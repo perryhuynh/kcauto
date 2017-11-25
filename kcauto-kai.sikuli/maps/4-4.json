@@ -1,0 +1,30 @@
+{
+	"world": 4,
+	"subworld": 4,
+	"nodes": {
+		"A": {
+			"coords": [643, 218]
+		},
+		"C": {
+			"coords": [386, 192]
+		},
+		"F": {
+			"coords": [491, 231],
+			"types": ["sub"]
+		},
+		"G": {
+			"coords": [366, 255]
+		},
+		"H": {
+			"coords": [222, 276],
+			"types": ["boss"]
+		},
+		"I": {
+			"coords": [544, 323],
+			"types": ["sub"]
+		},
+		"J": {
+			"coords": [390, 364]
+		}
+	}
+}

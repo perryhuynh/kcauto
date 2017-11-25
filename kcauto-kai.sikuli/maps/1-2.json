@@ -1,0 +1,16 @@
+{
+	"world": 1,
+	"subworld": 2,
+	"nodes": {
+		"A": {
+			"coords": [350, 145]
+		},
+		"B": {
+			"coords": [502, 116],
+			"types": ["boss"]
+		},
+		"D": {
+			"coords": [418, 332]
+		}
+	}
+}

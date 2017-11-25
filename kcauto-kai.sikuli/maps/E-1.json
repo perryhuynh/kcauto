@@ -1,0 +1,57 @@
+{
+	"world": "event",
+	"subworld": "1-1",
+	"nodes": {
+		"B": {
+			"coords": [600, 281],
+			"types": ["sub"]
+		},
+		"D": {
+			"coords": [540, 236],
+			"types": ["sub"]
+		},
+		"E": {
+			"coords": [497, 174],
+			"types": ["air"]
+		},
+		"G": {
+			"coords": [458, 339],
+			"types": ["select"]
+		},
+		"H": {
+			"coords": [452, 180],
+			"types": ["push", "nb"]
+		},
+		"J": {
+			"coords": [365, 321],
+			"types": ["sub"]
+		},
+		"K": {
+			"coords": [318, 310],
+			"types": ["air"]
+		},
+		"L": {
+			"coords": [265, 301],
+			"types": ["nb"]
+		},
+		"M": {
+			"coords": [323, 223],
+			"types": ["select"]
+		},
+		"N": {
+			"coords": [283, 151],
+			"types": ["air", "push"]
+		},
+		"O": {
+			"coords": [226, 274],
+			"types": ["air"]
+		},
+		"Q": {
+			"coords": [193, 339]
+		},
+		"S": {
+			"coords": [128, 276],
+			"types": ["boss"]
+		}
+	}
+}

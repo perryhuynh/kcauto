@@ -1,0 +1,44 @@
+{
+	"world": 4,
+	"subworld": 5,
+	"nodes": {
+		"A": {
+			"coords": [565, 142],
+			"types": ["select"]
+		},
+		"B": {
+			"coords": [544, 302],
+			"types": ["select"]
+		},
+		"C": {
+			"coords": [475, 213]
+		},
+		"D": {
+			"coords": [469, 99]
+		},
+		"E": {
+			"coords": [453, 341]
+		},
+		"F": {
+			"coords": [393, 234],
+			"types": ["sub"]
+		},
+		"G": {
+			"coords": [364, 119],
+			"types": ["select"]
+		},
+		"H": {
+			"coords": [353, 329]
+		},
+		"I": {
+			"coords": [287, 176]
+		},
+		"J": {
+			"coords": [280, 297]
+		},
+		"M": {
+			"coords": [171, 333],
+			"types": ["boss"]
+		}
+	}
+}

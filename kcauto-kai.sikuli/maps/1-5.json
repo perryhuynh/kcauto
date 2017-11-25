@@ -1,0 +1,33 @@
+{
+	"world": 1,
+	"subworld": 5,
+	"nodes": {
+		"A": {
+			"coords": [328, 111],
+			"types": ["sub"]
+		},
+		"B": {
+			"coords": [528, 123],
+			"types": ["sub"]
+		},
+		"C": {
+			"coords": [605, 205],
+			"types": ["sub"]
+		},
+		"D": {
+			"coords": [470, 232],
+			"types": ["sub"]
+		},
+		"F": {
+			"coords": [612, 318]
+		},
+		"G": {
+			"coords": [504, 372]
+		},
+		"I": {
+			"coords": [310, 323],
+			"types": ["sub", "boss"],
+			"nightBattle": false
+		}
+	}
+}

@@ -1,0 +1,10 @@
+{
+  "linters": {
+    "eslint": {
+      "excludes": [
+        "**/node_modules/**",
+        "**/webpack.config.js"
+      ]
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+	"world": 1,
+	"subworld": 6,
+	"nodes": {
+		"B": {
+			"coords": [256, 270],
+			"types": ["push"]
+		},
+		"C": {
+			"coords": [297, 233],
+			"types": ["sub"]
+		},
+		"D": {
+			"coords": [296, 190],
+			"types": ["air", "sub"]
+		},
+		"E": {
+			"coords": [336, 351],
+			"types": ["sub"]
+		},
+		"F": {
+			"coords": [353, 312],
+			"types": ["air"]
+		},
+		"I": {
+			"coords": [450, 189],
+			"types": ["sub"]
+		},
+		"J": {
+			"coords": [522, 123]
+		},
+		"K": {
+			"coords": [583, 232]
+		},
+		"L": {
+			"coords": [581, 190],
+			"types": ["air"]
+		}
+	}
+}
