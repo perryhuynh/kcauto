@@ -341,6 +341,11 @@ class CombatModule(object):
                         self.regions['check_damage_combat'])
                     self.dmg = self._combine_fleet_damages(
                         self.dmg, fleet_two_damages)
+                    # ascertain whether or not the escort fleet's flagship is
+                    # damaged if necessary
+                    if (fleet_two_damages['heavy'] is 1 and
+                            self.fleets[2].flagship_damaged is False):
+                        self.fleets[2].check_damage_flagship(self.regions)
                 Util.rejigger_mouse(self.regions, 'lbas')
                 # click through while not next battle or home
                 while not (
@@ -387,10 +392,22 @@ class CombatModule(object):
                         self.config.combat['retreat_limit'],
                         self.dmg))
                 if threshold_dmg_count > 0:
-                    Util.log_warning(
-                        "{} ship(s) damaged above threshold. Retreating."
-                        .format(threshold_dmg_count))
-                    retreat = True
+                    retreat_override = False
+                    if self.combined_fleet and threshold_dmg_count is 1:
+                        # if there is only one heavily damaged ship and it is
+                        # the flagship of the escort fleet, do not retreat
+                        if (self.fleets[2].damage_counts['heavy'] is 1 and
+                                self.fleets[2].flagship_damaged):
+                            retreat_override = True
+                            Util.log_msg(
+                                "The 1 ship damaged beyond threshold is the "
+                                "escort fleet's flagship (unsinkable). "
+                                "Continuing sortie.")
+                    if not retreat_override:
+                        Util.log_warning(
+                            "{} ship(s) damaged above threshold. Retreating."
+                            .format(threshold_dmg_count))
+                        retreat = True
 
                 # resolve retreat/continue
                 if retreat:
@@ -562,6 +579,7 @@ class CombatFleet(Fleet):
             fleet_id (int): id of the fleet
         """
         self.fleet_id = fleet_id
+        self.flagship_damaged = False
         self.damage_counts = {}
         self.damaged_fcf_retreat_count = 0
         self.fatigue = {}
@@ -665,6 +683,18 @@ class CombatFleet(Fleet):
         self.check_damages(regions['check_damage'])
         Util.click_screen(regions, '7th_next')
         return self.check_damages(regions['check_damage_7th'], reset=False)
+
+    def check_damage_flagship(self, regions):
+        """Method that checks whether or not the flagship of the fleet is
+        damaged in the post-combat results screen. Important for ascertaining
+        whether or not the flagship of the escort fleet is the ship with heavy
+        damage as it is not sinkable.
+
+        Args:
+            regions (dict): dict of pre-defined kcauto-kai regions
+        """
+        if regions['check_damage_flagship'].exists('ship_state_dmg_heavy.png'):
+            self.flagship_damaged = True
 
     def check_fatigue(self, region):
         """Method to multithread the detection of fatigue states of the fleet.
