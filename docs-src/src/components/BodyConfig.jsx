@@ -101,9 +101,12 @@ class BodyConfig extends React.Component {
     combatRepairLimit: 'moderate',
     combatRepairTimeLimit: new Date(new Date().setHours(0, 30, 0, 0)),
     combatLBASGroups: null,
-    combatLBASGroup1Nodes: null,
-    combatLBASGroup2Nodes: null,
-    combatLBASGroup3Nodes: null,
+    combatLBASGroup1Node1: null,
+    combatLBASGroup1Node2: null,
+    combatLBASGroup2Node1: null,
+    combatLBASGroup2Node2: null,
+    combatLBASGroup3Node1: null,
+    combatLBASGroup3Node2: null,
     combatOptionCheckFatigue: false,
     combatOptionReserveDocks: false,
     combatOptionPortCheck: false,
@@ -181,9 +184,12 @@ class BodyConfig extends React.Component {
       combatRepairLimit,
       combatRepairTimeLimit,
       combatLBASGroups,
-      combatLBASGroup1Nodes,
-      combatLBASGroup2Nodes,
-      combatLBASGroup3Nodes,
+      combatLBASGroup1Node1,
+      combatLBASGroup1Node2,
+      combatLBASGroup2Node1,
+      combatLBASGroup2Node2,
+      combatLBASGroup3Node1,
+      combatLBASGroup3Node2,
       combatOptionCheckFatigue,
       combatOptionReserveDocks,
       combatOptionPortCheck,
@@ -533,13 +539,12 @@ class BodyConfig extends React.Component {
                     Group 1
                   </InputLabel>
                   <Select
-                    multi
                     className={classes.reactSelect}
                     simpleValue={true}
-                    name='combatLBASGroup1Nodes'
-                    value={combatLBASGroup1Nodes}
+                    name='combatLBASGroup1Node1'
+                    value={combatLBASGroup1Node1}
                     options={NODES}
-                    onChange={value => this.setState({ combatLBASGroup1Nodes: value })}
+                    onChange={value => this.setState({ combatLBASGroup1Node1: value })}
                     disabled={combatLBASGroup1NodesDisabled}
                     fullWidth />
                 </FormControl>
@@ -550,13 +555,12 @@ class BodyConfig extends React.Component {
                     Group 2
                   </InputLabel>
                   <Select
-                    multi
                     className={classes.reactSelect}
                     simpleValue={true}
-                    name='combatLBASGroup2Nodes'
-                    value={combatLBASGroup2Nodes}
+                    name='combatLBASGroup2Node1'
+                    value={combatLBASGroup2Node1}
                     options={NODES}
-                    onChange={value => this.setState({ combatLBASGroup2Nodes: value })}
+                    onChange={value => this.setState({ combatLBASGroup2Node1: value })}
                     disabled={combatLBASGroup2NodesDisabled}
                     fullWidth />
                 </FormControl>
@@ -567,13 +571,12 @@ class BodyConfig extends React.Component {
                     Group 3
                   </InputLabel>
                   <Select
-                    multi
                     className={classes.reactSelect}
                     simpleValue={true}
-                    name='combatLBASGroup3Nodes'
-                    value={combatLBASGroup3Nodes}
+                    name='combatLBASGroup3Node1'
+                    value={combatLBASGroup3Node1}
                     options={NODES}
-                    onChange={value => this.setState({ combatLBASGroup3Nodes: value })}
+                    onChange={value => this.setState({ combatLBASGroup3Node1: value })}
                     disabled={combatLBASGroup3NodesDisabled}
                     fullWidth />
                 </FormControl>
