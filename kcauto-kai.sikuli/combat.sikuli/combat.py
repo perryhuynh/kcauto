@@ -562,6 +562,7 @@ class CombatFleet(Fleet):
             fleet_id (int): id of the fleet
         """
         self.fleet_id = fleet_id
+        self.flagship_damaged = False
         self.damage_counts = {}
         self.damaged_fcf_retreat_count = 0
         self.fatigue = {}
@@ -665,6 +666,19 @@ class CombatFleet(Fleet):
         self.check_damages(regions['check_damage'])
         Util.click_screen(regions, '7th_next')
         return self.check_damages(regions['check_damage_7th'], reset=False)
+
+    def check_damage_flagship(self, regions):
+        """Method that checks whether or not the flagship of the fleet is
+        damaged in the post-combat results screen. Important for ascertaining
+        whether or not the flagship of the escort fleet is the ship with heavy
+        damage as it is not sinkable.
+
+        Args:
+            regions (dict): dict of pre-defined kcauto-kai regions
+        """
+        if self.regions['check_damage_flagship'].exists(
+                'ship_state_dmg_heavy.png'):
+            self.flagship_damaged = True
 
     def check_fatigue(self, region):
         """Method to multithread the detection of fatigue states of the fleet.

@@ -315,22 +315,16 @@ class Util(object):
         regions['check_fatigue'] = Region(x + 500, y + 135, 22, 290)
         regions['check_damage'] = Region(x + 461, y + 130, 48, 300)
         regions['check_damage_7th'] = Region(x + 461, y + 376, 48, 50)
-        regions['check_damage_combat'] = Region(
-            x + 290, y + 140, 70, 320)
+        regions['check_damage_flagship'] = Region(x + 290, y + 185, 70, 50)
+        regions['check_damage_combat'] = Region(x + 290, y + 140, 70, 320)
         regions['enemy_pvp_fleet'] = Region(x + 400, y, 400, 480)
         # formation-related regions
-        regions['formation_line_ahead'] = Region(
-            x + 390, y + 160, 175, 50)
-        regions['formation_double_line'] = Region(
-            x + 520, y + 160, 175, 50)
-        regions['formation_diamond'] = Region(
-            x + 650, y + 160, 120, 50)
-        regions['formation_echelon'] = Region(
-            x + 390, y + 320, 120, 50)
-        regions['formation_line_abreast'] = Region(
-            x + 520, y + 320, 120, 50)
-        regions['formation_alerting'] = Region(
-            x + 650, y + 320, 120, 50)
+        regions['formation_line_ahead'] = Region(x + 390, y + 160, 175, 50)
+        regions['formation_double_line'] = Region(x + 520, y + 160, 175, 50)
+        regions['formation_diamond'] = Region(x + 650, y + 160, 120, 50)
+        regions['formation_echelon'] = Region(x + 390, y + 320, 120, 50)
+        regions['formation_line_abreast'] = Region(x + 520, y + 320, 120, 50)
+        regions['formation_alerting'] = Region(x + 650, y + 320, 120, 50)
         regions['formation_combinedfleet_1'] = Region(
             x + 420, y + 150, 160, 50)
         regions['formation_combinedfleet_2'] = Region(

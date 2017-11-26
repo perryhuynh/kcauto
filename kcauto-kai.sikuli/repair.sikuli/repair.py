@@ -82,7 +82,7 @@ class RepairModule(object):
         """
         Util.wait_and_click_and_wait(
             self.kc_region, 'dock_empty.png',
-            self.regions['right'], 'repairlist_icon')
+            self.regions['right'], 'repairlist_icon.png')
 
         if self._pick_fleet_ship():
             # TODO: only picks fleet ships at the moment... figure out logic
