@@ -345,8 +345,7 @@ class CombatModule(object):
                     # damaged if necessary
                     if (fleet_two_damages['heavy'] is 1 and
                             self.fleets[2].flagship_damaged is False):
-                        self.fleets[2].check_damage_flagship(
-                            self.regions['check_damage_flagship'])
+                        self.fleets[2].check_damage_flagship(self.regions)
                 Util.rejigger_mouse(self.regions, 'lbas')
                 # click through while not next battle or home
                 while not (
@@ -694,8 +693,7 @@ class CombatFleet(Fleet):
         Args:
             regions (dict): dict of pre-defined kcauto-kai regions
         """
-        if self.regions['check_damage_flagship'].exists(
-                'ship_state_dmg_heavy.png'):
+        if regions['check_damage_flagship'].exists('ship_state_dmg_heavy.png'):
             self.flagship_damaged = True
 
     def check_fatigue(self, region):
