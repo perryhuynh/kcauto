@@ -341,6 +341,12 @@ class CombatModule(object):
                         self.regions['check_damage_combat'])
                     self.dmg = self._combine_fleet_damages(
                         self.dmg, fleet_two_damages)
+                    # ascertain whether or not the escort fleet's flagship is
+                    # damaged if necessary
+                    if (fleet_two_damages['heavy'] is 1 and
+                            self.fleets[2].flagship_damaged is False):
+                        self.fleets[2].check_damage_flagship(
+                            self.regions['check_damage_flagship'])
                 Util.rejigger_mouse(self.regions, 'lbas')
                 # click through while not next battle or home
                 while not (
@@ -387,10 +393,22 @@ class CombatModule(object):
                         self.config.combat['retreat_limit'],
                         self.dmg))
                 if threshold_dmg_count > 0:
-                    Util.log_warning(
-                        "{} ship(s) damaged above threshold. Retreating."
-                        .format(threshold_dmg_count))
-                    retreat = True
+                    retreat_override = False
+                    if self.combined_fleet and threshold_dmg_count is 1:
+                        # if there is only one heavily damaged ship and it is
+                        # the flagship of the escort fleet, do not retreat
+                        if (self.fleets[2].damage_counts['heavy'] is 1 and
+                                self.fleets[2].flagship_damaged):
+                            retreat_override = True
+                            Util.log_msg(
+                                "The 1 ship damaged beyond threshold is the "
+                                "escort fleet's flagship (unsinkable). "
+                                "Continuing sortie.")
+                    if not retreat_override:
+                        Util.log_warning(
+                            "{} ship(s) damaged above threshold. Retreating."
+                            .format(threshold_dmg_count))
+                        retreat = True
 
                 # resolve retreat/continue
                 if retreat:
