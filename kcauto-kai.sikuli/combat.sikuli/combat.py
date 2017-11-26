@@ -450,14 +450,11 @@ class CombatModule(object):
             elif self.regions['lower_right_corner'].exists(
                     'combat_flagship_dmg.png'):
                 return False
-            elif self.regions['lower_right_corner'].exists('next.png'):
-                Util.click_screen(self.regions, 'center')
-                self.regions['left'].wait('home_menu_sortie.png', 30)
-                return False
-            elif self.regions['lower_right_corner'].exists('next_alt.png'):
-                Util.click_screen(self.regions, 'center')
-                self.regions['left'].wait('home_menu_sortie.png', 30)
-                return False
+            elif (self.regions['lower_right_corner'].exists('next_alt.png') or
+                    self.regions['lower_right_corner'].exists('next.png') or
+                    self.kc_region.exists('combat_nb_fight.png')):
+                at_node = True
+                return True
 
     def _run_loop_during_battle(self):
         """Method that continuously runs during combat for the night battle

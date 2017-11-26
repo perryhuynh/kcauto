@@ -3,66 +3,111 @@
 	"subworld": "2-1",
 	"nodes": {
 		"A": {
-			"coords": [213, 138],
+			"coords": [119, 190],
 			"types": ["sub"]
 		},
 		"B": {
-			"coords": [126, 173]
-		},
-		"C": {
-			"coords": [106, 237],
+			"coords": [137, 114],
 			"types": ["air"]
-		},
-		"D": {
-			"coords": [199, 256],
-			"types": ["sub"]
-		},
-		"E": {
-			"coords": [275, 273]
 		},
 		"F": {
-			"coords": [216, 292],
-			"types": ["air"]
-		},
-		"G": {
-			"coords": [148, 311],
-			"types": ["boss"]
-		},
-		"J": {
-			"coords": [282, 168],
-			"types": ["boss"]
-		},
-		"K": {
-			"coords": [410, 260]
-		},
-		"L": {
-			"coords": [452, 334]
-		},
-		"M": {
-			"coords": [473, 216],
+			"coords": [235, 242],
 			"types": ["select"]
 		},
-		"N": {
-			"coords": [493, 288],
+		"G": {
+			"coords": [251, 116],
 			"types": ["sub"]
 		},
-		"O": {
-			"coords": [515, 164],
+		"H": {
+			"coords": [274, 214],
+			"types": ["sub"]
+		},
+		"I": {
+			"coords": [275, 301],
+			"types": ["sub"]
+		},
+		"J": {
+			"coords": [311, 183],
+			"types": ["sub"]
+		},
+		"K": {
+			"coords": [327, 247],
+			"types": ["sub"]
+		},
+		"M": {
+			"coords": [338, 324],
 			"types": ["air"]
 		},
-		"P": {
-			"coords": [555, 218]
+		"N": {
+			"coords": [379, 279],
+			"types": ["air"]
 		},
-		"Q": {
-			"coords": [554, 346],
+		"O": {
+			"coords": [399, 212],
 			"types": ["air"]
 		},
 		"R": {
-			"coords": [633, 321]
+			"coords": [415, 360]
 		},
 		"S": {
-			"coords": [652, 222],
+			"coords": [436, 294],
+		},
+		"T": {
+			"coords": [443, 177],
+			"types": ["sub"]
+		},
+		"U": {
+			"coords": [451, 102]
+		},
+		"V": {
+			"coords": [461, 230],
+			"types": ["air"]
+		},
+		"W": {
+			"coords": [485, 315]
+		},
+		"X": {
+			"coords": [506, 269]
+		},
+		"Y": {
+			"coords": [550, 288]
+		},
+		"Z1": {
+			"coords": [475, 139],
+			"types": ["air"]
+		},
+		"Z2": {
+			"coords": [507, 103],
+			"types": ["air"]
+		},
+		"Z3": {
+			"coords": [544, 126]
+		},
+		"Z4": {
+			"coords": [570, 97]
+		},
+		"Z6": {
+			"coords": [613, 118],
 			"types": ["boss"]
-		}
+		},
+		"Z7": {
+			"coords": [583, 279]
+		},
+		"Z8": {
+			"coords": [616, 269]
+		},
+		"Z9": {
+			"coords": [607, 296]
+		},
+		"ZZ1": {
+			"coords": [647, 260]
+		},
+		"ZZ2": {
+			"coords": [660, 230]
+		},
+		"ZZ3": {
+			"coords": [671, 184],
+			"types": ["boss"]
+		},
 	}
 }
