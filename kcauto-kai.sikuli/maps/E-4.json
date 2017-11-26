@@ -4,7 +4,8 @@
 	"nodes": {
 		"A": {
 			"coords": [119, 190],
-			"types": ["sub"]
+			"types": ["sub"],
+			"formation": "vanguard"
 		},
 		"B": {
 			"coords": [137, 114],
@@ -23,7 +24,8 @@
 		},
 		"H": {
 			"coords": [274, 214],
-			"types": ["sub"]
+			"types": ["sub"],
+			"formation": "vanguard"
 		},
 		"I": {
 			"coords": [275, 301],
@@ -50,14 +52,16 @@
 			"types": ["air"]
 		},
 		"R": {
-			"coords": [415, 360]
+			"coords": [415, 360],
+			"formation": "vanguard"
 		},
 		"S": {
 			"coords": [436, 294]
 		},
 		"T": {
 			"coords": [443, 177],
-			"types": ["sub"]
+			"types": ["sub"],
+			"formation": "vanguard"
 		},
 		"U": {
 			"coords": [451, 102]
@@ -73,7 +77,8 @@
 			"coords": [506, 269]
 		},
 		"Y": {
-			"coords": [550, 288]
+			"coords": [550, 288],
+			"formation": "vanguard"
 		},
 		"Z1": {
 			"coords": [475, 139],
@@ -84,29 +89,36 @@
 			"types": ["air"]
 		},
 		"Z3": {
-			"coords": [544, 126]
+			"coords": [544, 126],
+			"formation": "vanguard"
 		},
 		"Z4": {
-			"coords": [570, 97]
+			"coords": [570, 97],
+			"formation": "vanguard"
 		},
 		"Z6": {
 			"coords": [613, 118],
 			"types": ["boss"]
 		},
 		"Z7": {
-			"coords": [583, 279]
+			"coords": [583, 279],
+			"formation": "vanguard"
 		},
 		"Z8": {
-			"coords": [616, 269]
+			"coords": [616, 269],
+			"formation": "vanguard"
 		},
 		"Z9": {
-			"coords": [607, 296]
+			"coords": [607, 296],
+			"formation": "vanguard"
 		},
 		"ZZ1": {
-			"coords": [647, 260]
+			"coords": [647, 260],
+			"formation": "vanguard"
 		},
 		"ZZ2": {
-			"coords": [660, 230]
+			"coords": [660, 230],
+			"formation": "vanguard"
 		},
 		"ZZ3": {
 			"coords": [671, 184],
