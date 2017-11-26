@@ -324,7 +324,7 @@ class Util(object):
         regions['formation_diamond'] = Region(x + 650, y + 160, 120, 50)
         regions['formation_echelon'] = Region(x + 390, y + 320, 120, 50)
         regions['formation_line_abreast'] = Region(x + 520, y + 320, 120, 50)
-        regions['formation_alerting'] = Region(x + 650, y + 320, 120, 50)
+        regions['formation_vanguard'] = Region(x + 650, y + 320, 120, 50)
         regions['formation_combinedfleet_1'] = Region(
             x + 420, y + 150, 160, 50)
         regions['formation_combinedfleet_2'] = Region(
