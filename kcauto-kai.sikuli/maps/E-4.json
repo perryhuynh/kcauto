@@ -10,6 +10,9 @@
 			"coords": [137, 114],
 			"types": ["air"]
 		},
+		"D": {
+			"coords": [192, 163]
+		},
 		"F": {
 			"coords": [235, 242],
 			"types": ["select"]
