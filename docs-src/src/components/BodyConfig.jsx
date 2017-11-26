@@ -595,7 +595,7 @@ class BodyConfig extends React.Component {
                       name='combatLBASGroup2Node2'
                       value={combatLBASGroup2Node2}
                       options={NODES}
-                      onChange={value => this.setState({ combatLBASGroup2Node1: value })}
+                      onChange={value => this.setState({ combatLBASGroup2Node2: value })}
                       disabled={combatLBASGroup2NodesDisabled} />
                   </div>
                 </FormControl>
