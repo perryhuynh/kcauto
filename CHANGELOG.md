@@ -1,3 +1,7 @@
+#### 0.1.2 (webUI only)
+
+* Better handling of LBAS Group Node assignment on webUI
+
 #### 0.1.1
 
 * Updates E-4 map data

@@ -47,6 +47,15 @@ export const setPythonConfig = config => (
       `${String(config.combatRepairTimeLimit.getHours()).padStart(2, '0')}` +
       `${String(config.combatRepairTimeLimit.getMinutes()).padStart(2, '0')}` :
       ''
+    const combatLBASGroup1Nodes = configTemp.combatLBASGroup1Node1 && configTemp.combatLBASGroup1Node2 ?
+      `${configTemp.combatLBASGroup1Node1},${configTemp.combatLBASGroup1Node2}` :
+      ''
+    const combatLBASGroup2Nodes = configTemp.combatLBASGroup2Node1 && configTemp.combatLBASGroup2Node2 ?
+      `${configTemp.combatLBASGroup2Node1},${configTemp.combatLBASGroup2Node2}` :
+      ''
+    const combatLBASGroup3Nodes = configTemp.combatLBASGroup3Node1 && configTemp.combatLBASGroup3Node2 ?
+      `${configTemp.combatLBASGroup3Node1},${configTemp.combatLBASGroup3Node2}` :
+      ''
     const combatOptions = []
     if (config.combatOptionCheckFatigue) {
       combatOptions.push('CheckFatigue')
@@ -90,9 +99,9 @@ export const setPythonConfig = config => (
       `RepairLimit: ${configTemp.combatRepairLimit}`,
       `RepairTimeLimit: ${combatRepairTimeLimit}`,
       `LBASGroups: ${configTemp.combatLBASGroups}`,
-      `LBASGroup1Nodes: ${configTemp.combatLBASGroup1Nodes}`,
-      `LBASGroup2Nodes: ${configTemp.combatLBASGroup2Nodes}`,
-      `LBASGroup3Nodes: ${configTemp.combatLBASGroup3Nodes}`,
+      `LBASGroup1Nodes: ${combatLBASGroup1Nodes}`,
+      `LBASGroup2Nodes: ${combatLBASGroup2Nodes}`,
+      `LBASGroup3Nodes: ${combatLBASGroup3Nodes}`,
       `MiscOptions: ${combatOptions.join(',')}`,
       '',
       '[Quests]',

@@ -67,7 +67,11 @@ const styles = () => ({
   reactSelect: {
     fontFamily: 'Roboto, sans-serif',
   },
-  flexTypography: {
+  reactSelectHalfWidth: {
+    width: '50%',
+    fontFamily: 'Roboto, sans-serif',
+  },
+  flexReset: {
     display: 'flex',
   },
   saveButton: {
@@ -101,9 +105,12 @@ class BodyConfig extends React.Component {
     combatRepairLimit: 'moderate',
     combatRepairTimeLimit: new Date(new Date().setHours(0, 30, 0, 0)),
     combatLBASGroups: null,
-    combatLBASGroup1Nodes: null,
-    combatLBASGroup2Nodes: null,
-    combatLBASGroup3Nodes: null,
+    combatLBASGroup1Node1: null,
+    combatLBASGroup1Node2: null,
+    combatLBASGroup2Node1: null,
+    combatLBASGroup2Node2: null,
+    combatLBASGroup3Node1: null,
+    combatLBASGroup3Node2: null,
     combatOptionCheckFatigue: false,
     combatOptionReserveDocks: false,
     combatOptionPortCheck: false,
@@ -151,6 +158,19 @@ class BodyConfig extends React.Component {
     this.setState({ combatNodeSelect1: null, combatNodeSelect2: null, combatNodeSelects })
   }
 
+  handleLBASGroupSelect = (value) => {
+    if (!value.includes('1')) {
+      this.setState({ combatLBASGroup1Node1: null, combatLBASGroup1Node2: null })
+    }
+    if (!value.includes('2')) {
+      this.setState({ combatLBASGroup2Node1: null, combatLBASGroup2Node2: null })
+    }
+    if (!value.includes('3')) {
+      this.setState({ combatLBASGroup3Node1: null, combatLBASGroup3Node2: null })
+    }
+    this.setState({ combatLBASGroups: value })
+  }
+
   render = () => {
     const {
       classes,
@@ -181,9 +201,12 @@ class BodyConfig extends React.Component {
       combatRepairLimit,
       combatRepairTimeLimit,
       combatLBASGroups,
-      combatLBASGroup1Nodes,
-      combatLBASGroup2Nodes,
-      combatLBASGroup3Nodes,
+      combatLBASGroup1Node1,
+      combatLBASGroup1Node2,
+      combatLBASGroup2Node1,
+      combatLBASGroup2Node2,
+      combatLBASGroup3Node1,
+      combatLBASGroup3Node2,
       combatOptionCheckFatigue,
       combatOptionReserveDocks,
       combatOptionPortCheck,
@@ -522,7 +545,7 @@ class BodyConfig extends React.Component {
                     name='combatLBASGroups'
                     value={combatLBASGroups}
                     options={LBAS_GROUPS}
-                    onChange={value => this.setState({ combatLBASGroups: value })}
+                    onChange={this.handleLBASGroupSelect}
                     disabled={!combatEnabled}
                     fullWidth />
                 </FormControl>
@@ -530,52 +553,76 @@ class BodyConfig extends React.Component {
               <Grid item xs={12} sm={3} className={classes.formGrid}>
                 <FormControl disabled={combatLBASGroup1NodesDisabled} margin='normal' fullWidth>
                   <InputLabel htmlFor='combatLBASGroup1Nodes' shrink={true} className={classes.reactSelectLabel}>
-                    Group 1
+                    Group 1 Nodes
                   </InputLabel>
-                  <Select
-                    multi
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatLBASGroup1Nodes'
-                    value={combatLBASGroup1Nodes}
-                    options={NODES}
-                    onChange={value => this.setState({ combatLBASGroup1Nodes: value })}
-                    disabled={combatLBASGroup1NodesDisabled}
-                    fullWidth />
+                  <div className={classes.flexReset}>
+                    <Select
+                      className={classes.reactSelectHalfWidth}
+                      simpleValue={true}
+                      name='combatLBASGroup1Node1'
+                      value={combatLBASGroup1Node1}
+                      options={NODES}
+                      onChange={value => this.setState({ combatLBASGroup1Node1: value })}
+                      disabled={combatLBASGroup1NodesDisabled} />
+                    <Select
+                      className={classes.reactSelectHalfWidth}
+                      simpleValue={true}
+                      name='combatLBASGroup1Node2'
+                      value={combatLBASGroup1Node2}
+                      options={NODES}
+                      onChange={value => this.setState({ combatLBASGroup1Node2: value })}
+                      disabled={combatLBASGroup1NodesDisabled} />
+                  </div>
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={3} className={classes.formGrid}>
                 <FormControl disabled={combatLBASGroup2NodesDisabled} margin='normal' fullWidth>
                   <InputLabel htmlFor='combatLBASGroup2Nodes' shrink={true} className={classes.reactSelectLabel}>
-                    Group 2
+                    Group 2 Nodes
                   </InputLabel>
-                  <Select
-                    multi
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatLBASGroup2Nodes'
-                    value={combatLBASGroup2Nodes}
-                    options={NODES}
-                    onChange={value => this.setState({ combatLBASGroup2Nodes: value })}
-                    disabled={combatLBASGroup2NodesDisabled}
-                    fullWidth />
+                  <div className={classes.flexReset}>
+                    <Select
+                      className={classes.reactSelectHalfWidth}
+                      simpleValue={true}
+                      name='combatLBASGroup2Node1'
+                      value={combatLBASGroup2Node1}
+                      options={NODES}
+                      onChange={value => this.setState({ combatLBASGroup2Node1: value })}
+                      disabled={combatLBASGroup2NodesDisabled} />
+                    <Select
+                      className={classes.reactSelectHalfWidth}
+                      simpleValue={true}
+                      name='combatLBASGroup2Node2'
+                      value={combatLBASGroup2Node2}
+                      options={NODES}
+                      onChange={value => this.setState({ combatLBASGroup2Node1: value })}
+                      disabled={combatLBASGroup2NodesDisabled} />
+                  </div>
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={3} className={classes.formGrid}>
                 <FormControl disabled={combatLBASGroup3NodesDisabled} margin='normal' fullWidth>
                   <InputLabel htmlFor='combatLBASGroup3Nodes' shrink={true} className={classes.reactSelectLabel}>
-                    Group 3
+                    Group 3 Nodes
                   </InputLabel>
-                  <Select
-                    multi
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatLBASGroup3Nodes'
-                    value={combatLBASGroup3Nodes}
-                    options={NODES}
-                    onChange={value => this.setState({ combatLBASGroup3Nodes: value })}
-                    disabled={combatLBASGroup3NodesDisabled}
-                    fullWidth />
+                  <div className={classes.flexReset}>
+                    <Select
+                      className={classes.reactSelectHalfWidth}
+                      simpleValue={true}
+                      name='combatLBASGroup3Node1'
+                      value={combatLBASGroup3Node1}
+                      options={NODES}
+                      onChange={value => this.setState({ combatLBASGroup3Node1: value })}
+                      disabled={combatLBASGroup3NodesDisabled} />
+                    <Select
+                      className={classes.reactSelectHalfWidth}
+                      simpleValue={true}
+                      name='combatLBASGroup3Node2'
+                      value={combatLBASGroup3Node2}
+                      options={NODES}
+                      onChange={value => this.setState({ combatLBASGroup3Node2: value })}
+                      disabled={combatLBASGroup3NodesDisabled} />
+                  </div>
                 </FormControl>
               </Grid>
 
@@ -637,7 +684,7 @@ class BodyConfig extends React.Component {
         </Grid>
         <Grid item xs={12} md={4}>
           <Paper className={classes.paper} elevation={0}>
-            <Typography type='display1' className={classes.flexTypography}>
+            <Typography type='display1' className={classes.flexReset}>
               Config
               <Button
                 dense
