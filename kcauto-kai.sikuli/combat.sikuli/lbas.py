@@ -81,7 +81,7 @@ class LBAS(object):
         Util.kc_sleep(1)
         for group in self.config.combat['lbas_groups']:
             Util.log_msg("Resupplying LBAS group {}.".format(group))
-            if group == not 1:
+            if group != 1:
                 self.regions['right'].click('lbas_group_tab_{}.png'.format(
                     str(group)))
             Util.check_and_click(self.regions['right'], 'lbas_resupply.png')
