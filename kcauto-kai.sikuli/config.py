@@ -204,7 +204,7 @@ class Config(object):
                 night_battles = {}
                 for raw_night_battle in self.combat['raw_night_battles']:
                     nbm = re.search(
-                        '([A-Z0-9]+)>(True|False)', raw_night_battle)
+                        '([A-Z0-9]+):(True|False)', raw_night_battle)
                     if nbm:
                         nbm_node = (
                             int(nbm.group(1)) if nbm.group(1).isdigit()
