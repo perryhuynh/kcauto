@@ -24,28 +24,27 @@ class CombatModule(object):
         self.regions = regions
         self.kc_region = regions['game']
         self.fleets = fleets
-        self.primary_fleet = (
-            fleets[3]
-            if self.config.combat['fleet_mode'] is 'striking' else fleets[1])
-
         self.next_combat_time = datetime.now()
-        self.dmg = {}
-        self.map = MapData(
-            self.config.combat['map'], self.regions, self.config)
-        self.current_position = [0, 0]
-        self.current_node = None
 
         self.combined_fleet = self.config.combat['combined_fleet']
         self.striking_fleet = (
             True if self.config.combat['fleet_mode'] is 'striking' else False)
+
+        self.primary_fleet = fleets[3] if self.striking_fleet else fleets[1]
         self.fleet_icon = 'fleet_icon_standard.png'
         if self.combined_fleet:
             self.fleet_icon = 'fleet_icon_{}.png'.format(
                 self.config.combat['fleet_mode'])
+        self.dmg = {}
 
         self.lbas = (
             LBAS(config, regions, self.map)
             if self.config.combat['lbas_enabled'] else None)
+
+        self.map = MapData(
+            self.config.combat['map'], self.regions, self.config)
+        self.current_position = [0, 0]
+        self.current_node = None
 
     def goto_combat(self):
         """Method to navigate to the combat menu.
