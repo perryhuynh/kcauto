@@ -151,9 +151,9 @@ class Config(object):
             if self.combat['raw_node_selects']:
                 node_selects = {}
                 for raw_node_select in self.combat['raw_node_selects']:
-                    ns = re.search('([A-Z0-9]+)>([A-Z0-9]+)', raw_node_select)
-                    if ns:
-                        node_selects[ns.group(1)] = ns.group(2)
+                    nsm = re.search('([A-Z0-9]+)>([A-Z0-9]+)', raw_node_select)
+                    if nsm:
+                        node_selects[nsm.group(1)] = nsm.group(2)
                     else:
                         Util.log_error("Invalid Node Select: '{}'".format(
                             raw_node_select))
@@ -161,6 +161,41 @@ class Config(object):
                 if self.ok and node_selects:
                     self.combat['node_selects'] = node_selects
                 del self.combat['raw_node_selects']
+            # validate the formations
+            if self.combat['raw_formations']:
+                formations = {}
+                valid_formations = (
+                    'combinedfleet_1', 'combinedfleet_2', 'combinedfleet_3',
+                    'combinedfleet_4', 'line_ahead', 'double_line', 'diamond',
+                    'echelon', 'line_abreast', 'vanguard')
+                for raw_formation in self.combat['raw_formations']:
+                    fm = re.search('([A-Z0-9]+):({})'.format(
+                        '|'.join(valid_formations)), raw_formation)
+                    if fm:
+                        formations[fm.group(1)] = fm.group(2)
+                    else:
+                        Util.log_error("Invalid Formation: '{}'".format(
+                            raw_formation))
+                        self.ok = False
+                if self.ok and formations:
+                    self.combat['formations'] = formations
+                del self.combat['raw_formations']
+            # validate the night battles
+            if self.combat['raw_night_battles']:
+                night_battles = {}
+                for raw_night_battle in self.combat['raw_night_battles']:
+                    nbm = re.search(
+                        '([A-Z0-9]+)>(True|False)', raw_night_battle)
+                    if nbm:
+                        night_battles[nbm.group(1)] = (
+                            True if nbm.group(2) is 'True' else False)
+                    else:
+                        Util.log_error("Invalid Night Battle: '{}'".format(
+                            raw_night_battle))
+                        self.ok = False
+                if self.ok and night_battles:
+                    self.combat['night_battles'] = night_battles
+                del self.combat['raw_night_battles']
             # validate the misc options
             for option in self.combat['misc_options']:
                 if option not in (
@@ -248,6 +283,10 @@ class Config(object):
         self.combat['combat_nodes'] = int(combat_nodes) if combat_nodes else 99
         self.combat['raw_node_selects'] = (
             self._getlist(config, 'Combat', 'NodeSelects'))
+        self.combat['raw_formations'] = (
+            self._getlist(config, 'Combat', 'Formations'))
+        self.combat['raw_night_battles'] = (
+            self._getlist(config, 'Combat', 'NightBattles'))
         self.combat['retreat_limit'] = config.get('Combat', 'RetreatLimit')
         self.combat['repair_limit'] = config.get('Combat', 'RepairLimit')
         self.combat['repair_time_limit'] = config.getint(
