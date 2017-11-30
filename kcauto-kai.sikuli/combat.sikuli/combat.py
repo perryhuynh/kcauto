@@ -327,7 +327,7 @@ class CombatModule(object):
 
                 # resolve night battle
                 if combat_result == 'night_battle':
-                    if self._select_night_battle(self._resolve_night_battle):
+                    if self._select_night_battle(self._resolve_night_battle()):
                         self._run_loop_during_battle()
 
                 self.regions['lower_right_corner'].wait('next.png', 30)
