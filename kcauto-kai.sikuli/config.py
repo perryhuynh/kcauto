@@ -151,14 +151,14 @@ class Config(object):
             # validate fleet modes and possible expedition fleet collisions
             if (self.combat['fleet_mode'] in ('ctf', 'stf', 'transport')
                     and self.expeditions['enabled']):
-                if self.expeditions['fleet2']:
+                if 'fleet2' in self.expeditions:
                     Util.log_error(
                         "Expedition(s) defined for Fleet 2 while Combat Fleet "
                         "Mode is defined as Combined Fleet.")
                     self.ok = False
             if (self.combat['fleet_mode'] == 'striking'
                     and self.expeditions['enabled']):
-                if self.expeditions['fleet3']:
+                if 'fleet3' in self.expeditions:
                     Util.log_error(
                         "Expedition(s) defined for Fleet 3 while Combat Fleet "
                         "Mode is defined as Striking Fleet.")
