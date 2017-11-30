@@ -262,19 +262,19 @@ class Config(object):
                 int, self._getlist(config, 'Expeditions', 'Fleet2'))
             self.expeditions_all.extend(self.expeditions['fleet2'])
         else:
-            del self.expeditions['fleet2']
+            self.expeditions.pop('fleet2', None)
         if config.get('Expeditions', 'Fleet3'):
             self.expeditions['fleet3'] = map(
                 int, self._getlist(config, 'Expeditions', 'Fleet3'))
             self.expeditions_all.extend(self.expeditions['fleet3'])
         else:
-            del self.expeditions['fleet3']
+            self.expeditions.pop('fleet3', None)
         if config.get('Expeditions', 'Fleet4'):
             self.expeditions['fleet4'] = map(
                 int, self._getlist(config, 'Expeditions', 'Fleet4'))
             self.expeditions_all.extend(self.expeditions['fleet4'])
         else:
-            del self.expeditions['fleet4']
+            self.expeditions.pop('fleet4', None)
 
     def _read_pvp(self, config):
         """Method to parse the Ovo settings of the passed in config.
