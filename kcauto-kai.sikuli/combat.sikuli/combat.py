@@ -110,12 +110,15 @@ class CombatModule(object):
         if self.striking_fleet:
             self.fleets[3].reset_fcf_retreat_counts()
 
-        # background observer for tracking the fleet position
-        observeRegion = Region(self.kc_region)
-        observeRegion.onAppear(
-            Pattern(self.fleet_icon).similar(Globals.FLEET_ICON_SIMILARITY),
-            self._update_fleet_position)
-        observeRegion.observeInBackground(FOREVER)
+        # background observer for tracking the fleet position; only runs in
+        # live engine mode
+        if self.config.combat['engine'] is 'live':
+            observeRegion = Region(self.kc_region)
+            observeRegion.onAppear(
+                Pattern(self.fleet_icon).similar(
+                    Globals.FLEET_ICON_SIMILARITY),
+                self._update_fleet_position)
+            observeRegion.observeInBackground(FOREVER)
 
         self._run_combat_logic()
 
@@ -127,8 +130,11 @@ class CombatModule(object):
         if self.striking_fleet:
             self.fleets[3].resolve_fcf_retreat_counts()
 
-        # stop the background observer once combat is complete
-        observeRegion.stopObserver()
+        # stop the background observer once combat is complete; only relevant
+        # for live engine mode
+        if self.config.combat['engine'] is 'live':
+            observeRegion.stopObserver()
+
         return True
 
     def _select_combat_map(self):
