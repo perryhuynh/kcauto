@@ -293,6 +293,8 @@ class Config(object):
         self.combat['combined_fleet'] = (
             True if self.combat['fleet_mode'] in ['ctf', 'stf', 'transport']
             else False)
+        self.combat['striking_fleet'] = (
+            True if self.combat['fleet_mode'] is 'striking' else False)
         self.combat['map'] = config.get('Combat', 'Map')
         combat_nodes = config.get('Combat', 'CombatNodes')
         self.combat['combat_nodes'] = int(combat_nodes) if combat_nodes else 99

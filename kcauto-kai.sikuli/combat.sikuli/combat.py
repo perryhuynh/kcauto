@@ -28,8 +28,7 @@ class CombatModule(object):
         self.next_combat_time = datetime.now()
 
         self.combined_fleet = self.config.combat['combined_fleet']
-        self.striking_fleet = (
-            True if self.config.combat['fleet_mode'] is 'striking' else False)
+        self.striking_fleet = self.config.combat['striking_fleet']
 
         self.primary_fleet = fleets[3] if self.striking_fleet else fleets[1]
         self.fleet_icon = 'fleet_icon_standard.png'
