@@ -367,7 +367,7 @@ class CombatModule(object):
                         Util.click_screen(self.regions, 'center')
                         Util.rejigger_mouse(self.regions, 'lbas')
                     elif self.combined_fleet or self.striking_fleet:
-                        self._fcf_resolver()
+                        self._resolve_fcf()
 
             if self.regions['left'].exists('home_menu_sortie.png'):
                 # arrived at home; sortie complete
@@ -417,13 +417,13 @@ class CombatModule(object):
 
                 # resolve retreat/continue
                 if retreat:
-                    self.map.select_sortie_continue_retreat(True)
+                    self._select_sortie_continue_retreat(True)
                     self.regions['left'].wait('home_menu_sortie.png', 30)
                     self._print_sortie_complete_msg(nodes_run)
                     sortieing = False
                     break
                 else:
-                    self.map.select_sortie_continue_retreat(False)
+                    self._select_sortie_continue_retreat(False)
 
     def _print_sortie_complete_msg(self, nodes_run):
         """Method that prints the post-sortie status report indicating number
@@ -455,7 +455,8 @@ class CombatModule(object):
                     self.regions['formation_combinedfleet_1'].exists(
                         'formation_combinedfleet_1.png')):
                 Util.log_msg("Fleet at Node {}".format(self.current_node))
-                self.map.resolve_formation(self.current_node)
+                # self.map.resolve_formation(self.current_node)
+                self._select_formation(formation)
                 Util.rejigger_mouse(self.regions, 'top')
                 at_node = True
                 return True
@@ -532,7 +533,52 @@ class CombatModule(object):
             matched_node if matched_node is not None else self.current_node)
         event.repeat()
 
-    def _fcf_resolver(self):
+    def _select_sortie_continue_retreat(self, retreat):
+        """Method that selects the sortie continue or retreat button.
+
+        Args:
+            retreat (bool): True if the retreat button should be pressed,
+                False otherwise
+        """
+        if retreat:
+            Util.log_msg("Retreating from sortie.")
+            Util.check_and_click(self.kc_region, 'combat_retreat.png')
+        else:
+            Util.log_msg("Continuing sortie.")
+            Util.check_and_click(self.kc_region, 'combat_continue.png')
+
+    def _select_formation(self, formation):
+        """Method that selects the specified formation on-screen.
+
+        Args:
+            formation (str): formation to select
+
+        Returns:
+            bool: True if the formation was clicked, False if its button could
+                not be found
+        """
+        Util.log_msg("Engaging the enemy in {} formation.".format(
+            formation.replace('_', ' ')))
+        return Util.check_and_click(
+            self.regions['formation_{}'.format(formation)],
+            'formation_{}.png'.format(formation))
+
+    def _select_night_battle(self, nb):
+        """Method that selects the night battle sortie button or retreats
+        from it.
+
+        Args:
+            nb (bool): indicates whether or not night battle should be done or
+                not
+        """
+        if nb:
+            Util.log_msg("Commencing night battle.")
+            Util.check_and_click(self.kc_region, 'combat_nb_fight.png')
+        else:
+            Util.log_msg("Declining night battle.")
+            Util.check_and_click(self.kc_region, 'combat_nb_retreat.png')
+
+    def _resolve_fcf(self):
         """Method that resolves the FCF prompt. Does not use FCF if there are
         more than one ship in a heavily damaged state. Supports both combined
         fleet FCF and striking force FCF
