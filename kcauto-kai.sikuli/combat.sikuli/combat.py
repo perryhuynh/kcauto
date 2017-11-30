@@ -514,24 +514,50 @@ class CombatModule(object):
         Args:
             event (event): sikuli observer event
         """
-        lastMatch = event.getMatch()
+        fleet_match = event.getMatch()
         # lastMatch is based off of screen positions, so subtract game region
         # x and y to get in-game positions
         self.current_position = [
-            lastMatch.x + (lastMatch.w / 2) - self.kc_region.x,
-            lastMatch.y + lastMatch.h - self.kc_region.y
+            fleet_match.x + (fleet_match.w / 2) - self.kc_region.x,
+            fleet_match.y + fleet_match.h - self.kc_region.y
         ]
 
         # debug console print for the observer's found position of the fleet
         """
         print(
             "{}, {} ({})".format(
-                self.current_position[0], self.current_position[1], lastMatch))
+                self.current_position[0], self.current_position[1],
+                fleet_match))
         """
         matched_node = self.map.find_node_by_pos(*self.current_position)
         self.current_node = (
             matched_node if matched_node is not None else self.current_node)
         event.repeat()
+
+    def _update_fleet_position_once(self):
+        """Method that can be called to find and update the fleet's position
+        on-demand.
+        """
+        fleet_match = self.kc_region.find(
+            Pattern(self.fleet_icon).similar(Globals.FLEET_ICON_SIMILARITY))
+        # lastMatch is based off of screen positions, so subtract game region
+        # x and y to get in-game positions
+        self.current_position = [
+            fleet_match.x + (fleet_match.w / 2) - self.kc_region.x,
+            fleet_match.y + fleet_match.h - self.kc_region.y
+        ]
+
+        # debug console print for the method's found position of the fleet
+        """
+        print(
+            "{}, {} ({})".format(
+                self.current_position[0], self.current_position[1],
+                fleet_match))
+        """
+        matched_node = self.map.find_node_by_pos(*self.current_position)
+        self.current_node = (
+            matched_node if matched_node is not None else self.current_node)
+        Util.log_msg("Fleet at node {}.".format(self.current_node))
 
     def _select_sortie_continue_retreat(self, retreat):
         """Method that selects the sortie continue or retreat button.
