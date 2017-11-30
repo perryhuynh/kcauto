@@ -73,7 +73,7 @@ class MapData(object):
                 for
 
         Returns:
-            tuple: tuple of formations to choose, in priority order
+            tuple: tuple of formations to try in order
         """
         if node:
             if node.formation:
@@ -92,7 +92,7 @@ class MapData(object):
                     return ('diamond', )
             elif 'mixed' in node.types:
                 if self.config.combat['combined_fleet']:
-                    return ('combined_fleet2', )
+                    return ('combinedfleet_2', )
                 else:
                     return ('double_line', )
             else:

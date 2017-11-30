@@ -45,6 +45,7 @@ class CombatModule(object):
             self.config.combat['map'], self.regions, self.config)
         self.current_position = [0, 0]
         self.current_node = None
+        self.nodes_run = []
 
     def goto_combat(self):
         """Method to navigate to the combat menu.
@@ -310,13 +311,13 @@ class CombatModule(object):
 
         # primary combat loop
         sortieing = True
-        nodes_run = []
+        self.nodes_run = []
         while sortieing:
             at_node = self._run_loop_between_nodes()
 
             if at_node:
                 # arrived at combat node
-                nodes_run.append(self.current_node)
+                self.nodes_run.append(self.current_node)
 
                 # get rid of initial boss dialogue
                 Util.kc_sleep(5)
@@ -329,7 +330,7 @@ class CombatModule(object):
 
                 # resolve night battle
                 if combat_result == 'night_battle':
-                    if self.map.resolve_night_battle(nodes_run[-1]):
+                    if self._select_night_battle(self._resolve_night_battle):
                         self._run_loop_during_battle()
 
                 self.regions['lower_right_corner'].wait('next.png', 30)
@@ -371,7 +372,7 @@ class CombatModule(object):
 
             if self.regions['left'].exists('home_menu_sortie.png'):
                 # arrived at home; sortie complete
-                self._print_sortie_complete_msg(nodes_run)
+                self._print_sortie_complete_msg(self.nodes_run)
                 sortieing = False
                 break
 
@@ -381,14 +382,14 @@ class CombatModule(object):
                 Util.log_msg("Flagship damaged. Automatic retreat.")
                 Util.click_screen(self.regions, 'game')
                 self.regions['left'].wait('home_menu_sortie.png', 30)
-                self._print_sortie_complete_msg(nodes_run)
+                self._print_sortie_complete_msg(self.nodes_run)
                 sortieing = False
                 break
 
             if self.kc_region.exists('combat_retreat.png'):
                 retreat = False
                 # check whether to retreat against combat nodes count
-                if len(nodes_run) >= self.config.combat['combat_nodes']:
+                if len(self.nodes_run) >= self.config.combat['combat_nodes']:
                     Util.log_msg(
                         "Ran the necessary number of nodes. Retreating.")
                     retreat = True
@@ -419,7 +420,7 @@ class CombatModule(object):
                 if retreat:
                     self._select_sortie_continue_retreat(True)
                     self.regions['left'].wait('home_menu_sortie.png', 30)
-                    self._print_sortie_complete_msg(nodes_run)
+                    self._print_sortie_complete_msg(self.nodes_run)
                     sortieing = False
                     break
                 else:
@@ -455,15 +456,19 @@ class CombatModule(object):
                     self.regions['formation_combinedfleet_1'].exists(
                         'formation_combinedfleet_1.png')):
                 Util.log_msg("Fleet at Node {}".format(self.current_node))
-                # self.map.resolve_formation(self.current_node)
-                self._select_formation(formation)
+                formations = self._resolve_formation()
+                for formation in formations:
+                    if self._select_formation(formation):
+                        break
                 Util.rejigger_mouse(self.regions, 'top')
                 at_node = True
                 return True
             elif self.kc_region.exists('combat_node_select.png'):
-                if (
-                        self.current_node.name
-                        in self.config.combat['node_selects']):
+                # node select dialog option exists; resolve fleet location and
+                # select node
+                self._update_fleet_position_once()
+                if (self.current_node.name in
+                        self.config.combat['node_selects']):
                     next_node = self.config.combat['node_selects'][
                         self.current_node.name]
                     self.map.nodes[next_node].click_node(self.regions['game'])
@@ -559,6 +564,66 @@ class CombatModule(object):
             matched_node if matched_node is not None else self.current_node)
         Util.log_msg("Fleet at node {}.".format(self.current_node))
 
+    def _resolve_formation(self):
+        """Method to resolve which formation to select depending on the combat
+        engine mode and any custom specified formations.
+
+        Returns:
+            tuple: tuple of formations to try in order
+        """
+        next_node_count = len(self.nodes_run) + 1
+        custom_formations = self.config.combat['formations']
+
+        if self.config.combat['engine'] is 'legacy':
+            # if legacy engine, custom formation can only be applied on a node
+            # count basis; if a custom formation is not defined, default to
+            # combinedfleet_1 or line_ahead
+            if next_node_count in custom_formations:
+                return (custom_formations[next_node_count], )
+            else:
+                return (
+                    'combinedfleet_1' if self.combined_fleet else 'line_ahead',
+                    )
+        elif self.config.combat['engine'] is 'live':
+            # if live engine, custom formation can be applied by node name or
+            # node count; if a custom formation is not defined, defer to the
+            # mapData instance's resolve_formation method
+            if self.current_node.name in custom_formations:
+                return (custom_formations[self.current_node.name], )
+            elif next_node_count in custom_formations:
+                return (custom_formations[next_node_count], )
+            else:
+                return self.map.resolve_formation(self.current_node)
+
+    def _resolve_night_battle(self):
+        """Method to resolve whether or not to conduct night battle depending
+        on the combat engine mode and any custom specified night battle modes.
+
+        Returns:
+            bool: True if night battle should be conducted; False otherwise
+        """
+        next_node_count = len(self.nodes_run) + 1
+        custom_night_battles = self.config.combat['night_battles']
+
+        if self.config.combat['engine'] is 'legacy':
+            # if legacy engine, custom night battle modes can only be applied
+            # on a node count basis; if a custom night battle mode is not
+            # defined, default to True
+            if next_node_count in custom_night_battles:
+                return custom_night_battles[next_node_count]
+            else:
+                return True
+        elif self.config.combat['engine'] is 'live':
+            # if live engine, custom night battle modes can be applied by node
+            # name or node count; if a custom night battle mode is not defined,
+            # defer to the mapData instance's resolve_night_battle method
+            if self.current_node.name in custom_night_battles:
+                return custom_night_battles[self.current_node.name]
+            elif next_node_count in custom_night_battles:
+                return custom_night_battles[next_node_count]
+            else:
+                return self.map.resolve_night_battle(self.nodes_run[-1])
+
     def _select_sortie_continue_retreat(self, retreat):
         """Method that selects the sortie continue or retreat button.
 
@@ -596,13 +661,18 @@ class CombatModule(object):
         Args:
             nb (bool): indicates whether or not night battle should be done or
                 not
+
+        Returns:
+            bool: True if night battle was initiated, False otherwise
         """
         if nb:
             Util.log_msg("Commencing night battle.")
             Util.check_and_click(self.kc_region, 'combat_nb_fight.png')
+            return True
         else:
             Util.log_msg("Declining night battle.")
             Util.check_and_click(self.kc_region, 'combat_nb_retreat.png')
+            return False
 
     def _resolve_fcf(self):
         """Method that resolves the FCF prompt. Does not use FCF if there are
