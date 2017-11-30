@@ -111,6 +111,7 @@ class RepairModule(object):
             else:
                 self.repair_timers.append(self._timer_to_datetime(
                     repair_timer))
+        Util.kc_sleep()
 
     def _pick_fleet_ship(self):
         """Method to click a fleet ship based on the fleet icons displayed next
