@@ -35,10 +35,11 @@ class CombatModule(object):
         self.current_position = [0, 0]
         self.current_node = None
 
-        self.combined_fleet = (
-            True if self.config.combat['combined_fleet'] else False)
+        self.combined_fleet = self.config.combat['combined_fleet']
+        self.striking_fleet = (
+            True if self.config.combat['fleet_mode'] is 'striking' else False)
         self.fleet_icon = 'fleet_icon_standard.png'
-        if self.config.combat['combined_fleet']:
+        if self.combined_fleet:
             self.fleet_icon = 'fleet_icon_{}.png'.format(
                 self.config.combat['fleet_mode'])
 
@@ -102,9 +103,12 @@ class CombatModule(object):
             # fleet fatigue/damage check failed; cancel sortie
             return False
 
-        if self.config.combat['combined_fleet']:
+        # reset FCF retreat counters for combined and striking fleets
+        if self.combined_fleet:
             self.fleets[1].reset_fcf_retreat_counts()
             self.fleets[2].reset_fcf_retreat_counts()
+        if self.striking_fleet:
+            self.fleets[3].reset_fcf_retreat_counts()
 
         # background observer for tracking the fleet position
         observeRegion = Region(self.kc_region)
@@ -115,9 +119,13 @@ class CombatModule(object):
 
         self._run_combat_logic()
 
-        if self.config.combat['combined_fleet']:
+        # after combat, resolve the FCF retreat counters for combined and
+        # striking fleets and add them back to their damage counters
+        if self.combined_fleet:
             self.fleets[1].resolve_fcf_retreat_counts()
             self.fleets[2].resolve_fcf_retreat_counts()
+        if self.striking_fleet:
+            self.fleets[3].resolve_fcf_retreat_counts()
 
         # stop the background observer once combat is complete
         observeRegion.stopObserver()
@@ -359,7 +367,7 @@ class CombatModule(object):
                             'next_alt.png'):
                         Util.click_screen(self.regions, 'center')
                         Util.rejigger_mouse(self.regions, 'lbas')
-                    elif self.combined_fleet:
+                    elif self.combined_fleet or self.striking_fleet:
                         self._fcf_resolver()
 
             if self.regions['left'].exists('home_menu_sortie.png'):
@@ -541,7 +549,7 @@ class CombatModule(object):
                     fcf_retreat = True
                     self.fleets[1].increment_fcf_retreat_count()
                     self.fleets[2].increment_fcf_retreat_count()
-            elif self.config.combat['fleet_mode'] is 'striking':
+            elif self.striking_fleet:
                 # for striking fleets, check the heavy damage counts of the
                 # 3rd fleet
                 if self.fleets[3].damage_counts['heavy'] is 1:
