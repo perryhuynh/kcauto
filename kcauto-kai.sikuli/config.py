@@ -2,6 +2,7 @@
 import ConfigParser
 import os
 import sys
+import re
 from sikuli import getBundlePath
 from copy import deepcopy
 from util import Util
@@ -135,18 +136,37 @@ class Config(object):
                     self.ok = False
 
         if self.combat['enabled']:
+            # validate the combat engine
+            if self.combat['engine'] not in ('legacy', 'live'):
+                Util.log_error("Invalid Combat Engine: '{}'.".format(
+                    self.combat['engine']))
+                self.ok = False
             # validate the fleet mode
-            valid = ['ctf', 'stf', 'transport', 'striking', '']
-            if self.combat['fleet_mode'] not in valid:
+            if self.combat['fleet_mode'] not in (
+                    'ctf', 'stf', 'transport', 'striking', ''):
                 Util.log_error("Invalid Combat FleetMode: '{}'.".format(
                     self.combat['fleet_mode']))
                 self.ok = False
+            # validate the node selects
+            if self.combat['raw_node_selects']:
+                node_selects = {}
+                for raw_node_select in self.combat['raw_node_selects']:
+                    ns = re.search('([A-Z0-9]+)>([A-Z0-9]+)', raw_node_select)
+                    if ns:
+                        node_selects[ns.group(1)] = ns.group(2)
+                    else:
+                        Util.log_error("Invalid Node Select: '{}'".format(
+                            raw_node_select))
+                        self.ok = False
+                if self.ok and node_selects:
+                    self.combat['node_selects'] = node_selects
+                del self.combat['raw_node_selects']
             # validate the misc options
-            valid = [
-                'CheckFatigue', 'ReserveDocks', 'PortCheck', 'MedalStop']
             for option in self.combat['misc_options']:
-                if option not in valid:
-                    Util.log_msg(
+                if option not in (
+                        'CheckFatigue', 'ReserveDocks', 'PortCheck',
+                        'MedalStop'):
+                    Util.log_error(
                         "Invalid Combat MiscOption: '{}'.".format(option))
                     self.ok = False
 
@@ -218,18 +238,16 @@ class Config(object):
             config (ConfigParser): ConfigParser instance
         """
         self.combat['enabled'] = True
+        self.combat['engine'] = config.get('Combat', 'Engine')
         self.combat['fleet_mode'] = config.get('Combat', 'FleetMode')
         self.combat['combined_fleet'] = (
             True if self.combat['fleet_mode'] in ['ctf', 'stf', 'transport']
             else False)
         self.combat['map'] = config.get('Combat', 'Map')
         combat_nodes = config.get('Combat', 'CombatNodes')
-        self.combat['combat_nodes'] = int(combat_nodes) if combat_nodes else 10
-        raw_node_selects = self._getlist(config, 'Combat', 'NodeSelects')
-        node_selects = {}
-        for raw_node_select in raw_node_selects:
-            node_selects[raw_node_select[:1]] = raw_node_select[-1:]
-        self.combat['node_selects'] = node_selects
+        self.combat['combat_nodes'] = int(combat_nodes) if combat_nodes else 99
+        self.combat['raw_node_selects'] = (
+            self._getlist(config, 'Combat', 'NodeSelects'))
         self.combat['retreat_limit'] = config.get('Combat', 'RetreatLimit')
         self.combat['repair_limit'] = config.get('Combat', 'RepairLimit')
         self.combat['repair_time_limit'] = config.getint(

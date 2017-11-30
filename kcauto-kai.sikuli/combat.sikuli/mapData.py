@@ -31,8 +31,14 @@ class MapData(object):
         json_path = os.path.join(
             os.getcwd(), 'kcauto-kai.sikuli', 'maps',
             '{}.json'.format(self.location))
-        with open(json_path) as raw_json:
-            map_data = json.load(raw_json)
+        try:
+            with open(json_path) as raw_json:
+                map_data = json.load(raw_json)
+        except:
+            Util.log_error(
+                "There was an issue opening or loading the specified map file:"
+                " {}.json".format(self.location))
+            raise
 
         self.world = map_data['world']
         self.subworld = map_data['subworld']
