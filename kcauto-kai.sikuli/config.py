@@ -176,7 +176,6 @@ class Config(object):
                         self.ok = False
                 if self.ok and node_selects:
                     self.combat['node_selects'] = node_selects
-                del self.combat['raw_node_selects']
             # validate the formations
             if self.combat['raw_formations']:
                 formations = {}
@@ -198,7 +197,6 @@ class Config(object):
                         self.ok = False
                 if self.ok and formations:
                     self.combat['formations'] = formations
-                del self.combat['raw_formations']
             # validate the night battles
             if self.combat['raw_night_battles']:
                 night_battles = {}
@@ -217,7 +215,6 @@ class Config(object):
                         self.ok = False
                 if self.ok and night_battles:
                     self.combat['night_battles'] = night_battles
-                del self.combat['raw_night_battles']
             # validate the misc options
             for option in self.combat['misc_options']:
                 if option not in (
