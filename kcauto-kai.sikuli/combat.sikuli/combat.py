@@ -462,7 +462,12 @@ class CombatModule(object):
                         'formation_line_ahead.png') or
                     self.regions['formation_combinedfleet_1'].exists(
                         'formation_combinedfleet_1.png')):
-                Util.log_msg("Fleet at Node {}".format(self.current_node))
+                # announce which node we're at
+                if self.config.combat['engine'] == 'legacy':
+                    Util.log_msg("Fleet at Node #{}".format(
+                        len(self.nodes_run) + 1))
+                if self.config.combat['engine'] == 'live':
+                    Util.log_msg("Fleet at Node {}".format(self.current_node))
                 formations = self._resolve_formation()
                 for formation in formations:
                     if self._select_formation(formation):
@@ -606,6 +611,7 @@ class CombatModule(object):
         Returns:
             tuple: tuple of formations to try in order
         """
+        # +1 since this happens before entering a node
         next_node_count = len(self.nodes_run) + 1
         custom_formations = self.config.combat['formations']
 
@@ -637,7 +643,8 @@ class CombatModule(object):
         Returns:
             bool: True if night battle should be conducted; False otherwise
         """
-        next_node_count = len(self.nodes_run) + 1
+        # no +1 since this happens after entering a node
+        next_node_count = len(self.nodes_run)
         custom_night_battles = self.config.combat['night_battles']
 
         if self.config.combat['engine'] == 'legacy':
