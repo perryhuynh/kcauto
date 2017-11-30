@@ -439,18 +439,15 @@ class CombatModule(object):
             bool: True if the method ends on a combat node, False otherwise
         """
         at_node = False
-        formation_check = (
-            'formation_combinedfleet_1'
-            if self.config.combat['combined_fleet']
-            else 'formation_line_ahead')
-
         while not at_node:
             if self.kc_region.exists('compass.png'):
                 while (self.kc_region.exists('compass.png')):
                     Util.click_screen(self.regions, 'center')
                     Util.kc_sleep(3)
-            elif self.regions[formation_check].exists(
-                    '{}.png'.format(formation_check)):
+            elif (self.regions['formation_line_ahead'].exists(
+                        'formation_line_ahead.png') or
+                    self.regions['formation_combinedfleet_1'].exists(
+                        'formation_combinedfleet_1.png')):
                 Util.log_msg("Fleet at Node {}".format(self.current_node))
                 self.map.resolve_formation(self.current_node)
                 Util.rejigger_mouse(self.regions, 'top')
