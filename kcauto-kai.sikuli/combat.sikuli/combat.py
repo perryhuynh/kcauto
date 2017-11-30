@@ -26,7 +26,7 @@ class CombatModule(object):
         self.fleets = fleets
         self.primary_fleet = (
             fleets[3]
-            if self.config.combat['fleet_mode'] == 'striking' else fleets[1])
+            if self.config.combat['fleet_mode'] is 'striking' else fleets[1])
 
         self.next_combat_time = datetime.now()
         self.dmg = {}
@@ -194,7 +194,7 @@ class CombatModule(object):
         """
         cancel_sortie = False
 
-        if self.config.combat['fleet_mode'] == 'striking':
+        if self.config.combat['fleet_mode'] is 'striking':
             # switch fleet to 3rd fleet if striking fleet
             Util.kc_sleep(1)
             self._switch_fleet_pre_sortie(3)
@@ -276,7 +276,7 @@ class CombatModule(object):
             needs_resupply = True
         fleet_damages = (
             fleet.check_damages_7th(self.regions)
-            if self.config.combat['fleet_mode'] == 'striking'
+            if self.config.combat['fleet_mode'] is 'striking'
             else fleet.check_damages(self.regions['check_damage']))
 
         if 'CheckFatigue' in self.config.combat['misc_options']:
@@ -389,8 +389,7 @@ class CombatModule(object):
                 # check whether to retreat against fleet damage state
                 threshold_dmg_count = (
                     self.primary_fleet.get_damage_counts_at_threshold(
-                        self.config.combat['retreat_limit'],
-                        self.dmg))
+                        self.config.combat['retreat_limit'], self.dmg))
                 if threshold_dmg_count > 0:
                     retreat_override = False
                     if self.combined_fleet and threshold_dmg_count is 1:
@@ -528,16 +527,32 @@ class CombatModule(object):
 
     def _fcf_resolver(self):
         """Method that resolves the FCF prompt. Does not use FCF if there are
-        more than one ship in a heavily damaged state.
+        more than one ship in a heavily damaged state. Supports both combined
+        fleet FCF and striking force FCF
         """
         if self.regions['lower_left'].exists('fcf_retreat_ship.png'):
-            fleet_1_heavy_damage = self.fleets[1].damage_counts['heavy']
-            fleet_2_heavy_damage = self.fleets[2].damage_counts['heavy']
-            if fleet_1_heavy_damage + fleet_2_heavy_damage is 1:
-                self.fleets[1].increment_fcf_retreat_count()
-                self.fleets[2].increment_fcf_retreat_count()
+            fcf_retreat = False
+            if self.combined_fleet:
+                # for combined fleets, check the heavy damage counts of both
+                # fleets 1 and 2
+                fleet_1_heavy_damage = self.fleets[1].damage_counts['heavy']
+                fleet_2_heavy_damage = self.fleets[2].damage_counts['heavy']
+                if fleet_1_heavy_damage + fleet_2_heavy_damage is 1:
+                    fcf_retreat = True
+                    self.fleets[1].increment_fcf_retreat_count()
+                    self.fleets[2].increment_fcf_retreat_count()
+            elif self.config.combat['fleet_mode'] is 'striking':
+                # for striking fleets, check the heavy damage counts of the
+                # 3rd fleet
+                if self.fleets[3].damage_counts['heavy'] is 1:
+                    fcf_retreat = True
+                    self.fleets[3].increment_fcf_retreat_count()
+
+            if fcf_retreat:
                 if (Util.check_and_click(
                         self.regions['lower'], 'fcf_retreat_ship.png')):
+                    # decrement the Combat module's internal dmg count so it
+                    # knows to continue sortie to the next node
                     self.dmg['heavy'] -= 1
             else:
                 Util.log_warning("Declining to retreat ship with FCF.")
