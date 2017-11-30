@@ -172,7 +172,10 @@ class Config(object):
                     fm = re.search('([A-Z0-9]+):({})'.format(
                         '|'.join(valid_formations)), raw_formation)
                     if fm:
-                        formations[fm.group(1)] = fm.group(2)
+                        fm_node = (
+                            int(fm.group(1)) if fm.group(1).isdigit()
+                            else fm.group(1))
+                        formations[fm_node] = fm.group(2)
                     else:
                         Util.log_error("Invalid Formation: '{}'".format(
                             raw_formation))
@@ -187,7 +190,10 @@ class Config(object):
                     nbm = re.search(
                         '([A-Z0-9]+)>(True|False)', raw_night_battle)
                     if nbm:
-                        night_battles[nbm.group(1)] = (
+                        nbm_node = (
+                            int(nbm.group(1)) if nbm.group(1).isdigit()
+                            else nbm.group(1))
+                        night_battles[nbm_node] = (
                             True if nbm.group(2) is 'True' else False)
                     else:
                         Util.log_error("Invalid Night Battle: '{}'".format(
