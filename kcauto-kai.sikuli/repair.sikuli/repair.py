@@ -140,7 +140,7 @@ class RepairModule(object):
             fleet_instance = self.fleets[fleet_id]
 
             if fleet_instance.get_damage_counts_at_threshold(
-                    self.config.combat['repair_limit']) is 0:
+                    self.config.combat['repair_limit']) == 0:
                 # if this fleet has no longer has ships that need repair,
                 # don't search for its marker
                 continue
@@ -151,7 +151,7 @@ class RepairModule(object):
             for ship_match in ship_matches:
                 target_region = ship_match.offset(Location(342, 0)).nearby(5)
                 for damage in valid_damages:
-                    if fleet_instance.damage_counts[damage] is 0:
+                    if fleet_instance.damage_counts[damage] == 0:
                         # if no ships in this fleet are at this damage state,
                         # don't search for it
                         continue

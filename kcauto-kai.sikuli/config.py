@@ -156,7 +156,7 @@ class Config(object):
                         "Expedition(s) defined for Fleet 2 while Combat Fleet "
                         "Mode is defined as Combined Fleet.")
                     self.ok = False
-            if (self.combat['fleet_mode'] is 'striking'
+            if (self.combat['fleet_mode'] == 'striking'
                     and self.expeditions['enabled']):
                 if self.expeditions['fleet3']:
                     Util.log_error(
@@ -208,7 +208,7 @@ class Config(object):
                             int(nbm.group(1)) if nbm.group(1).isdigit()
                             else nbm.group(1))
                         night_battles[nbm_node] = (
-                            True if nbm.group(2) is 'True' else False)
+                            True if nbm.group(2) == 'True' else False)
                     else:
                         Util.log_error("Invalid Night Battle: '{}'".format(
                             raw_night_battle))
@@ -294,7 +294,7 @@ class Config(object):
             True if self.combat['fleet_mode'] in ['ctf', 'stf', 'transport']
             else False)
         self.combat['striking_fleet'] = (
-            True if self.combat['fleet_mode'] is 'striking' else False)
+            True if self.combat['fleet_mode'] == 'striking' else False)
         self.combat['map'] = config.get('Combat', 'Map')
         combat_nodes = config.get('Combat', 'CombatNodes')
         self.combat['combat_nodes'] = int(combat_nodes) if combat_nodes else 99

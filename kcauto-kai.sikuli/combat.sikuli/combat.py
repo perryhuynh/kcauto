@@ -193,7 +193,7 @@ class CombatModule(object):
         """
         cancel_sortie = False
 
-        if self.config.combat['fleet_mode'] is 'striking':
+        if self.config.combat['fleet_mode'] == 'striking':
             # switch fleet to 3rd fleet if striking fleet
             Util.kc_sleep(1)
             self._switch_fleet_pre_sortie(3)
@@ -275,7 +275,7 @@ class CombatModule(object):
             needs_resupply = True
         fleet_damages = (
             fleet.check_damages_7th(self.regions)
-            if self.config.combat['fleet_mode'] is 'striking'
+            if self.config.combat['fleet_mode'] == 'striking'
             else fleet.check_damages(self.regions['check_damage']))
         fleet.print_damage_counts()
 
@@ -309,7 +309,7 @@ class CombatModule(object):
             at_node = self._run_loop_between_nodes()
 
             # stop the background observer if no longer on the map screen
-            if self.config.combat['engine'] is 'live':
+            if self.config.combat['engine'] == 'live':
                 self.observeRegion.stopObserver()
 
             if at_node:
@@ -350,8 +350,8 @@ class CombatModule(object):
                         self.dmg, fleet_two_damages)
                     # ascertain whether or not the escort fleet's flagship is
                     # damaged if necessary
-                    if (fleet_two_damages['heavy'] is 1 and
-                            self.fleets[2].flagship_damaged is False):
+                    if (fleet_two_damages['heavy'] == 1 and
+                            not self.fleets[2].flagship_damaged):
                         self.fleets[2].check_damage_flagship(self.regions)
                 Util.rejigger_mouse(self.regions, 'lbas')
                 # click through while not next battle or home
@@ -400,10 +400,10 @@ class CombatModule(object):
                         self.config.combat['retreat_limit'], self.dmg))
                 if threshold_dmg_count > 0:
                     retreat_override = False
-                    if self.combined_fleet and threshold_dmg_count is 1:
+                    if self.combined_fleet and threshold_dmg_count == 1:
                         # if there is only one heavily damaged ship and it is
                         # the flagship of the escort fleet, do not retreat
-                        if (self.fleets[2].damage_counts['heavy'] is 1 and
+                        if (self.fleets[2].damage_counts['heavy'] == 1 and
                                 self.fleets[2].flagship_damaged):
                             retreat_override = True
                             Util.log_msg(
@@ -450,7 +450,7 @@ class CombatModule(object):
 
         # if in live engine mode, begin the background observer to track and
         # update the fleet position
-        if self.config.combat['engine'] is 'live':
+        if self.config.combat['engine'] == 'live':
             self._start_fleet_observer()
 
         while not at_node:
@@ -473,7 +473,7 @@ class CombatModule(object):
             elif self.kc_region.exists('combat_node_select.png'):
                 # node select dialog option exists; resolve fleet location and
                 # select node
-                if self.config.combat['engine'] is 'legacy':
+                if self.config.combat['engine'] == 'legacy':
                     # only need to manually update self.current_node if in
                     # legacy engine mode
                     self._update_fleet_position_once()
@@ -594,9 +594,9 @@ class CombatModule(object):
         node number if the engine is in legacy mode, otherwise with the Node
         instance of the encountered node if in live mode
         """
-        if self.config.combat['engine'] is 'legacy':
+        if self.config.combat['engine'] == 'legacy':
             self.nodes_run.append(len(self.nodes_run) + 1)
-        elif self.config.combat['engine'] is 'live':
+        elif self.config.combat['engine'] == 'live':
             self.nodes_run.append(self.current_node)
 
     def _resolve_formation(self):
@@ -609,7 +609,7 @@ class CombatModule(object):
         next_node_count = len(self.nodes_run) + 1
         custom_formations = self.config.combat['formations']
 
-        if self.config.combat['engine'] is 'legacy':
+        if self.config.combat['engine'] == 'legacy':
             # if legacy engine, custom formation can only be applied on a node
             # count basis; if a custom formation is not defined, default to
             # combinedfleet_1 or line_ahead
@@ -619,7 +619,7 @@ class CombatModule(object):
                 return (
                     'combinedfleet_1' if self.combined_fleet else 'line_ahead',
                     )
-        elif self.config.combat['engine'] is 'live':
+        elif self.config.combat['engine'] == 'live':
             # if live engine, custom formation can be applied by node name or
             # node count; if a custom formation is not defined, defer to the
             # mapData instance's resolve_formation method
@@ -640,7 +640,7 @@ class CombatModule(object):
         next_node_count = len(self.nodes_run) + 1
         custom_night_battles = self.config.combat['night_battles']
 
-        if self.config.combat['engine'] is 'legacy':
+        if self.config.combat['engine'] == 'legacy':
             # if legacy engine, custom night battle modes can only be applied
             # on a node count basis; if a custom night battle mode is not
             # defined, default to True
@@ -648,7 +648,7 @@ class CombatModule(object):
                 return custom_night_battles[next_node_count]
             else:
                 return True
-        elif self.config.combat['engine'] is 'live':
+        elif self.config.combat['engine'] == 'live':
             # if live engine, custom night battle modes can be applied by node
             # name or node count; if a custom night battle mode is not defined,
             # defer to the mapData instance's resolve_night_battle method
@@ -721,14 +721,14 @@ class CombatModule(object):
                 # fleets 1 and 2
                 fleet_1_heavy_damage = self.fleets[1].damage_counts['heavy']
                 fleet_2_heavy_damage = self.fleets[2].damage_counts['heavy']
-                if fleet_1_heavy_damage + fleet_2_heavy_damage is 1:
+                if fleet_1_heavy_damage + fleet_2_heavy_damage == 1:
                     fcf_retreat = True
                     self.fleets[1].increment_fcf_retreat_count()
                     self.fleets[2].increment_fcf_retreat_count()
             elif self.striking_fleet:
                 # for striking fleets, check the heavy damage counts of the
                 # 3rd fleet
-                if self.fleets[3].damage_counts['heavy'] is 1:
+                if self.fleets[3].damage_counts['heavy'] == 1:
                     fcf_retreat = True
                     self.fleets[3].increment_fcf_retreat_count()
 
@@ -797,7 +797,7 @@ class CombatFleet(Fleet):
         heavily damaged ship in the fleet, and decrement the heavy damage from
         the damage counter.
         """
-        if 'heavy' in self.damage_counts and self.damage_counts['heavy'] is 1:
+        if 'heavy' in self.damage_counts and self.damage_counts['heavy'] == 1:
             Util.log_msg(
                 "Retreating damaged ship via FCF from fleet {}."
                 .format(self.fleet_id))
