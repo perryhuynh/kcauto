@@ -278,10 +278,12 @@ class CombatModule(object):
             fleet.check_damages_7th(self.regions)
             if self.config.combat['fleet_mode'] is 'striking'
             else fleet.check_damages(self.regions['check_damage']))
+        fleet.print_damage_counts()
 
         if 'CheckFatigue' in self.config.combat['misc_options']:
             fleet_fatigue = fleet.check_fatigue(
                 self.regions['check_fatigue'])
+            fleet.print_fatigue_states()
             return (needs_resupply, fleet_damages, fleet_fatigue)
         return (needs_resupply, fleet_damages, {})
 
@@ -336,6 +338,7 @@ class CombatModule(object):
                 self.regions['game'].wait('mvp_marker.png', 30)
                 self.dmg = self.primary_fleet.check_damages(
                     self.regions['check_damage_combat'])
+                self.primary_fleet.print_damage_counts()
                 if self.combined_fleet:
                     self.regions['lower_right_corner'].wait('next.png', 30)
                     Util.click_screen(self.regions, 'center')
@@ -343,6 +346,7 @@ class CombatModule(object):
                     self.regions['game'].wait('mvp_marker.png', 30)
                     fleet_two_damages = self.fleets[2].check_damages(
                         self.regions['check_damage_combat'])
+                    self.fleets[2].print_damage_counts()
                     self.dmg = self._combine_fleet_damages(
                         self.dmg, fleet_two_damages)
                     # ascertain whether or not the escort fleet's flagship is
@@ -800,6 +804,28 @@ class CombatFleet(Fleet):
                 .format(self.fleet_id))
             self.damaged_fcf_retreat_count += 1
             self.damage_counts['heavy'] -= 1
+
+    def print_damage_counts(self):
+        """Method to report the fleet's damage counts in a more human-readable
+        format
+        """
+        Util.log_msg(
+            "Fleet {} damage counts: {} heavy / {} moderate / {} minor"
+            .format(
+                self.fleet_id, self.damage_counts['heavy'],
+                self.damage_counts['moderate'], self.damage_counts['minor']))
+
+    def print_fatigue_states(self):
+        """Method to report the fleet's fatigue state in a more human-readable
+        format
+        """
+        fatigue = 'Rested'
+        if self.fatigue['high']:
+            fatigue = 'High'
+        elif self.fatigue['medium']:
+            fatigue = 'Medium'
+        Util.log_msg(
+            "Fleet {} fatigue state: {}".format(self.fleet_id, fatigue))
 
     def get_damage_counts_at_threshold(self, threshold, counts={}):
         """Method for returning the number of ships at and below the specified
