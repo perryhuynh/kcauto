@@ -37,15 +37,15 @@ class CombatModule(object):
                 self.config.combat['fleet_mode'])
         self.dmg = {}
 
-        self.lbas = (
-            LBAS(config, regions, self.map)
-            if self.config.combat['lbas_enabled'] else None)
-
         self.map = MapData(
             self.config.combat['map'], self.regions, self.config)
         self.current_position = [0, 0]
         self.current_node = None
         self.nodes_run = []
+
+        self.lbas = (
+            LBAS(config, regions, self.map)
+            if self.config.combat['lbas_enabled'] else None)
 
     def goto_combat(self):
         """Method to navigate to the combat menu.
