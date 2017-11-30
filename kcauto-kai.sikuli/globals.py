@@ -12,7 +12,7 @@ class Globals(object):
     DEFAULT_SIMILARITY = 0.8
     DAMAGE_SIMILARITY = 0.7
     FATIGUE_SIMILARITY = 0.8
-    FLEET_ICON_SIMILARITY = 0.6
+    FLEET_ICON_SIMILARITY = 0.8
 
     # area expansion presets
     EXPAND = {
