@@ -128,7 +128,8 @@ class Config(object):
         self.ok = True
 
         if self.expeditions['enabled']:
-            valid_expeditions = range(1, 41) + [9998, 9999]
+            valid_expeditions = range(1, 41) + [
+                'A1', 'A2', 'A3', 'B1', 9998, 9999]
             for expedition in self.expeditions_all:
                 if expedition not in valid_expeditions:
                     Util.log_error(
@@ -147,6 +148,21 @@ class Config(object):
                 Util.log_error("Invalid Combat FleetMode: '{}'.".format(
                     self.combat['fleet_mode']))
                 self.ok = False
+            # validate fleet modes and possible expedition fleet collisions
+            if (self.combat['fleet_mode'] in ('ctf', 'stf', 'transport')
+                    and self.expeditions['enabled']):
+                if self.expeditions['fleet2']:
+                    Util.log_error(
+                        "Expedition(s) defined for Fleet 2 while Combat Fleet "
+                        "Mode is defined as Combined Fleet.")
+                    self.ok = False
+            if (self.combat['fleet_mode'] is 'striking'
+                    and self.expeditions['enabled']):
+                if self.expeditions['fleet3']:
+                    Util.log_error(
+                        "Expedition(s) defined for Fleet 3 while Combat Fleet "
+                        "Mode is defined as Striking Fleet.")
+                    self.ok = False
             # validate the node selects
             if self.combat['raw_node_selects']:
                 node_selects = {}
@@ -211,10 +227,6 @@ class Config(object):
                         "Invalid Combat MiscOption: '{}'.".format(option))
                     self.ok = False
 
-        # TODO: Add additional checks to make sure that expeditions to fleet 2
-        # and 3 were not assigned if combined fleets or striking fleet modes
-        # were assigned
-
     def _read_general(self, config):
         """Method to parse the General settings of the passed in config.
 
@@ -250,19 +262,19 @@ class Config(object):
                 int, self._getlist(config, 'Expeditions', 'Fleet2'))
             self.expeditions_all.extend(self.expeditions['fleet2'])
         else:
-            self.expeditions.pop('fleet2', None)
+            del self.expeditions['fleet2']
         if config.get('Expeditions', 'Fleet3'):
             self.expeditions['fleet3'] = map(
                 int, self._getlist(config, 'Expeditions', 'Fleet3'))
             self.expeditions_all.extend(self.expeditions['fleet3'])
         else:
-            self.expeditions.pop('fleet3', None)
+            del self.expeditions['fleet3']
         if config.get('Expeditions', 'Fleet4'):
             self.expeditions['fleet4'] = map(
                 int, self._getlist(config, 'Expeditions', 'Fleet4'))
             self.expeditions_all.extend(self.expeditions['fleet4'])
         else:
-            self.expeditions.pop('fleet4', None)
+            del self.expeditions['fleet4']
 
     def _read_pvp(self, config):
         """Method to parse the Ovo settings of the passed in config.
