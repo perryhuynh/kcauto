@@ -23,6 +23,7 @@ class CombatModule(object):
         self.stats = stats
         self.regions = regions
         self.kc_region = regions['game']
+        self.observeRegion = Region(self.kc_region)
         self.fleets = fleets
         self.next_combat_time = datetime.now()
 
@@ -110,16 +111,6 @@ class CombatModule(object):
         if self.striking_fleet:
             self.fleets[3].reset_fcf_retreat_counts()
 
-        # background observer for tracking the fleet position; only runs in
-        # live engine mode
-        if self.config.combat['engine'] is 'live':
-            observeRegion = Region(self.kc_region)
-            observeRegion.onAppear(
-                Pattern(self.fleet_icon).similar(
-                    Globals.FLEET_ICON_SIMILARITY),
-                self._update_fleet_position)
-            observeRegion.observeInBackground(FOREVER)
-
         self._run_combat_logic()
 
         # after combat, resolve the FCF retreat counters for combined and
@@ -129,11 +120,6 @@ class CombatModule(object):
             self.fleets[2].resolve_fcf_retreat_counts()
         if self.striking_fleet:
             self.fleets[3].resolve_fcf_retreat_counts()
-
-        # stop the background observer once combat is complete; only relevant
-        # for live engine mode
-        if self.config.combat['engine'] is 'live':
-            observeRegion.stopObserver()
 
         return True
 
@@ -321,11 +307,15 @@ class CombatModule(object):
         while sortieing:
             at_node = self._run_loop_between_nodes()
 
+            # stop the background observer if no longer on the map screen
+            if self.config.combat['engine'] is 'live':
+                self.observeRegion.stopObserver()
+
             if at_node:
                 # arrived at combat node
-                self.nodes_run.append(self.current_node)
+                self._increment_nodes_run()
 
-                # get rid of initial boss dialogue
+                # click to get rid of initial boss dialogue in case it exists
                 Util.kc_sleep(5)
                 Util.click_screen(self.regions, 'center')
                 Util.kc_sleep()
@@ -368,13 +358,14 @@ class CombatModule(object):
                         self.kc_region.exists('combat_retreat.png')):
                     if self.regions['lower_right_corner'].exists('next.png'):
                         Util.click_screen(self.regions, 'center')
-                        Util.rejigger_mouse(self.regions, 'lbas')
+                        Util.rejigger_mouse(self.regions, 'top')
                     elif self.regions['lower_right_corner'].exists(
                             'next_alt.png'):
                         Util.click_screen(self.regions, 'center')
-                        Util.rejigger_mouse(self.regions, 'lbas')
+                        Util.rejigger_mouse(self.regions, 'top')
                     elif self.combined_fleet or self.striking_fleet:
                         self._resolve_fcf()
+                        Util.rejigger_mouse(self.regions, 'top')
 
             if self.regions['left'].exists('home_menu_sortie.png'):
                 # arrived at home; sortie complete
@@ -437,7 +428,8 @@ class CombatModule(object):
         of nodes run and nodes run.
 
         Args:
-            nodes_run (list): list of Nodes run in the primary combat logic
+            nodes_run (list): list of combat node numbers (legacy mode) or
+                Nodes instances (live mode) run in the primary combat logic
         """
         Util.log_success(
             "Sortie complete. Encountered {} combat nodes (nodes {}).".format(
@@ -452,6 +444,12 @@ class CombatModule(object):
             bool: True if the method ends on a combat node, False otherwise
         """
         at_node = False
+
+        # if in live engine mode, begin the background observer to track and
+        # update the fleet position
+        if self.config.combat['engine'] is 'live':
+            self._start_fleet_observer()
+
         while not at_node:
             if self.kc_region.exists('compass.png'):
                 while (self.kc_region.exists('compass.png')):
@@ -472,7 +470,10 @@ class CombatModule(object):
             elif self.kc_region.exists('combat_node_select.png'):
                 # node select dialog option exists; resolve fleet location and
                 # select node
-                self._update_fleet_position_once()
+                if self.config.combat['engine'] is 'legacy':
+                    # only need to manually update self.current_node if in
+                    # legacy engine mode
+                    self._update_fleet_position_once()
                 if (self.current_node.name in
                         self.config.combat['node_selects']):
                     next_node = self.config.combat['node_selects'][
@@ -517,6 +518,21 @@ class CombatModule(object):
             Pattern('fleet_{}.png'.format(fleet)).exact(),
             self.regions['top_submenu'],
             Pattern('fleet_{}_active.png'.format(fleet)).exact())
+
+    def _start_fleet_observer(self):
+        """Method that starts the observeRegion/observeInBackground methods
+        that tracks the fleet position icon in real-time in the live engine
+        mode.
+        """
+        self.observeRegion.onAppear(
+            Pattern(self.fleet_icon).similar(Globals.FLEET_ICON_SIMILARITY),
+            self._update_fleet_position)
+        self.observeRegion.observeInBackground(FOREVER)
+
+    def _stop_fleet_observer(self):
+        """Stops the observer started by the _start_fleet_observer() method.
+        """
+        self.observeRegion.stopObserver()
 
     def _update_fleet_position(self, event):
         """Method that is run by the fleet observer to continuously update the
@@ -569,6 +585,16 @@ class CombatModule(object):
         self.current_node = (
             matched_node if matched_node is not None else self.current_node)
         Util.log_msg("Fleet at node {}.".format(self.current_node))
+
+    def _increment_nodes_run(self):
+        """Method to properly append to the nodes_run attribute; the combat
+        node number if the engine is in legacy mode, otherwise with the Node
+        instance of the encountered node if in live mode
+        """
+        if self.config.combat['engine'] is 'legacy':
+            self.nodes_run.append(len(self.nodes_run) + 1)
+        elif self.config.combat['engine'] is 'live':
+            self.nodes_run.append(self.current_node)
 
     def _resolve_formation(self):
         """Method to resolve which formation to select depending on the combat
