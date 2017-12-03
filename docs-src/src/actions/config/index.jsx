@@ -91,6 +91,7 @@ export const setPythonConfig = config => (
       '',
       '[Combat]',
       `Enabled: ${configTemp.combatEnabled}`,
+      `Engine: ${configTemp.combatEngine}`,
       `Map: ${configTemp.combatMap}`,
       `FleetMode: ${configTemp.combatFleetMode}`,
       `CombatNodes: ${configTemp.combatCombatNodes}`,

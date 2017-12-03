@@ -102,6 +102,7 @@ class BodyConfig extends React.Component {
     expeditionsFleet4: '38',
     pvpEnabled: false,
     combatEnabled: false,
+    combatEngine: 'legacy',
     combatMap: '1-1',
     combatFleetMode: '',
     combatCombatNodes: null,
@@ -198,6 +199,7 @@ class BodyConfig extends React.Component {
       expeditionsFleet4,
       pvpEnabled,
       combatEnabled,
+      combatEngine,
       combatMap,
       combatFleetMode,
       combatCombatNodes,
@@ -381,6 +383,26 @@ class BodyConfig extends React.Component {
                 checked={combatEnabled}
                 onChange={(event, checked) => this.setState({ combatEnabled: checked })} />
             </Typography>
+
+            <Grid container spacing={0}>
+              <Grid item xs={12} sm={12} className={classes.formGrid}>
+                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                  <InputLabel htmlFor='combatEngine' shrink={true} className={classes.reactSelectLabel}>
+                    Engine
+                  </InputLabel>
+                  <Select
+                    className={classes.reactSelect}
+                    simpleValue={true}
+                    name='combatEngine'
+                    value={combatEngine}
+                    options={COMBAT_ENGINES}
+                    onChange={value => this.setState({ combatEngine: value })}
+                    disabled={!combatEnabled}
+                    clearable={false}
+                    fullWidth />
+                </FormControl>
+              </Grid>
+            </Grid>
 
             <Grid container spacing={0}>
               <Grid item xs={12} sm={4} className={classes.formGrid}>
