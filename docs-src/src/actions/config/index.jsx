@@ -96,6 +96,8 @@ export const setPythonConfig = config => (
       `FleetMode: ${configTemp.combatFleetMode}`,
       `CombatNodes: ${configTemp.combatCombatNodes}`,
       `NodeSelects: ${configTemp.combatNodeSelects}`,
+      `Formations: ${configTemp.combatFormations}`,
+      `NightBattles: ${configTemp.combatNightBattles}`,
       `RetreatLimit: ${configTemp.combatRetreatLimit}`,
       `RepairLimit: ${configTemp.combatRepairLimit}`,
       `RepairTimeLimit: ${combatRepairTimeLimit}`,

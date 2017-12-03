@@ -182,27 +182,41 @@ class BodyConfig extends React.Component {
     this.setState({ combatFleetMode: value })
   }
 
-  handleCombatNodeSelectAdd = (select1, select2) => {
-    // automatically add a node select option based on the two previous helper fields
-    const combatNodeSelects = this.state.combatNodeSelects ?
-      `${this.state.combatNodeSelects},${select1}>${select2}` :
-      `${select1}>${select2}`
+  handleCombatNodeSelectAdd = (node, targetNode) => {
+    // automatically add a node select option based on the two previous helper fields; also checks against previously
+    // entered values so that existing node selects for a node are overwritten
+    const tempCombatNodeSelects = this.state.combatNodeSelects ? this.state.combatNodeSelects : ''
+    const tempCombatNodeSelectsObj = this.optionsNodeSplitter(tempCombatNodeSelects, '>')
+    tempCombatNodeSelectsObj[node] = targetNode
+    const combatNodeSelects = Object.keys(tempCombatNodeSelectsObj).sort().map(key =>
+      `${key}>${tempCombatNodeSelectsObj[key]}`).join(',')
     this.setState({ combatNodeSelect1: null, combatNodeSelect2: null, combatNodeSelects })
   }
 
   handleCombatFormationAdd = (node, formation) => {
-    // automatically add a custom formation selection based on the two previous helper fields
-    const combatFormations = this.state.combatFormations ?
-      `${this.state.combatFormations},${node}:${formation}` :
-      `${node}:${formation}`
+    // automatically add a custom formation selection based on the two previous helper fields; also checks against
+    // previously entered values so that existing formations for a node are overwritten
+    const tempCombatFormations = this.state.combatFormations ? this.state.combatFormations : ''
+    const tempCombatFormationsObj = this.optionsNodeSplitter(tempCombatFormations, ':')
+
+    // if no node is specified, find next node number to apply formation to
+    const targetNode = node || this.findMaxNumericNode(tempCombatFormationsObj) + 1
+    tempCombatFormationsObj[targetNode] = formation
+    const combatFormations = Object.keys(tempCombatFormationsObj).sort().map(key =>
+      `${key}:${tempCombatFormationsObj[key]}`).join(',')
     this.setState({ combatFormationsNode: null, combatFormationsFormation: null, combatFormations })
   }
 
   handleCombatNightBattleAdd = (node, nightBattle) => {
-    // automatically add a custom night battle selection based on the two previous helper fields
-    const combatNightBattles = this.state.combatNightBattles ?
-      `${this.state.combatNightBattles},${node}:${nightBattle}` :
-      `${node}:${nightBattle}`
+    // automatically add a custom night battle selection based on the two previous helper fields; also checks against
+    // previously entered values so that existing night battle selections for a node are overwritten
+    const tempCombatNightBattles = this.state.combatNightBattles ? this.state.combatNightBattles : ''
+    const tempCombatNightBattlesObj = this.optionsNodeSplitter(tempCombatNightBattles, ':')
+    // if no node is specified, find next node number to apply night battle mode to
+    const targetNode = node || this.findMaxNumericNode(tempCombatNightBattlesObj) + 1
+    tempCombatNightBattlesObj[targetNode] = nightBattle
+    const combatNightBattles = Object.keys(tempCombatNightBattlesObj).sort().map(key =>
+      `${key}:${tempCombatNightBattlesObj[key]}`).join(',')
     this.setState({ combatNightBattlesNode: null, combatNightBattlesMode: null, combatNightBattles })
   }
 
@@ -218,6 +232,31 @@ class BodyConfig extends React.Component {
       this.setState({ combatLBASGroup3Node1: null, combatLBASGroup3Node2: null })
     }
     this.setState({ combatLBASGroups: value })
+  }
+
+  optionsNodeSplitter = (rawOption, divider) => {
+    // helper method to convert a list of comma-separated values divided in two via a divider into an object with the
+    // value left of the divider as the key, and the value right of the divider as the value
+    const optionsObj = rawOption.split(',').reduce((obj, option) => {
+      const tempObj = obj
+      const optionInfo = option.split(divider)
+      if (optionInfo.length === 2) {
+        const node = optionInfo[0]
+        const optionChoice = optionInfo[1]
+        tempObj[node] = optionChoice
+      }
+      return tempObj
+    }, {})
+    return optionsObj
+  }
+
+  findMaxNumericNode = (object) => {
+    // finds and returns the max numeric node specified in a node options object
+    const nodes = Object.keys(object)
+    if (nodes.length === 0) {
+      return 0
+    }
+    return Math.max(...nodes.filter(node => parseFloat(node)).map(node => parseFloat(node)))
   }
 
   render = () => {
@@ -556,7 +595,8 @@ class BodyConfig extends React.Component {
                 <Button
                   dense
                   color='primary'
-                  disabled={!combatEnabled || (!combatNodeSelect1 || !combatNodeSelect2)}
+                  disabled={!combatEnabled ||
+                    (!combatNodeSelect1 || !combatNodeSelect2 || combatNodeSelect1 === combatNodeSelect2)}
                   onClick={() => this.handleCombatNodeSelectAdd(combatNodeSelect1, combatNodeSelect2)}
                 >
                   Add
@@ -591,7 +631,7 @@ class BodyConfig extends React.Component {
                     simpleValue={true}
                     name='combatFormationsNode'
                     value={combatFormationsNode}
-                    options={COMBAT_NODE_COUNTS}
+                    options={combatEngine === 'legacy' ? COMBAT_NODE_COUNTS : COMBAT_NODE_COUNTS.concat(NODES)}
                     onChange={value => this.setState({ combatFormationsNode: value })}
                     disabled={!combatEnabled}
                     fullWidth />
@@ -617,7 +657,7 @@ class BodyConfig extends React.Component {
                 <Button
                   dense
                   color='primary'
-                  disabled={!combatEnabled || (!combatFormationsNode || !combatFormationsFormation)}
+                  disabled={!combatEnabled || !combatFormationsFormation}
                   onClick={() => this.handleCombatFormationAdd(combatFormationsNode, combatFormationsFormation)}
                 >
                   Add
@@ -652,7 +692,7 @@ class BodyConfig extends React.Component {
                     simpleValue={true}
                     name='combatNightBattlesNode'
                     value={combatNightBattlesNode}
-                    options={COMBAT_NODE_COUNTS}
+                    options={combatEngine === 'legacy' ? COMBAT_NODE_COUNTS : COMBAT_NODE_COUNTS.concat(NODES)}
                     onChange={value => this.setState({ combatNightBattlesNode: value })}
                     disabled={!combatEnabled}
                     fullWidth />
@@ -678,7 +718,7 @@ class BodyConfig extends React.Component {
                 <Button
                   dense
                   color='primary'
-                  disabled={!combatEnabled || (!combatNightBattlesNode || !combatNightBattlesMode)}
+                  disabled={!combatEnabled || !combatNightBattlesMode}
                   onClick={() => this.handleCombatNightBattleAdd(combatNightBattlesNode, combatNightBattlesMode)}
                 >
                   Add
