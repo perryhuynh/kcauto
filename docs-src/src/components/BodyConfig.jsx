@@ -21,6 +21,11 @@ import { ChevronRight, ContentSave } from 'mdi-material-ui'
 const EXPEDITIONS = Array.from({ length: 40 }, (value, key) => ({ value: String(key + 1), label: String(key + 1) }))
 EXPEDITIONS.push({ value: '9998', label: 'Node Support' })
 EXPEDITIONS.push({ value: '9999', label: 'Boss Support' })
+const COMBAT_ENGINES = [
+  { value: 'legacy', label: 'legacy: per-node definition of formations and night battles / low CPU use' },
+  {
+    value: 'live', label: 'live: auto node detection with optional formation and night battle overrides / high CPU use',
+  }]
 const MAPS = ['1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-1', '2-2', '2-3', '2-4', '2-5', '3-1', '3-2', '3-3', '3-4',
   '3-5', '4-1', '4-2', '4-3', '4-4', '4-5', '5-1', '5-2', '5-3', '5-4', '5-5', '6-1', '6-2', '6-3', '6-4', '6-5',
   'E-1', 'E-2', 'E-3', 'E-4', 'E-5', 'E-6', 'E-7', 'E-8']
@@ -28,8 +33,14 @@ const MAPS = ['1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-1', '2-2', '2-3', '2-
 const COMBINED_FLEET_MODES = [
   { value: '', label: 'Standard' }, { value: 'ctf', label: 'CTF' }, { value: 'stf', label: 'STF' },
   { value: 'transport', label: 'Transport' }, { value: 'striking', label: 'Striking' }]
-const COMBAT_NODE_COUNTS = ['1', '2', '3', '4', '5'].map(value => ({ value, label: value }))
+const COMBAT_NODE_COUNTS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'].map(value => (
+  { value, label: value }))
 const NODES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(value => ({ value, label: value }))
+NODES.push(...['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7', 'Z8', 'Z9', 'ZZ1', 'ZZ2', 'ZZ3'].map(value => (
+  { value, label: value })))
+const FORMATIONS = ['line_ahead', 'double_line', 'diamond', 'echelon', 'line_abreast', 'vanguard', 'combined_fleet_1',
+  'combined_fleet_2', 'combined_fleet_3', 'combined_fleet_4'].map(value => ({ value, label: value.replace('_', ' ') }))
+const NIGHT_BATTLES = ['False', 'True'].map(value => ({ value, label: value.toLowerCase() }))
 const DAMAGE_STATES = ['heavy', 'moderate', 'minor'].map(value => ({ value, label: value }))
 const LBAS_GROUPS = ['1', '2', '3'].map(value => ({ value, label: value }))
 
@@ -95,12 +106,19 @@ class BodyConfig extends React.Component {
     expeditionsFleet4: '38',
     pvpEnabled: false,
     combatEnabled: false,
+    combatEngine: 'legacy',
     combatMap: '1-1',
     combatFleetMode: '',
     combatCombatNodes: null,
     combatNodeSelect1: null,
     combatNodeSelect2: null,
     combatNodeSelects: null,
+    combatFormationsNode: null,
+    combatFormationsFormation: null,
+    combatFormations: null,
+    combatNightBattlesNode: null,
+    combatNightBattlesMode: null,
+    combatNightBattles: null,
     combatRetreatLimit: 'heavy',
     combatRepairLimit: 'moderate',
     combatRepairTimeLimit: new Date(new Date().setHours(0, 30, 0, 0)),
@@ -140,25 +158,70 @@ class BodyConfig extends React.Component {
     saveAs(configBlob, 'config.ini', true)
   }
 
+  handleCombatToggle = (event, checked) => {
+    // when the combat option is toggled back on, make sure to clear any expeditions based on the combat fleet mode
+    if (checked) {
+      if (this.state.combatFleetMode === 'striking') {
+        this.setState({ expeditionsFleet3: [] })
+      } else if (['ctf', 'stf', 'transport'].indexOf(this.state.combatFleetMode) > -1) {
+        this.setState({ expeditionsFleet2: [] })
+      }
+    }
+    this.setState({ combatEnabled: checked })
+  }
+
   handleFleetModeChange = (value) => {
+    // when changing the fleet mode, make sure to disable and clear any conflicting expeditions as needed
     if (value === 'striking') {
-      this.setState({ expeditionsFleet3Enabled: false, expeditionsFleet3: [] })
-    } else if (value === 'ctf' || value === 'stf' || value === 'transport') {
-      this.setState({ expeditionsFleet2Enabled: false, expeditionsFleet2: [] })
+      this.setState({ expeditionsFleet2Enabled: true, expeditionsFleet3Enabled: false, expeditionsFleet3: [] })
+    } else if (['ctf', 'stf', 'transport'].indexOf(value) > -1) {
+      this.setState({ expeditionsFleet2Enabled: false, expeditionsFleet2: [], expeditionsFleet3Enabled: true })
     } else {
       this.setState({ expeditionsFleet2Enabled: true, expeditionsFleet3Enabled: true })
     }
     this.setState({ combatFleetMode: value })
   }
 
-  handleCombatNodeSelectAdd = (select1, select2) => {
-    const combatNodeSelects = this.state.combatNodeSelects ?
-      `${this.state.combatNodeSelects},${select1}>${select2}` :
-      `${select1}>${select2}`
+  handleCombatNodeSelectAdd = (node, targetNode) => {
+    // automatically add a node select option based on the two previous helper fields; also checks against previously
+    // entered values so that existing node selects for a node are overwritten
+    const tempCombatNodeSelects = this.state.combatNodeSelects ? this.state.combatNodeSelects : ''
+    const tempCombatNodeSelectsObj = this.optionsNodeSplitter(tempCombatNodeSelects, '>')
+    tempCombatNodeSelectsObj[node] = targetNode
+    const combatNodeSelects = Object.keys(tempCombatNodeSelectsObj).sort().map(key =>
+      `${key}>${tempCombatNodeSelectsObj[key]}`).join(',')
     this.setState({ combatNodeSelect1: null, combatNodeSelect2: null, combatNodeSelects })
   }
 
+  handleCombatFormationAdd = (node, formation) => {
+    // automatically add a custom formation selection based on the two previous helper fields; also checks against
+    // previously entered values so that existing formations for a node are overwritten
+    const tempCombatFormations = this.state.combatFormations ? this.state.combatFormations : ''
+    const tempCombatFormationsObj = this.optionsNodeSplitter(tempCombatFormations, ':')
+
+    // if no node is specified, find next node number to apply formation to
+    const targetNode = node || this.findMaxNumericNode(tempCombatFormationsObj) + 1
+    tempCombatFormationsObj[targetNode] = formation
+    const combatFormations = Object.keys(tempCombatFormationsObj).sort().map(key =>
+      `${key}:${tempCombatFormationsObj[key]}`).join(',')
+    this.setState({ combatFormationsNode: null, combatFormationsFormation: null, combatFormations })
+  }
+
+  handleCombatNightBattleAdd = (node, nightBattle) => {
+    // automatically add a custom night battle selection based on the two previous helper fields; also checks against
+    // previously entered values so that existing night battle selections for a node are overwritten
+    const tempCombatNightBattles = this.state.combatNightBattles ? this.state.combatNightBattles : ''
+    const tempCombatNightBattlesObj = this.optionsNodeSplitter(tempCombatNightBattles, ':')
+    // if no node is specified, find next node number to apply night battle mode to
+    const targetNode = node || this.findMaxNumericNode(tempCombatNightBattlesObj) + 1
+    tempCombatNightBattlesObj[targetNode] = nightBattle
+    const combatNightBattles = Object.keys(tempCombatNightBattlesObj).sort().map(key =>
+      `${key}:${tempCombatNightBattlesObj[key]}`).join(',')
+    this.setState({ combatNightBattlesNode: null, combatNightBattlesMode: null, combatNightBattles })
+  }
+
   handleLBASGroupSelect = (value) => {
+    // clear the LBAS node selects as needed based on the LBAS group selections
     if (!value.includes('1')) {
       this.setState({ combatLBASGroup1Node1: null, combatLBASGroup1Node2: null })
     }
@@ -169,6 +232,31 @@ class BodyConfig extends React.Component {
       this.setState({ combatLBASGroup3Node1: null, combatLBASGroup3Node2: null })
     }
     this.setState({ combatLBASGroups: value })
+  }
+
+  optionsNodeSplitter = (rawOption, divider) => {
+    // helper method to convert a list of comma-separated values divided in two via a divider into an object with the
+    // value left of the divider as the key, and the value right of the divider as the value
+    const optionsObj = rawOption.split(',').reduce((obj, option) => {
+      const tempObj = obj
+      const optionInfo = option.split(divider)
+      if (optionInfo.length === 2) {
+        const node = optionInfo[0]
+        const optionChoice = optionInfo[1]
+        tempObj[node] = optionChoice
+      }
+      return tempObj
+    }, {})
+    return optionsObj
+  }
+
+  findMaxNumericNode = (object) => {
+    // finds and returns the max numeric node specified in a node options object
+    const nodes = Object.keys(object)
+    if (nodes.length === 0) {
+      return 0
+    }
+    return Math.max(...nodes.filter(node => parseFloat(node)).map(node => parseFloat(node)))
   }
 
   render = () => {
@@ -191,12 +279,19 @@ class BodyConfig extends React.Component {
       expeditionsFleet4,
       pvpEnabled,
       combatEnabled,
+      combatEngine,
       combatMap,
       combatFleetMode,
       combatCombatNodes,
       combatNodeSelect1,
       combatNodeSelect2,
       combatNodeSelects,
+      combatFormationsNode,
+      combatFormationsFormation,
+      combatFormations,
+      combatNightBattlesNode,
+      combatNightBattlesMode,
+      combatNightBattles,
       combatRetreatLimit,
       combatRepairLimit,
       combatRepairTimeLimit,
@@ -216,6 +311,12 @@ class BodyConfig extends React.Component {
 
     const combatNodeSelectOptions = combatNodeSelects ?
       combatNodeSelects.split(',').map(value => ({ value, label: value })) :
+      []
+    const combatFormationOptions = combatFormations ?
+      combatFormations.split(',').map(value => ({ value, label: value })) :
+      []
+    const combatNightBattleOptions = combatNightBattles ?
+      combatNightBattles.split(',').map(value => ({ value, label: value })) :
       []
     const combatLBASGroupsArray = combatLBASGroups ? combatLBASGroups.split(',') : []
     const combatLBASGroup1NodesDisabled = !combatEnabled || combatLBASGroupsArray.indexOf('1') < 0
@@ -303,7 +404,11 @@ class BodyConfig extends React.Component {
 
             <Grid container spacing={0}>
               <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl disabled={!expeditionsEnabled || !expeditionsFleet2Enabled} margin='normal' fullWidth>
+                <FormControl
+                  disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet2Enabled)}
+                  margin='normal'
+                  fullWidth
+                >
                   <InputLabel htmlFor='expeditionsFleet2' shrink={true} className={classes.reactSelectLabel}>
                     Fleet 2
                   </InputLabel>
@@ -315,14 +420,18 @@ class BodyConfig extends React.Component {
                     value={expeditionsFleet2}
                     options={EXPEDITIONS}
                     onChange={value => this.setState({ expeditionsFleet2: value })}
-                    disabled={!expeditionsEnabled || !expeditionsFleet2Enabled}
+                    disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet2Enabled)}
                     fullWidth />
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl disabled={!expeditionsEnabled || !expeditionsFleet3Enabled} margin='normal' fullWidth>
+                <FormControl
+                  disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet3Enabled)}
+                  margin='normal'
+                  fullWidth
+                >
                   <InputLabel htmlFor='expeditionsFleet3' shrink={true} className={classes.reactSelectLabel}>
-                    Fleet 2
+                    Fleet 3
                   </InputLabel>
                   <Select
                     multi
@@ -332,14 +441,18 @@ class BodyConfig extends React.Component {
                     value={expeditionsFleet3}
                     options={EXPEDITIONS}
                     onChange={value => this.setState({ expeditionsFleet3: value })}
-                    disabled={!expeditionsEnabled || !expeditionsFleet3Enabled}
+                    disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet3Enabled)}
                     fullWidth />
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl disabled={!expeditionsEnabled || !expeditionsFleet4Enabled} margin='normal' fullWidth>
+                <FormControl
+                  disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet4Enabled)}
+                  margin='normal'
+                  fullWidth
+                >
                   <InputLabel htmlFor='expeditionsFleet4' shrink={true} className={classes.reactSelectLabel}>
-                    Fleet 2
+                    Fleet 4
                   </InputLabel>
                   <Select
                     multi
@@ -349,7 +462,7 @@ class BodyConfig extends React.Component {
                     value={expeditionsFleet4}
                     options={EXPEDITIONS}
                     onChange={value => this.setState({ expeditionsFleet4: value })}
-                    disabled={!expeditionsEnabled || !expeditionsFleet4Enabled}
+                    disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet4Enabled)}
                     fullWidth />
                 </FormControl>
               </Grid>
@@ -372,8 +485,28 @@ class BodyConfig extends React.Component {
               <Switch
                 className={classes.switch}
                 checked={combatEnabled}
-                onChange={(event, checked) => this.setState({ combatEnabled: checked })} />
+                onChange={this.handleCombatToggle} />
             </Typography>
+
+            <Grid container spacing={0}>
+              <Grid item xs={12} sm={12} className={classes.formGrid}>
+                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                  <InputLabel htmlFor='combatEngine' shrink={true} className={classes.reactSelectLabel}>
+                    Engine
+                  </InputLabel>
+                  <Select
+                    className={classes.reactSelect}
+                    simpleValue={true}
+                    name='combatEngine'
+                    value={combatEngine}
+                    options={COMBAT_ENGINES}
+                    onChange={value => this.setState({ combatEngine: value })}
+                    disabled={!combatEnabled}
+                    clearable={false}
+                    fullWidth />
+                </FormControl>
+              </Grid>
+            </Grid>
 
             <Grid container spacing={0}>
               <Grid item xs={12} sm={4} className={classes.formGrid}>
@@ -462,7 +595,8 @@ class BodyConfig extends React.Component {
                 <Button
                   dense
                   color='primary'
-                  disabled={!combatEnabled || (!combatNodeSelect1 || !combatNodeSelect2)}
+                  disabled={!combatEnabled ||
+                    (!combatNodeSelect1 || !combatNodeSelect2 || combatNodeSelect1 === combatNodeSelect2)}
                   onClick={() => this.handleCombatNodeSelectAdd(combatNodeSelect1, combatNodeSelect2)}
                 >
                   Add
@@ -482,6 +616,128 @@ class BodyConfig extends React.Component {
                     value={combatNodeSelects}
                     options={combatNodeSelectOptions}
                     onChange={value => this.setState({ combatNodeSelects: value })}
+                    disabled={!combatEnabled}
+                    fullWidth />
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={4} sm={2} className={classes.formGrid}>
+                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                  <InputLabel htmlFor='combatFormationsNode' shrink={true} className={classes.reactSelectLabel}>
+                    If at this Node...
+                  </InputLabel>
+                  <Select
+                    className={classes.reactSelect}
+                    simpleValue={true}
+                    name='combatFormationsNode'
+                    value={combatFormationsNode}
+                    options={combatEngine === 'legacy' ? COMBAT_NODE_COUNTS : COMBAT_NODE_COUNTS.concat(NODES)}
+                    onChange={value => this.setState({ combatFormationsNode: value })}
+                    disabled={!combatEnabled}
+                    fullWidth />
+                </FormControl>
+              </Grid>
+              <Grid item xs={4} sm={3} className={classes.formGrid}>
+                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                  <InputLabel htmlFor='combatFormationsFormation' shrink={true} className={classes.reactSelectLabel}>
+                    ...select this Formation
+                  </InputLabel>
+                  <Select
+                    className={classes.reactSelect}
+                    simpleValue={true}
+                    name='combatFormationsFormation'
+                    value={combatFormationsFormation}
+                    options={FORMATIONS}
+                    onChange={value => this.setState({ combatFormationsFormation: value })}
+                    disabled={!combatEnabled}
+                    fullWidth />
+                </FormControl>
+              </Grid>
+              <Grid item xs={4} sm={1} className={classes.formGridButton}>
+                <Button
+                  dense
+                  color='primary'
+                  disabled={!combatEnabled || !combatFormationsFormation}
+                  onClick={() => this.handleCombatFormationAdd(combatFormationsNode, combatFormationsFormation)}
+                >
+                  Add
+                  <ChevronRight />
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={6} className={classes.formGrid}>
+                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                  <InputLabel htmlFor='combatFormations' shrink={true} className={classes.reactSelectLabel}>
+                    All Specified Formations
+                  </InputLabel>
+                  <Creatable
+                    multi
+                    className={classes.reactSelect}
+                    simpleValue={true}
+                    name='combatFormations'
+                    value={combatFormations}
+                    options={combatFormationOptions}
+                    onChange={value => this.setState({ combatFormations: value })}
+                    disabled={!combatEnabled}
+                    fullWidth />
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={4} sm={2} className={classes.formGrid}>
+                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                  <InputLabel htmlFor='combatNightBattlesNode' shrink={true} className={classes.reactSelectLabel}>
+                    If at this Node...
+                  </InputLabel>
+                  <Select
+                    className={classes.reactSelect}
+                    simpleValue={true}
+                    name='combatNightBattlesNode'
+                    value={combatNightBattlesNode}
+                    options={combatEngine === 'legacy' ? COMBAT_NODE_COUNTS : COMBAT_NODE_COUNTS.concat(NODES)}
+                    onChange={value => this.setState({ combatNightBattlesNode: value })}
+                    disabled={!combatEnabled}
+                    fullWidth />
+                </FormControl>
+              </Grid>
+              <Grid item xs={4} sm={3} className={classes.formGrid}>
+                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                  <InputLabel htmlFor='combatNightBattlesMode' shrink={true} className={classes.reactSelectLabel}>
+                    ...select Night Battle
+                  </InputLabel>
+                  <Select
+                    className={classes.reactSelect}
+                    simpleValue={true}
+                    name='combatNightBattlesMode'
+                    value={combatNightBattlesMode}
+                    options={NIGHT_BATTLES}
+                    onChange={value => this.setState({ combatNightBattlesMode: value })}
+                    disabled={!combatEnabled}
+                    fullWidth />
+                </FormControl>
+              </Grid>
+              <Grid item xs={4} sm={1} className={classes.formGridButton}>
+                <Button
+                  dense
+                  color='primary'
+                  disabled={!combatEnabled || !combatNightBattlesMode}
+                  onClick={() => this.handleCombatNightBattleAdd(combatNightBattlesNode, combatNightBattlesMode)}
+                >
+                  Add
+                  <ChevronRight />
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={6} className={classes.formGrid}>
+                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                  <InputLabel htmlFor='combatNightBattles' shrink={true} className={classes.reactSelectLabel}>
+                    All Night Battles
+                  </InputLabel>
+                  <Creatable
+                    multi
+                    className={classes.reactSelect}
+                    simpleValue={true}
+                    name='combatNightBattles'
+                    value={combatNightBattles}
+                    options={combatNightBattleOptions}
+                    onChange={value => this.setState({ combatNightBattles: value })}
                     disabled={!combatEnabled}
                     fullWidth />
                 </FormControl>

@@ -23,24 +23,25 @@ class CombatModule(object):
         self.stats = stats
         self.regions = regions
         self.kc_region = regions['game']
+        self.observeRegion = Region(self.kc_region)
         self.fleets = fleets
-        self.primary_fleet = (
-            fleets[3]
-            if self.config.combat['fleet_mode'] == 'striking' else fleets[1])
-
         self.next_combat_time = datetime.now()
+
+        self.combined_fleet = self.config.combat['combined_fleet']
+        self.striking_fleet = self.config.combat['striking_fleet']
+
+        self.primary_fleet = fleets[3] if self.striking_fleet else fleets[1]
+        self.fleet_icon = 'fleet_icon_standard.png'
+        if self.combined_fleet:
+            self.fleet_icon = 'fleet_icon_{}.png'.format(
+                self.config.combat['fleet_mode'])
         self.dmg = {}
+
         self.map = MapData(
             self.config.combat['map'], self.regions, self.config)
         self.current_position = [0, 0]
         self.current_node = None
-
-        self.combined_fleet = (
-            True if self.config.combat['combined_fleet'] else False)
-        self.fleet_icon = 'fleet_icon_standard.png'
-        if self.config.combat['combined_fleet']:
-            self.fleet_icon = 'fleet_icon_{}.png'.format(
-                self.config.combat['fleet_mode'])
+        self.nodes_run = []
 
         self.lbas = (
             LBAS(config, regions, self.map)
@@ -102,25 +103,23 @@ class CombatModule(object):
             # fleet fatigue/damage check failed; cancel sortie
             return False
 
-        if self.config.combat['combined_fleet']:
+        # reset FCF retreat counters for combined and striking fleets
+        if self.combined_fleet:
             self.fleets[1].reset_fcf_retreat_counts()
             self.fleets[2].reset_fcf_retreat_counts()
-
-        # background observer for tracking the fleet position
-        observeRegion = Region(self.kc_region)
-        observeRegion.onAppear(
-            Pattern(self.fleet_icon).similar(Globals.FLEET_ICON_SIMILARITY),
-            self._update_fleet_position)
-        observeRegion.observeInBackground(FOREVER)
+        if self.striking_fleet:
+            self.fleets[3].reset_fcf_retreat_counts()
 
         self._run_combat_logic()
 
-        if self.config.combat['combined_fleet']:
+        # after combat, resolve the FCF retreat counters for combined and
+        # striking fleets and add them back to their damage counters
+        if self.combined_fleet:
             self.fleets[1].resolve_fcf_retreat_counts()
             self.fleets[2].resolve_fcf_retreat_counts()
+        if self.striking_fleet:
+            self.fleets[3].resolve_fcf_retreat_counts()
 
-        # stop the background observer once combat is complete
-        observeRegion.stopObserver()
         return True
 
     def _select_combat_map(self):
@@ -278,10 +277,12 @@ class CombatModule(object):
             fleet.check_damages_7th(self.regions)
             if self.config.combat['fleet_mode'] == 'striking'
             else fleet.check_damages(self.regions['check_damage']))
+        fleet.print_damage_counts()
 
         if 'CheckFatigue' in self.config.combat['misc_options']:
             fleet_fatigue = fleet.check_fatigue(
                 self.regions['check_fatigue'])
+            fleet.print_fatigue_states()
             return (needs_resupply, fleet_damages, fleet_fatigue)
         return (needs_resupply, fleet_damages, {})
 
@@ -303,15 +304,19 @@ class CombatModule(object):
 
         # primary combat loop
         sortieing = True
-        nodes_run = []
+        self.nodes_run = []
         while sortieing:
             at_node = self._run_loop_between_nodes()
 
+            # stop the background observer if no longer on the map screen
+            if self.config.combat['engine'] == 'live':
+                self.observeRegion.stopObserver()
+
             if at_node:
                 # arrived at combat node
-                nodes_run.append(self.current_node)
+                self._increment_nodes_run()
 
-                # get rid of initial boss dialogue
+                # click to get rid of initial boss dialogue in case it exists
                 Util.kc_sleep(5)
                 Util.click_screen(self.regions, 'center')
                 Util.kc_sleep()
@@ -322,7 +327,7 @@ class CombatModule(object):
 
                 # resolve night battle
                 if combat_result == 'night_battle':
-                    if self.map.resolve_night_battle(nodes_run[-1]):
+                    if self._select_night_battle(self._resolve_night_battle()):
                         self._run_loop_during_battle()
 
                 self.regions['lower_right_corner'].wait('next.png', 30)
@@ -332,6 +337,7 @@ class CombatModule(object):
                 self.regions['game'].wait('mvp_marker.png', 30)
                 self.dmg = self.primary_fleet.check_damages(
                     self.regions['check_damage_combat'])
+                self.primary_fleet.print_damage_counts()
                 if self.combined_fleet:
                     self.regions['lower_right_corner'].wait('next.png', 30)
                     Util.click_screen(self.regions, 'center')
@@ -339,12 +345,13 @@ class CombatModule(object):
                     self.regions['game'].wait('mvp_marker.png', 30)
                     fleet_two_damages = self.fleets[2].check_damages(
                         self.regions['check_damage_combat'])
+                    self.fleets[2].print_damage_counts()
                     self.dmg = self._combine_fleet_damages(
                         self.dmg, fleet_two_damages)
                     # ascertain whether or not the escort fleet's flagship is
                     # damaged if necessary
-                    if (fleet_two_damages['heavy'] is 1 and
-                            self.fleets[2].flagship_damaged is False):
+                    if (fleet_two_damages['heavy'] == 1 and
+                            not self.fleets[2].flagship_damaged):
                         self.fleets[2].check_damage_flagship(self.regions)
                 Util.rejigger_mouse(self.regions, 'lbas')
                 # click through while not next battle or home
@@ -354,17 +361,18 @@ class CombatModule(object):
                         self.kc_region.exists('combat_retreat.png')):
                     if self.regions['lower_right_corner'].exists('next.png'):
                         Util.click_screen(self.regions, 'center')
-                        Util.rejigger_mouse(self.regions, 'lbas')
+                        Util.rejigger_mouse(self.regions, 'top')
                     elif self.regions['lower_right_corner'].exists(
                             'next_alt.png'):
                         Util.click_screen(self.regions, 'center')
-                        Util.rejigger_mouse(self.regions, 'lbas')
-                    elif self.combined_fleet:
-                        self._fcf_resolver()
+                        Util.rejigger_mouse(self.regions, 'top')
+                    elif self.combined_fleet or self.striking_fleet:
+                        self._resolve_fcf()
+                        Util.rejigger_mouse(self.regions, 'top')
 
             if self.regions['left'].exists('home_menu_sortie.png'):
                 # arrived at home; sortie complete
-                self._print_sortie_complete_msg(nodes_run)
+                self._print_sortie_complete_msg(self.nodes_run)
                 sortieing = False
                 break
 
@@ -374,14 +382,14 @@ class CombatModule(object):
                 Util.log_msg("Flagship damaged. Automatic retreat.")
                 Util.click_screen(self.regions, 'game')
                 self.regions['left'].wait('home_menu_sortie.png', 30)
-                self._print_sortie_complete_msg(nodes_run)
+                self._print_sortie_complete_msg(self.nodes_run)
                 sortieing = False
                 break
 
             if self.kc_region.exists('combat_retreat.png'):
                 retreat = False
                 # check whether to retreat against combat nodes count
-                if len(nodes_run) >= self.config.combat['combat_nodes']:
+                if len(self.nodes_run) >= self.config.combat['combat_nodes']:
                     Util.log_msg(
                         "Ran the necessary number of nodes. Retreating.")
                     retreat = True
@@ -389,14 +397,13 @@ class CombatModule(object):
                 # check whether to retreat against fleet damage state
                 threshold_dmg_count = (
                     self.primary_fleet.get_damage_counts_at_threshold(
-                        self.config.combat['retreat_limit'],
-                        self.dmg))
+                        self.config.combat['retreat_limit'], self.dmg))
                 if threshold_dmg_count > 0:
                     retreat_override = False
-                    if self.combined_fleet and threshold_dmg_count is 1:
+                    if self.combined_fleet and threshold_dmg_count == 1:
                         # if there is only one heavily damaged ship and it is
                         # the flagship of the escort fleet, do not retreat
-                        if (self.fleets[2].damage_counts['heavy'] is 1 and
+                        if (self.fleets[2].damage_counts['heavy'] == 1 and
                                 self.fleets[2].flagship_damaged):
                             retreat_override = True
                             Util.log_msg(
@@ -411,20 +418,21 @@ class CombatModule(object):
 
                 # resolve retreat/continue
                 if retreat:
-                    self.map.select_sortie_continue_retreat(True)
+                    self._select_sortie_continue_retreat(True)
                     self.regions['left'].wait('home_menu_sortie.png', 30)
-                    self._print_sortie_complete_msg(nodes_run)
+                    self._print_sortie_complete_msg(self.nodes_run)
                     sortieing = False
                     break
                 else:
-                    self.map.select_sortie_continue_retreat(False)
+                    self._select_sortie_continue_retreat(False)
 
     def _print_sortie_complete_msg(self, nodes_run):
         """Method that prints the post-sortie status report indicating number
         of nodes run and nodes run.
 
         Args:
-            nodes_run (list): list of Nodes run in the primary combat logic
+            nodes_run (list): list of combat node numbers (legacy mode) or
+                Nodes instances (live mode) run in the primary combat logic
         """
         Util.log_success(
             "Sortie complete. Encountered {} combat nodes (nodes {}).".format(
@@ -439,27 +447,43 @@ class CombatModule(object):
             bool: True if the method ends on a combat node, False otherwise
         """
         at_node = False
-        formation_check = (
-            'formation_combinedfleet_1'
-            if self.config.combat['combined_fleet']
-            else 'formation_line_ahead')
+
+        # if in live engine mode, begin the background observer to track and
+        # update the fleet position
+        if self.config.combat['engine'] == 'live':
+            self._start_fleet_observer()
 
         while not at_node:
             if self.kc_region.exists('compass.png'):
                 while (self.kc_region.exists('compass.png')):
                     Util.click_screen(self.regions, 'center')
                     Util.kc_sleep(3)
-            elif self.regions[formation_check].exists(
-                    '{}.png'.format(formation_check)):
-                Util.log_msg("Fleet at Node {}".format(self.current_node))
-                self.map.resolve_formation(self.current_node)
+            elif (self.regions['formation_line_ahead'].exists(
+                        'formation_line_ahead.png') or
+                    self.regions['formation_combinedfleet_1'].exists(
+                        'formation_combinedfleet_1.png')):
+                # announce which node we're at
+                if self.config.combat['engine'] == 'legacy':
+                    Util.log_msg("Fleet at Node #{}".format(
+                        len(self.nodes_run) + 1))
+                if self.config.combat['engine'] == 'live':
+                    Util.log_msg("Fleet at Node {}".format(self.current_node))
+                formations = self._resolve_formation()
+                for formation in formations:
+                    if self._select_formation(formation):
+                        break
                 Util.rejigger_mouse(self.regions, 'top')
                 at_node = True
                 return True
             elif self.kc_region.exists('combat_node_select.png'):
-                if (
-                        self.current_node.name
-                        in self.config.combat['node_selects']):
+                # node select dialog option exists; resolve fleet location and
+                # select node
+                if self.config.combat['engine'] == 'legacy':
+                    # only need to manually update self.current_node if in
+                    # legacy engine mode
+                    self._update_fleet_position_once()
+                if (self.current_node.name in
+                        self.config.combat['node_selects']):
                     next_node = self.config.combat['node_selects'][
                         self.current_node.name]
                     self.map.nodes[next_node].click_node(self.regions['game'])
@@ -503,6 +527,21 @@ class CombatModule(object):
             self.regions['top_submenu'],
             Pattern('fleet_{}_active.png'.format(fleet)).exact())
 
+    def _start_fleet_observer(self):
+        """Method that starts the observeRegion/observeInBackground methods
+        that tracks the fleet position icon in real-time in the live engine
+        mode.
+        """
+        self.observeRegion.onAppear(
+            Pattern(self.fleet_icon).similar(Globals.FLEET_ICON_SIMILARITY),
+            self._update_fleet_position)
+        self.observeRegion.observeInBackground(FOREVER)
+
+    def _stop_fleet_observer(self):
+        """Stops the observer started by the _start_fleet_observer() method.
+        """
+        self.observeRegion.stopObserver()
+
     def _update_fleet_position(self, event):
         """Method that is run by the fleet observer to continuously update the
         fleet's status.
@@ -510,37 +549,201 @@ class CombatModule(object):
         Args:
             event (event): sikuli observer event
         """
-        lastMatch = event.getMatch()
+        fleet_match = event.getMatch()
         # lastMatch is based off of screen positions, so subtract game region
         # x and y to get in-game positions
         self.current_position = [
-            lastMatch.x + (lastMatch.w / 2) - self.kc_region.x,
-            lastMatch.y + lastMatch.h - self.kc_region.y
+            fleet_match.x + (fleet_match.w / 2) - self.kc_region.x,
+            fleet_match.y + fleet_match.h - self.kc_region.y
         ]
 
         # debug console print for the observer's found position of the fleet
         """
         print(
             "{}, {} ({})".format(
-                self.current_position[0], self.current_position[1], lastMatch))
+                self.current_position[0], self.current_position[1],
+                fleet_match))
         """
         matched_node = self.map.find_node_by_pos(*self.current_position)
         self.current_node = (
             matched_node if matched_node is not None else self.current_node)
         event.repeat()
 
-    def _fcf_resolver(self):
+    def _update_fleet_position_once(self):
+        """Method that can be called to find and update the fleet's position
+        on-demand.
+        """
+        fleet_match = self.kc_region.find(
+            Pattern(self.fleet_icon).similar(Globals.FLEET_ICON_SIMILARITY))
+        # lastMatch is based off of screen positions, so subtract game region
+        # x and y to get in-game positions
+        self.current_position = [
+            fleet_match.x + (fleet_match.w / 2) - self.kc_region.x,
+            fleet_match.y + fleet_match.h - self.kc_region.y
+        ]
+
+        # debug console print for the method's found position of the fleet
+        """
+        print(
+            "{}, {} ({})".format(
+                self.current_position[0], self.current_position[1],
+                fleet_match))
+        """
+        matched_node = self.map.find_node_by_pos(*self.current_position)
+        self.current_node = (
+            matched_node if matched_node is not None else self.current_node)
+        Util.log_msg("Fleet at node {}.".format(self.current_node))
+
+    def _increment_nodes_run(self):
+        """Method to properly append to the nodes_run attribute; the combat
+        node number if the engine is in legacy mode, otherwise with the Node
+        instance of the encountered node if in live mode
+        """
+        if self.config.combat['engine'] == 'legacy':
+            self.nodes_run.append(len(self.nodes_run) + 1)
+        elif self.config.combat['engine'] == 'live':
+            self.nodes_run.append(self.current_node)
+
+    def _resolve_formation(self):
+        """Method to resolve which formation to select depending on the combat
+        engine mode and any custom specified formations.
+
+        Returns:
+            tuple: tuple of formations to try in order
+        """
+        # +1 since this happens before entering a node
+        next_node_count = len(self.nodes_run) + 1
+        custom_formations = self.config.combat['formations']
+
+        if self.config.combat['engine'] == 'legacy':
+            # if legacy engine, custom formation can only be applied on a node
+            # count basis; if a custom formation is not defined, default to
+            # combinedfleet_1 or line_ahead
+            if next_node_count in custom_formations:
+                return (custom_formations[next_node_count], )
+            else:
+                return (
+                    'combinedfleet_1' if self.combined_fleet else 'line_ahead',
+                    )
+        elif self.config.combat['engine'] == 'live':
+            # if live engine, custom formation can be applied by node name or
+            # node count; if a custom formation is not defined, defer to the
+            # mapData instance's resolve_formation method
+            if self.current_node.name in custom_formations:
+                return (custom_formations[self.current_node.name], )
+            elif next_node_count in custom_formations:
+                return (custom_formations[next_node_count], )
+            else:
+                return self.map.resolve_formation(self.current_node)
+
+    def _resolve_night_battle(self):
+        """Method to resolve whether or not to conduct night battle depending
+        on the combat engine mode and any custom specified night battle modes.
+
+        Returns:
+            bool: True if night battle should be conducted; False otherwise
+        """
+        # no +1 since this happens after entering a node
+        next_node_count = len(self.nodes_run)
+        custom_night_battles = self.config.combat['night_battles']
+
+        if self.config.combat['engine'] == 'legacy':
+            # if legacy engine, custom night battle modes can only be applied
+            # on a node count basis; if a custom night battle mode is not
+            # defined, default to True
+            if next_node_count in custom_night_battles:
+                return custom_night_battles[next_node_count]
+            else:
+                return True
+        elif self.config.combat['engine'] == 'live':
+            # if live engine, custom night battle modes can be applied by node
+            # name or node count; if a custom night battle mode is not defined,
+            # defer to the mapData instance's resolve_night_battle method
+            if self.current_node.name in custom_night_battles:
+                return custom_night_battles[self.current_node.name]
+            elif next_node_count in custom_night_battles:
+                return custom_night_battles[next_node_count]
+            else:
+                return self.map.resolve_night_battle(self.nodes_run[-1])
+
+    def _select_sortie_continue_retreat(self, retreat):
+        """Method that selects the sortie continue or retreat button.
+
+        Args:
+            retreat (bool): True if the retreat button should be pressed,
+                False otherwise
+        """
+        if retreat:
+            Util.log_msg("Retreating from sortie.")
+            Util.check_and_click(self.kc_region, 'combat_retreat.png')
+        else:
+            Util.log_msg("Continuing sortie.")
+            Util.check_and_click(self.kc_region, 'combat_continue.png')
+
+    def _select_formation(self, formation):
+        """Method that selects the specified formation on-screen.
+
+        Args:
+            formation (str): formation to select
+
+        Returns:
+            bool: True if the formation was clicked, False if its button could
+                not be found
+        """
+        Util.log_msg("Engaging the enemy in {} formation.".format(
+            formation.replace('_', ' ')))
+        return Util.check_and_click(
+            self.regions['formation_{}'.format(formation)],
+            'formation_{}.png'.format(formation))
+
+    def _select_night_battle(self, nb):
+        """Method that selects the night battle sortie button or retreats
+        from it.
+
+        Args:
+            nb (bool): indicates whether or not night battle should be done or
+                not
+
+        Returns:
+            bool: True if night battle was initiated, False otherwise
+        """
+        if nb:
+            Util.log_msg("Commencing night battle.")
+            Util.check_and_click(self.kc_region, 'combat_nb_fight.png')
+            return True
+        else:
+            Util.log_msg("Declining night battle.")
+            Util.check_and_click(self.kc_region, 'combat_nb_retreat.png')
+            return False
+
+    def _resolve_fcf(self):
         """Method that resolves the FCF prompt. Does not use FCF if there are
-        more than one ship in a heavily damaged state.
+        more than one ship in a heavily damaged state. Supports both combined
+        fleet FCF and striking force FCF
         """
         if self.regions['lower_left'].exists('fcf_retreat_ship.png'):
-            fleet_1_heavy_damage = self.fleets[1].damage_counts['heavy']
-            fleet_2_heavy_damage = self.fleets[2].damage_counts['heavy']
-            if fleet_1_heavy_damage + fleet_2_heavy_damage is 1:
-                self.fleets[1].increment_fcf_retreat_count()
-                self.fleets[2].increment_fcf_retreat_count()
+            fcf_retreat = False
+            if self.combined_fleet:
+                # for combined fleets, check the heavy damage counts of both
+                # fleets 1 and 2
+                fleet_1_heavy_damage = self.fleets[1].damage_counts['heavy']
+                fleet_2_heavy_damage = self.fleets[2].damage_counts['heavy']
+                if fleet_1_heavy_damage + fleet_2_heavy_damage == 1:
+                    fcf_retreat = True
+                    self.fleets[1].increment_fcf_retreat_count()
+                    self.fleets[2].increment_fcf_retreat_count()
+            elif self.striking_fleet:
+                # for striking fleets, check the heavy damage counts of the
+                # 3rd fleet
+                if self.fleets[3].damage_counts['heavy'] == 1:
+                    fcf_retreat = True
+                    self.fleets[3].increment_fcf_retreat_count()
+
+            if fcf_retreat:
                 if (Util.check_and_click(
                         self.regions['lower'], 'fcf_retreat_ship.png')):
+                    # decrement the Combat module's internal dmg count so it
+                    # knows to continue sortie to the next node
                     self.dmg['heavy'] -= 1
             else:
                 Util.log_warning("Declining to retreat ship with FCF.")
@@ -601,12 +804,34 @@ class CombatFleet(Fleet):
         heavily damaged ship in the fleet, and decrement the heavy damage from
         the damage counter.
         """
-        if 'heavy' in self.damage_counts and self.damage_counts['heavy'] is 1:
+        if 'heavy' in self.damage_counts and self.damage_counts['heavy'] == 1:
             Util.log_msg(
                 "Retreating damaged ship via FCF from fleet {}."
                 .format(self.fleet_id))
             self.damaged_fcf_retreat_count += 1
             self.damage_counts['heavy'] -= 1
+
+    def print_damage_counts(self):
+        """Method to report the fleet's damage counts in a more human-readable
+        format
+        """
+        Util.log_msg(
+            "Fleet {} damage counts: {} heavy / {} moderate / {} minor"
+            .format(
+                self.fleet_id, self.damage_counts['heavy'],
+                self.damage_counts['moderate'], self.damage_counts['minor']))
+
+    def print_fatigue_states(self):
+        """Method to report the fleet's fatigue state in a more human-readable
+        format
+        """
+        fatigue = 'Rested'
+        if self.fatigue['high']:
+            fatigue = 'High'
+        elif self.fatigue['medium']:
+            fatigue = 'Medium'
+        Util.log_msg(
+            "Fleet {} fatigue state: {}".format(self.fleet_id, fatigue))
 
     def get_damage_counts_at_threshold(self, threshold, counts={}):
         """Method for returning the number of ships at and below the specified

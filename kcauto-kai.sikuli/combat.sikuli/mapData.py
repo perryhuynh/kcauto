@@ -31,8 +31,14 @@ class MapData(object):
         json_path = os.path.join(
             os.getcwd(), 'kcauto-kai.sikuli', 'maps',
             '{}.json'.format(self.location))
-        with open(json_path) as raw_json:
-            map_data = json.load(raw_json)
+        try:
+            with open(json_path) as raw_json:
+                map_data = json.load(raw_json)
+        except:
+            Util.log_error(
+                "There was an issue opening or loading the specified map file:"
+                " {}.json".format(self.location))
+            raise
 
         self.world = map_data['world']
         self.subworld = map_data['subworld']
@@ -65,34 +71,41 @@ class MapData(object):
         Args:
             node (Node): Node object for the node to determine the formation
                 for
+
+        Returns:
+            tuple: tuple of formations to try in order
         """
         if node:
             if node.formation:
-                self._select_formation(node.formation)
+                return (node.formation, )
             elif 'sub' in node.types:
                 if self.config.combat['combined_fleet']:
-                    self._select_formation('combinedfleet_1')
+                    return ('combinedfleet_1', )
                 else:
-                    self._select_formation('line_abreast')
+                    return ('line_abreast', )
             elif 'air' in node.types:
                 if self.config.combat['combined_fleet']:
-                    if not self._select_formation('combinedfleet_3'):
-                        # formation 3 not available; possibly due to FCF; fall
-                        # back to formation 4
-                        self._select_formation('combinedfleet_4')
+                    # formation 3 might not be available possibly due to FCF;
+                    # provide formation 4 as fallback
+                    return ('combinedfleet_3', 'combinedfleet_4')
                 else:
-                    self._select_formation('diamond')
+                    return ('diamond', )
+            elif 'mixed' in node.types:
+                if self.config.combat['combined_fleet']:
+                    return ('combinedfleet_2', )
+                else:
+                    return ('double_line', )
             else:
                 if self.config.combat['combined_fleet']:
-                    self._select_formation('combinedfleet_4')
+                    return ('combinedfleet_4', )
                 else:
-                    self._select_formation('line_ahead')
+                    return ('line_ahead', )
         else:
             # default to line ahead or combinedfleet 4
             if self.config.combat['combined_fleet']:
-                self._select_formation('combinedfleet_4')
+                return ('combinedfleet_4', )
             else:
-                self._select_formation('line_ahead')
+                return ('line_ahead', )
 
     def resolve_night_battle(self, node):
         """Method for determining whether or not to conduct night battle at the
@@ -103,70 +116,20 @@ class MapData(object):
                 status for
 
         Returns:
-            bool: True if night battle is conducted at the node, False
+            bool: True if night battle should be conducted at the node, False
                 otherwise
         """
-        night_battle = False
         if node:
             if node.night_battle is not None:
-                self._select_night_battle(node.night_battle)
-                night_battle = node.night_battle
+                return node.night_battle
             elif 'boss' in node.types:
-                self._select_night_battle(True)
-                night_battle = True
+                return True
             elif 'sub' in node.types or 'air' in node.types:
-                self._select_night_battle(False)
+                return False
             else:
-                self._select_night_battle(False)
+                return False
         else:
-            self._select_night_battle(False)
-
-        return night_battle
-
-    def select_sortie_continue_retreat(self, retreat):
-        """Method that selects the sortie continue or retreat button.
-
-        Args:
-            retreat (bool): True if the retreat button should be pressed,
-                False otherwise
-        """
-        if retreat:
-            Util.log_msg("Retreating from sortie.")
-            Util.check_and_click(self.kc_region, 'combat_retreat.png')
-        else:
-            Util.log_msg("Continuing sortie.")
-            Util.check_and_click(self.kc_region, 'combat_continue.png')
-
-    def _select_formation(self, formation):
-        """Method that selects the specified formation on-screen.
-
-        Args:
-            formation (str): formation to select
-
-        Returns:
-            bool: True if the formation was clicked, False if its button could
-                not be found
-        """
-        Util.log_msg("Engaging the enemy in {} formation.".format(
-            formation.replace('_', ' ')))
-        return Util.check_and_click(
-            self.regions['formation_{}'.format(formation)],
-            'formation_{}.png'.format(formation))
-
-    def _select_night_battle(self, nb):
-        """Method that selects the night battle sortie button or retreats
-        from it.
-
-        Args:
-            nb (bool): indicates whether or not night battle should be done or
-                not
-        """
-        if nb:
-            Util.log_msg("Commencing night battle.")
-            Util.check_and_click(self.kc_region, 'combat_nb_fight.png')
-        else:
-            Util.log_msg("Declining night battle.")
-            Util.check_and_click(self.kc_region, 'combat_nb_retreat.png')
+            return False
 
 
 class Node(object):
