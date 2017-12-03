@@ -21,6 +21,7 @@ import { ChevronRight, ContentSave } from 'mdi-material-ui'
 const EXPEDITIONS = Array.from({ length: 40 }, (value, key) => ({ value: String(key + 1), label: String(key + 1) }))
 EXPEDITIONS.push({ value: '9998', label: 'Node Support' })
 EXPEDITIONS.push({ value: '9999', label: 'Boss Support' })
+const COMBAT_ENGINES = ['legacy', 'live'].map(value => ({ value, label: value }))
 const MAPS = ['1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-1', '2-2', '2-3', '2-4', '2-5', '3-1', '3-2', '3-3', '3-4',
   '3-5', '4-1', '4-2', '4-3', '4-4', '4-5', '5-1', '5-2', '5-3', '5-4', '5-5', '6-1', '6-2', '6-3', '6-4', '6-5',
   'E-1', 'E-2', 'E-3', 'E-4', 'E-5', 'E-6', 'E-7', 'E-8']
@@ -28,10 +29,14 @@ const MAPS = ['1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-1', '2-2', '2-3', '2-
 const COMBINED_FLEET_MODES = [
   { value: '', label: 'Standard' }, { value: 'ctf', label: 'CTF' }, { value: 'stf', label: 'STF' },
   { value: 'transport', label: 'Transport' }, { value: 'striking', label: 'Striking' }]
-const COMBAT_NODE_COUNTS = ['1', '2', '3', '4', '5'].map(value => ({ value, label: value }))
+const COMBAT_NODE_COUNTS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'].map(value => (
+  { value, label: value }))
 const NODES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(value => ({ value, label: value }))
 NODES.push(...['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7', 'Z8', 'Z9', 'ZZ1', 'ZZ2', 'ZZ3'].map(value => (
   { value, label: value })))
+const FORMATIONS = ['line_ahead', 'double_line', 'diamond', 'echelon', 'line_abreast', 'vanguard', 'combined_fleet_1',
+  'combined_fleet_2', 'combined_fleet_3', 'combined_fleet_4'].map(value => ({ value, label: value.replace('_', ' ') }))
+const NIGHT_BATTLES = ['False', 'True'].map(value => ({ value, label: value.toLowerCase() }))
 const DAMAGE_STATES = ['heavy', 'moderate', 'minor'].map(value => ({ value, label: value }))
 const LBAS_GROUPS = ['1', '2', '3'].map(value => ({ value, label: value }))
 
