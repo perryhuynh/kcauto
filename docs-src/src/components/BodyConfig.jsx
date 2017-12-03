@@ -152,11 +152,24 @@ class BodyConfig extends React.Component {
     saveAs(configBlob, 'config.ini', true)
   }
 
+  handleCombatToggle = (event, checked) => {
+    // when the combat option is toggled back on, make sure to clear any expeditions based on the combat fleet mode
+    if (checked) {
+      if (this.state.combatFleetMode === 'striking') {
+        this.setState({ expeditionsFleet3: [] })
+      } else if (['ctf', 'stf', 'transport'].indexOf(this.state.combatFleetMode) > -1) {
+        this.setState({ expeditionsFleet2: [] })
+      }
+    }
+    this.setState({ combatEnabled: checked })
+  }
+
   handleFleetModeChange = (value) => {
+    // when changing the fleet mode, make sure to disable and clear any conflicting expeditions as needed
     if (value === 'striking') {
-      this.setState({ expeditionsFleet3Enabled: false, expeditionsFleet3: [] })
-    } else if (value === 'ctf' || value === 'stf' || value === 'transport') {
-      this.setState({ expeditionsFleet2Enabled: false, expeditionsFleet2: [] })
+      this.setState({ expeditionsFleet2Enabled: true, expeditionsFleet3Enabled: false, expeditionsFleet3: [] })
+    } else if (['ctf', 'stf', 'transport'].indexOf(value) > -1) {
+      this.setState({ expeditionsFleet2Enabled: false, expeditionsFleet2: [], expeditionsFleet3Enabled: true })
     } else {
       this.setState({ expeditionsFleet2Enabled: true, expeditionsFleet3Enabled: true })
     }
@@ -164,6 +177,7 @@ class BodyConfig extends React.Component {
   }
 
   handleCombatNodeSelectAdd = (select1, select2) => {
+    // automatically add a node select option based on the two previous helper fields
     const combatNodeSelects = this.state.combatNodeSelects ?
       `${this.state.combatNodeSelects},${select1}>${select2}` :
       `${select1}>${select2}`
@@ -171,6 +185,7 @@ class BodyConfig extends React.Component {
   }
 
   handleLBASGroupSelect = (value) => {
+    // clear the LBAS node selects as needed based on the LBAS group selections
     if (!value.includes('1')) {
       this.setState({ combatLBASGroup1Node1: null, combatLBASGroup1Node2: null })
     }
@@ -316,7 +331,11 @@ class BodyConfig extends React.Component {
 
             <Grid container spacing={0}>
               <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl disabled={!expeditionsEnabled || !expeditionsFleet2Enabled} margin='normal' fullWidth>
+                <FormControl
+                  disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet2Enabled)}
+                  margin='normal'
+                  fullWidth
+                >
                   <InputLabel htmlFor='expeditionsFleet2' shrink={true} className={classes.reactSelectLabel}>
                     Fleet 2
                   </InputLabel>
@@ -328,14 +347,18 @@ class BodyConfig extends React.Component {
                     value={expeditionsFleet2}
                     options={EXPEDITIONS}
                     onChange={value => this.setState({ expeditionsFleet2: value })}
-                    disabled={!expeditionsEnabled || !expeditionsFleet2Enabled}
+                    disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet2Enabled)}
                     fullWidth />
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl disabled={!expeditionsEnabled || !expeditionsFleet3Enabled} margin='normal' fullWidth>
+                <FormControl
+                  disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet3Enabled)}
+                  margin='normal'
+                  fullWidth
+                >
                   <InputLabel htmlFor='expeditionsFleet3' shrink={true} className={classes.reactSelectLabel}>
-                    Fleet 2
+                    Fleet 3
                   </InputLabel>
                   <Select
                     multi
@@ -345,14 +368,18 @@ class BodyConfig extends React.Component {
                     value={expeditionsFleet3}
                     options={EXPEDITIONS}
                     onChange={value => this.setState({ expeditionsFleet3: value })}
-                    disabled={!expeditionsEnabled || !expeditionsFleet3Enabled}
+                    disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet3Enabled)}
                     fullWidth />
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl disabled={!expeditionsEnabled || !expeditionsFleet4Enabled} margin='normal' fullWidth>
+                <FormControl
+                  disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet4Enabled)}
+                  margin='normal'
+                  fullWidth
+                >
                   <InputLabel htmlFor='expeditionsFleet4' shrink={true} className={classes.reactSelectLabel}>
-                    Fleet 2
+                    Fleet 4
                   </InputLabel>
                   <Select
                     multi
@@ -362,7 +389,7 @@ class BodyConfig extends React.Component {
                     value={expeditionsFleet4}
                     options={EXPEDITIONS}
                     onChange={value => this.setState({ expeditionsFleet4: value })}
-                    disabled={!expeditionsEnabled || !expeditionsFleet4Enabled}
+                    disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet4Enabled)}
                     fullWidth />
                 </FormControl>
               </Grid>
@@ -385,7 +412,7 @@ class BodyConfig extends React.Component {
               <Switch
                 className={classes.switch}
                 checked={combatEnabled}
-                onChange={(event, checked) => this.setState({ combatEnabled: checked })} />
+                onChange={this.handleCombatToggle} />
             </Typography>
 
             <Grid container spacing={0}>
