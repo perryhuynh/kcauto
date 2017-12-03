@@ -122,6 +122,14 @@ class BodyConfig extends React.Component {
     }
   }
 
+  onConfigLoadEnter = () => {
+    this.setState({ dropzoneActive: true })
+  }
+
+  onConfigLoadLeave = () => {
+    this.setState({ dropzoneActive: false })
+  }
+
   onSaveClick = () => {
     const configOutput = this.props.config.pythonConfig.reduce((config, line) => {
       let configTemp = config
@@ -208,18 +216,18 @@ class BodyConfig extends React.Component {
     this.setState({ combatLBASGroups: value })
   }
 
-  onConfigLoadEnter = () => {
-    this.setState({ dropzoneActive: true })
-  }
-
-  onConfigLoadLeave = () => {
-    this.setState({ dropzoneActive: false })
-  }
-
   handleConfigLoad = (acceptedFiles, rejectedFiles) => {
+    // only accept the first file
+    if (acceptedFiles.length === 1) {
+      const rawConfigFileHandle = acceptedFiles[0]
+      const reader = new FileReader()
+      reader.onload = () => {
+        const rawConfig = reader.result
+        console.log(rawConfig)
+      }
+      reader.readAsText(rawConfigFileHandle)
+    }
     this.setState({ dropzoneActive: false })
-    console.log(acceptedFiles)
-    console.log(rejectedFiles)
   }
 
   optionsNodeSplitter = (rawOption, divider) => {
