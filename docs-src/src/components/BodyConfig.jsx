@@ -22,9 +22,9 @@ const EXPEDITIONS = Array.from({ length: 40 }, (value, key) => ({ value: String(
 EXPEDITIONS.push({ value: '9998', label: 'Node Support' })
 EXPEDITIONS.push({ value: '9999', label: 'Boss Support' })
 const COMBAT_ENGINES = [
-  { value: 'legacy', label: 'legacy (per-node definition of formations and night battles / low CPU use' },
+  { value: 'legacy', label: 'legacy: per-node definition of formations and night battles / low CPU use' },
   {
-    value: 'live', label: 'live (auto node detection with optional formation and night battle overrides / high CPU use',
+    value: 'live', label: 'live: auto node detection with optional formation and night battle overrides / high CPU use',
   }]
 const MAPS = ['1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-1', '2-2', '2-3', '2-4', '2-5', '3-1', '3-2', '3-3', '3-4',
   '3-5', '4-1', '4-2', '4-3', '4-4', '4-5', '5-1', '5-2', '5-3', '5-4', '5-5', '6-1', '6-2', '6-3', '6-4', '6-5',
@@ -113,6 +113,12 @@ class BodyConfig extends React.Component {
     combatNodeSelect1: null,
     combatNodeSelect2: null,
     combatNodeSelects: null,
+    combatFormationsNode: null,
+    combatFormationsFormation: null,
+    combatFormations: null,
+    combatNightBattlesNode: null,
+    combatNightBattlesMode: null,
+    combatNightBattles: null,
     combatRetreatLimit: 'heavy',
     combatRepairLimit: 'moderate',
     combatRepairTimeLimit: new Date(new Date().setHours(0, 30, 0, 0)),
@@ -184,6 +190,22 @@ class BodyConfig extends React.Component {
     this.setState({ combatNodeSelect1: null, combatNodeSelect2: null, combatNodeSelects })
   }
 
+  handleCombatFormationAdd = (node, formation) => {
+    // automatically add a custom formation selection based on the two previous helper fields
+    const combatFormations = this.state.combatFormations ?
+      `${this.state.combatFormations},${node}:${formation}` :
+      `${node}:${formation}`
+    this.setState({ combatFormationsNode: null, combatFormationsFormation: null, combatFormations })
+  }
+
+  handleCombatNightBattleAdd = (node, nightBattle) => {
+    // automatically add a custom night battle selection based on the two previous helper fields
+    const combatNightBattles = this.state.combatNightBattles ?
+      `${this.state.combatNightBattles},${node}:${nightBattle}` :
+      `${node}:${nightBattle}`
+    this.setState({ combatNightBattlesNode: null, combatNightBattlesMode: null, combatNightBattles })
+  }
+
   handleLBASGroupSelect = (value) => {
     // clear the LBAS node selects as needed based on the LBAS group selections
     if (!value.includes('1')) {
@@ -225,6 +247,12 @@ class BodyConfig extends React.Component {
       combatNodeSelect1,
       combatNodeSelect2,
       combatNodeSelects,
+      combatFormationsNode,
+      combatFormationsFormation,
+      combatFormations,
+      combatNightBattlesNode,
+      combatNightBattlesMode,
+      combatNightBattles,
       combatRetreatLimit,
       combatRepairLimit,
       combatRepairTimeLimit,
@@ -244,6 +272,12 @@ class BodyConfig extends React.Component {
 
     const combatNodeSelectOptions = combatNodeSelects ?
       combatNodeSelects.split(',').map(value => ({ value, label: value })) :
+      []
+    const combatFormationOptions = combatFormations ?
+      combatFormations.split(',').map(value => ({ value, label: value })) :
+      []
+    const combatNightBattleOptions = combatNightBattles ?
+      combatNightBattles.split(',').map(value => ({ value, label: value })) :
       []
     const combatLBASGroupsArray = combatLBASGroups ? combatLBASGroups.split(',') : []
     const combatLBASGroup1NodesDisabled = !combatEnabled || combatLBASGroupsArray.indexOf('1') < 0
@@ -542,6 +576,128 @@ class BodyConfig extends React.Component {
                     value={combatNodeSelects}
                     options={combatNodeSelectOptions}
                     onChange={value => this.setState({ combatNodeSelects: value })}
+                    disabled={!combatEnabled}
+                    fullWidth />
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={4} sm={2} className={classes.formGrid}>
+                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                  <InputLabel htmlFor='combatFormationsNode' shrink={true} className={classes.reactSelectLabel}>
+                    If at this Node...
+                  </InputLabel>
+                  <Select
+                    className={classes.reactSelect}
+                    simpleValue={true}
+                    name='combatFormationsNode'
+                    value={combatFormationsNode}
+                    options={COMBAT_NODE_COUNTS}
+                    onChange={value => this.setState({ combatFormationsNode: value })}
+                    disabled={!combatEnabled}
+                    fullWidth />
+                </FormControl>
+              </Grid>
+              <Grid item xs={4} sm={3} className={classes.formGrid}>
+                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                  <InputLabel htmlFor='combatFormationsFormation' shrink={true} className={classes.reactSelectLabel}>
+                    ...select this Formation
+                  </InputLabel>
+                  <Select
+                    className={classes.reactSelect}
+                    simpleValue={true}
+                    name='combatFormationsFormation'
+                    value={combatFormationsFormation}
+                    options={FORMATIONS}
+                    onChange={value => this.setState({ combatFormationsFormation: value })}
+                    disabled={!combatEnabled}
+                    fullWidth />
+                </FormControl>
+              </Grid>
+              <Grid item xs={4} sm={1} className={classes.formGridButton}>
+                <Button
+                  dense
+                  color='primary'
+                  disabled={!combatEnabled || (!combatFormationsNode || !combatFormationsFormation)}
+                  onClick={() => this.handleCombatFormationAdd(combatFormationsNode, combatFormationsFormation)}
+                >
+                  Add
+                  <ChevronRight />
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={6} className={classes.formGrid}>
+                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                  <InputLabel htmlFor='combatFormations' shrink={true} className={classes.reactSelectLabel}>
+                    All Specified Formations
+                  </InputLabel>
+                  <Creatable
+                    multi
+                    className={classes.reactSelect}
+                    simpleValue={true}
+                    name='combatFormations'
+                    value={combatFormations}
+                    options={combatFormationOptions}
+                    onChange={value => this.setState({ combatFormations: value })}
+                    disabled={!combatEnabled}
+                    fullWidth />
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={4} sm={2} className={classes.formGrid}>
+                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                  <InputLabel htmlFor='combatNightBattlesNode' shrink={true} className={classes.reactSelectLabel}>
+                    If at this Node...
+                  </InputLabel>
+                  <Select
+                    className={classes.reactSelect}
+                    simpleValue={true}
+                    name='combatNightBattlesNode'
+                    value={combatNightBattlesNode}
+                    options={COMBAT_NODE_COUNTS}
+                    onChange={value => this.setState({ combatNightBattlesNode: value })}
+                    disabled={!combatEnabled}
+                    fullWidth />
+                </FormControl>
+              </Grid>
+              <Grid item xs={4} sm={3} className={classes.formGrid}>
+                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                  <InputLabel htmlFor='combatNightBattlesMode' shrink={true} className={classes.reactSelectLabel}>
+                    ...select Night Battle
+                  </InputLabel>
+                  <Select
+                    className={classes.reactSelect}
+                    simpleValue={true}
+                    name='combatNightBattlesMode'
+                    value={combatNightBattlesMode}
+                    options={NIGHT_BATTLES}
+                    onChange={value => this.setState({ combatNightBattlesMode: value })}
+                    disabled={!combatEnabled}
+                    fullWidth />
+                </FormControl>
+              </Grid>
+              <Grid item xs={4} sm={1} className={classes.formGridButton}>
+                <Button
+                  dense
+                  color='primary'
+                  disabled={!combatEnabled || (!combatNightBattlesNode || !combatNightBattlesMode)}
+                  onClick={() => this.handleCombatNightBattleAdd(combatNightBattlesNode, combatNightBattlesMode)}
+                >
+                  Add
+                  <ChevronRight />
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={6} className={classes.formGrid}>
+                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                  <InputLabel htmlFor='combatNightBattles' shrink={true} className={classes.reactSelectLabel}>
+                    All Night Battles
+                  </InputLabel>
+                  <Creatable
+                    multi
+                    className={classes.reactSelect}
+                    simpleValue={true}
+                    name='combatNightBattles'
+                    value={combatNightBattles}
+                    options={combatNightBattleOptions}
+                    onChange={value => this.setState({ combatNightBattles: value })}
                     disabled={!combatEnabled}
                     fullWidth />
                 </FormControl>
