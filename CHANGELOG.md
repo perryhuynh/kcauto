@@ -1,6 +1,15 @@
 #### 0.2.0
 
-* placeholder
+* Implements the Combat Engine option
+  * 'legacy' uses per-combat-node specification of formations and night battles
+  * 'live' uses live tracking of the fleet icon to automatically determine formations and night battles
+* Implements the Formations and NightBattles options
+  * Formations are comma-separated and must be specified in the form of <Node>:<Formation>
+  * NightBattles are comma-separated and must be specified in the form of <Node>:<True|False>
+  * The <Node>s for the two options must be specified as the nth-combat node number in 'legacy' mode. In 'live' mode, the <Node>s can be specified as either the nth-combat node number or the alpha-numeric node name. The nth-combat node number takes priority over the alpha-numeric node name
+* Hardens `wait_and_click_and_wait()` so the script is less likely to crash when the Kantai Collection servers are slow
+* Improves `recovery()` so that it attempts to recovery in more locations
+* Various bugfixes
 
 #### 0.1.3
 
