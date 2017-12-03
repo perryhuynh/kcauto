@@ -20,18 +20,38 @@ class Recovery(object):
             bool: True on successful recovery, otherwise raises an error
         """
         kc_region = kcauto_kai.kc_region
-        basic_recovery_enabled = True
+        regions = kcauto_kai.regions
         recovery_method = 'kc3'
 
-        App.focus(kcauto_kai.config.program)
-        kc_region.mouseMove(Location(0, 0))
+        Util.log_warning(
+            "FindFailed error occurred; attempting basic recovery.")
 
-        if basic_recovery_enabled:
-            type(Key.ESC)
-            sleep(1)
-            if kc_region.exists(Pattern('home_menu_sortie.png').exact()):
+        App.focus(kcauto_kai.config.program)
+        kc_region.mouseMove(Location(1, 1))
+
+        # basic recovery attempt
+        type(Key.ESC)
+        sleep(1)
+        if kc_region.exists(Pattern('kc_reference_point.png').exact()):
+            # reference point exists, so we are in-game
+            Util.log_success("Recovery successful.")
+            kcauto_kai.stats.increment_recoveries()
+            return True
+        elif kc_region.exists('next.png'):
+            # crashed at some results screen; try to click it away until we see
+            # the main game screen
+            while (kc_region.exists('next.png') and
+                    not kc_region.exists(
+                        Pattern('kc_reference_point.png').exact())):
+                Util.click_screen(regions, 'center')
+                sleep(2)
+            if kc_region.exists(Pattern('kc_reference_point.png').exact()):
+                # reference point exists, so we are back in-game
+                Util.log_success("Recovery successful.")
                 kcauto_kai.stats.increment_recoveries()
                 return True
+
+        # catbomb recovery
         if kc_region.exists('catbomb.png') and recovery_method != 'None':
             if recovery_method == 'browser':
                 Region.type(Key.F5)
@@ -65,9 +85,11 @@ class Recovery(object):
             Util.wait_and_click(
                 kc_region, Pattern('game_start.png').similar(0.999), 60)
             sleep(5)
-            Util.log_success("Recovery successful")
+            Util.log_success("Recovery successful.")
             kcauto_kai.stats.increment_recoveries()
             return True
+
+        # recovery failed
         Util.log_error("Irrecoverable crash")
         print(e)
         raise
