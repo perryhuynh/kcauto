@@ -48,14 +48,10 @@ class ResupplyModule(object):
                         'fleet_{:d}.png'.format(fleet.fleet_id),
                         self.regions['top_submenu'],
                         'fleet_{:d}_active.png'.format(fleet.fleet_id))
-                Util.wait_and_click(
-                    self.regions['top_submenu'], 'resupply_all.png')
+                Util.wait_and_click_and_wait(
+                    self.regions['top_submenu'], 'resupply_all.png',
+                    self.regions['lower_right'], 'resupply_all_done.png')
                 Util.kc_sleep()
-                # additional click on the hover'ed resupply button in case the
-                # previous click did not resolve properly
-                Util.check_and_click(
-                    self.regions['top_submenu'], 'resupply_all_hover.png')
-                self.regions['lower_right'].wait('resupply_all_done.png')
                 self.stats.increment_resupplies_done()
                 fleet.needs_resupply = False
                 Util.kc_sleep()

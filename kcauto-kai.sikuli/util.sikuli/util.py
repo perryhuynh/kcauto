@@ -1,6 +1,7 @@
 from sikuli import (
     Settings, Screen, App, Region, Location, Pattern, Match, FindFailed,
     Button)
+import org.sikuli.script.FindFailed as FindFailed
 # alternate Region class to check instasnce type against
 # https://answers.launchpad.net/sikuli/+question/269004
 import org.sikuli.script.Region as JRegion
@@ -414,7 +415,7 @@ class Util(object):
         return False
 
     @classmethod
-    def wait_and_click(cls, region, target, time=60, expand=[]):
+    def wait_and_click(cls, region, target, time=10, expand=[]):
         """Method to wait for the appearance of an image match then click it.
 
         Args:
@@ -433,7 +434,7 @@ class Util(object):
 
     @classmethod
     def wait_and_click_and_wait(
-            cls, click_region, click_target, wait_region, wait_target, time=60,
+            cls, click_region, click_target, wait_region, wait_target, time=10,
             expand=[]):
         """Method to wait for the appearance of an image match, click it,
         then wait for another subsequent image match.
@@ -454,7 +455,16 @@ class Util(object):
             cls.kc_sleep()
         click_region.click(
             cls.generate_pattern(click_region, click_target, expand, True))
-        wait_region.wait(wait_target, time)
+        try:
+            wait_region.wait(wait_target, time)
+        except FindFailed:
+            # the initial click might have failed due to lag within the client;
+            # rejigger the mouse and retry the click if this happens
+            click_region.mouseMove(Location(1, 1))
+            cls.wait_and_click_and_wait(
+                click_region, click_target, wait_region, wait_target, time,
+                expand)
+
         cls.kc_sleep()
 
     @classmethod
