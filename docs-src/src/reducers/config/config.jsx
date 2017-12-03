@@ -1,6 +1,7 @@
 import * as types from 'types/'
 
 const jsonConfigDefaults = {
+  dropzoneActive: false,
   generalProgram: 'Chrome',
   generalJSTOffset: '0',
   scheduledSleepEnabled: true,
