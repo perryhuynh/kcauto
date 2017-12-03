@@ -2,6 +2,7 @@
 import ConfigParser
 import os
 import sys
+import re
 from sikuli import getBundlePath
 from copy import deepcopy
 from util import Util
@@ -127,7 +128,8 @@ class Config(object):
         self.ok = True
 
         if self.expeditions['enabled']:
-            valid_expeditions = range(1, 41) + [9998, 9999]
+            valid_expeditions = range(1, 41) + [
+                'A1', 'A2', 'A3', 'B1', 9998, 9999]
             for expedition in self.expeditions_all:
                 if expedition not in valid_expeditions:
                     Util.log_error(
@@ -135,24 +137,92 @@ class Config(object):
                     self.ok = False
 
         if self.combat['enabled']:
+            # validate the combat engine
+            if self.combat['engine'] not in ('legacy', 'live'):
+                Util.log_error("Invalid Combat Engine: '{}'.".format(
+                    self.combat['engine']))
+                self.ok = False
             # validate the fleet mode
-            valid = ['ctf', 'stf', 'transport', 'striking', '']
-            if self.combat['fleet_mode'] not in valid:
+            if self.combat['fleet_mode'] not in (
+                    'ctf', 'stf', 'transport', 'striking', ''):
                 Util.log_error("Invalid Combat FleetMode: '{}'.".format(
                     self.combat['fleet_mode']))
                 self.ok = False
+            # validate fleet modes and possible expedition fleet collisions
+            if (self.combat['fleet_mode'] in ('ctf', 'stf', 'transport')
+                    and self.expeditions['enabled']):
+                if 'fleet2' in self.expeditions:
+                    Util.log_error(
+                        "Expedition(s) defined for Fleet 2 while Combat Fleet "
+                        "Mode is defined as Combined Fleet.")
+                    self.ok = False
+            if (self.combat['fleet_mode'] == 'striking'
+                    and self.expeditions['enabled']):
+                if 'fleet3' in self.expeditions:
+                    Util.log_error(
+                        "Expedition(s) defined for Fleet 3 while Combat Fleet "
+                        "Mode is defined as Striking Fleet.")
+                    self.ok = False
+            # validate the node selects
+            if self.combat['raw_node_selects']:
+                node_selects = {}
+                for raw_node_select in self.combat['raw_node_selects']:
+                    nsm = re.search('([A-Z0-9]+)>([A-Z0-9]+)', raw_node_select)
+                    if nsm:
+                        node_selects[nsm.group(1)] = nsm.group(2)
+                    else:
+                        Util.log_error("Invalid Node Select: '{}'".format(
+                            raw_node_select))
+                        self.ok = False
+                if self.ok and node_selects:
+                    self.combat['node_selects'] = node_selects
+            # validate the formations
+            if self.combat['raw_formations']:
+                formations = {}
+                valid_formations = (
+                    'combinedfleet_1', 'combinedfleet_2', 'combinedfleet_3',
+                    'combinedfleet_4', 'line_ahead', 'double_line', 'diamond',
+                    'echelon', 'line_abreast', 'vanguard')
+                for raw_formation in self.combat['raw_formations']:
+                    fm = re.search('([A-Z0-9]+):({})'.format(
+                        '|'.join(valid_formations)), raw_formation)
+                    if fm:
+                        fm_node = (
+                            int(fm.group(1)) if fm.group(1).isdigit()
+                            else fm.group(1))
+                        formations[fm_node] = fm.group(2)
+                    else:
+                        Util.log_error("Invalid Formation: '{}'".format(
+                            raw_formation))
+                        self.ok = False
+                if self.ok and formations:
+                    self.combat['formations'] = formations
+            # validate the night battles
+            if self.combat['raw_night_battles']:
+                night_battles = {}
+                for raw_night_battle in self.combat['raw_night_battles']:
+                    nbm = re.search(
+                        '([A-Z0-9]+):(True|False)', raw_night_battle)
+                    if nbm:
+                        nbm_node = (
+                            int(nbm.group(1)) if nbm.group(1).isdigit()
+                            else nbm.group(1))
+                        night_battles[nbm_node] = (
+                            True if nbm.group(2) == 'True' else False)
+                    else:
+                        Util.log_error("Invalid Night Battle: '{}'".format(
+                            raw_night_battle))
+                        self.ok = False
+                if self.ok and night_battles:
+                    self.combat['night_battles'] = night_battles
             # validate the misc options
-            valid = [
-                'CheckFatigue', 'ReserveDocks', 'PortCheck', 'MedalStop']
             for option in self.combat['misc_options']:
-                if option not in valid:
-                    Util.log_msg(
+                if option not in (
+                        'CheckFatigue', 'ReserveDocks', 'PortCheck',
+                        'MedalStop'):
+                    Util.log_error(
                         "Invalid Combat MiscOption: '{}'.".format(option))
                     self.ok = False
-
-        # TODO: Add additional checks to make sure that expeditions to fleet 2
-        # and 3 were not assigned if combined fleets or striking fleet modes
-        # were assigned
 
     def _read_general(self, config):
         """Method to parse the General settings of the passed in config.
@@ -218,18 +288,22 @@ class Config(object):
             config (ConfigParser): ConfigParser instance
         """
         self.combat['enabled'] = True
+        self.combat['engine'] = config.get('Combat', 'Engine')
         self.combat['fleet_mode'] = config.get('Combat', 'FleetMode')
         self.combat['combined_fleet'] = (
             True if self.combat['fleet_mode'] in ['ctf', 'stf', 'transport']
             else False)
+        self.combat['striking_fleet'] = (
+            True if self.combat['fleet_mode'] == 'striking' else False)
         self.combat['map'] = config.get('Combat', 'Map')
         combat_nodes = config.get('Combat', 'CombatNodes')
-        self.combat['combat_nodes'] = int(combat_nodes) if combat_nodes else 10
-        raw_node_selects = self._getlist(config, 'Combat', 'NodeSelects')
-        node_selects = {}
-        for raw_node_select in raw_node_selects:
-            node_selects[raw_node_select[:1]] = raw_node_select[-1:]
-        self.combat['node_selects'] = node_selects
+        self.combat['combat_nodes'] = int(combat_nodes) if combat_nodes else 99
+        self.combat['raw_node_selects'] = (
+            self._getlist(config, 'Combat', 'NodeSelects'))
+        self.combat['raw_formations'] = (
+            self._getlist(config, 'Combat', 'Formations'))
+        self.combat['raw_night_battles'] = (
+            self._getlist(config, 'Combat', 'NightBattles'))
         self.combat['retreat_limit'] = config.get('Combat', 'RetreatLimit')
         self.combat['repair_limit'] = config.get('Combat', 'RepairLimit')
         self.combat['repair_time_limit'] = config.getint(

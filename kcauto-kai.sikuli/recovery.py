@@ -26,7 +26,7 @@ class Recovery(object):
         App.focus(kcauto_kai.config.program)
         kc_region.mouseMove(Location(0, 0))
 
-        if basic_recovery_enabled is True:
+        if basic_recovery_enabled:
             type(Key.ESC)
             sleep(1)
             if kc_region.exists(Pattern('home_menu_sortie.png').exact()):

@@ -1,3 +1,7 @@
+#### 0.2.0
+
+* placeholder
+
 #### 0.1.3
 
 * Implements checks for damage state of flagship of escort fleet in combined fleets; if it is the only heavily damaged ship in the combined fleet it will not retreat since it is immune to sinking
