@@ -30,6 +30,8 @@ const COMBINED_FLEET_MODES = [
   { value: 'transport', label: 'Transport' }, { value: 'striking', label: 'Striking' }]
 const COMBAT_NODE_COUNTS = ['1', '2', '3', '4', '5'].map(value => ({ value, label: value }))
 const NODES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(value => ({ value, label: value }))
+NODES.push(...['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7', 'Z8', 'Z9', 'ZZ1', 'ZZ2', 'ZZ3'].map(value => (
+  { value, label: value })))
 const DAMAGE_STATES = ['heavy', 'moderate', 'minor'].map(value => ({ value, label: value }))
 const LBAS_GROUPS = ['1', '2', '3'].map(value => ({ value, label: value }))
 
