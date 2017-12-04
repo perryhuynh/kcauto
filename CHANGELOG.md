@@ -1,3 +1,9 @@
+#### 0.2.1
+
+* webUI config options does not reset when changing tabs to About and back
+* webUI now supports loading of existing kcauto-kai configs; use the 'Load' button and select your file, or drag and drop the file into the browser
+* Minor bugfix in Config module
+
 #### 0.2.0
 
 * Implements the Combat Engine option

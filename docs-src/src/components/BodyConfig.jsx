@@ -5,6 +5,7 @@ import { withStyles } from 'material-ui/styles'
 import saveAs from 'save-as'
 
 import TimeInput from 'material-ui-time-picker'
+import Dropzone from 'react-dropzone'
 
 import Grid from 'material-ui/Grid'
 import Paper from 'material-ui/Paper'
@@ -16,7 +17,7 @@ import Divider from 'material-ui/Divider'
 import Button from 'material-ui/Button'
 import Checkbox from 'material-ui/Checkbox'
 import Switch from 'material-ui/Switch'
-import { ChevronRight, ContentSave } from 'mdi-material-ui'
+import { ChevronRight, Upload, ContentSave } from 'mdi-material-ui'
 
 const EXPEDITIONS = Array.from({ length: 40 }, (value, key) => ({ value: String(key + 1), label: String(key + 1) }))
 EXPEDITIONS.push({ value: '9998', label: 'Node Support' })
@@ -45,6 +46,21 @@ const DAMAGE_STATES = ['heavy', 'moderate', 'minor'].map(value => ({ value, labe
 const LBAS_GROUPS = ['1', '2', '3'].map(value => ({ value, label: value }))
 
 const styles = () => ({
+  dropzoneOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    display: 'flex',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontFamily: 'Roboto, sans-serif',
+    fontSize: 24,
+    fontWeight: 'bold',
+    background: 'rgba(255,255,255,0.8)',
+    zIndex: 9,
+  },
   paper: {
     marginTop: 10,
     padding: 20,
@@ -90,51 +106,100 @@ const styles = () => ({
   },
 })
 
-class BodyConfig extends React.Component {
-  state = {
-    generalProgram: 'Chrome',
-    generalJSTOffset: '0',
-    scheduledSleepEnabled: true,
-    scheduledSleepStart: new Date(new Date().setHours(0, 0, 0, 0)),
-    scheduledSleepLength: '4',
-    expeditionsEnabled: false,
+const createStateObjFromPythonConfig = (pyConfig) => {
+  const pyConfigLines = pyConfig.split('\n')
+  const pyConfigObj = {}
+  let currentSection = ''
+  pyConfigLines.forEach((line) => {
+    if (line.indexOf('#') === 0) {
+      // comment line
+    } else if (line === '[General]') {
+      currentSection = 'general'
+    } else if (line === '[ScheduledSleep]') {
+      currentSection = 'scheduledSleep'
+    } else if (line === '[Expeditions]') {
+      currentSection = 'expeditions'
+    } else if (line === '[PvP]') {
+      currentSection = 'pvp'
+    } else if (line === '[Combat]') {
+      currentSection = 'combat'
+    } else if (line === '[Quests]') {
+      currentSection = 'quests'
+    } else {
+      const splitLine = line.split(/:(.*)/, 2)
+      // valid config line
+      let value = splitLine[1] ? splitLine[1].trim() : null
+      if (splitLine[0].indexOf('LBASGroup') > -1 && splitLine[0].indexOf('Nodes') > -1) {
+        value = value ? value.split(',').map(node => node.trim()) : [null, null]
+      } else if (splitLine[0] === 'MiscOptions') {
+        value = value ? value.split(',').map(option => option.trim()) : []
+      }
+      pyConfigObj[`${currentSection}${splitLine[0].trim()}`] = value
+    }
+  })
+
+  console.log(pyConfigObj)
+
+  const jsonConfig = {
+    dropzoneActive: false,
+    generalProgram: pyConfigObj.generalProgram,
+    generalJSTOffset: pyConfigObj.generalJSTOffset || '0',
+    scheduledSleepEnabled: pyConfigObj.scheduledSleepEnabled === 'True',
+    scheduledSleepStartTime: new Date(new Date()
+      .setHours(
+        parseInt(pyConfigObj.scheduledSleepStartTime.substr(0, 2), 10),
+        parseInt(pyConfigObj.scheduledSleepStartTime.substr(2, 2), 10), 0, 0
+      )),
+    scheduledSleepSleepLength: pyConfigObj.scheduledSleepSleepLength || null,
+    expeditionsEnabled: pyConfigObj.expeditionsEnabled === 'True',
     expeditionsFleet2Enabled: true,
     expeditionsFleet3Enabled: true,
     expeditionsFleet4Enabled: true,
-    expeditionsFleet2: '2',
-    expeditionsFleet3: '5',
-    expeditionsFleet4: '38',
-    pvpEnabled: false,
-    combatEnabled: false,
-    combatEngine: 'legacy',
-    combatMap: '1-1',
-    combatFleetMode: '',
-    combatCombatNodes: null,
+    expeditionsFleet2: pyConfigObj.expeditionsFleet2 || null,
+    expeditionsFleet3: pyConfigObj.expeditionsFleet3 || null,
+    expeditionsFleet4: pyConfigObj.expeditionsFleet4 || null,
+    pvpEnabled: pyConfigObj.pvpEnabled === 'True',
+    combatEnabled: pyConfigObj.combatEnabled === 'True',
+    combatEngine: pyConfigObj.combatEngine || 'legacy',
+    combatMap: pyConfigObj.combatMap || '1-1',
+    combatFleetMode: pyConfigObj.combatFleetMode || '',
+    combatCombatNodes: pyConfigObj.combatCombatNodes || null,
     combatNodeSelect1: null,
     combatNodeSelect2: null,
-    combatNodeSelects: null,
+    combatNodeSelects: pyConfigObj.combatNodeSelects || null,
     combatFormationsNode: null,
     combatFormationsFormation: null,
-    combatFormations: null,
+    combatFormations: pyConfigObj.combatFormations || null,
     combatNightBattlesNode: null,
     combatNightBattlesMode: null,
-    combatNightBattles: null,
-    combatRetreatLimit: 'heavy',
-    combatRepairLimit: 'moderate',
-    combatRepairTimeLimit: new Date(new Date().setHours(0, 30, 0, 0)),
-    combatLBASGroups: null,
-    combatLBASGroup1Node1: null,
-    combatLBASGroup1Node2: null,
-    combatLBASGroup2Node1: null,
-    combatLBASGroup2Node2: null,
-    combatLBASGroup3Node1: null,
-    combatLBASGroup3Node2: null,
-    combatOptionCheckFatigue: false,
-    combatOptionReserveDocks: false,
-    combatOptionPortCheck: false,
-    combatOptionMedalStop: false,
-    questsEnabled: true,
+    combatNightBattles: pyConfigObj.combatNightBattles || null,
+    combatRetreatLimit: pyConfigObj.combatRetreatLimit || 'heavy',
+    combatRepairLimit: pyConfigObj.combatRepairLimit || 'moderate',
+    combatRepairTimeLimit: new Date(new Date()
+      .setHours(
+        parseInt(pyConfigObj.combatRepairTimeLimit.substr(0, 2), 10),
+        parseInt(pyConfigObj.combatRepairTimeLimit.substr(2, 2), 10), 0, 0
+      )),
+    combatLBASGroups: pyConfigObj.combatLBASGroups || null,
+    combatLBASGroup1Node1: pyConfigObj.combatLBASGroup1Nodes[0] || null,
+    combatLBASGroup1Node2: pyConfigObj.combatLBASGroup1Nodes[1] || null,
+    combatLBASGroup2Node1: pyConfigObj.combatLBASGroup2Nodes[0] || null,
+    combatLBASGroup2Node2: pyConfigObj.combatLBASGroup2Nodes[1] || null,
+    combatLBASGroup3Node1: pyConfigObj.combatLBASGroup3Nodes[0] || null,
+    combatLBASGroup3Node2: pyConfigObj.combatLBASGroup3Nodes[1] || null,
+    combatOptionCheckFatigue: pyConfigObj.combatMiscOptions.includes('CheckFatigue') || false,
+    combatOptionReserveDocks: pyConfigObj.combatMiscOptions.includes('ReserveDocks') || false,
+    combatOptionPortCheck: pyConfigObj.combatMiscOptions.includes('PortCheck') || false,
+    combatOptionMedalStop: pyConfigObj.combatMiscOptions.includes('MedalStop') || false,
+    questsEnabled: pyConfigObj.questsEnabled === 'True',
   }
+
+  return jsonConfig
+}
+
+class BodyConfig extends React.Component {
+  // grab default states from the store; defaults are in reducers/config/config.jsx
+  state = this.props.config.jsonConfig
 
   componentDidMount = () => {
     // this.props.setJsonConfig(this.state)
@@ -142,10 +207,34 @@ class BodyConfig extends React.Component {
   }
 
   componentDidUpdate = (nextProp, nextState) => {
-    if (this.state !== nextState) {
-      // this.props.setJsonConfig(this.state)
+    if (this.state !== nextState && this.state.dropzoneActive === nextState.dropzoneActive) {
+      // try not to fire the setConfig'ers if it's just the dropzone state changing
+      this.props.setJsonConfig(this.state)
       this.props.setPythonConfig(this.state)
     }
+  }
+
+  onConfigLoadEnter = () => {
+    this.setState({ dropzoneActive: true })
+  }
+
+  onConfigLoadLeave = () => {
+    this.setState({ dropzoneActive: false })
+  }
+
+  onConfigLoad = (acceptedFiles, rejectedFiles) => {
+    // only accept the first file
+    if (acceptedFiles.length === 1) {
+      const rawConfigFileHandle = acceptedFiles[0]
+      const reader = new FileReader()
+      reader.onload = () => {
+        const newState = createStateObjFromPythonConfig(reader.result)
+        console.log(newState)
+        this.setState(newState)
+      }
+      reader.readAsText(rawConfigFileHandle)
+    }
+    this.setState({ dropzoneActive: false })
   }
 
   onSaveClick = () => {
@@ -265,11 +354,12 @@ class BodyConfig extends React.Component {
       config,
     } = this.props
     const {
+      dropzoneActive,
       generalProgram,
       generalJSTOffset,
       scheduledSleepEnabled,
-      scheduledSleepStart,
-      scheduledSleepLength,
+      scheduledSleepStartTime,
+      scheduledSleepSleepLength,
       expeditionsEnabled,
       expeditionsFleet2Enabled,
       expeditionsFleet3Enabled,
@@ -322,644 +412,665 @@ class BodyConfig extends React.Component {
     const combatLBASGroup1NodesDisabled = !combatEnabled || combatLBASGroupsArray.indexOf('1') < 0
     const combatLBASGroup2NodesDisabled = !combatEnabled || combatLBASGroupsArray.indexOf('2') < 0
     const combatLBASGroup3NodesDisabled = !combatEnabled || combatLBASGroupsArray.indexOf('3') < 0
+    let configLoad
 
     return (
-      <Grid container spacing={0}>
-        <Grid item xs={12} md={8}>
-          <Paper className={classes.paper} elevation={0}>
-            <Typography type='display1'>General</Typography>
+      <Dropzone
+        ref={(node) => { configLoad = node }}
+        style={{ position: 'relative' }}
+        accept='.ini'
+        onDrop={this.onConfigLoad}
+        onDragEnter={this.onConfigLoadEnter}
+        onDragLeave={this.onConfigLoadLeave}
+        disableClick
+      >
+        { dropzoneActive ? <div className={classes.dropzoneOverlay}>drop your config file here</div> : null }
+        <Grid container spacing={0}>
+          <Grid item xs={12} md={8}>
+            <Paper className={classes.paper} elevation={0}>
+              <Typography type='display1'>General</Typography>
 
-            <Grid container spacing={0}>
-              <Grid item xs={12} sm={8} className={classes.formGrid}>
-                <TextField
-                  id='generalProgram'
-                  label='Program'
-                  value={generalProgram}
-                  onChange={event => this.setState({ generalProgram: event.target.value })}
-                  helperText='Program that Kantai Collection is running in (ex: Chrome)'
-                  className={classes.formControl}
-                  fullWidth
-                  margin='normal' />
+              <Grid container spacing={0}>
+                <Grid item xs={12} sm={8} className={classes.formGrid}>
+                  <TextField
+                    id='generalProgram'
+                    label='Program'
+                    value={generalProgram}
+                    onChange={event => this.setState({ generalProgram: event.target.value })}
+                    helperText='Program that Kantai Collection is running in (ex: Chrome)'
+                    className={classes.formControl}
+                    fullWidth
+                    margin='normal' />
+                </Grid>
+                <Grid item xs={12} sm={4} className={classes.formGrid}>
+                  <TextField
+                    id='generalJSTOffset'
+                    label='JST Offset'
+                    value={generalJSTOffset}
+                    onChange={event => this.setState({ generalJSTOffset: event.target.value })}
+                    helperText='Hours offset from JST'
+                    className={classes.formControl}
+                    fullWidth
+                    type='number'
+                    margin='normal' />
+                </Grid>
               </Grid>
-              <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <TextField
-                  id='generalJSTOffset'
-                  label='JST Offset'
-                  value={generalJSTOffset}
-                  onChange={event => this.setState({ generalJSTOffset: event.target.value })}
-                  helperText='Hours offset from JST'
-                  className={classes.formControl}
-                  fullWidth
-                  type='number'
-                  margin='normal' />
-              </Grid>
-            </Grid>
 
-            <Divider />
+              <Divider />
 
-            <Typography type='display1'>
-              Scheduled Sleep
-              <Switch
-                className={classes.switch}
-                checked={scheduledSleepEnabled}
-                onChange={(event, checked) => this.setState({ scheduledSleepEnabled: checked })} />
-            </Typography>
+              <Typography type='display1'>
+                Scheduled Sleep
+                <Switch
+                  className={classes.switch}
+                  checked={scheduledSleepEnabled}
+                  onChange={(event, checked) => this.setState({ scheduledSleepEnabled: checked })} />
+              </Typography>
 
-            <Grid container spacing={0}>
-              <Grid item xs={12} sm={6} className={classes.formGrid}>
-                <FormControl disabled={!scheduledSleepEnabled} className={classes.formControl} fullWidth>
-                  <InputLabel htmlFor='scheduledSleepStart'>Start Time</InputLabel>
-                  <TimeInput
-                    id='scheduledSleepStart'
-                    mode='24h'
-                    value={scheduledSleepStart}
-                    onChange={time => this.setState({ scheduledSleepStart: time })}
+              <Grid container spacing={0}>
+                <Grid item xs={12} sm={6} className={classes.formGrid}>
+                  <FormControl disabled={!scheduledSleepEnabled} className={classes.formControl} fullWidth>
+                    <InputLabel htmlFor='scheduledSleepStartTime'>Start Time</InputLabel>
+                    <TimeInput
+                      id='scheduledSleepStartTime'
+                      mode='24h'
+                      value={scheduledSleepStartTime}
+                      onChange={time => this.setState({ scheduledSleepStartTime: time })}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6} className={classes.formGrid}>
+                  <TextField
+                    id='scheduledSleepSleepLength'
+                    label='Length'
+                    value={scheduledSleepSleepLength}
+                    onChange={event => this.setState({ scheduledSleepSleepLength: event.target.value })}
+                    helperText='How long to sleep for'
+                    type='number'
+                    margin='normal'
+                    className={classes.formControl}
+                    disabled={!scheduledSleepEnabled}
                     fullWidth />
-                </FormControl>
+                </Grid>
               </Grid>
-              <Grid item xs={12} sm={6} className={classes.formGrid}>
-                <TextField
-                  id='scheduledSleepLength'
-                  label='Length'
-                  value={scheduledSleepLength}
-                  onChange={event => this.setState({ scheduledSleepLength: event.target.value })}
-                  helperText='How long to sleep for'
-                  type='number'
-                  margin='normal'
-                  className={classes.formControl}
-                  disabled={!scheduledSleepEnabled}
-                  fullWidth />
-              </Grid>
-            </Grid>
 
-            <Divider />
+              <Divider />
 
-            <Typography type='display1'>
-              Expeditions
-              <Switch
-                className={classes.switch}
-                checked={expeditionsEnabled}
-                onChange={(event, checked) => this.setState({ expeditionsEnabled: checked })} />
-            </Typography>
+              <Typography type='display1'>
+                Expeditions
+                <Switch
+                  className={classes.switch}
+                  checked={expeditionsEnabled}
+                  onChange={(event, checked) => this.setState({ expeditionsEnabled: checked })} />
+              </Typography>
 
-            <Grid container spacing={0}>
-              <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl
-                  disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet2Enabled)}
-                  margin='normal'
-                  fullWidth
-                >
-                  <InputLabel htmlFor='expeditionsFleet2' shrink={true} className={classes.reactSelectLabel}>
-                    Fleet 2
-                  </InputLabel>
-                  <Select
-                    multi
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='expeditionsFleet2'
-                    value={expeditionsFleet2}
-                    options={EXPEDITIONS}
-                    onChange={value => this.setState({ expeditionsFleet2: value })}
+              <Grid container spacing={0}>
+                <Grid item xs={12} sm={4} className={classes.formGrid}>
+                  <FormControl
                     disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet2Enabled)}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl
-                  disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet3Enabled)}
-                  margin='normal'
-                  fullWidth
-                >
-                  <InputLabel htmlFor='expeditionsFleet3' shrink={true} className={classes.reactSelectLabel}>
-                    Fleet 3
-                  </InputLabel>
-                  <Select
-                    multi
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='expeditionsFleet3'
-                    value={expeditionsFleet3}
-                    options={EXPEDITIONS}
-                    onChange={value => this.setState({ expeditionsFleet3: value })}
+                    margin='normal'
+                    fullWidth
+                  >
+                    <InputLabel htmlFor='expeditionsFleet2' shrink={true} className={classes.reactSelectLabel}>
+                      Fleet 2
+                    </InputLabel>
+                    <Select
+                      multi
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='expeditionsFleet2'
+                      value={expeditionsFleet2}
+                      options={EXPEDITIONS}
+                      onChange={value => this.setState({ expeditionsFleet2: value })}
+                      disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet2Enabled)}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4} className={classes.formGrid}>
+                  <FormControl
                     disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet3Enabled)}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl
-                  disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet4Enabled)}
-                  margin='normal'
-                  fullWidth
-                >
-                  <InputLabel htmlFor='expeditionsFleet4' shrink={true} className={classes.reactSelectLabel}>
-                    Fleet 4
-                  </InputLabel>
-                  <Select
-                    multi
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='expeditionsFleet4'
-                    value={expeditionsFleet4}
-                    options={EXPEDITIONS}
-                    onChange={value => this.setState({ expeditionsFleet4: value })}
+                    margin='normal'
+                    fullWidth
+                  >
+                    <InputLabel htmlFor='expeditionsFleet3' shrink={true} className={classes.reactSelectLabel}>
+                      Fleet 3
+                    </InputLabel>
+                    <Select
+                      multi
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='expeditionsFleet3'
+                      value={expeditionsFleet3}
+                      options={EXPEDITIONS}
+                      onChange={value => this.setState({ expeditionsFleet3: value })}
+                      disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet3Enabled)}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4} className={classes.formGrid}>
+                  <FormControl
                     disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet4Enabled)}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-            </Grid>
-
-            <Divider />
-
-            <Typography type='display1'>
-              PvP
-              <Switch
-                className={classes.switch}
-                checked={pvpEnabled}
-                onChange={(event, checked) => this.setState({ pvpEnabled: checked })} />
-            </Typography>
-
-            <Divider />
-
-            <Typography type='display1'>
-              Combat
-              <Switch
-                className={classes.switch}
-                checked={combatEnabled}
-                onChange={this.handleCombatToggle} />
-            </Typography>
-
-            <Grid container spacing={0}>
-              <Grid item xs={12} sm={12} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatEngine' shrink={true} className={classes.reactSelectLabel}>
-                    Engine
-                  </InputLabel>
-                  <Select
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatEngine'
-                    value={combatEngine}
-                    options={COMBAT_ENGINES}
-                    onChange={value => this.setState({ combatEngine: value })}
-                    disabled={!combatEnabled}
-                    clearable={false}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-            </Grid>
-
-            <Grid container spacing={0}>
-              <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatMap' shrink={true} className={classes.reactSelectLabel}>
-                    Map
-                  </InputLabel>
-                  <Select
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatMap'
-                    value={combatMap}
-                    options={MAPS}
-                    onChange={value => this.setState({ combatMap: value })}
-                    disabled={!combatEnabled}
-                    clearable={false}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatFleetMode' shrink={true} className={classes.reactSelectLabel}>
-                    Fleet Mode
-                  </InputLabel>
-                  <Select
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatFleetMode'
-                    value={combatFleetMode}
-                    options={COMBINED_FLEET_MODES}
-                    onChange={this.handleFleetModeChange}
-                    disabled={!combatEnabled}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatCombatNodes' shrink={true} className={classes.reactSelectLabel}>
-                    Combat Node Count
-                  </InputLabel>
-                  <Select
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatCombatNodes'
-                    value={combatCombatNodes}
-                    options={COMBAT_NODE_COUNTS}
-                    onChange={value => this.setState({ combatCombatNodes: value })}
-                    disabled={!combatEnabled}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={4} sm={2} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatNodeSelect1' shrink={true} className={classes.reactSelectLabel}>
-                    If at this Node...
-                  </InputLabel>
-                  <Select
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatNodeSelect1'
-                    value={combatNodeSelect1}
-                    options={NODES}
-                    onChange={value => this.setState({ combatNodeSelect1: value })}
-                    disabled={!combatEnabled}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-              <Grid item xs={4} sm={2} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatNodeSelect2' shrink={true} className={classes.reactSelectLabel}>
-                    ...select this Node
-                  </InputLabel>
-                  <Select
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatNodeSelect2'
-                    value={combatNodeSelect2}
-                    options={NODES}
-                    onChange={value => this.setState({ combatNodeSelect2: value })}
-                    disabled={!combatEnabled}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-              <Grid item xs={4} sm={1} className={classes.formGridButton}>
-                <Button
-                  dense
-                  color='primary'
-                  disabled={!combatEnabled ||
-                    (!combatNodeSelect1 || !combatNodeSelect2 || combatNodeSelect1 === combatNodeSelect2)}
-                  onClick={() => this.handleCombatNodeSelectAdd(combatNodeSelect1, combatNodeSelect2)}
-                >
-                  Add
-                  <ChevronRight />
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={7} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatNodeSelects' shrink={true} className={classes.reactSelectLabel}>
-                    All Node Selects
-                  </InputLabel>
-                  <Creatable
-                    multi
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatNodeSelects'
-                    value={combatNodeSelects}
-                    options={combatNodeSelectOptions}
-                    onChange={value => this.setState({ combatNodeSelects: value })}
-                    disabled={!combatEnabled}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={4} sm={2} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatFormationsNode' shrink={true} className={classes.reactSelectLabel}>
-                    If at this Node...
-                  </InputLabel>
-                  <Select
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatFormationsNode'
-                    value={combatFormationsNode}
-                    options={combatEngine === 'legacy' ? COMBAT_NODE_COUNTS : COMBAT_NODE_COUNTS.concat(NODES)}
-                    onChange={value => this.setState({ combatFormationsNode: value })}
-                    disabled={!combatEnabled}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-              <Grid item xs={4} sm={3} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatFormationsFormation' shrink={true} className={classes.reactSelectLabel}>
-                    ...select this Formation
-                  </InputLabel>
-                  <Select
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatFormationsFormation'
-                    value={combatFormationsFormation}
-                    options={FORMATIONS}
-                    onChange={value => this.setState({ combatFormationsFormation: value })}
-                    disabled={!combatEnabled}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-              <Grid item xs={4} sm={1} className={classes.formGridButton}>
-                <Button
-                  dense
-                  color='primary'
-                  disabled={!combatEnabled || !combatFormationsFormation}
-                  onClick={() => this.handleCombatFormationAdd(combatFormationsNode, combatFormationsFormation)}
-                >
-                  Add
-                  <ChevronRight />
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={6} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatFormations' shrink={true} className={classes.reactSelectLabel}>
-                    All Specified Formations
-                  </InputLabel>
-                  <Creatable
-                    multi
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatFormations'
-                    value={combatFormations}
-                    options={combatFormationOptions}
-                    onChange={value => this.setState({ combatFormations: value })}
-                    disabled={!combatEnabled}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={4} sm={2} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatNightBattlesNode' shrink={true} className={classes.reactSelectLabel}>
-                    If at this Node...
-                  </InputLabel>
-                  <Select
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatNightBattlesNode'
-                    value={combatNightBattlesNode}
-                    options={combatEngine === 'legacy' ? COMBAT_NODE_COUNTS : COMBAT_NODE_COUNTS.concat(NODES)}
-                    onChange={value => this.setState({ combatNightBattlesNode: value })}
-                    disabled={!combatEnabled}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-              <Grid item xs={4} sm={3} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatNightBattlesMode' shrink={true} className={classes.reactSelectLabel}>
-                    ...select Night Battle
-                  </InputLabel>
-                  <Select
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatNightBattlesMode'
-                    value={combatNightBattlesMode}
-                    options={NIGHT_BATTLES}
-                    onChange={value => this.setState({ combatNightBattlesMode: value })}
-                    disabled={!combatEnabled}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-              <Grid item xs={4} sm={1} className={classes.formGridButton}>
-                <Button
-                  dense
-                  color='primary'
-                  disabled={!combatEnabled || !combatNightBattlesMode}
-                  onClick={() => this.handleCombatNightBattleAdd(combatNightBattlesNode, combatNightBattlesMode)}
-                >
-                  Add
-                  <ChevronRight />
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={6} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatNightBattles' shrink={true} className={classes.reactSelectLabel}>
-                    All Night Battles
-                  </InputLabel>
-                  <Creatable
-                    multi
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatNightBattles'
-                    value={combatNightBattles}
-                    options={combatNightBattleOptions}
-                    onChange={value => this.setState({ combatNightBattles: value })}
-                    disabled={!combatEnabled}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatRetreatLimit' shrink={true} className={classes.reactSelectLabel}>
-                    Retreat Limit
-                  </InputLabel>
-                  <Select
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatRetreatLimit'
-                    value={combatRetreatLimit}
-                    options={DAMAGE_STATES}
-                    onChange={value => this.setState({ combatRetreatLimit: value })}
-                    disabled={!combatEnabled}
-                    clearable={false}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatRepairLimit' shrink={true} className={classes.reactSelectLabel}>
-                    Repair Limit
-                  </InputLabel>
-                  <Select
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatRepairLimit'
-                    value={combatRepairLimit}
-                    options={DAMAGE_STATES}
-                    onChange={value => this.setState({ combatRepairLimit: value })}
-                    disabled={!combatEnabled}
-                    clearable={false}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={4} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} fullWidth>
-                  <InputLabel htmlFor='combatRepairTimeLimit'>Repair Time Limit</InputLabel>
-                  <TimeInput
-                    id='combatRepairTimeLimit'
-                    mode='24h'
-                    value={combatRepairTimeLimit}
-                    onChange={time => this.setState({ combatRepairTimeLimit: time })}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={12} sm={3} className={classes.formGrid}>
-                <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatLBASGroups' shrink={true} className={classes.reactSelectLabel}>
-                    LBAS Groups
-                  </InputLabel>
-                  <Select
-                    multi
-                    className={classes.reactSelect}
-                    simpleValue={true}
-                    name='combatLBASGroups'
-                    value={combatLBASGroups}
-                    options={LBAS_GROUPS}
-                    onChange={this.handleLBASGroupSelect}
-                    disabled={!combatEnabled}
-                    fullWidth />
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={3} className={classes.formGrid}>
-                <FormControl disabled={combatLBASGroup1NodesDisabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatLBASGroup1Nodes' shrink={true} className={classes.reactSelectLabel}>
-                    Group 1 Nodes
-                  </InputLabel>
-                  <div className={classes.flexReset}>
+                    margin='normal'
+                    fullWidth
+                  >
+                    <InputLabel htmlFor='expeditionsFleet4' shrink={true} className={classes.reactSelectLabel}>
+                      Fleet 4
+                    </InputLabel>
                     <Select
-                      className={classes.reactSelectHalfWidth}
+                      multi
+                      className={classes.reactSelect}
                       simpleValue={true}
-                      name='combatLBASGroup1Node1'
-                      value={combatLBASGroup1Node1}
-                      options={NODES}
-                      onChange={value => this.setState({ combatLBASGroup1Node1: value })}
-                      disabled={combatLBASGroup1NodesDisabled} />
-                    <Select
-                      className={classes.reactSelectHalfWidth}
-                      simpleValue={true}
-                      name='combatLBASGroup1Node2'
-                      value={combatLBASGroup1Node2}
-                      options={NODES}
-                      onChange={value => this.setState({ combatLBASGroup1Node2: value })}
-                      disabled={combatLBASGroup1NodesDisabled} />
-                  </div>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={3} className={classes.formGrid}>
-                <FormControl disabled={combatLBASGroup2NodesDisabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatLBASGroup2Nodes' shrink={true} className={classes.reactSelectLabel}>
-                    Group 2 Nodes
-                  </InputLabel>
-                  <div className={classes.flexReset}>
-                    <Select
-                      className={classes.reactSelectHalfWidth}
-                      simpleValue={true}
-                      name='combatLBASGroup2Node1'
-                      value={combatLBASGroup2Node1}
-                      options={NODES}
-                      onChange={value => this.setState({ combatLBASGroup2Node1: value })}
-                      disabled={combatLBASGroup2NodesDisabled} />
-                    <Select
-                      className={classes.reactSelectHalfWidth}
-                      simpleValue={true}
-                      name='combatLBASGroup2Node2'
-                      value={combatLBASGroup2Node2}
-                      options={NODES}
-                      onChange={value => this.setState({ combatLBASGroup2Node2: value })}
-                      disabled={combatLBASGroup2NodesDisabled} />
-                  </div>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={3} className={classes.formGrid}>
-                <FormControl disabled={combatLBASGroup3NodesDisabled} margin='normal' fullWidth>
-                  <InputLabel htmlFor='combatLBASGroup3Nodes' shrink={true} className={classes.reactSelectLabel}>
-                    Group 3 Nodes
-                  </InputLabel>
-                  <div className={classes.flexReset}>
-                    <Select
-                      className={classes.reactSelectHalfWidth}
-                      simpleValue={true}
-                      name='combatLBASGroup3Node1'
-                      value={combatLBASGroup3Node1}
-                      options={NODES}
-                      onChange={value => this.setState({ combatLBASGroup3Node1: value })}
-                      disabled={combatLBASGroup3NodesDisabled} />
-                    <Select
-                      className={classes.reactSelectHalfWidth}
-                      simpleValue={true}
-                      name='combatLBASGroup3Node2'
-                      value={combatLBASGroup3Node2}
-                      options={NODES}
-                      onChange={value => this.setState({ combatLBASGroup3Node2: value })}
-                      disabled={combatLBASGroup3NodesDisabled} />
-                  </div>
-                </FormControl>
+                      name='expeditionsFleet4'
+                      value={expeditionsFleet4}
+                      options={EXPEDITIONS}
+                      onChange={value => this.setState({ expeditionsFleet4: value })}
+                      disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet4Enabled)}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
               </Grid>
 
-              <Grid item xs={12} sm={12} className={classes.formGrid}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={combatOptionCheckFatigue}
-                      onChange={(event, checked) => this.setState({ combatOptionCheckFatigue: checked })}
+              <Divider />
+
+              <Typography type='display1'>
+                PvP
+                <Switch
+                  className={classes.switch}
+                  checked={pvpEnabled}
+                  onChange={(event, checked) => this.setState({ pvpEnabled: checked })} />
+              </Typography>
+
+              <Divider />
+
+              <Typography type='display1'>
+                Combat
+                <Switch
+                  className={classes.switch}
+                  checked={combatEnabled}
+                  onChange={this.handleCombatToggle} />
+              </Typography>
+
+              <Grid container spacing={0}>
+                <Grid item xs={12} sm={12} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatEngine' shrink={true} className={classes.reactSelectLabel}>
+                      Engine
+                    </InputLabel>
+                    <Select
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatEngine'
+                      value={combatEngine}
+                      options={COMBAT_ENGINES}
+                      onChange={value => this.setState({ combatEngine: value })}
                       disabled={!combatEnabled}
-                      value='combatOptionCheckFatigue' />
-                  }
-                  label='Check Fatigue'
-                  disabled={!combatEnabled} />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={combatOptionReserveDocks}
-                      onChange={(event, checked) => this.setState({ combatOptionReserveDocks: checked })}
-                      disabled={true}
-                      value='combatOptionReserveDocks' />
-                  }
-                  label='Reserve Docks'
-                  disabled={true} />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={combatOptionPortCheck}
-                      onChange={(event, checked) => this.setState({ combatOptionPortCheck: checked })}
-                      disabled={!combatEnabled}
-                      value='combatOptionPortCheck' />
-                  }
-                  label='Port Check'
-                  disabled={!combatEnabled} />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={combatOptionMedalStop}
-                      onChange={(event, checked) => this.setState({ combatOptionMedalStop: checked })}
-                      disabled={true}
-                      value='combatOptionMedalStop' />
-                  }
-                  label='Medal Stop'
-                  disabled={true} />
+                      clearable={false}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
               </Grid>
 
-            </Grid>
+              <Grid container spacing={0}>
+                <Grid item xs={12} sm={4} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatMap' shrink={true} className={classes.reactSelectLabel}>
+                      Map
+                    </InputLabel>
+                    <Select
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatMap'
+                      value={combatMap}
+                      options={MAPS}
+                      onChange={value => this.setState({ combatMap: value })}
+                      disabled={!combatEnabled}
+                      clearable={false}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatFleetMode' shrink={true} className={classes.reactSelectLabel}>
+                      Fleet Mode
+                    </InputLabel>
+                    <Select
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatFleetMode'
+                      value={combatFleetMode}
+                      options={COMBINED_FLEET_MODES}
+                      onChange={this.handleFleetModeChange}
+                      disabled={!combatEnabled}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatCombatNodes' shrink={true} className={classes.reactSelectLabel}>
+                      Combat Node Count
+                    </InputLabel>
+                    <Select
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatCombatNodes'
+                      value={combatCombatNodes}
+                      options={COMBAT_NODE_COUNTS}
+                      onChange={value => this.setState({ combatCombatNodes: value })}
+                      disabled={!combatEnabled}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
 
-            <Divider />
+                <Grid item xs={4} sm={2} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatNodeSelect1' shrink={true} className={classes.reactSelectLabel}>
+                      If at this Node...
+                    </InputLabel>
+                    <Select
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatNodeSelect1'
+                      value={combatNodeSelect1}
+                      options={NODES}
+                      onChange={value => this.setState({ combatNodeSelect1: value })}
+                      disabled={!combatEnabled}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={4} sm={2} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatNodeSelect2' shrink={true} className={classes.reactSelectLabel}>
+                      ...select this Node
+                    </InputLabel>
+                    <Select
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatNodeSelect2'
+                      value={combatNodeSelect2}
+                      options={NODES}
+                      onChange={value => this.setState({ combatNodeSelect2: value })}
+                      disabled={!combatEnabled}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={4} sm={1} className={classes.formGridButton}>
+                  <Button
+                    dense
+                    color='primary'
+                    disabled={!combatEnabled ||
+                      (!combatNodeSelect1 || !combatNodeSelect2 || combatNodeSelect1 === combatNodeSelect2)}
+                    onClick={() => this.handleCombatNodeSelectAdd(combatNodeSelect1, combatNodeSelect2)}
+                  >
+                    Add
+                    <ChevronRight />
+                  </Button>
+                </Grid>
+                <Grid item xs={12} sm={7} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatNodeSelects' shrink={true} className={classes.reactSelectLabel}>
+                      All Node Selects
+                    </InputLabel>
+                    <Creatable
+                      multi
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatNodeSelects'
+                      value={combatNodeSelects}
+                      options={combatNodeSelectOptions}
+                      onChange={value => this.setState({ combatNodeSelects: value })}
+                      disabled={!combatEnabled}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
 
-            <Typography type='display1'>
-              Quests
-              <Switch
-                className={classes.switch}
-                checked={questsEnabled}
-                onChange={(event, checked) => this.setState({ questsEnabled: checked })} />
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Paper className={classes.paper} elevation={0}>
-            <Typography type='display1' className={classes.flexReset}>
-              Config
-              <Button
-                dense
-                color='primary'
-                className={classes.saveButton}
-                onClick={() => this.onSaveClick()}
-              >
-                Save
-                <ContentSave />
-              </Button>
-            </Typography>
-            <Paper elevation={2}>
-              <pre className={classes.pre}>
-                {config.pythonConfig.map(line => `${line}\n`)}
-              </pre>
+                <Grid item xs={4} sm={2} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatFormationsNode' shrink={true} className={classes.reactSelectLabel}>
+                      If at this Node...
+                    </InputLabel>
+                    <Select
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatFormationsNode'
+                      value={combatFormationsNode}
+                      options={combatEngine === 'legacy' ? COMBAT_NODE_COUNTS : COMBAT_NODE_COUNTS.concat(NODES)}
+                      onChange={value => this.setState({ combatFormationsNode: value })}
+                      disabled={!combatEnabled}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={4} sm={3} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatFormationsFormation' shrink={true} className={classes.reactSelectLabel}>
+                      ...select this Formation
+                    </InputLabel>
+                    <Select
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatFormationsFormation'
+                      value={combatFormationsFormation}
+                      options={FORMATIONS}
+                      onChange={value => this.setState({ combatFormationsFormation: value })}
+                      disabled={!combatEnabled}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={4} sm={1} className={classes.formGridButton}>
+                  <Button
+                    dense
+                    color='primary'
+                    disabled={!combatEnabled || !combatFormationsFormation}
+                    onClick={() => this.handleCombatFormationAdd(combatFormationsNode, combatFormationsFormation)}
+                  >
+                    Add
+                    <ChevronRight />
+                  </Button>
+                </Grid>
+                <Grid item xs={12} sm={6} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatFormations' shrink={true} className={classes.reactSelectLabel}>
+                      All Specified Formations
+                    </InputLabel>
+                    <Creatable
+                      multi
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatFormations'
+                      value={combatFormations}
+                      options={combatFormationOptions}
+                      onChange={value => this.setState({ combatFormations: value })}
+                      disabled={!combatEnabled}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={4} sm={2} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatNightBattlesNode' shrink={true} className={classes.reactSelectLabel}>
+                      If at this Node...
+                    </InputLabel>
+                    <Select
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatNightBattlesNode'
+                      value={combatNightBattlesNode}
+                      options={combatEngine === 'legacy' ? COMBAT_NODE_COUNTS : COMBAT_NODE_COUNTS.concat(NODES)}
+                      onChange={value => this.setState({ combatNightBattlesNode: value })}
+                      disabled={!combatEnabled}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={4} sm={3} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatNightBattlesMode' shrink={true} className={classes.reactSelectLabel}>
+                      ...select Night Battle
+                    </InputLabel>
+                    <Select
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatNightBattlesMode'
+                      value={combatNightBattlesMode}
+                      options={NIGHT_BATTLES}
+                      onChange={value => this.setState({ combatNightBattlesMode: value })}
+                      disabled={!combatEnabled}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={4} sm={1} className={classes.formGridButton}>
+                  <Button
+                    dense
+                    color='primary'
+                    disabled={!combatEnabled || !combatNightBattlesMode}
+                    onClick={() => this.handleCombatNightBattleAdd(combatNightBattlesNode, combatNightBattlesMode)}
+                  >
+                    Add
+                    <ChevronRight />
+                  </Button>
+                </Grid>
+                <Grid item xs={12} sm={6} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatNightBattles' shrink={true} className={classes.reactSelectLabel}>
+                      All Night Battles
+                    </InputLabel>
+                    <Creatable
+                      multi
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatNightBattles'
+                      value={combatNightBattles}
+                      options={combatNightBattleOptions}
+                      onChange={value => this.setState({ combatNightBattles: value })}
+                      disabled={!combatEnabled}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} sm={4} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatRetreatLimit' shrink={true} className={classes.reactSelectLabel}>
+                      Retreat Limit
+                    </InputLabel>
+                    <Select
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatRetreatLimit'
+                      value={combatRetreatLimit}
+                      options={DAMAGE_STATES}
+                      onChange={value => this.setState({ combatRetreatLimit: value })}
+                      disabled={!combatEnabled}
+                      clearable={false}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatRepairLimit' shrink={true} className={classes.reactSelectLabel}>
+                      Repair Limit
+                    </InputLabel>
+                    <Select
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatRepairLimit'
+                      value={combatRepairLimit}
+                      options={DAMAGE_STATES}
+                      onChange={value => this.setState({ combatRepairLimit: value })}
+                      disabled={!combatEnabled}
+                      clearable={false}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} fullWidth>
+                    <InputLabel htmlFor='combatRepairTimeLimit'>Repair Time Limit</InputLabel>
+                    <TimeInput
+                      id='combatRepairTimeLimit'
+                      mode='24h'
+                      value={combatRepairTimeLimit}
+                      onChange={time => this.setState({ combatRepairTimeLimit: time })}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} sm={3} className={classes.formGrid}>
+                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatLBASGroups' shrink={true} className={classes.reactSelectLabel}>
+                      LBAS Groups
+                    </InputLabel>
+                    <Select
+                      multi
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      name='combatLBASGroups'
+                      value={combatLBASGroups}
+                      options={LBAS_GROUPS}
+                      onChange={this.handleLBASGroupSelect}
+                      disabled={!combatEnabled}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={3} className={classes.formGrid}>
+                  <FormControl disabled={combatLBASGroup1NodesDisabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatLBASGroup1Nodes' shrink={true} className={classes.reactSelectLabel}>
+                      Group 1 Nodes
+                    </InputLabel>
+                    <div className={classes.flexReset}>
+                      <Select
+                        className={classes.reactSelectHalfWidth}
+                        simpleValue={true}
+                        name='combatLBASGroup1Node1'
+                        value={combatLBASGroup1Node1}
+                        options={NODES}
+                        onChange={value => this.setState({ combatLBASGroup1Node1: value })}
+                        disabled={combatLBASGroup1NodesDisabled} />
+                      <Select
+                        className={classes.reactSelectHalfWidth}
+                        simpleValue={true}
+                        name='combatLBASGroup1Node2'
+                        value={combatLBASGroup1Node2}
+                        options={NODES}
+                        onChange={value => this.setState({ combatLBASGroup1Node2: value })}
+                        disabled={combatLBASGroup1NodesDisabled} />
+                    </div>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={3} className={classes.formGrid}>
+                  <FormControl disabled={combatLBASGroup2NodesDisabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatLBASGroup2Nodes' shrink={true} className={classes.reactSelectLabel}>
+                      Group 2 Nodes
+                    </InputLabel>
+                    <div className={classes.flexReset}>
+                      <Select
+                        className={classes.reactSelectHalfWidth}
+                        simpleValue={true}
+                        name='combatLBASGroup2Node1'
+                        value={combatLBASGroup2Node1}
+                        options={NODES}
+                        onChange={value => this.setState({ combatLBASGroup2Node1: value })}
+                        disabled={combatLBASGroup2NodesDisabled} />
+                      <Select
+                        className={classes.reactSelectHalfWidth}
+                        simpleValue={true}
+                        name='combatLBASGroup2Node2'
+                        value={combatLBASGroup2Node2}
+                        options={NODES}
+                        onChange={value => this.setState({ combatLBASGroup2Node2: value })}
+                        disabled={combatLBASGroup2NodesDisabled} />
+                    </div>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={3} className={classes.formGrid}>
+                  <FormControl disabled={combatLBASGroup3NodesDisabled} margin='normal' fullWidth>
+                    <InputLabel htmlFor='combatLBASGroup3Nodes' shrink={true} className={classes.reactSelectLabel}>
+                      Group 3 Nodes
+                    </InputLabel>
+                    <div className={classes.flexReset}>
+                      <Select
+                        className={classes.reactSelectHalfWidth}
+                        simpleValue={true}
+                        name='combatLBASGroup3Node1'
+                        value={combatLBASGroup3Node1}
+                        options={NODES}
+                        onChange={value => this.setState({ combatLBASGroup3Node1: value })}
+                        disabled={combatLBASGroup3NodesDisabled} />
+                      <Select
+                        className={classes.reactSelectHalfWidth}
+                        simpleValue={true}
+                        name='combatLBASGroup3Node2'
+                        value={combatLBASGroup3Node2}
+                        options={NODES}
+                        onChange={value => this.setState({ combatLBASGroup3Node2: value })}
+                        disabled={combatLBASGroup3NodesDisabled} />
+                    </div>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} sm={12} className={classes.formGrid}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={combatOptionCheckFatigue}
+                        onChange={(event, checked) => this.setState({ combatOptionCheckFatigue: checked })}
+                        disabled={!combatEnabled}
+                        value='combatOptionCheckFatigue' />
+                    }
+                    label='Check Fatigue'
+                    disabled={!combatEnabled} />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={combatOptionReserveDocks}
+                        onChange={(event, checked) => this.setState({ combatOptionReserveDocks: checked })}
+                        disabled={true}
+                        value='combatOptionReserveDocks' />
+                    }
+                    label='Reserve Docks'
+                    disabled={true} />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={combatOptionPortCheck}
+                        onChange={(event, checked) => this.setState({ combatOptionPortCheck: checked })}
+                        disabled={!combatEnabled}
+                        value='combatOptionPortCheck' />
+                    }
+                    label='Port Check'
+                    disabled={!combatEnabled} />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={combatOptionMedalStop}
+                        onChange={(event, checked) => this.setState({ combatOptionMedalStop: checked })}
+                        disabled={true}
+                        value='combatOptionMedalStop' />
+                    }
+                    label='Medal Stop'
+                    disabled={true} />
+                </Grid>
+
+              </Grid>
+
+              <Divider />
+
+              <Typography type='display1'>
+                Quests
+                <Switch
+                  className={classes.switch}
+                  checked={questsEnabled}
+                  onChange={(event, checked) => this.setState({ questsEnabled: checked })} />
+              </Typography>
             </Paper>
-          </Paper>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Paper className={classes.paper} elevation={0}>
+              <Typography type='display1' className={classes.flexReset}>
+                Config
+                <Button
+                  dense
+                  color='primary'
+                  className={classes.saveButton}
+                  onClick={() => configLoad.open()}
+                >
+                  Load
+                  <Upload />
+                </Button>
+                <Button
+                  dense
+                  color='primary'
+                  className={classes.saveButton}
+                  onClick={() => this.onSaveClick()}
+                >
+                  Save
+                  <ContentSave />
+                </Button>
+              </Typography>
+              <Paper elevation={2}>
+                <pre className={classes.pre}>
+                  {config.pythonConfig.map(line => `${line}\n`)}
+                </pre>
+              </Paper>
+            </Paper>
+          </Grid>
         </Grid>
-      </Grid>
+      </Dropzone>
     )
   }
 }

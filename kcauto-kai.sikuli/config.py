@@ -298,10 +298,13 @@ class Config(object):
         self.combat['map'] = config.get('Combat', 'Map')
         combat_nodes = config.get('Combat', 'CombatNodes')
         self.combat['combat_nodes'] = int(combat_nodes) if combat_nodes else 99
+        self.combat['node_selects'] = {}
         self.combat['raw_node_selects'] = (
             self._getlist(config, 'Combat', 'NodeSelects'))
+        self.combat['formations'] = {}
         self.combat['raw_formations'] = (
             self._getlist(config, 'Combat', 'Formations'))
+        self.combat['night_battles'] = {}
         self.combat['raw_night_battles'] = (
             self._getlist(config, 'Combat', 'NightBattles'))
         self.combat['retreat_limit'] = config.get('Combat', 'RetreatLimit')
