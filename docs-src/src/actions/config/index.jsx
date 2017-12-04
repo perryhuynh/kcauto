@@ -39,9 +39,9 @@ export const setPythonConfig = config => (
       }
       return temp
     }, {})
-    const scheduledSleepStart = config.scheduledSleepStart ?
-      `${String(config.scheduledSleepStart.getHours()).padStart(2, '0')}` +
-      `${String(config.scheduledSleepStart.getMinutes()).padStart(2, '0')}` :
+    const scheduledSleepStartTime = config.scheduledSleepStartTime ?
+      `${String(config.scheduledSleepStartTime.getHours()).padStart(2, '0')}` +
+      `${String(config.scheduledSleepStartTime.getMinutes()).padStart(2, '0')}` :
       ''
     const combatRepairTimeLimit = config.combatRepairTimeLimit ?
       `${String(config.combatRepairTimeLimit.getHours()).padStart(2, '0')}` +
@@ -77,8 +77,8 @@ export const setPythonConfig = config => (
       '',
       '[ScheduledSleep]',
       `Enabled: ${configTemp.scheduledSleepEnabled}`,
-      `StartTime: ${scheduledSleepStart}`,
-      `SleepLength: ${configTemp.scheduledSleepLength}`,
+      `StartTime: ${scheduledSleepStartTime}`,
+      `SleepLength: ${configTemp.scheduledSleepSleepLength}`,
       '',
       '[Expeditions]',
       `Enabled: ${configTemp.expeditionsEnabled}`,
