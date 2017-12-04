@@ -106,6 +106,97 @@ const styles = () => ({
   },
 })
 
+const createStateObjFromPythonConfig = (pyConfig) => {
+  const pyConfigLines = pyConfig.split('\n')
+  const pyConfigObj = {}
+  let currentSection = ''
+  pyConfigLines.forEach((line) => {
+    if (line.indexOf('#') === 0) {
+      // comment line
+    } else if (line === '[General]') {
+      currentSection = 'general'
+    } else if (line === '[ScheduledSleep]') {
+      currentSection = 'scheduledSleep'
+    } else if (line === '[Expeditions]') {
+      currentSection = 'expeditions'
+    } else if (line === '[PvP]') {
+      currentSection = 'pvp'
+    } else if (line === '[Combat]') {
+      currentSection = 'combat'
+    } else if (line === '[Quests]') {
+      currentSection = 'quests'
+    } else {
+      const splitLine = line.split(/:(.*)/, 2)
+      // valid config line
+      let value = splitLine[1] ? splitLine[1].trim() : null
+      if (splitLine[0].indexOf('LBASGroup') > -1 && splitLine[0].indexOf('Nodes') > -1) {
+        value = value ? value.split(',').map(node => node.trim()) : [null, null]
+      } else if (splitLine[0] === 'MiscOptions') {
+        value = value ? value.split(',').map(option => option.trim()) : []
+      }
+      pyConfigObj[`${currentSection}${splitLine[0].trim()}`] = value
+    }
+  })
+
+  console.log(pyConfigObj)
+
+  const jsonConfig = {
+    dropzoneActive: false,
+    generalProgram: pyConfigObj.generalProgram,
+    generalJSTOffset: pyConfigObj.generalJSTOffset || '0',
+    scheduledSleepEnabled: pyConfigObj.scheduledSleepEnabled === 'True',
+    scheduledSleepStartTime: new Date(new Date()
+      .setHours(
+        parseInt(pyConfigObj.scheduledSleepStartTime.substr(0, 2), 10),
+        parseInt(pyConfigObj.scheduledSleepStartTime.substr(2, 2), 10), 0, 0
+      )),
+    scheduledSleepSleepLength: pyConfigObj.scheduledSleepSleepLength || null,
+    expeditionsEnabled: pyConfigObj.expeditionsEnabled === 'True',
+    expeditionsFleet2Enabled: true,
+    expeditionsFleet3Enabled: true,
+    expeditionsFleet4Enabled: true,
+    expeditionsFleet2: pyConfigObj.expeditionsFleet2 || null,
+    expeditionsFleet3: pyConfigObj.expeditionsFleet3 || null,
+    expeditionsFleet4: pyConfigObj.expeditionsFleet4 || null,
+    pvpEnabled: pyConfigObj.pvpEnabled === 'True',
+    combatEnabled: pyConfigObj.combatEnabled === 'True',
+    combatEngine: pyConfigObj.combatEngine || 'legacy',
+    combatMap: pyConfigObj.combatMap || '1-1',
+    combatFleetMode: pyConfigObj.combatFleetMode || '',
+    combatCombatNodes: pyConfigObj.combatCombatNodes || null,
+    combatNodeSelect1: null,
+    combatNodeSelect2: null,
+    combatNodeSelects: pyConfigObj.combatNodeSelects || null,
+    combatFormationsNode: null,
+    combatFormationsFormation: null,
+    combatFormations: pyConfigObj.combatFormations || null,
+    combatNightBattlesNode: null,
+    combatNightBattlesMode: null,
+    combatNightBattles: pyConfigObj.combatNightBattles || null,
+    combatRetreatLimit: pyConfigObj.combatRetreatLimit || 'heavy',
+    combatRepairLimit: pyConfigObj.combatRepairLimit || 'moderate',
+    combatRepairTimeLimit: new Date(new Date()
+      .setHours(
+        parseInt(pyConfigObj.combatRepairTimeLimit.substr(0, 2), 10),
+        parseInt(pyConfigObj.combatRepairTimeLimit.substr(2, 2), 10), 0, 0
+      )),
+    combatLBASGroups: pyConfigObj.combatLBASGroups || null,
+    combatLBASGroup1Node1: pyConfigObj.combatLBASGroup1Nodes[0] || null,
+    combatLBASGroup1Node2: pyConfigObj.combatLBASGroup1Nodes[1] || null,
+    combatLBASGroup2Node1: pyConfigObj.combatLBASGroup2Nodes[0] || null,
+    combatLBASGroup2Node2: pyConfigObj.combatLBASGroup2Nodes[1] || null,
+    combatLBASGroup3Node1: pyConfigObj.combatLBASGroup3Nodes[0] || null,
+    combatLBASGroup3Node2: pyConfigObj.combatLBASGroup3Nodes[1] || null,
+    combatOptionCheckFatigue: pyConfigObj.combatMiscOptions.includes('CheckFatigue') || false,
+    combatOptionReserveDocks: pyConfigObj.combatMiscOptions.includes('ReserveDocks') || false,
+    combatOptionPortCheck: pyConfigObj.combatMiscOptions.includes('PortCheck') || false,
+    combatOptionMedalStop: pyConfigObj.combatMiscOptions.includes('MedalStop') || false,
+    questsEnabled: pyConfigObj.questsEnabled === 'True',
+  }
+
+  return jsonConfig
+}
+
 class BodyConfig extends React.Component {
   // grab default states from the store; defaults are in reducers/config/config.jsx
   state = this.props.config.jsonConfig
@@ -116,7 +207,8 @@ class BodyConfig extends React.Component {
   }
 
   componentDidUpdate = (nextProp, nextState) => {
-    if (this.state !== nextState) {
+    if (this.state !== nextState && this.state.dropzoneActive === nextState.dropzoneActive) {
+      // try not to fire the setConfig'ers if it's just the dropzone state changing
       this.props.setJsonConfig(this.state)
       this.props.setPythonConfig(this.state)
     }
@@ -127,6 +219,21 @@ class BodyConfig extends React.Component {
   }
 
   onConfigLoadLeave = () => {
+    this.setState({ dropzoneActive: false })
+  }
+
+  onConfigLoad = (acceptedFiles, rejectedFiles) => {
+    // only accept the first file
+    if (acceptedFiles.length === 1) {
+      const rawConfigFileHandle = acceptedFiles[0]
+      const reader = new FileReader()
+      reader.onload = () => {
+        const newState = createStateObjFromPythonConfig(reader.result)
+        console.log(newState)
+        this.setState(newState)
+      }
+      reader.readAsText(rawConfigFileHandle)
+    }
     this.setState({ dropzoneActive: false })
   }
 
@@ -216,20 +323,6 @@ class BodyConfig extends React.Component {
     this.setState({ combatLBASGroups: value })
   }
 
-  handleConfigLoad = (acceptedFiles, rejectedFiles) => {
-    // only accept the first file
-    if (acceptedFiles.length === 1) {
-      const rawConfigFileHandle = acceptedFiles[0]
-      const reader = new FileReader()
-      reader.onload = () => {
-        const rawConfig = reader.result
-        console.log(rawConfig)
-      }
-      reader.readAsText(rawConfigFileHandle)
-    }
-    this.setState({ dropzoneActive: false })
-  }
-
   optionsNodeSplitter = (rawOption, divider) => {
     // helper method to convert a list of comma-separated values divided in two via a divider into an object with the
     // value left of the divider as the key, and the value right of the divider as the value
@@ -265,8 +358,8 @@ class BodyConfig extends React.Component {
       generalProgram,
       generalJSTOffset,
       scheduledSleepEnabled,
-      scheduledSleepStart,
-      scheduledSleepLength,
+      scheduledSleepStartTime,
+      scheduledSleepSleepLength,
       expeditionsEnabled,
       expeditionsFleet2Enabled,
       expeditionsFleet3Enabled,
@@ -326,7 +419,7 @@ class BodyConfig extends React.Component {
         ref={(node) => { configLoad = node }}
         style={{ position: 'relative' }}
         accept='.ini'
-        onDrop={this.handleConfigLoad}
+        onDrop={this.onConfigLoad}
         onDragEnter={this.onConfigLoadEnter}
         onDragLeave={this.onConfigLoadLeave}
         disableClick
@@ -376,21 +469,21 @@ class BodyConfig extends React.Component {
               <Grid container spacing={0}>
                 <Grid item xs={12} sm={6} className={classes.formGrid}>
                   <FormControl disabled={!scheduledSleepEnabled} className={classes.formControl} fullWidth>
-                    <InputLabel htmlFor='scheduledSleepStart'>Start Time</InputLabel>
+                    <InputLabel htmlFor='scheduledSleepStartTime'>Start Time</InputLabel>
                     <TimeInput
-                      id='scheduledSleepStart'
+                      id='scheduledSleepStartTime'
                       mode='24h'
-                      value={scheduledSleepStart}
-                      onChange={time => this.setState({ scheduledSleepStart: time })}
+                      value={scheduledSleepStartTime}
+                      onChange={time => this.setState({ scheduledSleepStartTime: time })}
                       fullWidth />
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6} className={classes.formGrid}>
                   <TextField
-                    id='scheduledSleepLength'
+                    id='scheduledSleepSleepLength'
                     label='Length'
-                    value={scheduledSleepLength}
-                    onChange={event => this.setState({ scheduledSleepLength: event.target.value })}
+                    value={scheduledSleepSleepLength}
+                    onChange={event => this.setState({ scheduledSleepSleepLength: event.target.value })}
                     helperText='How long to sleep for'
                     type='number'
                     margin='normal'
