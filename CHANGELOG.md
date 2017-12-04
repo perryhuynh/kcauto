@@ -1,3 +1,7 @@
+#### 0.2.2
+
+* Bugfix on webUI where the scheduledSleep options were not being exported properly
+
 #### 0.2.1
 
 * webUI config options does not reset when changing tabs to About and back
