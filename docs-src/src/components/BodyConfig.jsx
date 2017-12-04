@@ -17,7 +17,7 @@ import Divider from 'material-ui/Divider'
 import Button from 'material-ui/Button'
 import Checkbox from 'material-ui/Checkbox'
 import Switch from 'material-ui/Switch'
-import { ChevronRight, ContentSave } from 'mdi-material-ui'
+import { ChevronRight, Upload, ContentSave } from 'mdi-material-ui'
 
 const EXPEDITIONS = Array.from({ length: 40 }, (value, key) => ({ value: String(key + 1), label: String(key + 1) }))
 EXPEDITIONS.push({ value: '9998', label: 'Node Support' })
@@ -1050,7 +1050,7 @@ class BodyConfig extends React.Component {
                   onClick={() => configLoad.open()}
                 >
                   Load
-                  <ContentSave />
+                  <Upload />
                 </Button>
                 <Button
                   dense
