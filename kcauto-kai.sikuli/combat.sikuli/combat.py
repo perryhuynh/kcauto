@@ -846,8 +846,10 @@ class CombatFleet(Fleet):
         Returns:
             int: the number of ships at or below the damage threshold
         """
+        counts = counts if counts else self.damage_counts
         if not counts:
-            counts = self.damage_counts
+            # counts not initialized; return 0
+            return 0
 
         valid_damages = self.get_damages_at_threshold(threshold)
 
