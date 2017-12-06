@@ -654,7 +654,7 @@ class CombatModule(object):
             if next_node_count in custom_night_battles:
                 return custom_night_battles[next_node_count]
             else:
-                return True
+                return False
         elif self.config.combat['engine'] == 'live':
             # if live engine, custom night battle modes can be applied by node
             # name or node count; if a custom night battle mode is not defined,
