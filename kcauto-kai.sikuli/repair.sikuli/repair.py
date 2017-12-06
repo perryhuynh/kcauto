@@ -23,6 +23,7 @@ class RepairModule(object):
         self.kc_region = self.regions['game']
         self.fleets = fleets
         self.combat = combat
+        self.repair_slots = 0
         self.repair_timers = []
 
     def goto_repair(self):
@@ -37,9 +38,14 @@ class RepairModule(object):
         Returns:
             boolean: True if ships need to be repaired, False otherwise
         """
+        self._remove_old_timers()
         for fleet_id, fleet in self.fleets.items():
             if fleet.get_damage_counts_at_threshold(
                     self.config.combat['repair_limit']) > 0:
+                if len(self.repair_timers) == self.repair_slots:
+                    # there are ships to repair, but the docks are full with
+                    # ongoing repairs so do not attempt repairs yet
+                    return False
                 return True
         return False
 
@@ -53,18 +59,21 @@ class RepairModule(object):
         self.repair_timers = []
         dock_busy_matches = Util.findAll_wrapper(
             self.kc_region, 'dock_timer.png')
+        dock_busy_count = len(dock_busy_matches)
 
         for match in dock_busy_matches:
             repair_timer = Util.read_timer(self.kc_region, match, 'l', 100)
             self.repair_timers.append(self._timer_to_datetime(repair_timer))
 
         # find empty docks
-        dock_empty_count = 0
         dock_empty_matches = Util.findAll_wrapper(
             self.kc_region, 'dock_empty.png')
+        dock_empty_count = len(dock_empty_matches)
 
-        for i in dock_empty_matches:
-            dock_empty_count += 1
+        if dock_busy_count + dock_empty_count > self.repair_slots:
+            # update the known number of total repair slots if it is different
+            # from what is already stored, with a max of 4 slots
+            self.repair_slots = min(dock_busy_count + dock_empty_count, 4)
 
         if dock_empty_count == 0:
             # TODO: handle repair_timers, come back on shortest timer
@@ -197,6 +206,14 @@ class RepairModule(object):
         return datetime.now() + timedelta(
             hours=timer['hours'], minutes=timer['minutes'],
             seconds=timer['seconds'])
+
+    def _remove_old_timers(self):
+        """Method to go through the existing repair timers and remove them if
+        they are past, implying that the repairs are done and the dock is free
+        """
+        now = datetime.now()
+        self.repair_timers = [
+            timer for timer in self.repair_timers if timer < now]
 
     def _update_combat_next_sortie_time(self, timer):
         """Method to update the combat module's next sortie time based on the
