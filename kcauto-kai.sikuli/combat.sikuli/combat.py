@@ -63,7 +63,7 @@ class CombatModule(object):
             return True
         return False
 
-    def _set_next_combat_time(self, delta={}):
+    def set_next_combat_time(self, delta={}):
         """Method to set the next combat time based on the provided hours,
         minutes, and seconds delta.
 
@@ -97,7 +97,7 @@ class CombatModule(object):
                     self.regions['lower_right'], start_button):
                 # generic sortie fail catch
                 Util.log_warning("Could not begin sortie for some reason!")
-                self._set_next_combat_time()
+                self.set_next_combat_time()
                 return False
         else:
             # fleet fatigue/damage check failed; cancel sortie
@@ -151,7 +151,7 @@ class CombatModule(object):
             pass_lbas_check, delay_time = (
                 self.lbas.resupply_groups(lbas_check_fatigue))
             if not pass_lbas_check:
-                self._set_next_combat_time({'minutes': delay_time})
+                self.set_next_combat_time({'minutes': delay_time})
                 return False
 
         if self.map.world == 'event':
@@ -215,19 +215,19 @@ class CombatModule(object):
 
         if needs_resupply:
             Util.log_warning("Canceling combat sortie: resupply required.")
-            self._set_next_combat_time()
+            self.set_next_combat_time()
             cancel_sortie = True
 
         if 'CheckFatigue' in self.config.combat['misc_options']:
             if fleet_fatigue['high']:
                 Util.log_warning(
                     "Canceling combat sortie: fleet has high fatigue.")
-                self._set_next_combat_time({'minutes': 25})
+                self.set_next_combat_time({'minutes': 25})
                 cancel_sortie = True
             elif fleet_fatigue['medium']:
                 Util.log_warning(
                     "Canceling combat sortie: fleet has medium fatigue.")
-                self._set_next_combat_time({'minutes': 15})
+                self.set_next_combat_time({'minutes': 15})
                 cancel_sortie = True
 
         # just use fleet 1's method
@@ -239,7 +239,7 @@ class CombatModule(object):
             Util.log_warning(
                 "Canceling combat sortie: {:d} ships above damage threshold."
                 .format(damage_counts_at_threshold))
-            self._set_next_combat_time()
+            self.set_next_combat_time()
             cancel_sortie = True
 
         if ('PortCheck' in self.config.combat['misc_options'] or
@@ -249,7 +249,7 @@ class CombatModule(object):
                 if self.map.world == 'event' else 'warning_port_full.png')
             if self.regions['lower'].exists(port_full_notice):
                 Util.log_warning("Canceling combat sortie: port is full.")
-                self._set_next_combat_time({'minutes': 15})
+                self.set_next_combat_time({'minutes': 15})
                 cancel_sortie = True
 
         if cancel_sortie:

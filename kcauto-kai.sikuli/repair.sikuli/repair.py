@@ -7,7 +7,7 @@ from util import Util
 
 
 class RepairModule(object):
-    def __init__(self, config, stats, regions, fleets):
+    def __init__(self, config, stats, regions, fleets, combat):
         """Initializes the Repair module.
 
         Args:
@@ -15,12 +15,14 @@ class RepairModule(object):
             stats (Stats): kcauto-kai Stats instance
             regions (dict): dict of pre-defined kcauto-kai regions
             fleets (dict): dict of active combat Fleet instances
+            combat (ComabtModule): active Combat Module instance
         """
         self.config = config
         self.stats = stats
         self.regions = regions
         self.kc_region = self.regions['game']
         self.fleets = fleets
+        self.combat = combat
         self.repair_timers = []
 
     def goto_repair(self):
@@ -109,8 +111,8 @@ class RepairModule(object):
                 self.stats.increment_buckets_used()
                 self.kc_region.wait('dock_empty.png')
             else:
-                self.repair_timers.append(self._timer_to_datetime(
-                    repair_timer))
+                self._update_combat_next_sortie_time(
+                    self._timer_to_datetime(repair_timer))
         Util.kc_sleep()
 
     def _pick_fleet_ship(self):
@@ -195,3 +197,20 @@ class RepairModule(object):
         return datetime.now() + timedelta(
             hours=timer['hours'], minutes=timer['minutes'],
             seconds=timer['seconds'])
+
+    def _update_combat_next_sortie_time(self, timer):
+        """Method to update the combat module's next sortie time based on the
+        passed in timer.
+
+        Args:
+            timer (datetime): datetime instance of when the repair that just
+                started will end
+        """
+        self.repair_timers.append(timer)
+
+        if timer > self.combat.next_combat_time:
+            self.combat.set_next_combat_time({
+                'hours': timer.hour,
+                'minutes': timer.minute + 1,
+                'seconds': timer.second
+            })
