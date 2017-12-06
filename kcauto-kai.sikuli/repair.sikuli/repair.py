@@ -213,7 +213,7 @@ class RepairModule(object):
         """
         now = datetime.now()
         self.repair_timers = [
-            timer for timer in self.repair_timers if timer < now]
+            timer for timer in self.repair_timers if timer > now]
 
     def _update_combat_next_sortie_time(self, timer):
         """Method to update the combat module's next sortie time based on the
