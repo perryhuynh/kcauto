@@ -42,7 +42,8 @@ class RepairModule(object):
         for fleet_id, fleet in self.fleets.items():
             if fleet.get_damage_counts_at_threshold(
                     self.config.combat['repair_limit']) > 0:
-                if len(self.repair_timers) == self.repair_slots:
+                if (len(self.repair_timers) == self.repair_slots and
+                        self.repair_slots != 0):
                     # there are ships to repair, but the docks are full with
                     # ongoing repairs so do not attempt repairs yet
                     return False
