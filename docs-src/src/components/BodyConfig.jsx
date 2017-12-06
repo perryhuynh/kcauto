@@ -39,8 +39,8 @@ const COMBAT_NODE_COUNTS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '
 const NODES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(value => ({ value, label: value }))
 NODES.push(...['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7', 'Z8', 'Z9', 'ZZ1', 'ZZ2', 'ZZ3'].map(value => (
   { value, label: value })))
-const FORMATIONS = ['line_ahead', 'double_line', 'diamond', 'echelon', 'line_abreast', 'vanguard', 'combined_fleet_1',
-  'combined_fleet_2', 'combined_fleet_3', 'combined_fleet_4'].map(value => ({ value, label: value.replace('_', ' ') }))
+const FORMATIONS = ['line_ahead', 'double_line', 'diamond', 'echelon', 'line_abreast', 'vanguard', 'combinedfleet_1',
+  'combinedfleet_2', 'combinedfleet_3', 'combinedfleet_4'].map(value => ({ value, label: value.replace('_', ' ') }))
 const NIGHT_BATTLES = ['False', 'True'].map(value => ({ value, label: value.toLowerCase() }))
 const DAMAGE_STATES = ['heavy', 'moderate', 'minor'].map(value => ({ value, label: value }))
 const LBAS_GROUPS = ['1', '2', '3'].map(value => ({ value, label: value }))
