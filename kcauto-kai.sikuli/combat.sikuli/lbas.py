@@ -113,6 +113,7 @@ class LBAS(object):
             dict: updated fatigue counter
         """
         group_fatigue = self._check_fatigue()
+        self.print_fatigue_states(group)
         if group_fatigue['high'] or group_fatigue['medium']:
             # lbas group is fatigued; put it in rest mode
             self._switch_lbas_mode('rest')
@@ -159,7 +160,6 @@ class LBAS(object):
             target=self._check_fatigue_func, args=('high', ))
         Util.multithreader([
             thread_check_low_fatigue, thread_check_high_fatigue])
-        print(self.fatigue)
         return self.fatigue
 
     def _check_fatigue_func(self, mode):
@@ -174,3 +174,15 @@ class LBAS(object):
                 Pattern('ship_state_fatigue_{}.png'.format(mode))
                 .similar(Globals.FATIGUE_SIMILARITY)))
             else False)
+
+    def print_fatigue_states(self, group):
+        """Method to report the LBAS Group's fatigue state in a more
+        human-readable format
+        """
+        fatigue = 'Rested'
+        if self.fatigue['high']:
+            fatigue = 'High'
+        elif self.fatigue['medium']:
+            fatigue = 'Medium'
+        Util.log_msg(
+            "LBAS Group {} fatigue state: {}".format(group, fatigue))

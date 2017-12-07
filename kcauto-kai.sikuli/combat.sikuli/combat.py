@@ -946,7 +946,6 @@ class CombatFleet(Fleet):
             target=self._check_fatigue_func, args=('high', region))
         Util.multithreader([
             thread_check_low_fatigue, thread_check_high_fatigue])
-        print(self.fatigue)
         return self.fatigue
 
     def _check_fatigue_func(self, mode, region):
