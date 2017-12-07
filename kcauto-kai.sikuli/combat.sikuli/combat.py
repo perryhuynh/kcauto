@@ -111,6 +111,7 @@ class CombatModule(object):
             self.fleets[3].reset_fcf_retreat_counts()
 
         self._run_combat_logic()
+        self.set_next_combat_time()
 
         # after combat, resolve the FCF retreat counters for combined and
         # striking fleets and add them back to their damage counters
