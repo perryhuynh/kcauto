@@ -318,9 +318,9 @@ class CombatModule(object):
 
                 # click to get rid of initial boss dialogue in case it exists
                 Util.kc_sleep(5)
-                Util.click_screen(self.regions, 'center')
+                Util.click_screen(self.regions, 'lbas')
                 Util.kc_sleep()
-                Util.click_screen(self.regions, 'center')
+                Util.click_screen(self.regions, 'lbas')
                 Util.rejigger_mouse(self.regions, 'lbas')
 
                 combat_result = self._run_loop_during_battle()
@@ -462,17 +462,12 @@ class CombatModule(object):
                         'formation_line_ahead.png') or
                     self.regions['formation_combinedfleet_1'].exists(
                         'formation_combinedfleet_1.png')):
-                # announce which node we're at
-                if self.config.combat['engine'] == 'legacy':
-                    Util.log_msg("Fleet at Node #{}".format(
-                        len(self.nodes_run) + 1))
-                if self.config.combat['engine'] == 'live':
-                    Util.log_msg("Fleet at Node {}".format(self.current_node))
+                self._print_current_node()
                 formations = self._resolve_formation()
                 for formation in formations:
                     if self._select_formation(formation):
                         break
-                Util.rejigger_mouse(self.regions, 'top')
+                Util.rejigger_mouse(self.regions, 'lbas')
                 at_node = True
                 return True
             elif self.kc_region.exists('combat_node_select.png'):
@@ -486,6 +481,8 @@ class CombatModule(object):
                         self.config.combat['node_selects']):
                     next_node = self.config.combat['node_selects'][
                         self.current_node.name]
+                    Util.log_msg("Selecting Node {} from Node {}.".format(
+                        next_node, self.current_node))
                     self.map.nodes[next_node].click_node(self.regions['game'])
                     Util.rejigger_mouse(self.regions, 'lbas')
             elif self.regions['lower_right_corner'].exists(
@@ -494,6 +491,8 @@ class CombatModule(object):
             elif (self.regions['lower_right_corner'].exists('next_alt.png') or
                     self.regions['lower_right_corner'].exists('next.png') or
                     self.kc_region.exists('combat_nb_fight.png')):
+                self._print_current_node()
+                Util.rejigger_mouse(self.regions, 'lbas')
                 at_node = True
                 return True
 
@@ -603,6 +602,15 @@ class CombatModule(object):
             self.nodes_run.append(len(self.nodes_run) + 1)
         elif self.config.combat['engine'] == 'live':
             self.nodes_run.append(self.current_node)
+
+    def _print_current_node(self):
+        """Method to print out which node the fleet is at. Behavior differs
+        depending on the combat engine mode.
+        """
+        if self.config.combat['engine'] == 'legacy':
+            Util.log_msg("Fleet at Node #{}".format(len(self.nodes_run) + 1))
+        if self.config.combat['engine'] == 'live':
+            Util.log_msg("Fleet at Node {}".format(self.current_node))
 
     def _resolve_formation(self):
         """Method to resolve which formation to select depending on the combat
