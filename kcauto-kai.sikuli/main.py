@@ -113,7 +113,8 @@ class KCAutoKai(object):
                 self.modules['combat'] = CombatModule(
                     self.config, self.stats, self.regions, self.combat_fleets)
                 self.modules['repair'] = RepairModule(
-                    self.config, self.stats, self.regions, self.combat_fleets)
+                    self.config, self.stats, self.regions, self.combat_fleets,
+                    self.modules['combat'])
             else:
                 self.modules['combat'] = None
                 self.modules['repair'] = None

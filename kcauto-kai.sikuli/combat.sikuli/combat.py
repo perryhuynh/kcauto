@@ -63,7 +63,7 @@ class CombatModule(object):
             return True
         return False
 
-    def _set_next_combat_time(self, delta={}):
+    def set_next_combat_time(self, delta={}):
         """Method to set the next combat time based on the provided hours,
         minutes, and seconds delta.
 
@@ -97,7 +97,7 @@ class CombatModule(object):
                     self.regions['lower_right'], start_button):
                 # generic sortie fail catch
                 Util.log_warning("Could not begin sortie for some reason!")
-                self._set_next_combat_time()
+                self.set_next_combat_time({'minutes': 5})
                 return False
         else:
             # fleet fatigue/damage check failed; cancel sortie
@@ -111,6 +111,7 @@ class CombatModule(object):
             self.fleets[3].reset_fcf_retreat_counts()
 
         self._run_combat_logic()
+        self.set_next_combat_time()
 
         # after combat, resolve the FCF retreat counters for combined and
         # striking fleets and add them back to their damage counters
@@ -151,7 +152,7 @@ class CombatModule(object):
             pass_lbas_check, delay_time = (
                 self.lbas.resupply_groups(lbas_check_fatigue))
             if not pass_lbas_check:
-                self._set_next_combat_time({'minutes': delay_time})
+                self.set_next_combat_time({'minutes': delay_time})
                 return False
 
         if self.map.world == 'event':
@@ -215,19 +216,19 @@ class CombatModule(object):
 
         if needs_resupply:
             Util.log_warning("Canceling combat sortie: resupply required.")
-            self._set_next_combat_time()
+            self.set_next_combat_time()
             cancel_sortie = True
 
         if 'CheckFatigue' in self.config.combat['misc_options']:
             if fleet_fatigue['high']:
                 Util.log_warning(
                     "Canceling combat sortie: fleet has high fatigue.")
-                self._set_next_combat_time({'minutes': 25})
+                self.set_next_combat_time({'minutes': 25})
                 cancel_sortie = True
             elif fleet_fatigue['medium']:
                 Util.log_warning(
                     "Canceling combat sortie: fleet has medium fatigue.")
-                self._set_next_combat_time({'minutes': 15})
+                self.set_next_combat_time({'minutes': 15})
                 cancel_sortie = True
 
         # just use fleet 1's method
@@ -239,7 +240,7 @@ class CombatModule(object):
             Util.log_warning(
                 "Canceling combat sortie: {:d} ships above damage threshold."
                 .format(damage_counts_at_threshold))
-            self._set_next_combat_time()
+            self.set_next_combat_time()
             cancel_sortie = True
 
         if ('PortCheck' in self.config.combat['misc_options'] or
@@ -249,7 +250,7 @@ class CombatModule(object):
                 if self.map.world == 'event' else 'warning_port_full.png')
             if self.regions['lower'].exists(port_full_notice):
                 Util.log_warning("Canceling combat sortie: port is full.")
-                self._set_next_combat_time({'minutes': 15})
+                self.set_next_combat_time({'minutes': 15})
                 cancel_sortie = True
 
         if cancel_sortie:
@@ -318,9 +319,9 @@ class CombatModule(object):
 
                 # click to get rid of initial boss dialogue in case it exists
                 Util.kc_sleep(5)
-                Util.click_screen(self.regions, 'center')
+                Util.click_screen(self.regions, 'lbas')
                 Util.kc_sleep()
-                Util.click_screen(self.regions, 'center')
+                Util.click_screen(self.regions, 'lbas')
                 Util.rejigger_mouse(self.regions, 'lbas')
 
                 combat_result = self._run_loop_during_battle()
@@ -462,17 +463,12 @@ class CombatModule(object):
                         'formation_line_ahead.png') or
                     self.regions['formation_combinedfleet_1'].exists(
                         'formation_combinedfleet_1.png')):
-                # announce which node we're at
-                if self.config.combat['engine'] == 'legacy':
-                    Util.log_msg("Fleet at Node #{}".format(
-                        len(self.nodes_run) + 1))
-                if self.config.combat['engine'] == 'live':
-                    Util.log_msg("Fleet at Node {}".format(self.current_node))
+                self._print_current_node()
                 formations = self._resolve_formation()
                 for formation in formations:
                     if self._select_formation(formation):
                         break
-                Util.rejigger_mouse(self.regions, 'top')
+                Util.rejigger_mouse(self.regions, 'lbas')
                 at_node = True
                 return True
             elif self.kc_region.exists('combat_node_select.png'):
@@ -486,6 +482,8 @@ class CombatModule(object):
                         self.config.combat['node_selects']):
                     next_node = self.config.combat['node_selects'][
                         self.current_node.name]
+                    Util.log_msg("Selecting Node {} from Node {}.".format(
+                        next_node, self.current_node))
                     self.map.nodes[next_node].click_node(self.regions['game'])
                     Util.rejigger_mouse(self.regions, 'lbas')
             elif self.regions['lower_right_corner'].exists(
@@ -494,6 +492,8 @@ class CombatModule(object):
             elif (self.regions['lower_right_corner'].exists('next_alt.png') or
                     self.regions['lower_right_corner'].exists('next.png') or
                     self.kc_region.exists('combat_nb_fight.png')):
+                self._print_current_node()
+                Util.rejigger_mouse(self.regions, 'lbas')
                 at_node = True
                 return True
 
@@ -604,6 +604,15 @@ class CombatModule(object):
         elif self.config.combat['engine'] == 'live':
             self.nodes_run.append(self.current_node)
 
+    def _print_current_node(self):
+        """Method to print out which node the fleet is at. Behavior differs
+        depending on the combat engine mode.
+        """
+        if self.config.combat['engine'] == 'legacy':
+            Util.log_msg("Fleet at Node #{}".format(len(self.nodes_run) + 1))
+        if self.config.combat['engine'] == 'live':
+            Util.log_msg("Fleet at Node {}".format(self.current_node))
+
     def _resolve_formation(self):
         """Method to resolve which formation to select depending on the combat
         engine mode and any custom specified formations.
@@ -654,7 +663,7 @@ class CombatModule(object):
             if next_node_count in custom_night_battles:
                 return custom_night_battles[next_node_count]
             else:
-                return True
+                return False
         elif self.config.combat['engine'] == 'live':
             # if live engine, custom night battle modes can be applied by node
             # name or node count; if a custom night battle mode is not defined,
@@ -846,8 +855,10 @@ class CombatFleet(Fleet):
         Returns:
             int: the number of ships at or below the damage threshold
         """
+        counts = counts if counts else self.damage_counts
         if not counts:
-            counts = self.damage_counts
+            # counts not initialized; return 0
+            return 0
 
         valid_damages = self.get_damages_at_threshold(threshold)
 
@@ -936,7 +947,6 @@ class CombatFleet(Fleet):
             target=self._check_fatigue_func, args=('high', region))
         Util.multithreader([
             thread_check_low_fatigue, thread_check_high_fatigue])
-        print(self.fatigue)
         return self.fatigue
 
     def _check_fatigue_func(self, mode, region):
