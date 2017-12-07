@@ -229,7 +229,6 @@ class RepairModule(object):
         """
         repair_end_time = self._timer_to_datetime(timer)
         self.repair_timers.append(repair_end_time)
-        print(self.repair_timers)
 
         if repair_end_time > self.combat.next_combat_time:
             timer['minutes'] += 1
