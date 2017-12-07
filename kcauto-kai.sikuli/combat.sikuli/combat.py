@@ -97,7 +97,7 @@ class CombatModule(object):
                     self.regions['lower_right'], start_button):
                 # generic sortie fail catch
                 Util.log_warning("Could not begin sortie for some reason!")
-                self.set_next_combat_time()
+                self.set_next_combat_time({'minutes': 5})
                 return False
         else:
             # fleet fatigue/damage check failed; cancel sortie

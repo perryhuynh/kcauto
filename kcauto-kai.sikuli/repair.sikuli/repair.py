@@ -229,7 +229,10 @@ class RepairModule(object):
         """
         repair_end_time = self._timer_to_datetime(timer)
         self.repair_timers.append(repair_end_time)
+        print(self.repair_timers)
 
         if repair_end_time > self.combat.next_combat_time:
             timer['minutes'] += 1
             self.combat.set_next_combat_time(timer)
+            Util.log_msg("Delaying next combat sortie to {}".format(
+                self.next_combat_time.strftime('%Y-%m-%d %H:%M:%S')))
