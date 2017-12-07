@@ -125,8 +125,7 @@ class RepairModule(object):
                 self.stats.increment_buckets_used()
                 self.kc_region.wait('dock_empty.png')
             else:
-                self._update_combat_next_sortie_time(
-                    self._timer_to_datetime(repair_timer))
+                self._update_combat_next_sortie_time(repair_timer)
         Util.kc_sleep()
 
     def _pick_fleet_ship(self):
@@ -228,11 +227,8 @@ class RepairModule(object):
             timer (datetime): datetime instance of when the repair that just
                 started will end
         """
-        self.repair_timers.append(timer)
+        self.repair_timers.append(self._timer_to_datetime(timer))
 
+        timer['minutes'] += 1
         if timer > self.combat.next_combat_time:
-            self.combat.set_next_combat_time({
-                'hours': timer.hour,
-                'minutes': timer.minute + 1,
-                'seconds': timer.second
-            })
+            self.combat.set_next_combat_time(timer)
