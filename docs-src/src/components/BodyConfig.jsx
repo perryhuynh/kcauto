@@ -138,8 +138,6 @@ const createStateObjFromPythonConfig = (pyConfig) => {
     }
   })
 
-  console.log(pyConfigObj)
-
   const jsonConfig = {
     dropzoneActive: false,
     generalProgram: pyConfigObj.generalProgram,
