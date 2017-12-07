@@ -1,6 +1,7 @@
 #### 0.2.3
 
 * Better cross-talk between Repair and Combat modules - Repair module will set the Combat module's next sortie time more accurately
+* Improvements to console output
 * Bugfixes in webUI and Combat module
 
 #### 0.2.2
