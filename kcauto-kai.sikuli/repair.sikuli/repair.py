@@ -227,8 +227,9 @@ class RepairModule(object):
             timer (datetime): datetime instance of when the repair that just
                 started will end
         """
-        self.repair_timers.append(self._timer_to_datetime(timer))
+        repair_end_time = self._timer_to_datetime(timer)
+        self.repair_timers.append(repair_end_time)
 
-        timer['minutes'] += 1
-        if timer > self.combat.next_combat_time:
+        if repair_end_time > self.combat.next_combat_time:
+            timer['minutes'] += 1
             self.combat.set_next_combat_time(timer)
