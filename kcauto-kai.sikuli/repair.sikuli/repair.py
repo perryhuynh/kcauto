@@ -235,4 +235,4 @@ class RepairModule(object):
             timer['minutes'] += 1
             self.combat.set_next_combat_time(timer)
             Util.log_msg("Delaying next combat sortie to {}".format(
-                self.next_combat_time.strftime('%Y-%m-%d %H:%M:%S')))
+                self.combat.next_combat_time.strftime('%Y-%m-%d %H:%M:%S')))
