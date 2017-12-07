@@ -60,16 +60,20 @@ class RepairModule(object):
         self.repair_timers = []
         dock_busy_matches = Util.findAll_wrapper(
             self.kc_region, 'dock_timer.png')
-        dock_busy_count = len(dock_busy_matches)
+        dock_busy_count = 0
 
         for match in dock_busy_matches:
+            dock_busy_count += 1
             repair_timer = Util.read_timer(self.kc_region, match, 'l', 100)
             self.repair_timers.append(self._timer_to_datetime(repair_timer))
 
         # find empty docks
         dock_empty_matches = Util.findAll_wrapper(
             self.kc_region, 'dock_empty.png')
-        dock_empty_count = len(dock_empty_matches)
+        dock_empty_count = 0
+
+        for match in dock_empty_matches:
+            dock_empty_count += 1
 
         if dock_busy_count + dock_empty_count > self.repair_slots:
             # update the known number of total repair slots if it is different
