@@ -930,7 +930,9 @@ class CombatFleet(Fleet):
         Args:
             regions (dict): dict of pre-defined kcauto-kai regions
         """
-        if regions['check_damage_flagship'].exists('ship_state_dmg_heavy.png'):
+        if (regions['check_damage_flagship'].exists(Pattern(
+                'ship_state_dmg_heavy.png').similar(
+                    Globals.FATIGUE_SIMILARITY))):
             self.flagship_damaged = True
 
     def check_fatigue(self, region):
