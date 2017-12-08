@@ -1,3 +1,7 @@
+#### 0.2.4
+
+* Minor bugfixes
+
 #### 0.2.3
 
 * Better cross-talk between Repair and Combat modules - Repair module will set the Combat module's next sortie time more accurately
