@@ -271,9 +271,10 @@ class KCAutoKai(object):
             self._focus_kancolle()
             Nav.goto(self.regions, 'home')
             self._run_fast_expedition_check()
-            # Check quests
-            self.modules['quest'].goto_quests()
-            self.modules['quest'].quests_logic_wrapper()
+            # Check quests if active
+            if self.modules['quest']:
+                self.modules['quest'].goto_quests()
+                self.modules['quest'].quests_logic_wrapper()
             Nav.goto(self.regions, 'home')
             self._run_fast_expedition_check()
             self.modules['pvp'].goto_pvp()
@@ -283,9 +284,10 @@ class KCAutoKai(object):
                 self.run_resupply_cycle()
                 Nav.goto(self.regions, 'home')
                 self._run_fast_expedition_check()
-                # Check quests
-                self.modules['quest'].goto_quests()
-                self.modules['quest'].quests_logic_wrapper_fast()
+                # Check quests if active
+                if self.modules['quest']:
+                    self.modules['quest'].goto_quests()
+                    self.modules['quest'].quests_logic_wrapper_fast()
                 Nav.goto(self.regions, 'home')
                 self._run_fast_expedition_check()
                 self.modules['pvp'].goto_pvp()
