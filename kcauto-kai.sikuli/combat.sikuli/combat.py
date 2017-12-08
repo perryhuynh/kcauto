@@ -508,8 +508,9 @@ class CombatModule(object):
         while True:
             if self.kc_region.exists('combat_nb_fight.png'):
                 return 'night_battle'
-            elif (self.kc_region.exists('next.png')
-                    or self.kc_region.exists('next_alt.png')):
+            elif (self.regions['lower_right_corner'].exists('next.png')
+                    or self.regions['lower_right_corner'].exists(
+                        'next_alt.png')):
                 return 'results'
             else:
                 pass

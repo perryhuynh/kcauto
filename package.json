@@ -1,6 +1,6 @@
 {
   "name": "kcauto-kai",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "main": "index.js",
   "repository": "git@gitlab.com:mrmin123/kcauto-kai.git",
   "author": "mrmin123 <minyoung.choi@gmail.com>",
