@@ -1,3 +1,8 @@
+#### 0.2.6
+
+* Bugfix where combat sorties could not be started if LBAS was enabled but all groups were set on air defense
+* Revised formation check areas in preparation for vanguard formation being removed from game
+
 #### 0.2.5
 
 * Critical bugfix on combined fleet 2nd flagship damage checking - please update if you use kcauto-kai to sortie to combined fleet maps
