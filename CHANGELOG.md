@@ -1,3 +1,7 @@
+#### 0.2.5
+
+* Critical bugfix on combined fleet 2nd flagship damage checking - please update if you use kcauto-kai to sortie to combined fleet maps
+
 #### 0.2.4
 
 * Minor bugfixes

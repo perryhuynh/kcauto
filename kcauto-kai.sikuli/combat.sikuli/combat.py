@@ -91,7 +91,10 @@ class CombatModule(object):
 
         if self._conduct_pre_sortie_checks():
             start_button = 'combat_start.png'
-            if self.lbas:
+            if (self.lbas and
+                    (self.config.combat['lbas_group_1_nodes'] or
+                        self.config.combat['lbas_group_2_nodes'] or
+                        self.config.combat['lbas_group_3_nodes'])):
                 start_button = 'combat_start_lbas.png'
             if not Util.check_and_click(
                     self.regions['lower_right'], start_button):
@@ -508,9 +511,8 @@ class CombatModule(object):
         while True:
             if self.kc_region.exists('combat_nb_fight.png'):
                 return 'night_battle'
-            elif (self.regions['lower_right_corner'].exists('next.png')
-                    or self.regions['lower_right_corner'].exists(
-                        'next_alt.png')):
+            elif (self.regions['lower_right_corner'].exists('next_alt.png') or
+                    self.regions['lower_right_corner'].exists('next.png')):
                 return 'results'
             else:
                 pass
@@ -930,7 +932,9 @@ class CombatFleet(Fleet):
         Args:
             regions (dict): dict of pre-defined kcauto-kai regions
         """
-        if regions['check_damage_flagship'].exists('ship_state_dmg_heavy.png'):
+        if (regions['check_damage_flagship'].exists(Pattern(
+                'ship_state_dmg_heavy.png').similar(
+                    Globals.FATIGUE_SIMILARITY))):
             self.flagship_damaged = True
 
     def check_fatigue(self, region):
