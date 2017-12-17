@@ -227,7 +227,6 @@ class BodyConfig extends React.Component {
       const reader = new FileReader()
       reader.onload = () => {
         const newState = createStateObjFromPythonConfig(reader.result)
-        console.log(newState)
         this.setState(newState)
       }
       reader.readAsText(rawConfigFileHandle)
