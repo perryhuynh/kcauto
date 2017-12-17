@@ -4,9 +4,10 @@ import { withStyles } from 'material-ui/styles'
 import AppBar from 'material-ui/AppBar'
 import Tabs, { Tab } from 'material-ui/Tabs'
 import Grid from 'material-ui/Grid'
-import { InformationOutline, Settings } from 'mdi-material-ui'
+import { Play, Settings, InformationOutline } from 'mdi-material-ui'
 
 import BodyConfigContainer from 'containers/BodyConfigContainer'
+import BodyRunCmdContainer from 'containers/BodyRunCmdContainer'
 import BodyAboutContainer from 'containers/BodyAboutContainer'
 
 const styles = () => ({
@@ -38,6 +39,7 @@ class Body extends React.Component {
             centered
           >
             <Tab icon={<Settings />} label='Config' />
+            <Tab icon={<Play />} label='Run Cmd' />
             <Tab icon={<InformationOutline />} label='About' />
           </Tabs>
         </AppBar>
@@ -45,6 +47,9 @@ class Body extends React.Component {
           <BodyConfigContainer /> :
           null}
         { this.state.value === 1 ?
+          <BodyRunCmdContainer /> :
+          null}
+        { this.state.value === 2 ?
           <BodyAboutContainer /> :
           null}
       </div>
