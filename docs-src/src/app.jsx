@@ -13,9 +13,10 @@ import { setUILanguage } from 'actions/ui/language'
 import Reducers from 'reducers/'
 import Menu from 'components/Menu'
 import Body from 'components/Body'
+import Footer from 'components/Footer'
 
 let store = Reducers
-console.log(process.version)
+
 const reduxMiddleware = process.env.NODE_ENV === 'production' ?
   applyMiddleware(thunk) :
   applyMiddleware(thunk, createLogger())
@@ -30,6 +31,7 @@ render(
     <Grid container>
       <Menu />
       <Body />
+      <Footer />
     </Grid>
   </Provider>,
   document.getElementById('app')
