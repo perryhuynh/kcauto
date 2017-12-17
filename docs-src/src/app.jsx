@@ -15,7 +15,7 @@ import Menu from 'components/Menu'
 import Body from 'components/Body'
 
 let store = Reducers
-
+console.log(process.version)
 const reduxMiddleware = process.env.NODE_ENV === 'production' ?
   applyMiddleware(thunk) :
   applyMiddleware(thunk, createLogger())
