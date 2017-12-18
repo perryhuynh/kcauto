@@ -36,6 +36,7 @@ class Menu extends Component {
     this.props.setUILanguage(language)
     this.setState({ languageDropdownAnchor: null })
   }
+
   render = () => {
     const {
       classes,
@@ -77,7 +78,6 @@ class Menu extends Component {
               <MenuItem onClick={() => this.handleChangeLanguage('en')}>EN</MenuItem>
               <MenuItem onClick={() => this.handleChangeLanguage('kr')}>KR</MenuItem>
             </MuiMenu>
-
 
             <a href={urls.DISCORD_LINK}>
               <IconButton color='contrast'><Discord className={classes.largeIcon} /></IconButton>
