@@ -219,7 +219,7 @@ class KCAutoKai(object):
             self.regions['lower_right_corner'].wait('next.png', 30)
             while not self.regions['home_menu'].exists('home_menu_sortie.png'):
                 Util.click_screen(self.regions, 'center')
-                Util.kc_sleep()
+                Util.kc_sleep(1)
             # recurse in case there are more expedition fleets to receive
             self.run_receive_expedition_cycle()
             self.print_stats_check = True

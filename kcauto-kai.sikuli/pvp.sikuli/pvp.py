@@ -93,12 +93,11 @@ class PvPModule(object):
             # wait through night battle combat, if applicable
             pass
 
-        Util.check_and_click(self.regions['lower_right_corner'], 'next.png')
+        Util.click_screen(self.regions, 'center')
 
         while not self.regions['home_menu'].exists('home_menu_sortie.png'):
             # click through post-combat screens until main menu
-            Util.check_and_click(
-                self.regions['lower_right_corner'], 'next.png')
+            Util.click_screen(self.regions, 'center')
             Util.kc_sleep(2)
 
         self.stats.increment_pvp_done()

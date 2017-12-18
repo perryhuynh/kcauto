@@ -3,7 +3,7 @@ import * as types from 'types/'
 const jsonConfigDefaults = {
   dropzoneActive: false,
   generalProgram: 'Chrome',
-  generalJSTOffset: '0',
+  generalJSTOffset: -((new Date().getTimezoneOffset() / 60) + 9),
   scheduledSleepEnabled: true,
   scheduledSleepStartTime: new Date(new Date().setHours(0, 0, 0, 0)),
   scheduledSleepSleepLength: '4',

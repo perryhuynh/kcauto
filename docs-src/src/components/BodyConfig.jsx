@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Select, { Creatable } from 'react-select'
 import { withStyles } from 'material-ui/styles'
@@ -19,30 +19,47 @@ import Checkbox from 'material-ui/Checkbox'
 import Switch from 'material-ui/Switch'
 import { ChevronRight, Upload, ContentSave } from 'mdi-material-ui'
 
+import Localize from 'containers/LocalizeContainer'
+
 const EXPEDITIONS = Array.from({ length: 40 }, (value, key) => ({ value: String(key + 1), label: String(key + 1) }))
 EXPEDITIONS.push({ value: '9998', label: 'Node Support' })
 EXPEDITIONS.push({ value: '9999', label: 'Boss Support' })
 const COMBAT_ENGINES = [
-  { value: 'legacy', label: 'legacy: per-node definition of formations and night battles / low CPU use' },
-  {
-    value: 'live', label: 'live: auto node detection with optional formation and night battle overrides / high CPU use',
-  }]
+  { value: 'legacy', label: <Localize field='bodyConfig.combatEngineLegacy' /> },
+  { value: 'live', label: <Localize field='bodyConfig.combatEngineLive' /> }]
 const MAPS = ['1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-1', '2-2', '2-3', '2-4', '2-5', '3-1', '3-2', '3-3', '3-4',
   '3-5', '4-1', '4-2', '4-3', '4-4', '4-5', '5-1', '5-2', '5-3', '5-4', '5-5', '6-1', '6-2', '6-3', '6-4', '6-5',
   'E-1', 'E-2', 'E-3', 'E-4', 'E-5', 'E-6', 'E-7', 'E-8']
   .map(value => ({ value, label: value }))
 const COMBINED_FLEET_MODES = [
-  { value: '', label: 'Standard' }, { value: 'ctf', label: 'CTF' }, { value: 'stf', label: 'STF' },
-  { value: 'transport', label: 'Transport' }, { value: 'striking', label: 'Striking' }]
+  { value: '', label: <Localize field='bodyConfig.combatFleetModeStandard' /> },
+  { value: 'ctf', label: <Localize field='bodyConfig.combatFleetModeCTF' /> },
+  { value: 'stf', label: <Localize field='bodyConfig.combatFleetModeSTF' /> },
+  { value: 'transport', label: <Localize field='bodyConfig.combatFleetModeTransport' /> },
+  { value: 'striking', label: <Localize field='bodyConfig.combatFleetModeStriking' /> }]
 const COMBAT_NODE_COUNTS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'].map(value => (
   { value, label: value }))
 const NODES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(value => ({ value, label: value }))
 NODES.push(...['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7', 'Z8', 'Z9', 'ZZ1', 'ZZ2', 'ZZ3'].map(value => (
   { value, label: value })))
-const FORMATIONS = ['line_ahead', 'double_line', 'diamond', 'echelon', 'line_abreast', 'vanguard', 'combinedfleet_1',
-  'combinedfleet_2', 'combinedfleet_3', 'combinedfleet_4'].map(value => ({ value, label: value.replace('_', ' ') }))
-const NIGHT_BATTLES = ['False', 'True'].map(value => ({ value, label: value.toLowerCase() }))
-const DAMAGE_STATES = ['heavy', 'moderate', 'minor'].map(value => ({ value, label: value }))
+const FORMATIONS = [
+  { value: 'line_ahead', label: <Localize field='bodyConfig.combatFormationLineAhead' /> },
+  { value: 'double_line', label: <Localize field='bodyConfig.combatFormationDoubleLine' /> },
+  { value: 'diamond', label: <Localize field='bodyConfig.combatFormationDoubleLine' /> },
+  { value: 'echelon', label: <Localize field='bodyConfig.combatFormationEchelon' /> },
+  { value: 'line_abreast', label: <Localize field='bodyConfig.combatFormationLineAbreast' /> },
+  { value: 'vanguard', label: <Localize field='bodyConfig.combatFormationVanguard' /> },
+  { value: 'combinedfleet_1', label: <Localize field='bodyConfig.combatFormationCombinedFleet1' /> },
+  { value: 'combinedfleet_2', label: <Localize field='bodyConfig.combatFormationCombinedFleet2' /> },
+  { value: 'combinedfleet_3', label: <Localize field='bodyConfig.combatFormationCombinedFleet3' /> },
+  { value: 'combinedfleet_4', label: <Localize field='bodyConfig.combatFormationCombinedFleet4' /> }]
+const NIGHT_BATTLES = [
+  { value: 'True', label: <Localize field='bodyConfig.combatNightBattleTrue' /> },
+  { value: 'False', label: <Localize field='bodyConfig.combatNightBattleFalse' /> }]
+const DAMAGE_STATES = [
+  { value: 'heavy', label: <Localize field='bodyConfig.combatDamageStateHeavy' /> },
+  { value: 'moderate', label: <Localize field='bodyConfig.combatDamageStateModerate' /> },
+  { value: 'minor', label: <Localize field='bodyConfig.combatDamageStateMinor' /> }]
 const LBAS_GROUPS = ['1', '2', '3'].map(value => ({ value, label: value }))
 
 const styles = () => ({
@@ -89,7 +106,7 @@ const styles = () => ({
   },
   reactSelectLabel: {
     transform: 'translate(0, -15px) scale(0.75)',
-    minWidth: 130,
+    minWidth: '150%',
   },
   reactSelect: {
     fontFamily: 'Roboto, sans-serif',
@@ -195,7 +212,7 @@ const createStateObjFromPythonConfig = (pyConfig) => {
   return jsonConfig
 }
 
-class BodyConfig extends React.Component {
+class BodyConfig extends Component {
   // grab default states from the store; defaults are in reducers/config/config.jsx
   state = this.props.config.jsonConfig
 
@@ -227,7 +244,6 @@ class BodyConfig extends React.Component {
       const reader = new FileReader()
       reader.onload = () => {
         const newState = createStateObjFromPythonConfig(reader.result)
-        console.log(newState)
         this.setState(newState)
       }
       reader.readAsText(rawConfigFileHandle)
@@ -426,16 +442,16 @@ class BodyConfig extends React.Component {
         <Grid container spacing={0}>
           <Grid item xs={12} md={8}>
             <Paper className={classes.paper} elevation={0}>
-              <Typography type='display1'>General</Typography>
+              <Typography type='display1'><Localize field='bodyConfig.generalHeader' /></Typography>
 
               <Grid container spacing={0}>
                 <Grid item xs={12} sm={8} className={classes.formGrid}>
                   <TextField
                     id='generalProgram'
-                    label='Program'
+                    label={<Localize field='bodyConfig.generalProgram' />}
                     value={generalProgram}
                     onChange={event => this.setState({ generalProgram: event.target.value })}
-                    helperText='Program that Kantai Collection is running in (ex: Chrome)'
+                    helperText={<Localize field='bodyConfig.generalProgramDesc' />}
                     className={classes.formControl}
                     fullWidth
                     margin='normal' />
@@ -443,10 +459,10 @@ class BodyConfig extends React.Component {
                 <Grid item xs={12} sm={4} className={classes.formGrid}>
                   <TextField
                     id='generalJSTOffset'
-                    label='JST Offset'
+                    label={<Localize field='bodyConfig.generalJSTOffset' />}
                     value={generalJSTOffset}
                     onChange={event => this.setState({ generalJSTOffset: event.target.value })}
-                    helperText='Hours offset from JST'
+                    helperText={<Localize field='bodyConfig.generalJSTOffsetDesc' />}
                     className={classes.formControl}
                     fullWidth
                     type='number'
@@ -457,7 +473,7 @@ class BodyConfig extends React.Component {
               <Divider />
 
               <Typography type='display1'>
-                Scheduled Sleep
+                <Localize field='bodyConfig.scheduledSleepHeader' />
                 <Switch
                   className={classes.switch}
                   checked={scheduledSleepEnabled}
@@ -467,7 +483,9 @@ class BodyConfig extends React.Component {
               <Grid container spacing={0}>
                 <Grid item xs={12} sm={6} className={classes.formGrid}>
                   <FormControl disabled={!scheduledSleepEnabled} className={classes.formControl} fullWidth>
-                    <InputLabel htmlFor='scheduledSleepStartTime'>Start Time</InputLabel>
+                    <InputLabel htmlFor='scheduledSleepStartTime'>
+                      <Localize field='bodyConfig.scheduledSleepStartTime' />
+                    </InputLabel>
                     <TimeInput
                       id='scheduledSleepStartTime'
                       mode='24h'
@@ -479,10 +497,10 @@ class BodyConfig extends React.Component {
                 <Grid item xs={12} sm={6} className={classes.formGrid}>
                   <TextField
                     id='scheduledSleepSleepLength'
-                    label='Length'
+                    label={<Localize field='bodyConfig.scheduledSleepLength' />}
                     value={scheduledSleepSleepLength}
                     onChange={event => this.setState({ scheduledSleepSleepLength: event.target.value })}
-                    helperText='How long to sleep for'
+                    helperText={<Localize field='bodyConfig.scheduledSleepLengthDesc' />}
                     type='number'
                     margin='normal'
                     className={classes.formControl}
@@ -494,7 +512,7 @@ class BodyConfig extends React.Component {
               <Divider />
 
               <Typography type='display1'>
-                Expeditions
+                <Localize field='bodyConfig.expeditionsHeader' />
                 <Switch
                   className={classes.switch}
                   checked={expeditionsEnabled}
@@ -509,7 +527,7 @@ class BodyConfig extends React.Component {
                     fullWidth
                   >
                     <InputLabel htmlFor='expeditionsFleet2' shrink={true} className={classes.reactSelectLabel}>
-                      Fleet 2
+                      <Localize field='bodyConfig.expeditionsFleet2' />
                     </InputLabel>
                     <Select
                       multi
@@ -530,7 +548,7 @@ class BodyConfig extends React.Component {
                     fullWidth
                   >
                     <InputLabel htmlFor='expeditionsFleet3' shrink={true} className={classes.reactSelectLabel}>
-                      Fleet 3
+                      <Localize field='bodyConfig.expeditionsFleet3' />
                     </InputLabel>
                     <Select
                       multi
@@ -551,7 +569,7 @@ class BodyConfig extends React.Component {
                     fullWidth
                   >
                     <InputLabel htmlFor='expeditionsFleet4' shrink={true} className={classes.reactSelectLabel}>
-                      Fleet 4
+                      <Localize field='bodyConfig.expeditionsFleet4' />
                     </InputLabel>
                     <Select
                       multi
@@ -570,7 +588,7 @@ class BodyConfig extends React.Component {
               <Divider />
 
               <Typography type='display1'>
-                PvP
+                <Localize field='bodyConfig.pvpHeader' />
                 <Switch
                   className={classes.switch}
                   checked={pvpEnabled}
@@ -580,7 +598,7 @@ class BodyConfig extends React.Component {
               <Divider />
 
               <Typography type='display1'>
-                Combat
+                <Localize field='bodyConfig.combatHeader' />
                 <Switch
                   className={classes.switch}
                   checked={combatEnabled}
@@ -591,7 +609,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={12} sm={12} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatEngine' shrink={true} className={classes.reactSelectLabel}>
-                      Engine
+                      <Localize field='bodyConfig.combatEngine' />
                     </InputLabel>
                     <Select
                       className={classes.reactSelect}
@@ -611,7 +629,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={12} sm={4} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatMap' shrink={true} className={classes.reactSelectLabel}>
-                      Map
+                      <Localize field='bodyConfig.combatMap' />
                     </InputLabel>
                     <Select
                       className={classes.reactSelect}
@@ -628,7 +646,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={12} sm={4} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatFleetMode' shrink={true} className={classes.reactSelectLabel}>
-                      Fleet Mode
+                      <Localize field='bodyConfig.combatFleetMode' />
                     </InputLabel>
                     <Select
                       className={classes.reactSelect}
@@ -644,7 +662,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={12} sm={4} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatCombatNodes' shrink={true} className={classes.reactSelectLabel}>
-                      Combat Node Count
+                      <Localize field='bodyConfig.combatCombatNodeCount' />
                     </InputLabel>
                     <Select
                       className={classes.reactSelect}
@@ -661,7 +679,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={4} sm={2} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatNodeSelect1' shrink={true} className={classes.reactSelectLabel}>
-                      If at this Node...
+                      <Localize field='bodyConfig.combatNodeSelect1' />
                     </InputLabel>
                     <Select
                       className={classes.reactSelect}
@@ -677,7 +695,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={4} sm={2} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatNodeSelect2' shrink={true} className={classes.reactSelectLabel}>
-                      ...select this Node
+                      <Localize field='bodyConfig.combatNodeSelect2' />
                     </InputLabel>
                     <Select
                       className={classes.reactSelect}
@@ -698,14 +716,14 @@ class BodyConfig extends React.Component {
                       (!combatNodeSelect1 || !combatNodeSelect2 || combatNodeSelect1 === combatNodeSelect2)}
                     onClick={() => this.handleCombatNodeSelectAdd(combatNodeSelect1, combatNodeSelect2)}
                   >
-                    Add
+                    <Localize field='bodyConfig.combatNodeSelectAdd' />
                     <ChevronRight />
                   </Button>
                 </Grid>
                 <Grid item xs={12} sm={7} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatNodeSelects' shrink={true} className={classes.reactSelectLabel}>
-                      All Node Selects
+                      <Localize field='bodyConfig.combatNodeSelects' />
                     </InputLabel>
                     <Creatable
                       multi
@@ -723,7 +741,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={4} sm={2} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatFormationsNode' shrink={true} className={classes.reactSelectLabel}>
-                      If at this Node...
+                      <Localize field='bodyConfig.combatCustomFormation1' />
                     </InputLabel>
                     <Select
                       className={classes.reactSelect}
@@ -739,7 +757,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={4} sm={3} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatFormationsFormation' shrink={true} className={classes.reactSelectLabel}>
-                      ...select this Formation
+                      <Localize field='bodyConfig.combatCustomFormation2' />
                     </InputLabel>
                     <Select
                       className={classes.reactSelect}
@@ -759,14 +777,14 @@ class BodyConfig extends React.Component {
                     disabled={!combatEnabled || !combatFormationsFormation}
                     onClick={() => this.handleCombatFormationAdd(combatFormationsNode, combatFormationsFormation)}
                   >
-                    Add
+                    <Localize field='bodyConfig.combatCustomFormationAdd' />
                     <ChevronRight />
                   </Button>
                 </Grid>
                 <Grid item xs={12} sm={6} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatFormations' shrink={true} className={classes.reactSelectLabel}>
-                      All Specified Formations
+                      <Localize field='bodyConfig.combatCustomFormations' />
                     </InputLabel>
                     <Creatable
                       multi
@@ -784,7 +802,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={4} sm={2} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatNightBattlesNode' shrink={true} className={classes.reactSelectLabel}>
-                      If at this Node...
+                      <Localize field='bodyConfig.combatNightBattle1' />
                     </InputLabel>
                     <Select
                       className={classes.reactSelect}
@@ -800,7 +818,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={4} sm={3} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatNightBattlesMode' shrink={true} className={classes.reactSelectLabel}>
-                      ...select Night Battle
+                      <Localize field='bodyConfig.combatNightBattle2' />
                     </InputLabel>
                     <Select
                       className={classes.reactSelect}
@@ -820,14 +838,14 @@ class BodyConfig extends React.Component {
                     disabled={!combatEnabled || !combatNightBattlesMode}
                     onClick={() => this.handleCombatNightBattleAdd(combatNightBattlesNode, combatNightBattlesMode)}
                   >
-                    Add
+                    <Localize field='bodyConfig.combatNightBattleAdd' />
                     <ChevronRight />
                   </Button>
                 </Grid>
                 <Grid item xs={12} sm={6} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatNightBattles' shrink={true} className={classes.reactSelectLabel}>
-                      All Night Battles
+                      <Localize field='bodyConfig.combatNightBattles' />
                     </InputLabel>
                     <Creatable
                       multi
@@ -845,7 +863,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={12} sm={4} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatRetreatLimit' shrink={true} className={classes.reactSelectLabel}>
-                      Retreat Limit
+                      <Localize field='bodyConfig.combatRetreatLimit' />
                     </InputLabel>
                     <Select
                       className={classes.reactSelect}
@@ -862,7 +880,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={12} sm={4} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatRepairLimit' shrink={true} className={classes.reactSelectLabel}>
-                      Repair Limit
+                      <Localize field='bodyConfig.combatRepairLimit' />
                     </InputLabel>
                     <Select
                       className={classes.reactSelect}
@@ -878,7 +896,9 @@ class BodyConfig extends React.Component {
                 </Grid>
                 <Grid item xs={12} sm={4} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} fullWidth>
-                    <InputLabel htmlFor='combatRepairTimeLimit'>Repair Time Limit</InputLabel>
+                    <InputLabel htmlFor='combatRepairTimeLimit'>
+                      <Localize field='bodyConfig.combatRepairTimeLimit' />
+                    </InputLabel>
                     <TimeInput
                       id='combatRepairTimeLimit'
                       mode='24h'
@@ -891,7 +911,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={12} sm={3} className={classes.formGrid}>
                   <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatLBASGroups' shrink={true} className={classes.reactSelectLabel}>
-                      LBAS Groups
+                      <Localize field='bodyConfig.combatLBASGroups' />
                     </InputLabel>
                     <Select
                       multi
@@ -908,7 +928,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={12} sm={3} className={classes.formGrid}>
                   <FormControl disabled={combatLBASGroup1NodesDisabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatLBASGroup1Nodes' shrink={true} className={classes.reactSelectLabel}>
-                      Group 1 Nodes
+                      <Localize field='bodyConfig.combatLBASGroup1' />
                     </InputLabel>
                     <div className={classes.flexReset}>
                       <Select
@@ -933,7 +953,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={12} sm={3} className={classes.formGrid}>
                   <FormControl disabled={combatLBASGroup2NodesDisabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatLBASGroup2Nodes' shrink={true} className={classes.reactSelectLabel}>
-                      Group 2 Nodes
+                      <Localize field='bodyConfig.combatLBASGroup2' />
                     </InputLabel>
                     <div className={classes.flexReset}>
                       <Select
@@ -958,7 +978,7 @@ class BodyConfig extends React.Component {
                 <Grid item xs={12} sm={3} className={classes.formGrid}>
                   <FormControl disabled={combatLBASGroup3NodesDisabled} margin='normal' fullWidth>
                     <InputLabel htmlFor='combatLBASGroup3Nodes' shrink={true} className={classes.reactSelectLabel}>
-                      Group 3 Nodes
+                      <Localize field='bodyConfig.combatLBASGroup3' />
                     </InputLabel>
                     <div className={classes.flexReset}>
                       <Select
@@ -990,7 +1010,7 @@ class BodyConfig extends React.Component {
                         disabled={!combatEnabled}
                         value='combatOptionCheckFatigue' />
                     }
-                    label='Check Fatigue'
+                    label={<Localize field='bodyConfig.combatCheckFatigue' />}
                     disabled={!combatEnabled} />
                   <FormControlLabel
                     control={
@@ -1000,7 +1020,7 @@ class BodyConfig extends React.Component {
                         disabled={true}
                         value='combatOptionReserveDocks' />
                     }
-                    label='Reserve Docks'
+                    label={<Localize field='bodyConfig.combatReserveDocks' />}
                     disabled={true} />
                   <FormControlLabel
                     control={
@@ -1010,7 +1030,7 @@ class BodyConfig extends React.Component {
                         disabled={!combatEnabled}
                         value='combatOptionPortCheck' />
                     }
-                    label='Port Check'
+                    label={<Localize field='bodyConfig.combatPortCheck' />}
                     disabled={!combatEnabled} />
                   <FormControlLabel
                     control={
@@ -1020,16 +1040,15 @@ class BodyConfig extends React.Component {
                         disabled={true}
                         value='combatOptionMedalStop' />
                     }
-                    label='Medal Stop'
+                    label={<Localize field='bodyConfig.combatMedalStop' />}
                     disabled={true} />
                 </Grid>
-
               </Grid>
 
               <Divider />
 
               <Typography type='display1'>
-                Quests
+                <Localize field='bodyConfig.questsHeader' />
                 <Switch
                   className={classes.switch}
                   checked={questsEnabled}
@@ -1040,14 +1059,14 @@ class BodyConfig extends React.Component {
           <Grid item xs={12} md={4}>
             <Paper className={classes.paper} elevation={0}>
               <Typography type='display1' className={classes.flexReset}>
-                Config
+                <Localize field='bodyConfig.configHeader' />
                 <Button
                   dense
                   color='primary'
                   className={classes.saveButton}
                   onClick={() => configLoad.open()}
                 >
-                  Load
+                  <Localize field='bodyConfig.configLoad' />
                   <Upload />
                 </Button>
                 <Button
@@ -1056,7 +1075,7 @@ class BodyConfig extends React.Component {
                   className={classes.saveButton}
                   onClick={() => this.onSaveClick()}
                 >
-                  Save
+                  <Localize field='bodyConfig.configSave' />
                   <ContentSave />
                 </Button>
               </Typography>
@@ -1075,7 +1094,6 @@ class BodyConfig extends React.Component {
 
 BodyConfig.propTypes = {
   classes: PropTypes.object.isRequired,
-  ui: PropTypes.object.isRequired,
   config: PropTypes.object.isRequired,
   setJsonConfig: PropTypes.func.isRequired,
   setPythonConfig: PropTypes.func.isRequired,

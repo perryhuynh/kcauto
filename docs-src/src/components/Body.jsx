@@ -1,13 +1,13 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
 import AppBar from 'material-ui/AppBar'
 import Tabs, { Tab } from 'material-ui/Tabs'
-import Grid from 'material-ui/Grid'
-import { InformationOutline, Settings } from 'mdi-material-ui'
+import { Play, Settings, InformationOutline } from 'mdi-material-ui'
 
 import BodyConfigContainer from 'containers/BodyConfigContainer'
-import BodyAboutContainer from 'containers/BodyAboutContainer'
+import BodyRunCmdContainer from 'containers/BodyRunCmdContainer'
+import BodyAbout from 'components/BodyAbout'
 
 const styles = () => ({
   root: {
@@ -15,13 +15,9 @@ const styles = () => ({
   },
 })
 
-class Body extends React.Component {
+class Body extends Component {
   state = {
     value: 0,
-  }
-
-  handleChange = (event, value) => {
-    this.setState({ value })
   }
 
   render = () => {
@@ -32,12 +28,13 @@ class Body extends React.Component {
         <AppBar position='static' color='default'>
           <Tabs
             value={this.state.value}
-            onChange={this.handleChange}
+            onChange={(event, value) => this.setState({ value })}
             indicatorColor='primary'
             textColor='primary'
             centered
           >
             <Tab icon={<Settings />} label='Config' />
+            <Tab icon={<Play />} label='Run Cmd' />
             <Tab icon={<InformationOutline />} label='About' />
           </Tabs>
         </AppBar>
@@ -45,7 +42,10 @@ class Body extends React.Component {
           <BodyConfigContainer /> :
           null}
         { this.state.value === 1 ?
-          <BodyAboutContainer /> :
+          <BodyRunCmdContainer /> :
+          null}
+        { this.state.value === 2 ?
+          <BodyAbout /> :
           null}
       </div>
     )

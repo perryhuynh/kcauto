@@ -7,7 +7,9 @@ const outputPath = path.join(__dirname, '..', 'docs');
 module.exports = env => {
   const isProd = env.prod;
   const isDev = env.dev;
-  const pluginsArray = [];
+  const pluginsArray = [new webpack.DefinePlugin({
+    'process.version': JSON.stringify(process.env.npm_package_version),
+  })];
   if (isProd) {
     pluginsArray.push(new webpack.DefinePlugin({
       'process.env': {
