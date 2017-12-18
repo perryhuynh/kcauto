@@ -106,7 +106,7 @@ const styles = () => ({
   },
   reactSelectLabel: {
     transform: 'translate(0, -15px) scale(0.75)',
-    minWidth: 130,
+    minWidth: '150%',
   },
   reactSelect: {
     fontFamily: 'Roboto, sans-serif',
