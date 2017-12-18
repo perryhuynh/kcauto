@@ -1,5 +1,6 @@
 #### 0.2.7
 
+* Revise sleeps for expeditions and click points for PvP
 * Add Run Cmd tab to webUI: refer to this tab if you need help building the command needed to start kcauto-kai from the command line/terminal
 * Localization support to webUI
   * Currently English and partial Korean support only; please refer to `docs-src/localizations/_template.jsx` if you would like to provide additional localization options for the webUI
