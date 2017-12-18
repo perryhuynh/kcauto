@@ -1,3 +1,6 @@
+// localization for the Korean language. Initial translation lifted from an unofficial translation floating around the
+// web.
+
 // uncomment if JSX and URLs are used
 // import React from 'react'
 // import * as urls from 'urls'
