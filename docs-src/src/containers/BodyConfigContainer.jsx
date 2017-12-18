@@ -7,7 +7,6 @@ import BodyConfig from 'components/BodyConfig'
 
 const mapStateToProps = state => (
   {
-    ui: state.ui,
     config: state.config,
   }
 )
