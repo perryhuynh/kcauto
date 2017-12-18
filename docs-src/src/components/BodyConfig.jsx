@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Select, { Creatable } from 'react-select'
 import { withStyles } from 'material-ui/styles'
@@ -212,7 +212,7 @@ const createStateObjFromPythonConfig = (pyConfig) => {
   return jsonConfig
 }
 
-class BodyConfig extends React.Component {
+class BodyConfig extends Component {
   // grab default states from the store; defaults are in reducers/config/config.jsx
   state = this.props.config.jsonConfig
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
 
@@ -37,7 +37,7 @@ const styles = () => ({
   },
 })
 
-class BodyRunCmd extends React.Component {
+class BodyRunCmd extends Component {
   state = {
     sikuliPath: this.props.runCmd.sikuliPath,
     kcautoKaiPath: this.props.runCmd.kcautoKaiPath,
