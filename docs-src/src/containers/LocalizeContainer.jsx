@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 
-import BodyAbout from 'components/BodyAbout'
+import Localize from 'components/Localize'
 
 
 const mapStateToProps = state => (
@@ -9,4 +9,4 @@ const mapStateToProps = state => (
   }
 )
 
-export default connect(mapStateToProps)(BodyAbout)
+export default connect(mapStateToProps)(Localize)
