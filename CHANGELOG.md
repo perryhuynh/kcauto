@@ -1,3 +1,12 @@
+#### 0.2.7
+
+* Add Run Cmd tab to webUI: refer to this tab if you need help building the command needed to start kcauto-kai from the command line/terminal
+* Localization support to webUI
+  * Currently English and partial Korean support only; please refer to `docs-src/localizations/_template.jsx` if you would like to provide additional localization options for the webUI
+* webUI automatically calculates JST offset on initial load
+* Add footer to webUI that displays the version of kcauto-kai the webUI is compatible with
+* Various code cleanup on webUI
+
 #### 0.2.6
 
 * Bugfix where combat sorties could not be started if LBAS was enabled but all groups were set on air defense
