@@ -9,6 +9,7 @@ import IconButton from 'material-ui/IconButton'
 import { Ferry, Earth, GithubCircle, Discord } from 'mdi-material-ui'
 
 import * as urls from 'urls'
+import { availableLocalizations } from 'localizations'
 
 const styles = () => ({
   root: {
@@ -19,7 +20,11 @@ const styles = () => ({
   },
   langaugeButton: {
     fontFamily: 'Roboto, sans-serif',
-    fontSize: '14px',
+    fontSize: 14,
+    marginRight: 10,
+  },
+  selected: {
+    fontWeight: 'bold',
   },
   largeIcon: {
     width: 30,
@@ -58,6 +63,7 @@ class Menu extends Component {
               color='contrast'
               className={classes.langaugeButton}
               onClick={event => this.setState({ languageDropdownAnchor: event.currentTarget })}
+              title='change webUI language'
             >
               <Earth className={classes.largeIcon} /> {ui.language.toUpperCase()}
             </IconButton>
@@ -75,15 +81,26 @@ class Menu extends Component {
               open={dropdownOpen}
               onRequestClose={() => this.setState({ languageDropdownAnchor: null })}
             >
-              <MenuItem onClick={() => this.handleChangeLanguage('en')}>EN</MenuItem>
-              <MenuItem onClick={() => this.handleChangeLanguage('kr')}>KR</MenuItem>
+              {availableLocalizations.map(localization => (
+                <MenuItem
+                  key={localization}
+                  onClick={() => this.handleChangeLanguage(localization)}
+                  className={localization === ui.language ? classes.selected : null}
+                >
+                  {localization.toUpperCase()}
+                </MenuItem>
+              ))}
             </MuiMenu>
 
             <a href={urls.DISCORD_LINK}>
-              <IconButton color='contrast'><Discord className={classes.largeIcon} /></IconButton>
+              <IconButton color='contrast' title='kcauto-kai Discord'>
+                <Discord className={classes.largeIcon} />
+              </IconButton>
             </a>
             <a href={urls.GITHUB_LINK}>
-              <IconButton color='contrast'><GithubCircle className={classes.largeIcon} /></IconButton>
+              <IconButton color='contrast' title='kcauto-kai Github'>
+                <GithubCircle className={classes.largeIcon} />
+              </IconButton>
             </a>
           </Toolbar>
         </AppBar>

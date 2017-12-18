@@ -7,7 +7,7 @@ import { Play, Settings, InformationOutline } from 'mdi-material-ui'
 
 import BodyConfigContainer from 'containers/BodyConfigContainer'
 import BodyRunCmdContainer from 'containers/BodyRunCmdContainer'
-import BodyAboutContainer from 'containers/BodyAboutContainer'
+import BodyAbout from 'components/BodyAbout'
 
 const styles = () => ({
   root: {
@@ -45,7 +45,7 @@ class Body extends Component {
           <BodyRunCmdContainer /> :
           null}
         { this.state.value === 2 ?
-          <BodyAboutContainer /> :
+          <BodyAbout /> :
           null}
       </div>
     )

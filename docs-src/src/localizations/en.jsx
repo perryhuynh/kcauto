@@ -1,3 +1,6 @@
+import React from 'react'
+import * as urls from 'urls'
+
 export const en = {
   bodyConfig: {
     generalHeader: 'General',
@@ -80,6 +83,21 @@ export const en = {
     noCommandNotice: 'Fill out the above two fields to generate the command.',
   },
   bodyAbout: {
+    intro1:
+  <span>
+    <strong>kcauto-kai</strong> is a robust Kantai Collection automation tool. The successor
+    to <a href={urls.KANCOLLE_AUTO_GITHUB_LINK}>kancolle-auto</a>, both it and kcauto-kai are proof-of-concepts in
+    using Sikuli for vision-based scripting to automate the playing of Kantai Collection and are exercises in
+    automating large, convoluted, and complex game logic. It is not designed to be the fastest automation tool,
+    but instead designed to be robust and highly
+    customizable. <strong>Please read the Disclaimer section before use!</strong>
+  </span>,
+    intro2:
+  <span>
+    Visit the <a href={urls.GITHUB_LINK}>kcauto-kai GitHub repository</a> for the latest releases and to
+    report any bugs. Join the <a href={urls.DISCORD_LINK}>kcauto-kai Discord</a> for up to date information
+    and help.
+  </span>,
     disclaimerHeader: 'Disclaimer',
     disclaimer1: `kcauto-kai is meant for educational purposes only! Actual and prolonged usage of kcauto-kai may result
       in your account being banned. Remember that botting is against rules! The author of kcauto-kai makes no guarantee

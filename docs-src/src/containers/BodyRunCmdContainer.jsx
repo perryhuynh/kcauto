@@ -7,7 +7,6 @@ import BodyRunCmd from 'components/BodyRunCmd'
 
 const mapStateToProps = state => (
   {
-    ui: state.ui,
     runCmd: state.runCmd,
   }
 )

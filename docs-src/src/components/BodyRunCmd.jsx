@@ -7,6 +7,8 @@ import Paper from 'material-ui/Paper'
 import Typography from 'material-ui/Typography'
 import TextField from 'material-ui/TextField'
 
+import Localize from 'containers/LocalizeContainer'
+
 
 const styles = () => ({
   paper: {
@@ -67,19 +69,18 @@ class BodyRunCmd extends React.Component {
         <Grid item xs={6}>
           <Paper className={classes.paper} elevation={0}>
             <Typography type='body1' className={classes.paragraph}>
-              Fill out the two fields below to generate the command you need to run in your command prompt/cmd/terminal
-              to run kcauto-kai.
+              <Localize field='bodyRunCmd.intro' />
             </Typography>
 
             <Grid container spacing={0}>
               <Grid item xs={12} className={classes.formGrid}>
                 <TextField
                   id='sikuliPath'
-                  label='Sikuli Path'
+                  label={<Localize field='bodyRunCmd.sikuliPath' />}
                   value={sikuliPath}
                   placeholder='C:\sikulix'
                   onChange={this.handleChangeSikuliPath}
-                  helperText='Full path to the folder/directory where Sikuli is installed (where sikulix.jar exists)'
+                  helperText={<Localize field='bodyRunCmd.sikuliPathDesc' />}
                   className={classes.formControl}
                   fullWidth
                   margin='normal' />
@@ -87,18 +88,20 @@ class BodyRunCmd extends React.Component {
               <Grid item xs={12} className={classes.formGrid}>
                 <TextField
                   id='kcautoKaiPath'
-                  label='kcauto-kai Path'
+                  label={<Localize field='bodyRunCmd.kcautoKaiPath' />}
                   placeholder='C:\kcauto-kai'
                   value={kcautoKaiPath}
                   onChange={this.handleChangeKCAutoKaiPath}
-                  helperText='Full path to the folder/directory where kcauto-kai is installed (where config.ini exists)'
+                  helperText={<Localize field='bodyRunCmd.kcautoKaiPathDesc' />}
                   className={classes.formControl}
                   fullWidth
                   margin='normal' />
               </Grid>
             </Grid>
 
-            <Typography type='title' className={classes.title}>Command</Typography>
+            <Typography type='title' className={classes.title}>
+              <Localize field='bodyRunCmd.commandHeader' />
+            </Typography>
             {sikuliPath && kcautoKaiPath ?
               <Paper elevation={2}>
                 <pre className={classes.pre}>
@@ -107,7 +110,7 @@ class BodyRunCmd extends React.Component {
                 </pre>
               </Paper> :
               <Typography type='body1' className={classes.paragraph}>
-                Fill out the above two fields to generate the command.
+                <Localize field='bodyRunCmd.noCommandNotice' />
               </Typography>
             }
           </Paper>
@@ -120,7 +123,6 @@ class BodyRunCmd extends React.Component {
 BodyRunCmd.propTypes = {
   classes: PropTypes.object.isRequired,
   runCmd: PropTypes.object.isRequired,
-  ui: PropTypes.object.isRequired,
   setSikuliPath: PropTypes.func.isRequired,
   setKCAutoKaiPath: PropTypes.func.isRequired,
 }

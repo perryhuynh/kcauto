@@ -1,3 +1,7 @@
+// uncomment if JSX and URLs are used
+// import React from 'react'
+// import * as urls from 'urls'
+
 export const kr = {
   bodyConfig: {
     generalHeader: '일반 설정',
@@ -79,6 +83,8 @@ export const kr = {
     noCommandNotice: null,
   },
   bodyAbout: {
+    intro1: null,
+    intro2: null,
     disclaimerHeader: null,
     disclaimer1: null,
     disclaimer2: null,

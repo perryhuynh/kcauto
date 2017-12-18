@@ -6,4 +6,6 @@ const localizations = {
   kr,
 }
 
+export const availableLocalizations = Object.keys(localizations).sort()
+
 export default localizations
