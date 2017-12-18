@@ -6,6 +6,7 @@
 // import * as urls from 'urls'
 
 export const kr = {
+  label: '한국어',
   bodyConfig: {
     generalHeader: '일반 설정',
     generalProgram: '프로그램',

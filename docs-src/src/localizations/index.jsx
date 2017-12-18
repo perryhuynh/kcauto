@@ -6,6 +6,10 @@ const localizations = {
   kr,
 }
 
-export const availableLocalizations = Object.keys(localizations).sort()
+export const availableLocalizations = Object.keys(localizations).reduce((localizationsObj, localization) => {
+  const tempLocalizationsObj = localizationsObj
+  tempLocalizationsObj[localization] = localizations[localization].label
+  return tempLocalizationsObj
+}, {})
 
 export default localizations

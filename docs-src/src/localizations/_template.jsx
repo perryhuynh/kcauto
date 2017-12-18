@@ -9,6 +9,7 @@
 // Once you've made or updated a translation please make a PR on the kcauto-kai Github repository for review. Thank you!
 
 export const TMP = {
+  label: 'Language',
   bodyConfig: {
     generalHeader: null,
     generalProgram: null,

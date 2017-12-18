@@ -2,6 +2,7 @@ import React from 'react'
 import * as urls from 'urls'
 
 export const en = {
+  label: 'English',
   bodyConfig: {
     generalHeader: 'General',
     generalProgram: 'Program',
@@ -73,8 +74,8 @@ export const en = {
     configSave: 'Save',
   },
   bodyRunCmd: {
-    intro: `Fill out the two fields below to generate the command you need to run in your command prompt/cmd/terminal to
-      run kcauto-kai.`,
+    intro: `Assuming that you've properly installed Java, Sikuli, and kcauto-kai, fill out the two fields below to
+      generate the command you need to run in your command prompt/cmd/terminal to start kcauto-kai.`,
     sikuliPath: 'Sikuli Path',
     sikuliPathDesc: 'Full path to the folder/directory where Sikuli is installed (where sikulix.jar exists)',
     kcautoKaiPath: 'kcauto-kai Path',

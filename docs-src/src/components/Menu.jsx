@@ -19,9 +19,10 @@ const styles = () => ({
     flex: 1,
   },
   langaugeButton: {
+    width: 'auto',
+    marginRight: 10,
     fontFamily: 'Roboto, sans-serif',
     fontSize: 14,
-    marginRight: 10,
   },
   selected: {
     fontWeight: 'bold',
@@ -65,29 +66,29 @@ class Menu extends Component {
               onClick={event => this.setState({ languageDropdownAnchor: event.currentTarget })}
               title='change webUI language'
             >
-              <Earth className={classes.largeIcon} /> {ui.language.toUpperCase()}
+              <Earth className={classes.largeIcon} /> {availableLocalizations[ui.language]}
             </IconButton>
             <MuiMenu
               id='languageDropdown'
               anchorEl={languageDropdownAnchor}
               anchorOrigin={{
                 vertical: 'top',
-                horizontal: 'right',
+                horizontal: 'center',
               }}
               transformOrigin={{
                 vertical: 'top',
-                horizontal: 'right',
+                horizontal: 'center',
               }}
               open={dropdownOpen}
               onRequestClose={() => this.setState({ languageDropdownAnchor: null })}
             >
-              {availableLocalizations.map(localization => (
+              {Object.keys(availableLocalizations).map(localization => (
                 <MenuItem
                   key={localization}
                   onClick={() => this.handleChangeLanguage(localization)}
                   className={localization === ui.language ? classes.selected : null}
                 >
-                  {localization.toUpperCase()}
+                  {availableLocalizations[localization]}
                 </MenuItem>
               ))}
             </MuiMenu>
