@@ -1,9 +1,9 @@
 import { en } from 'localizations/en'
-import { kr } from 'localizations/kr'
+import { ko } from 'localizations/ko'
 
 const localizations = {
   en,
-  kr,
+  ko,
 }
 
 export const availableLocalizations = Object.keys(localizations).reduce((localizationsObj, localization) => {

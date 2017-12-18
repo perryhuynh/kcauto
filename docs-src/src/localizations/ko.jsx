@@ -5,7 +5,7 @@
 // import React from 'react'
 // import * as urls from 'urls'
 
-export const kr = {
+export const ko = {
   label: '한국어',
   bodyConfig: {
     generalHeader: '일반 설정',

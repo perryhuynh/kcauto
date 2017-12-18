@@ -3,7 +3,7 @@
 // import * as urls from 'urls'
 
 // This is the template file for creating a localization file for the kcauto-kai webUI.
-// Replace TMP below with the 2-letter country code for the language you are providing localization for.
+// Replace TMP below with the 2-letter ISO 639-1 language code for the language you are providing localization for.
 // Refer to the en.jsx file for the content of these fields. Fields set as null or an empty string ('') will
 // automatically fall back to the original english localization of that field.
 // Once you've made or updated a translation please make a PR on the kcauto-kai Github repository for review. Thank you!
