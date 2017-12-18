@@ -459,10 +459,10 @@ class BodyConfig extends Component {
                 <Grid item xs={12} sm={4} className={classes.formGrid}>
                   <TextField
                     id='generalJSTOffset'
-                    label={<Localize field='bodyConfig.JSTOffset' />}
+                    label={<Localize field='bodyConfig.generalJSTOffset' />}
                     value={generalJSTOffset}
                     onChange={event => this.setState({ generalJSTOffset: event.target.value })}
-                    helperText={<Localize field='bodyConfig.JSTOffsetDesc' />}
+                    helperText={<Localize field='bodyConfig.generalJSTOffsetDesc' />}
                     className={classes.formControl}
                     fullWidth
                     type='number'
