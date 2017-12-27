@@ -35,8 +35,14 @@ class ShipSwitcher(object):
                     self._resolve_replacement_ship()
 
     def _get_ship_count(self):
-        # read number at top of interface
-        pass
+        """Method that returns the number of ships in the port via the counter
+        at the top of the screen when at home.
+
+        Returns:
+            int: number of ships in port
+        """
+        return Util.read_number(
+            self.regions['ship_counter'], 'shipcount_label.png', 'r', 30, 1)
 
     def _switch_fleet(self, fleet):
         # unused for now

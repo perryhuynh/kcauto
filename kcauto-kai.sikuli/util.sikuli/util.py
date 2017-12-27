@@ -305,6 +305,7 @@ class Util(object):
         regions['top_submenu'] = Region(x + 100, y + 100, 700, 45)
         regions['quest_status'] = Region(x + 710, y + 110, 65, 340)
         regions['check_supply'] = Region(x + 465, y + 155, 65, 285)
+        regions['ship_counter'] = Region(x + 570, y, 105, 30)
         # repair-related regions
         regions['repair_panel'] = Region(x + 600, y + 110, 100, 340)
         regions['repair_shiplist_fleet_markers'] = Region(
