@@ -1,4 +1,5 @@
 from sikuli import Region, Pattern
+from math import ceil
 from threading import Thread
 from globals import Globals
 from fleet import Fleet
@@ -19,21 +20,34 @@ from fleet import Fleet
 
 
 class ShipSwitcher(object):
+    SHIPS_PER_PAGE = 10
+
     def __init__(self, config, stats, regions, fleets, combat):
         self.config = config
         self.stats = stats
         self.regions = regions
         self.kc_region = regions['game']
         self.ship_count = 1
+        self.ship_page_count = 1
+        self.ship_last_page_count = 1
         self.current_shiplist_page = 1
 
     def ship_switch_logic(self):
-        self._get_ship_count()
+        self._set_shiplist_counts()
         for i in range(1, 7):
             if self._check_need_to_switch_ship(i):
                 self._press_switch_ship_button(i)
                 for '__OPTIONS':
                     self._resolve_replacement_ship()
+
+    def _set_shiplist_counts(self):
+        """Method that sets the ship-list related internal counts based on the
+        number of ships in the port
+        """
+        self.ship_count = self._get_ship_count()
+        self.ship_page_count = int(
+            ceil(self.ship_count / float(SHIPS_PER_PAGE)))
+        self.ship_last_page_count = self.ship_count % SHIPS_PER_PAGE
 
     def _get_ship_count(self):
         """Method that returns the number of ships in the port via the counter
