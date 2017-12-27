@@ -1,6 +1,7 @@
 from sikuli import Region, Pattern
 from threading import Thread
 from globals import Globals
+from fleet import Fleet
 
 
 # Order by NEW
@@ -43,10 +44,6 @@ class ShipSwitcher(object):
         """
         return Util.read_number(
             self.regions['ship_counter'], 'shipcount_label.png', 'r', 30, 1)
-
-    def _switch_fleet(self, fleet):
-        # unused for now
-        pass
 
     def _check_need_to_switch_ship(self, position):
         # check against settings in specific region: damage? fatigue?
