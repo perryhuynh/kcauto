@@ -67,7 +67,18 @@ class ShipSwitcher(object):
         pass
 
     def _switch_shiplist_sorting(self, target):
-        pass
+        """Switches the shiplist sorting to the specified target mode.
+
+        Args:
+            target (str): the sorting to switch the shiplist to
+        """
+        while not self.regions['__SHIPLISTICON_REGION'].exists(
+                'shiplist_sort_{}.png'.format(target)):
+            Util.check_and_click(
+                self.regions['__SHIPLISTICON_REGION'],
+                'shiplist_sort_arrow.png',
+                Globals.EXPAND['shiplist_sort'])
+            Util.kc_sleep(1)
 
     def _change_shiplist_page(self, target):
         if target == 'end':
