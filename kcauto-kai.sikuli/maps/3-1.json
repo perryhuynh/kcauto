@@ -3,7 +3,8 @@
 	"subworld": 1,
 	"nodes": {
 		"A": {
-			"coords": [174, 186]
+			"coords": [174, 186],
+			"types": ["retreat"]
 		},
 		"C": {
 			"coords": [268, 164]
