@@ -154,7 +154,8 @@ class ExpeditionModule(object):
         soon as the subsequent sortie is over.
         """
         for fleet_id, fleet in self.fleets.items():
-            if 9998 in fleet.expeditions or 9999 in fleet.expeditions:
+            if (9998 in fleet.expeditions or 9999 in fleet.expeditions or
+                    33 in fleet.expeditions or 34 in fleet.expeditions):
                 Util.log_msg(
                     "Resetting fleet {}'s expedition status.".format(fleet_id))
                 fleet.at_base = True
