@@ -312,6 +312,7 @@ class KCAutoKai(object):
 
             if self.modules['combat'].combat_logic_wrapper():
                 if self.modules['expedition']:
+                    print 'reset expedition fleets'
                     self.modules['expedition'].reset_support_fleets()
 
             self._run_fast_expedition_check()
