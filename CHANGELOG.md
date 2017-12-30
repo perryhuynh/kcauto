@@ -1,5 +1,6 @@
 #### 0.2.8
 
+* Update live combat engine to support 'retreat' node types via the JSON file (currently applied to 1-3E, 2-4C, 3-1A, and 4-1H)
 * Revise expedition retrieval logic to reduce chance of infinite logic loop
 * Add expeditions 33 and 34 to list of expeditions that get reset after a combat sortie
 * Bugfix in Combat module where the script would hang if a sortie ended on a resource node
