@@ -200,17 +200,17 @@ class CombatModule(object):
         if self.config.combat['fleet_mode'] == 'striking':
             # switch fleet to 3rd fleet if striking fleet
             Util.kc_sleep(1)
-            Fleet.switch(self.regions['top_submenu'], 3)
+            self._switch_fleet_pre_sortie(3)
 
         needs_resupply, self.dmg, fleet_fatigue = (
             self._run_pre_sortie_fleet_check_logic(self.primary_fleet))
 
         if self.combined_fleet:
             # additional combined fleet checks
-            Fleet.switch(self.regions['top_submenu'], 2)
+            self._switch_fleet_pre_sortie(2)
             two_needs_resupply, fleet_two_damages, fleet_two_fatigue = (
                 self._run_pre_sortie_fleet_check_logic(self.fleets[2]))
-            Fleet.switch(self.regions['top_submenu'], 1)
+            self._switch_fleet_pre_sortie(1)
 
             self.dmg = self._combine_fleet_damages(self.dmg, fleet_two_damages)
             for key in fleet_fatigue:
