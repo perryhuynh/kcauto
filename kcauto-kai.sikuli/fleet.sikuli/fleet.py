@@ -1,4 +1,3 @@
-from sikuli import Pattern
 from threading import Thread
 from util import Util
 
@@ -65,18 +64,3 @@ class Fleet(object):
         """
         if region.exists('resupply_alert{}.png'.format(type)):
             self.needs_resupply = True
-
-    @staticmethod
-    def switch(region, fleet):
-        """Method that switches to the specified fleet by pressing the fleet
-        icon in the specified region.
-
-        Args:
-            region (Region): sikuli Region in which to search for the fleet
-                icons
-            fleet (int): id of fleet to switch to
-        """
-        Util.wait_and_click_and_wait(
-            region, Pattern('fleet_{}.png'.format(fleet)).exact(),
-            region, Pattern('fleet_{}_active.png'.format(fleet)).exact())
-        Util.kc_sleep()
