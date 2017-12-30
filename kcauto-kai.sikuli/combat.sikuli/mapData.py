@@ -147,7 +147,9 @@ class Node(object):
             node_data (TYPE): Description
         """
         self.name = name
-        self.coords = node_data['coords']
+        self.coords.append(node_data['coords'])
+        if 'altCoords' in node_data:
+            self.coords.extend(node_data['altCoords'])
         self.types = node_data['types'] if 'types' in node_data else []
         self.formation = (
             node_data['formation'] if 'formation' in node_data else '')
@@ -156,13 +158,14 @@ class Node(object):
 
     def coord_match(self, x, y):
         node_buffer = 35 if 'boss' in self.types else 20
-        min_x = self.coords[0] - node_buffer
-        max_x = self.coords[0] + node_buffer
-        min_y = self.coords[1] - node_buffer
-        max_y = self.coords[1] + node_buffer
-        if min_x <= x <= max_x and min_y <= y <= max_y:
-            return True
-        return False
+        for coord in self.coords:
+            min_x = coord[0] - node_buffer
+            max_x = coord[0] + node_buffer
+            min_y = coord[1] - node_buffer
+            max_y = coord[1] + node_buffer
+            if min_x <= x <= max_x and min_y <= y <= max_y:
+                return True
+            return False
 
     def click_node(self, kc_region):
         rand_x = kc_region.x + randint(self.coords[0] - 5, self.coords[0] + 5)
