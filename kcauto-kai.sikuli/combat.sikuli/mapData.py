@@ -69,8 +69,7 @@ class MapData(object):
         specified node.
 
         Args:
-            node (Node): Node object for the node to determine the formation
-                for
+            node (Node): Node object for the node the fleet is at
 
         Returns:
             tuple: tuple of formations to try in order
@@ -112,8 +111,7 @@ class MapData(object):
         specified node.
 
         Args:
-            node (Node): Node object for the node to determine the night battle
-                status for
+            node (Node): Node object for the node the fleet is at
 
         Returns:
             bool: True if night battle should be conducted at the node, False
@@ -126,15 +124,28 @@ class MapData(object):
                 return True
             elif 'sub' in node.types or 'air' in node.types:
                 return False
-            else:
+        return False
+
+    def resolve_continue_sortie(self, node):
+        """Method for determining whether or not to continue the sortied after
+        combat at the specified node.
+
+        Args:
+            node (Node): Node object for the node the fleet is at
+
+        Returns:
+            bool: True if sortie shoud be continued, False otherwise
+        """
+        if node:
+            if 'retreat' in node.types:
                 return False
-        else:
-            return False
+        return True
 
 
 class Node(object):
     name = ''
     coords = []
+    all_coords = []
     types = []
     formation = ''
     night_battle = None
@@ -148,6 +159,9 @@ class Node(object):
         """
         self.name = name
         self.coords = node_data['coords']
+        self.all_coords.append(node_data['coords'])
+        if 'altCoords' in node_data:
+            self.all_coords.extend(node_data['altCoords'])
         self.types = node_data['types'] if 'types' in node_data else []
         self.formation = (
             node_data['formation'] if 'formation' in node_data else '')
@@ -156,13 +170,14 @@ class Node(object):
 
     def coord_match(self, x, y):
         node_buffer = 35 if 'boss' in self.types else 20
-        min_x = self.coords[0] - node_buffer
-        max_x = self.coords[0] + node_buffer
-        min_y = self.coords[1] - node_buffer
-        max_y = self.coords[1] + node_buffer
-        if min_x <= x <= max_x and min_y <= y <= max_y:
-            return True
-        return False
+        for coord in self.all_coords:
+            min_x = coord[0] - node_buffer
+            max_x = coord[0] + node_buffer
+            min_y = coord[1] - node_buffer
+            max_y = coord[1] + node_buffer
+            if min_x <= x <= max_x and min_y <= y <= max_y:
+                return True
+            return False
 
     def click_node(self, kc_region):
         rand_x = kc_region.x + randint(self.coords[0] - 5, self.coords[0] + 5)

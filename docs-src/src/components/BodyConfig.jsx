@@ -45,7 +45,7 @@ NODES.push(...['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7', 'Z8', 'Z9', 'ZZ1', 'ZZ2
 const FORMATIONS = [
   { value: 'line_ahead', label: <Localize field='bodyConfig.combatFormationLineAhead' /> },
   { value: 'double_line', label: <Localize field='bodyConfig.combatFormationDoubleLine' /> },
-  { value: 'diamond', label: <Localize field='bodyConfig.combatFormationDoubleLine' /> },
+  { value: 'diamond', label: <Localize field='bodyConfig.combatFormationDiamond' /> },
   { value: 'echelon', label: <Localize field='bodyConfig.combatFormationEchelon' /> },
   { value: 'line_abreast', label: <Localize field='bodyConfig.combatFormationLineAbreast' /> },
   { value: 'vanguard', label: <Localize field='bodyConfig.combatFormationVanguard' /> },

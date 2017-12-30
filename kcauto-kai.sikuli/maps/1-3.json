@@ -6,7 +6,8 @@
 			"coords": [310, 112]
 		},
 		"E": {
-			"coords": [355, 344]
+			"coords": [355, 344],
+			"types": ["retreat"]
 		},
 		"F": {
 			"coords": [480, 358]
