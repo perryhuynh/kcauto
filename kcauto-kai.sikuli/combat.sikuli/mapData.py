@@ -69,8 +69,7 @@ class MapData(object):
         specified node.
 
         Args:
-            node (Node): Node object for the node to determine the formation
-                for
+            node (Node): Node object for the node the fleet is at
 
         Returns:
             tuple: tuple of formations to try in order
@@ -112,11 +111,10 @@ class MapData(object):
         specified node.
 
         Args:
-            node (Node): Node object for the node to determine the night battle
-                status for
+            node (Node): Node object for the node the fleet is at
 
         Returns:
-            bool: True if night battle should be conducted at the node, False
+            bool: True if night battle should be conducted at the node; False
                 otherwise
         """
         if node:
@@ -126,10 +124,22 @@ class MapData(object):
                 return True
             elif 'sub' in node.types or 'air' in node.types:
                 return False
-            else:
+        return False
+
+    def resolve_continue_sortie(self, node):
+        """Method for determining whether or not to continue the sortied after
+        combat at the specified node.
+
+        Args:
+            node (Node): Node object for the node the fleet is at
+
+        Returns:
+            bool: True if sortie shoud be continued; False otherwise
+        """
+        if node:
+            if 'retreat' in node.types:
                 return False
-        else:
-            return False
+        return True
 
 
 class Node(object):

@@ -658,12 +658,11 @@ class CombatModule(object):
             elif next_node_count in custom_night_battles:
                 return custom_night_battles[next_node_count]
             else:
-                return self.map.resolve_night_battle(self.nodes_run[-1])
+                return self.map.resolve_night_battle(self.current_node)
 
-    def _resolve_continue_retreat(self):
-        """Method to resolve whether or not to continue or retreat from the
-        sortie depending on number of nodes run, map data (if applicable), and
-        damage counts.
+    def _resolve_continue_sortie(self):
+        """Method to resolve whether or not to continue the sortie based on
+        number of nodes run, map data (if applicable), and damage counts.
 
         Returns:
             bool: True if sortie should be continued; False otherwise
@@ -672,6 +671,11 @@ class CombatModule(object):
         if len(self.nodes_run) >= self.config.combat['combat_nodes']:
             Util.log_msg("Ran the necessary number of nodes. Retreating.")
             return False
+
+        # if on live engine mode, check if the current node is a retreat node
+        if self.config.combat['engine'] == 'live':
+            if not self.map.resolve_continue_sortie(self.current_node):
+                return False
 
         # check whether to retreat against fleet damage state
         threshold_dmg_count = (
