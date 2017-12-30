@@ -675,6 +675,8 @@ class CombatModule(object):
         # if on live engine mode, check if the current node is a retreat node
         if self.config.combat['engine'] == 'live':
             if not self.map.resolve_continue_sortie(self.current_node):
+                Util.log_msg("Node {} is a retreat node. Retreating.".format(
+                    self.current_node))
                 return False
 
         # check whether to retreat against fleet damage state
