@@ -404,44 +404,17 @@ class CombatModule(object):
                 break
 
             if self.kc_region.exists('combat_retreat.png'):
-                retreat = False
-                # check whether to retreat against combat nodes count
-                if len(self.nodes_run) >= self.config.combat['combat_nodes']:
-                    Util.log_msg(
-                        "Ran the necessary number of nodes. Retreating.")
-                    retreat = True
-
-                # check whether to retreat against fleet damage state
-                threshold_dmg_count = (
-                    self.primary_fleet.get_damage_counts_at_threshold(
-                        self.config.combat['retreat_limit'], self.dmg))
-                if threshold_dmg_count > 0:
-                    retreat_override = False
-                    if self.combined_fleet and threshold_dmg_count == 1:
-                        # if there is only one heavily damaged ship and it is
-                        # the flagship of the escort fleet, do not retreat
-                        if (self.fleets[2].damage_counts['heavy'] == 1 and
-                                self.fleets[2].flagship_damaged):
-                            retreat_override = True
-                            Util.log_msg(
-                                "The 1 ship damaged beyond threshold is the "
-                                "escort fleet's flagship (unsinkable). "
-                                "Continuing sortie.")
-                    if not retreat_override:
-                        Util.log_warning(
-                            "{} ship(s) damaged above threshold. Retreating."
-                            .format(threshold_dmg_count))
-                        retreat = True
+                continue_sortie = self._resolve_continue_retreat()
 
                 # resolve retreat/continue
-                if retreat:
+                if continue_sortie:
+                    self._select_sortie_continue_retreat(False)
+                else:
                     self._select_sortie_continue_retreat(True)
                     self.regions['left'].wait('home_menu_sortie.png', 30)
                     self._print_sortie_complete_msg(self.nodes_run)
                     sortieing = False
                     break
-                else:
-                    self._select_sortie_continue_retreat(False)
 
     def _print_sortie_complete_msg(self, nodes_run):
         """Method that prints the post-sortie status report indicating number
@@ -686,6 +659,41 @@ class CombatModule(object):
                 return custom_night_battles[next_node_count]
             else:
                 return self.map.resolve_night_battle(self.nodes_run[-1])
+
+    def _resolve_continue_retreat(self):
+        """Method to resolve whether or not to continue or retreat from the
+        sortie depending on number of nodes run, map data (if applicable), and
+        damage counts.
+
+        Returns:
+            bool: True if sortie should be continued; False otherwise
+        """
+        # check whether to retreat against combat nodes count
+        if len(self.nodes_run) >= self.config.combat['combat_nodes']:
+            Util.log_msg("Ran the necessary number of nodes. Retreating.")
+            return False
+
+        # check whether to retreat against fleet damage state
+        threshold_dmg_count = (
+            self.primary_fleet.get_damage_counts_at_threshold(
+                self.config.combat['retreat_limit'], self.dmg))
+        if threshold_dmg_count > 0:
+            continue_override = False
+            if self.combined_fleet and threshold_dmg_count == 1:
+                # if there is only one heavily damaged ship and it is
+                # the flagship of the escort fleet, do not retreat
+                if (self.fleets[2].damage_counts['heavy'] == 1 and
+                        self.fleets[2].flagship_damaged):
+                    continue_override = True
+                    Util.log_msg(
+                        "The 1 ship damaged beyond threshold is the escort "
+                        "fleet's flagship (unsinkable). Continuing sortie.")
+            if not continue_override:
+                Util.log_warning(
+                    "{} ship(s) damaged above threshold. Retreating.".format(
+                        threshold_dmg_count))
+                return False
+        return True
 
     def _select_sortie_continue_retreat(self, retreat):
         """Method that selects the sortie continue or retreat button.
