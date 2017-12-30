@@ -96,8 +96,10 @@ class CombatModule(object):
                         self.config.combat['lbas_group_2_nodes'] or
                         self.config.combat['lbas_group_3_nodes'])):
                 start_button = 'combat_start_lbas.png'
-            if not Util.check_and_click(
-                    self.regions['lower_right'], start_button):
+            # attempt to click sortie start button
+            if Util.check_and_click(self.regions['lower_right'], start_button):
+                Util.log_msg("Beginning combat sortie.")
+            else:
                 # generic sortie fail catch
                 Util.log_warning("Could not begin sortie for some reason!")
                 self.set_next_combat_time({'minutes': 5})
@@ -402,44 +404,17 @@ class CombatModule(object):
                 break
 
             if self.kc_region.exists('combat_retreat.png'):
-                retreat = False
-                # check whether to retreat against combat nodes count
-                if len(self.nodes_run) >= self.config.combat['combat_nodes']:
-                    Util.log_msg(
-                        "Ran the necessary number of nodes. Retreating.")
-                    retreat = True
-
-                # check whether to retreat against fleet damage state
-                threshold_dmg_count = (
-                    self.primary_fleet.get_damage_counts_at_threshold(
-                        self.config.combat['retreat_limit'], self.dmg))
-                if threshold_dmg_count > 0:
-                    retreat_override = False
-                    if self.combined_fleet and threshold_dmg_count == 1:
-                        # if there is only one heavily damaged ship and it is
-                        # the flagship of the escort fleet, do not retreat
-                        if (self.fleets[2].damage_counts['heavy'] == 1 and
-                                self.fleets[2].flagship_damaged):
-                            retreat_override = True
-                            Util.log_msg(
-                                "The 1 ship damaged beyond threshold is the "
-                                "escort fleet's flagship (unsinkable). "
-                                "Continuing sortie.")
-                    if not retreat_override:
-                        Util.log_warning(
-                            "{} ship(s) damaged above threshold. Retreating."
-                            .format(threshold_dmg_count))
-                        retreat = True
+                continue_sortie = self._resolve_continue_sortie()
 
                 # resolve retreat/continue
-                if retreat:
-                    self._select_sortie_continue_retreat(True)
+                if continue_sortie:
+                    self._select_continue_sortie(True)
+                else:
+                    self._select_continue_sortie(False)
                     self.regions['left'].wait('home_menu_sortie.png', 30)
                     self._print_sortie_complete_msg(self.nodes_run)
                     sortieing = False
                     break
-                else:
-                    self._select_sortie_continue_retreat(False)
 
     def _print_sortie_complete_msg(self, nodes_run):
         """Method that prints the post-sortie status report indicating number
@@ -648,7 +623,8 @@ class CombatModule(object):
             # if live engine, custom formation can be applied by node name or
             # node count; if a custom formation is not defined, defer to the
             # mapData instance's resolve_formation method
-            if self.current_node.name in custom_formations:
+            if (self.current_node and
+                    self.current_node.name in custom_formations):
                 return (custom_formations[self.current_node.name], )
             elif next_node_count in custom_formations:
                 return (custom_formations[next_node_count], )
@@ -660,7 +636,7 @@ class CombatModule(object):
         on the combat engine mode and any custom specified night battle modes.
 
         Returns:
-            bool: True if night battle should be conducted; False otherwise
+            bool: True if night battle should be conducted, False otherwise
         """
         # no +1 since this happens after entering a node
         next_node_count = len(self.nodes_run)
@@ -678,26 +654,54 @@ class CombatModule(object):
             # if live engine, custom night battle modes can be applied by node
             # name or node count; if a custom night battle mode is not defined,
             # defer to the mapData instance's resolve_night_battle method
-            if self.current_node.name in custom_night_battles:
+            if (self.current_node and
+                    self.current_node.name in custom_night_battles):
                 return custom_night_battles[self.current_node.name]
             elif next_node_count in custom_night_battles:
                 return custom_night_battles[next_node_count]
             else:
-                return self.map.resolve_night_battle(self.nodes_run[-1])
+                return self.map.resolve_night_battle(self.current_node)
 
-    def _select_sortie_continue_retreat(self, retreat):
-        """Method that selects the sortie continue or retreat button.
+    def _resolve_continue_sortie(self):
+        """Method to resolve whether or not to continue the sortie based on
+        number of nodes run, map data (if applicable), and damage counts.
 
-        Args:
-            retreat (bool): True if the retreat button should be pressed,
-                False otherwise
+        Returns:
+            bool: True if sortie should be continued, False otherwise
         """
-        if retreat:
-            Util.log_msg("Retreating from sortie.")
-            Util.check_and_click(self.kc_region, 'combat_retreat.png')
-        else:
-            Util.log_msg("Continuing sortie.")
-            Util.check_and_click(self.kc_region, 'combat_continue.png')
+        # check whether to retreat against combat nodes count
+        if len(self.nodes_run) >= self.config.combat['combat_nodes']:
+            Util.log_msg("Ran the necessary number of nodes. Retreating.")
+            return False
+
+        # if on live engine mode, check if the current node is a retreat node
+        if self.config.combat['engine'] == 'live':
+            if not self.map.resolve_continue_sortie(self.current_node):
+                Util.log_msg("Node {} is a retreat node. Retreating.".format(
+                    self.current_node))
+                return False
+
+        # check whether to retreat against fleet damage state
+        threshold_dmg_count = (
+            self.primary_fleet.get_damage_counts_at_threshold(
+                self.config.combat['retreat_limit'], self.dmg))
+        if threshold_dmg_count > 0:
+            continue_override = False
+            if self.combined_fleet and threshold_dmg_count == 1:
+                # if there is only one heavily damaged ship and it is
+                # the flagship of the escort fleet, do not retreat
+                if (self.fleets[2].damage_counts['heavy'] == 1 and
+                        self.fleets[2].flagship_damaged):
+                    continue_override = True
+                    Util.log_msg(
+                        "The 1 ship damaged beyond threshold is the escort "
+                        "fleet's flagship (unsinkable). Continuing sortie.")
+            if not continue_override:
+                Util.log_warning(
+                    "{} ship(s) damaged above threshold. Retreating.".format(
+                        threshold_dmg_count))
+                return False
+        return True
 
     def _select_formation(self, formation):
         """Method that selects the specified formation on-screen.
@@ -734,6 +738,20 @@ class CombatModule(object):
             Util.log_msg("Declining night battle.")
             Util.check_and_click(self.kc_region, 'combat_nb_retreat.png')
             return False
+
+    def _select_continue_sortie(self, continue_sortie):
+        """Method that selects the sortie continue or retreat button.
+
+        Args:
+            continue_sortie (bool): True if the the sortie continue button
+            should be pressed, False otherwise
+        """
+        if continue_sortie:
+            Util.log_msg("Continuing sortie.")
+            Util.check_and_click(self.kc_region, 'combat_continue.png')
+        else:
+            Util.log_msg("Retreating from sortie.")
+            Util.check_and_click(self.kc_region, 'combat_retreat.png')
 
     def _resolve_fcf(self):
         """Method that resolves the FCF prompt. Does not use FCF if there are

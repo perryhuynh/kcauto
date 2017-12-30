@@ -6,7 +6,8 @@
 			"coords": [244, 280]
 		},
 		"C": {
-			"coords": [185, 167]
+			"coords": [185, 167],
+			"types": ["retreat"]
 		},
 		"D": {
 			"coords": [342, 139]
