@@ -70,7 +70,7 @@ class PvPModule(object):
         # start pvp
         Util.wait_and_click(self.regions['lower_left'], 'pvp_start_1.png', 30)
         Util.wait_and_click(self.regions['lower'], 'pvp_start_2.png', 30)
-        Util.log_msg("Beginning PvP.")
+        Util.log_msg("Beginning PvP sortie.")
         Util.rejigger_mouse(self.regions, 'top')
         Util.wait_and_click(self.regions[formation], formation)
 

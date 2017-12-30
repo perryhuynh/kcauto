@@ -96,8 +96,10 @@ class CombatModule(object):
                         self.config.combat['lbas_group_2_nodes'] or
                         self.config.combat['lbas_group_3_nodes'])):
                 start_button = 'combat_start_lbas.png'
-            if not Util.check_and_click(
-                    self.regions['lower_right'], start_button):
+            # attempt to click sortie start button
+            if Util.check_and_click(self.regions['lower_right'], start_button):
+                Util.log_msg("Beginning combat sortie.")
+            else:
                 # generic sortie fail catch
                 Util.log_warning("Could not begin sortie for some reason!")
                 self.set_next_combat_time({'minutes': 5})
