@@ -1,3 +1,7 @@
+#### 0.2.8
+
+* Bugfix in Combat module where the script would hang if a sortie ended on a resource node
+
 #### 0.2.7
 
 * Revise sleeps for expeditions and click points for PvP
