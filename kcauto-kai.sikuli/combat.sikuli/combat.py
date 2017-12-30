@@ -623,7 +623,8 @@ class CombatModule(object):
             # if live engine, custom formation can be applied by node name or
             # node count; if a custom formation is not defined, defer to the
             # mapData instance's resolve_formation method
-            if self.current_node.name in custom_formations:
+            if (self.current_node and
+                    self.current_node.name in custom_formations):
                 return (custom_formations[self.current_node.name], )
             elif next_node_count in custom_formations:
                 return (custom_formations[next_node_count], )
@@ -653,7 +654,8 @@ class CombatModule(object):
             # if live engine, custom night battle modes can be applied by node
             # name or node count; if a custom night battle mode is not defined,
             # defer to the mapData instance's resolve_night_battle method
-            if self.current_node.name in custom_night_battles:
+            if (self.current_node and
+                    self.current_node.name in custom_night_battles):
                 return custom_night_battles[self.current_node.name]
             elif next_node_count in custom_night_battles:
                 return custom_night_battles[next_node_count]
