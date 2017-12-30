@@ -135,6 +135,7 @@ class MapData(object):
 class Node(object):
     name = ''
     coords = []
+    all_coords = []
     types = []
     formation = ''
     night_battle = None
@@ -147,9 +148,10 @@ class Node(object):
             node_data (TYPE): Description
         """
         self.name = name
-        self.coords.append(node_data['coords'])
+        self.coords = node_data['coords']
+        self.all_coords.append(node_data['coords'])
         if 'altCoords' in node_data:
-            self.coords.extend(node_data['altCoords'])
+            self.all_coords.extend(node_data['altCoords'])
         self.types = node_data['types'] if 'types' in node_data else []
         self.formation = (
             node_data['formation'] if 'formation' in node_data else '')
@@ -158,7 +160,7 @@ class Node(object):
 
     def coord_match(self, x, y):
         node_buffer = 35 if 'boss' in self.types else 20
-        for coord in self.coords:
+        for coord in self.all_coords:
             min_x = coord[0] - node_buffer
             max_x = coord[0] + node_buffer
             min_y = coord[1] - node_buffer
