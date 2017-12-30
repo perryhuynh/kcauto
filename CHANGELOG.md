@@ -1,5 +1,7 @@
 #### 0.2.8
 
+* Revise expedition retrieval logic to reduce chance of infinite logic loop
+* Add expeditions 33 and 34 to list of expeditions that get reset after a combat sortie
 * Bugfix in Combat module where the script would hang if a sortie ended on a resource node
 
 #### 0.2.7
