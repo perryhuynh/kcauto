@@ -114,7 +114,7 @@ class MapData(object):
             node (Node): Node object for the node the fleet is at
 
         Returns:
-            bool: True if night battle should be conducted at the node; False
+            bool: True if night battle should be conducted at the node, False
                 otherwise
         """
         if node:
@@ -134,7 +134,7 @@ class MapData(object):
             node (Node): Node object for the node the fleet is at
 
         Returns:
-            bool: True if sortie shoud be continued; False otherwise
+            bool: True if sortie shoud be continued, False otherwise
         """
         if node:
             if 'retreat' in node.types:

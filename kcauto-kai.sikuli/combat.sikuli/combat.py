@@ -404,13 +404,13 @@ class CombatModule(object):
                 break
 
             if self.kc_region.exists('combat_retreat.png'):
-                continue_sortie = self._resolve_continue_retreat()
+                continue_sortie = self._resolve_continue_sortie()
 
                 # resolve retreat/continue
                 if continue_sortie:
-                    self._select_sortie_continue_retreat(False)
+                    self._select_continue_sortie(True)
                 else:
-                    self._select_sortie_continue_retreat(True)
+                    self._select_continue_sortie(False)
                     self.regions['left'].wait('home_menu_sortie.png', 30)
                     self._print_sortie_complete_msg(self.nodes_run)
                     sortieing = False
@@ -635,7 +635,7 @@ class CombatModule(object):
         on the combat engine mode and any custom specified night battle modes.
 
         Returns:
-            bool: True if night battle should be conducted; False otherwise
+            bool: True if night battle should be conducted, False otherwise
         """
         # no +1 since this happens after entering a node
         next_node_count = len(self.nodes_run)
@@ -665,7 +665,7 @@ class CombatModule(object):
         number of nodes run, map data (if applicable), and damage counts.
 
         Returns:
-            bool: True if sortie should be continued; False otherwise
+            bool: True if sortie should be continued, False otherwise
         """
         # check whether to retreat against combat nodes count
         if len(self.nodes_run) >= self.config.combat['combat_nodes']:
@@ -698,20 +698,6 @@ class CombatModule(object):
                         threshold_dmg_count))
                 return False
         return True
-
-    def _select_sortie_continue_retreat(self, retreat):
-        """Method that selects the sortie continue or retreat button.
-
-        Args:
-            retreat (bool): True if the retreat button should be pressed,
-                False otherwise
-        """
-        if retreat:
-            Util.log_msg("Retreating from sortie.")
-            Util.check_and_click(self.kc_region, 'combat_retreat.png')
-        else:
-            Util.log_msg("Continuing sortie.")
-            Util.check_and_click(self.kc_region, 'combat_continue.png')
 
     def _select_formation(self, formation):
         """Method that selects the specified formation on-screen.
@@ -748,6 +734,20 @@ class CombatModule(object):
             Util.log_msg("Declining night battle.")
             Util.check_and_click(self.kc_region, 'combat_nb_retreat.png')
             return False
+
+    def _select_continue_sortie(self, continue_sortie):
+        """Method that selects the sortie continue or retreat button.
+
+        Args:
+            continue_sortie (bool): True if the the sortie continue button
+            should be pressed, False otherwise
+        """
+        if continue_sortie:
+            Util.log_msg("Continuing sortie.")
+            Util.check_and_click(self.kc_region, 'combat_continue.png')
+        else:
+            Util.log_msg("Retreating from sortie.")
+            Util.check_and_click(self.kc_region, 'combat_retreat.png')
 
     def _resolve_fcf(self):
         """Method that resolves the FCF prompt. Does not use FCF if there are
