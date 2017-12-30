@@ -14,8 +14,10 @@ class Globals(object):
     FATIGUE_SIMILARITY = 0.8
     FLEET_ICON_SIMILARITY = 0.8
 
-    # area expansion presets
+    # area expansion presets; format is in [left, right, up, down] relative to
+    # the center of the match
     EXPAND = {
         'repair_list': [-325, 35, -10, 6],
-        'arrow_navigation': [-10, 10, -5, 5]
+        'arrow_navigation': [-10, 10, -5, 5],
+        'shiplist_sort': [-4, 36, -10, 10]
     }

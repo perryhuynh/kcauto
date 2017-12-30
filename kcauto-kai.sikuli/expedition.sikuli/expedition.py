@@ -108,12 +108,7 @@ class ExpeditionModule(object):
         Util.rejigger_mouse(self.regions, 'top')
         # switch fleet as necessary
         if fleet.fleet_id != 2:
-            Util.wait_and_click_and_wait(
-                self.regions['top_submenu'],
-                'fleet_{:d}.png'.format(fleet.fleet_id),
-                self.regions['top_submenu'],
-                'fleet_{:d}_active.png'.format(fleet.fleet_id))
-            Util.kc_sleep()
+            Fleet.switch(self.regions['top_submenu'], fleet.fleet_id)
 
         if self.kc_region.exists('ship_state_busy.png'):
             # fleet is already on an expedition
