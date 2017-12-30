@@ -48,10 +48,9 @@
 		},
 		"P": {
 			"coords": [181, 273],
-			"types": ["boss"]
-		},
-		"P(backup)": {
-			"coords": [206, 324],
+			"altCoords": [
+				[206, 324],
+			],
 			"types": ["boss"]
 		},
 		"Q": {
