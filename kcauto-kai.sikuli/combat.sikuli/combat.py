@@ -310,7 +310,7 @@ class CombatModule(object):
         sortieing = True
         self.nodes_run = []
         while sortieing:
-            at_node = self._run_loop_between_nodes()
+            at_node, dialogue_click = self._run_loop_between_nodes()
 
             # stop the background observer if no longer on the map screen
             if self.config.combat['engine'] == 'live':
@@ -320,12 +320,14 @@ class CombatModule(object):
                 # arrived at combat node
                 self._increment_nodes_run()
 
-                # click to get rid of initial boss dialogue in case it exists
-                Util.kc_sleep(5)
-                Util.click_screen(self.regions, 'lbas')
-                Util.kc_sleep()
-                Util.click_screen(self.regions, 'lbas')
-                Util.rejigger_mouse(self.regions, 'lbas')
+                if dialogue_click:
+                    # click to get rid of initial boss dialogue in case it
+                    # exists
+                    Util.kc_sleep(5)
+                    Util.click_screen(self.regions, 'center')
+                    Util.kc_sleep()
+                    Util.click_screen(self.regions, 'center')
+                    Util.rejigger_mouse(self.regions, 'lbas')
 
                 combat_result = self._run_loop_during_battle()
 
@@ -364,11 +366,11 @@ class CombatModule(object):
                         self.kc_region.exists('combat_flagship_dmg.png') or
                         self.kc_region.exists('combat_retreat.png')):
                     if self.regions['lower_right_corner'].exists('next.png'):
-                        Util.click_screen(self.regions, 'center')
+                        Util.click_screen(self.regions, 'shipgirl')
                         Util.rejigger_mouse(self.regions, 'top')
                     elif self.regions['lower_right_corner'].exists(
                             'next_alt.png'):
-                        Util.click_screen(self.regions, 'center')
+                        Util.click_screen(self.regions, 'shipgirl')
                         Util.rejigger_mouse(self.regions, 'top')
                     elif self.combined_fleet or self.striking_fleet:
                         self._resolve_fcf()
@@ -387,6 +389,15 @@ class CombatModule(object):
                 Util.click_screen(self.regions, 'game')
                 self.regions['left'].wait('home_menu_sortie.png', 30)
                 self._print_sortie_complete_msg(self.nodes_run)
+                sortieing = False
+                break
+
+            if self.regions['lower_right_corner'].exists('next_alt.png'):
+                # resource node end; sortie complete
+                while not self.regions['left'].exists('home_menu_sortie.png'):
+                    Util.click_screen(self.regions, 'shipgirl')
+                    Util.rejigger_mouse(self.regions, 'top')
+                    Util.kc_sleep(1)
                 sortieing = False
                 break
 
@@ -449,6 +460,8 @@ class CombatModule(object):
 
         Returns:
             bool: True if the method ends on a combat node, False otherwise
+            bool: True if the click to remove boss dialogue should be done,
+                False otherwise (only applicable if first bool is True)
         """
         at_node = False
 
@@ -459,6 +472,7 @@ class CombatModule(object):
 
         while not at_node:
             if self.kc_region.exists('compass.png'):
+                # spin compass
                 while (self.kc_region.exists('compass.png')):
                     Util.click_screen(self.regions, 'center')
                     Util.kc_sleep(3)
@@ -466,6 +480,8 @@ class CombatModule(object):
                         'formation_line_ahead.png') or
                     self.regions['formation_combinedfleet_1'].exists(
                         'formation_combinedfleet_1.png')):
+                # check for both single fleet and combined fleet formations
+                # since combined fleets can have single fleet battles
                 self._print_current_node()
                 formations = self._resolve_formation()
                 for formation in formations:
@@ -473,7 +489,7 @@ class CombatModule(object):
                         break
                 Util.rejigger_mouse(self.regions, 'lbas')
                 at_node = True
-                return True
+                return (True, True)
             elif self.kc_region.exists('combat_node_select.png'):
                 # node select dialog option exists; resolve fleet location and
                 # select node
@@ -489,16 +505,21 @@ class CombatModule(object):
                         next_node, self.current_node))
                     self.map.nodes[next_node].click_node(self.regions['game'])
                     Util.rejigger_mouse(self.regions, 'lbas')
-            elif self.regions['lower_right_corner'].exists(
-                    'combat_flagship_dmg.png'):
-                return False
-            elif (self.regions['lower_right_corner'].exists('next_alt.png') or
-                    self.regions['lower_right_corner'].exists('next.png') or
+            elif (self.regions['lower_right_corner'].exists('next.png') or
                     self.kc_region.exists('combat_nb_fight.png')):
+                # post-combat or night battle select without selecting a
+                # formation
                 self._print_current_node()
                 Util.rejigger_mouse(self.regions, 'lbas')
                 at_node = True
-                return True
+                return (True, False)
+            elif self.regions['lower_right_corner'].exists(
+                    'combat_flagship_dmg.png'):
+                # flagship retreat
+                return (False, False)
+            elif self.regions['lower_right_corner'].exists('next_alt.png'):
+                # resource node end
+                return (False, False)
 
     def _run_loop_during_battle(self):
         """Method that continuously runs during combat for the night battle
@@ -511,8 +532,7 @@ class CombatModule(object):
         while True:
             if self.kc_region.exists('combat_nb_fight.png'):
                 return 'night_battle'
-            elif (self.regions['lower_right_corner'].exists('next_alt.png') or
-                    self.regions['lower_right_corner'].exists('next.png')):
+            elif self.regions['lower_right_corner'].exists('next.png'):
                 return 'results'
             else:
                 pass
