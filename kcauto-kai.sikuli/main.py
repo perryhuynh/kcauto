@@ -6,6 +6,7 @@ from pvp import PvPModule
 from quest import QuestModule
 from repair import RepairModule
 from resupply import ResupplyModule
+from shipswitcher import ShipSwitcher
 from nav import Nav
 from stats import Stats
 from util import Util
@@ -75,6 +76,15 @@ class KCAutoKai(object):
         """
         self.config.read()
         self.config.validate()
+        # temp
+        self._focus_kancolle()
+        ss = ShipSwitcher(self.config, self.stats, self.regions, None, None)
+        ss._set_shiplist_counts()
+        print(ss.ship_count)
+        print(ss.ship_page_count)
+        print(ss.ship_last_page_count)
+        raise 0
+        # end temp
 
         if self.config.changed:
             self.active_fleets = {}
