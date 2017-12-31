@@ -56,7 +56,12 @@ class ShipSwitcher(object):
 
     def _get_ship_count(self):
         """Method that returns the number of ships in the port via the counter
-        at the top of the screen when at home.
+        at the top of the screen when at home. Directly calls the
+        read_ocr_number_text method then strips all non-number characters
+        because Tesseract OCR has issues detecting short number of characters
+        that are also white font on black backgrounds. Trick this by capturing
+        more of the region than is needed (includes a bit of the bucket icon)
+        then stripping out the superfluous/mis-recognized characters.
 
         Returns:
             int: number of ships in port
@@ -78,13 +83,12 @@ class ShipSwitcher(object):
         Args:
             target (str): the sorting to switch the shiplist to
         """
-        while not self.regions['__SHIPLISTICON_REGION'].exists(
+        while not self.regions['top_submenu'].exists(
                 'shiplist_sort_{}.png'.format(target)):
             Util.check_and_click(
-                self.regions['__SHIPLISTICON_REGION'],
+                self.regions['top_submenu'],
                 'shiplist_sort_arrow.png',
                 Globals.EXPAND['shiplist_sort'])
-            Util.kc_sleep(1)
 
     def _change_shiplist_page(self, target):
         if target == 'end':
