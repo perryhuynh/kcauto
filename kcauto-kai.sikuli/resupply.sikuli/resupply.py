@@ -1,3 +1,4 @@
+from fleet import Fleet
 from nav import Nav
 from util import Util
 
@@ -43,11 +44,7 @@ class ResupplyModule(object):
             if fleet.needs_resupply:
                 Util.log_msg("Resupplying fleet {}.".format(fleet_id))
                 if fleet_id != 1:
-                    Util.wait_and_click_and_wait(
-                        self.regions['top_submenu'],
-                        'fleet_{:d}.png'.format(fleet.fleet_id),
-                        self.regions['top_submenu'],
-                        'fleet_{:d}_active.png'.format(fleet.fleet_id))
+                    Fleet.switch(self.regions['top_submenu'], fleet.fleet_id)
                 Util.wait_and_click_and_wait(
                     self.regions['top_submenu'], 'resupply_all.png',
                     self.regions['lower_right'], 'resupply_all_done.png')
