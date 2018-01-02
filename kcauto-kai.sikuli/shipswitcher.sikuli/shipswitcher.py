@@ -78,10 +78,13 @@ class ShipSwitcher(object):
         pass
 
     def _switch_shiplist_sorting(self, target):
-        """Switches the shiplist sorting to the specified target mode.
+        """Switches the shiplist sorting to the specified target mode. 'first',
+        'prev', 'next', 'last' targets will click their respective buttons,
+        while an int target between 1 and 5 (inclusive) will click the page
+        number at that position at the bottom of the page (left to right).
 
         Args:
-            target (str): the sorting to switch the shiplist to
+            target (str, int): the sorting to switch the shiplist to
         """
         while not self.regions['top_submenu'].exists(
                 'shiplist_sort_{}.png'.format(target)):
@@ -107,6 +110,17 @@ class ShipSwitcher(object):
             Util.check_and_click(
                 self.regions['lower'], 'page_last.png',
                 Globals.EXPAND['arrow_navigation'])
+        elif 1 <= target <= 5:
+            zero_target = target - 1
+            x_start = 512 + (zero_target * 21) + (zero_target * 11)
+            x_stop = x_start + 11
+            y_start = 444
+            y_stop = 452
+
+            Util.click_coords(
+                self.kc_region,
+                Util.randint_gauss(x_start, x_stop),
+                Util.randint_gauss(y_start, y_stop))
 
     def _navigate_to_shiplist_page(self, target_page):
         current_page = self.curent_shiplist_page
