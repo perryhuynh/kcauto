@@ -392,9 +392,38 @@ class Util(object):
             preset (str): name of preset-area to move the mouse to
         """
         cls.rejigger_mouse(regions, preset)
-        regions['game'].mouseDown(Button.LEFT)
+        cls.click_mouse(regions['game'])
+
+    @classmethod
+    def click_coords(cls, region, x, y):
+        """Method to move the mouse to the specified x,y coordinates and
+        simulate clicking the mouse on the location.
+
+        Args:
+            region (Region): sikuli Region instance containing the last known
+                location of the Kantai Collection game screen
+            x (int): x-coords in pixels, relative to upper-left corner of game
+            y (int): y-coords in pixels, relative to upper-left corner of game
+        """
+        # offset x,y coords relative to upper-left corner of game to upper-left
+        # corner of screen
+        offset_x = region.x + x
+        offset_y = region.y + y
+        # move the mouse to offset location
+        region.mouseMove(Location(offset_x, offset_y))
+        cls.click_mouse(region)
+
+    @classmethod
+    def click_mouse(cls, region):
+        """Method to simulate clicking the mouse at its present location.
+
+        Args:
+            region (Region): sikuli Region instance containing the last known
+                location of the Kantai Collection game screen
+        """
+        region.mouseDown(Button.LEFT)
         cls.kc_sleep()
-        regions['game'].mouseUp(Button.LEFT)
+        region.mouseUp(Button.LEFT)
 
     @classmethod
     def check_and_click(cls, region, target, expand=[]):
