@@ -383,7 +383,7 @@ class Util(object):
         regions['game'].mouseMove(Location(rand_x, rand_y))
 
     @classmethod
-    def click_screen(cls, regions, preset):
+    def click_preset_region(cls, regions, preset):
         """Method to move the mouse to one of the preset regions defined in
         rejigger_mouse() and simulate clicking the mouse in the location.
 

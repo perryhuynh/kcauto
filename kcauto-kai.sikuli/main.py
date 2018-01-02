@@ -219,13 +219,13 @@ class KCAutoKai(object):
             bool: True if expeditions were received, False otherwise
         """
         if self.regions['expedition_flag'].exists('expedition_flag.png'):
-            Util.click_screen(self.regions, 'center')
+            Util.click_preset_region(self.regions, 'center')
             if self.modules['expedition']:
                 # expedition module is enabled
                 self.modules['expedition'].receive_expedition()
             self.regions['lower_right_corner'].wait('next.png', 30)
             while not self.regions['home_menu'].exists('home_menu_sortie.png'):
-                Util.click_screen(self.regions, 'shipgirl')
+                Util.click_preset_region(self.regions, 'shipgirl')
                 Util.kc_sleep()
             # recurse in case there are more expedition fleets to receive
             self.run_receive_expedition_cycle()

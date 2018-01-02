@@ -142,7 +142,7 @@ class LBAS(object):
         Util.rejigger_mouse(self.regions, 'top')
         while not self.regions['lbas_mode_switcher'].exists(
                 'lbas_group_mode_{}.png'.format(final_mode)):
-            Util.click_screen(self.regions, 'lbas_mode_switch_button')
+            Util.click_preset_region(self.regions, 'lbas_mode_switch_button')
             Util.rejigger_mouse(self.regions, 'top')
             Util.kc_sleep(1)
         Util.log_msg("LBAS group switched to {} mode.".format(final_mode))

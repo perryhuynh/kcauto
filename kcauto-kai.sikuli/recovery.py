@@ -43,7 +43,7 @@ class Recovery(object):
             while (kc_region.exists('next.png') and
                     not kc_region.exists(
                         Pattern('kc_reference_point.png').exact())):
-                Util.click_screen(regions, 'center')
+                Util.click_preset_region(regions, 'center')
                 sleep(2)
             if kc_region.exists(Pattern('kc_reference_point.png').exact()):
                 # reference point exists, so we are back in-game

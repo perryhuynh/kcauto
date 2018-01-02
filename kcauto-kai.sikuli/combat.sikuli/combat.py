@@ -173,7 +173,7 @@ class CombatModule(object):
             self.kc_region.wait('event_chalkboard.png', 10)
             while self.kc_region.exists('event_chalkboard'):
                 Util.kc_sleep(1)
-                Util.click_screen(self.regions, 'center')
+                Util.click_preset_region(self.regions, 'center')
                 Util.kc_sleep(1)
                 if self.regions['lower_right'].exists('sortie_select.png'):
                     break
@@ -326,9 +326,9 @@ class CombatModule(object):
                     # click to get rid of initial boss dialogue in case it
                     # exists
                     Util.kc_sleep(5)
-                    Util.click_screen(self.regions, 'center')
+                    Util.click_preset_region(self.regions, 'center')
                     Util.kc_sleep()
-                    Util.click_screen(self.regions, 'center')
+                    Util.click_preset_region(self.regions, 'center')
                     Util.rejigger_mouse(self.regions, 'lbas')
 
                 combat_result = self._run_loop_during_battle()
@@ -341,14 +341,14 @@ class CombatModule(object):
                 self.regions['lower_right_corner'].wait('next.png', 30)
 
                 # battle complete; resolve combat results
-                Util.click_screen(self.regions, 'center')
+                Util.click_preset_region(self.regions, 'center')
                 self.regions['game'].wait('mvp_marker.png', 30)
                 self.dmg = self.primary_fleet.check_damages(
                     self.regions['check_damage_combat'])
                 self.primary_fleet.print_damage_counts()
                 if self.combined_fleet:
                     self.regions['lower_right_corner'].wait('next.png', 30)
-                    Util.click_screen(self.regions, 'center')
+                    Util.click_preset_region(self.regions, 'center')
                     Util.kc_sleep(2)
                     self.regions['game'].wait('mvp_marker.png', 30)
                     fleet_two_damages = self.fleets[2].check_damages(
@@ -368,11 +368,11 @@ class CombatModule(object):
                         self.kc_region.exists('combat_flagship_dmg.png') or
                         self.kc_region.exists('combat_retreat.png')):
                     if self.regions['lower_right_corner'].exists('next.png'):
-                        Util.click_screen(self.regions, 'shipgirl')
+                        Util.click_preset_region(self.regions, 'shipgirl')
                         Util.rejigger_mouse(self.regions, 'top')
                     elif self.regions['lower_right_corner'].exists(
                             'next_alt.png'):
-                        Util.click_screen(self.regions, 'shipgirl')
+                        Util.click_preset_region(self.regions, 'shipgirl')
                         Util.rejigger_mouse(self.regions, 'top')
                     elif self.combined_fleet or self.striking_fleet:
                         self._resolve_fcf()
@@ -388,7 +388,7 @@ class CombatModule(object):
                     'combat_flagship_dmg.png'):
                 # flagship retreat; sortie complete
                 Util.log_msg("Flagship damaged. Automatic retreat.")
-                Util.click_screen(self.regions, 'game')
+                Util.click_preset_region(self.regions, 'game')
                 self.regions['left'].wait('home_menu_sortie.png', 30)
                 self._print_sortie_complete_msg(self.nodes_run)
                 sortieing = False
@@ -397,7 +397,7 @@ class CombatModule(object):
             if self.regions['lower_right_corner'].exists('next_alt.png'):
                 # resource node end; sortie complete
                 while not self.regions['left'].exists('home_menu_sortie.png'):
-                    Util.click_screen(self.regions, 'shipgirl')
+                    Util.click_preset_region(self.regions, 'shipgirl')
                     Util.rejigger_mouse(self.regions, 'top')
                     Util.kc_sleep(1)
                 sortieing = False
@@ -449,7 +449,7 @@ class CombatModule(object):
             if self.kc_region.exists('compass.png'):
                 # spin compass
                 while (self.kc_region.exists('compass.png')):
-                    Util.click_screen(self.regions, 'center')
+                    Util.click_preset_region(self.regions, 'center')
                     Util.kc_sleep(3)
             elif (self.regions['formation_line_ahead'].exists(
                         'formation_line_ahead.png') or
@@ -945,7 +945,7 @@ class CombatFleet(Fleet):
                 of the 7th ship
         """
         self.check_damages(regions['check_damage'])
-        Util.click_screen(regions, '7th_next')
+        Util.click_preset_region(regions, '7th_next')
         return self.check_damages(regions['check_damage_7th'], reset=False)
 
     def check_damage_flagship(self, regions):
