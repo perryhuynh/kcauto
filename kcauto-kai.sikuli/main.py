@@ -79,7 +79,7 @@ class KCAutoKai(object):
         # temp
         self._focus_kancolle()
         ss = ShipSwitcher(self.config, self.stats, self.regions, None, None)
-        ss._switch_shiplist_sorting('level')
+        ss._choose_ship_by_position(0)
         raise 0
         # end temp
 

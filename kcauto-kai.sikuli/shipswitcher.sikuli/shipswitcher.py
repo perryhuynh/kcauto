@@ -105,7 +105,35 @@ class ShipSwitcher(object):
         pass
 
     def _choose_ship_by_position(self, position):
-        pass
+        """Method that chooses the ship in the specified position in the
+        ship list.
+
+        Args:
+            position (int): integer between 1 and 10 specifying the position
+                that should be clicked on the ship list
+
+        Raises:
+            Exception: if position is not between 1 and 10
+        """
+        if not 1 <= position <= 10:
+            raise Exception(
+                "Invalid position passed to _choose_ship_by_position: {}"
+                .format(position))
+        zero_position = position - 1
+        # x start/stop do not change
+        x_start = 389
+        x_stop = 715
+        # y start/stop change depending on specified position; region has width
+        # of 326 pixels, height of 23 pixels, with a 5-pixel padding between
+        # each nth position on the list
+        y_start = 156 + (zero_position * 5) + (zero_position * 23)
+        y_stop = y_start + 23
+
+        Util.click_coords(
+            self.kc_region,
+            Util.randint_gauss(x_start, x_stop),
+            Util.randint_gauss(y_start, y_stop))
+        Util.kc_sleep(1)
 
     def _check_ship_availability(self):
         ship_not_available = False
