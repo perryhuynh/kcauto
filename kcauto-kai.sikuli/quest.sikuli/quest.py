@@ -178,7 +178,8 @@ class QuestModule(object):
                                 valid_quest['name']))
                         else:
                             # attempt to click and active quest
-                            Util.click_preset_region(self.regions, quest_bar_click)
+                            Util.click_preset_region(
+                                self.regions, quest_bar_click)
                             Util.kc_sleep(3, 0.5)
                             if not quest_bar.exists('quest_in_progress.png'):
                                 Util.log_msg("Quest queue full.")
@@ -242,7 +243,7 @@ class QuestModule(object):
                 page of quests, False otherwise
         """
         if Util.check_and_click(
-                self.regions['lower'], 'quests_next_page.png',
+                self.regions['lower'], 'page_next.png',
                 Globals.EXPAND['arrow_navigation']):
             Util.kc_sleep(1)
             return True

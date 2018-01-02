@@ -91,16 +91,24 @@ class ShipSwitcher(object):
                 Globals.EXPAND['shiplist_sort'])
 
     def _change_shiplist_page(self, target):
-        if target == 'end':
-            pass
-        elif target == 'back':
-            pass
-        elif target == 'forward':
-            pass
-        elif target == 'start':
-            pass
+        if target == 'first':
+            Util.check_and_click(
+                self.regions['lower'], 'page_first.png',
+                Globals.EXPAND['arrow_navigation'])
+        elif target == 'prev':
+            Util.check_and_click(
+                self.regions['lower'], 'page_prev.png',
+                Globals.EXPAND['arrow_navigation'])
+        elif target == 'next':
+            Util.check_and_click(
+                self.regions['lower'], 'page_next.png',
+                Globals.EXPAND['arrow_navigation'])
+        elif target == 'last':
+            Util.check_and_click(
+                self.regions['lower'], 'page_last.png',
+                Globals.EXPAND['arrow_navigation'])
 
-    def _switch_shiplist_page(self, target_page):
+    def _navigate_to_shiplist_page(self, target_page):
         current_page = self.curent_shiplist_page
         pass
 
@@ -143,7 +151,7 @@ class ShipSwitcher(object):
 
     def _resolve_replacement_ship(self):
         self._switch_shiplist_sorting('__TARGET')
-        self._switch_shiplist_page(5)
+        self._navigate_to_shiplist_page(5)
         self._choose_ship_by_position(4)
         if self._check_ship_availability():
             # click switch button
