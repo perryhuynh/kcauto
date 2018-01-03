@@ -179,7 +179,7 @@ class Node(object):
             max_y = coord[1] + node_buffer
             if min_x <= x <= max_x and min_y <= y <= max_y:
                 return True
-            return False
+        return False
 
     def click_node(self, kc_region):
         rand_x = kc_region.x + randint(self.coords[0] - 5, self.coords[0] + 5)
