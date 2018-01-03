@@ -123,8 +123,11 @@ class ShipSwitcher(object):
                 Util.randint_gauss(y_start, y_stop))
 
     def _navigate_to_shiplist_page(self, target_page):
+        if target_page > self.ship_page_count:
+            raise Exception(
+                "Invalid shiplist target page ({}) for number of known pages "
+                "({}).".format(target_page, self.ship_page_count))
         current_page = self.curent_shiplist_page
-        pass
 
     def _choose_ship_by_position(self, position):
         """Method that chooses the ship in the specified position in the
