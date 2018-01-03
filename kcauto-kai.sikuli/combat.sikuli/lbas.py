@@ -102,8 +102,8 @@ class LBAS(object):
             Util.kc_sleep(1)
         Util.kc_sleep(1)
         Util.wait_and_click_and_wait(
+            resupply_menu_button_region,
             resupply_menu_button_faded,
-            resupply_menu_button,
             resupply_menu_button_region,
             Pattern(resupply_menu_button).exact())
         Util.kc_sleep(1)
