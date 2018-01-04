@@ -3,7 +3,10 @@
 	"subworld": 3,
 	"nodes": {
 		"A": {
-			"coords": [612, 81]
+			"coords": [612, 81],
+			"altCoords": [
+				[631, 97]
+			]
 		},
 		"D": {
 			"coords": [402, 130],

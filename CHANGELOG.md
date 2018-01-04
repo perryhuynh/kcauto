@@ -1,3 +1,8 @@
+#### 0.2.9
+
+* Add support for LBAS in non-Event maps
+* Fix bug in `MapData` leading to incorrect node detection in the live combat engine
+
 #### 0.2.8
 
 * Update live combat engine to support 'retreat' node types via the JSON file (currently applied to 1-3E, 2-4C, 3-1A, and 4-1H)

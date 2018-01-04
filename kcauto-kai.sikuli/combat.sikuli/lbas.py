@@ -73,11 +73,22 @@ class LBAS(object):
             'medium': False
         }
         Util.log_msg("Begin resupplying LBAS groups.")
+        if self.config.combat['map'][0] == 'E':
+            resupply_menu_button = 'lbas_resupply_menu_button_event.png'
+            resupply_menu_button_faded = (
+                'lbas_resupply_menu_button_event_faded.png')
+            resupply_menu_button_region = self.regions['lower_left']
+        else:
+            resupply_menu_button = 'lbas_resupply_menu_button.png'
+            resupply_menu_button_faded = (
+                'lbas_resupply_menu_button_faded.png')
+            resupply_menu_button_region = self.regions['top_submenu']
+
         Util.wait_and_click_and_wait(
-            self.regions['lower_left'],
-            'lbas_resupply_menu_button_event.png',
-            self.regions['lower_left'],
-            Pattern('lbas_resupply_menu_button_event.png').exact())
+            resupply_menu_button_region,
+            resupply_menu_button,
+            resupply_menu_button_region,
+            Pattern(resupply_menu_button_faded).exact())
         Util.kc_sleep(1)
         for group in self.config.combat['lbas_groups']:
             Util.log_msg("Resupplying LBAS group {}.".format(group))
@@ -91,10 +102,10 @@ class LBAS(object):
             Util.kc_sleep(1)
         Util.kc_sleep(1)
         Util.wait_and_click_and_wait(
-            self.regions['lower_left'],
-            'lbas_resupply_menu_button_faded_event.png',
-            self.regions['lower_left'],
-            Pattern('lbas_resupply_menu_button_event.png').exact())
+            resupply_menu_button_region,
+            resupply_menu_button_faded,
+            resupply_menu_button_region,
+            Pattern(resupply_menu_button).exact())
         Util.kc_sleep(1)
         if fatigue['high']:
             return (False, 18)
