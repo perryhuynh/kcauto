@@ -9,7 +9,7 @@ class MapData(object):
     location = None
     world = None
     subworld = None
-    nodes = {}
+    nodes = None
 
     def __init__(self, location, regions, config):
         """Initializes a MapData instance. Holds the map and node information
@@ -44,6 +44,7 @@ class MapData(object):
         self.subworld = map_data['subworld']
 
         # instantiate Node objects for every node
+        self.nodes = {}
         for node in map_data['nodes']:
             self.nodes[node] = Node(node, map_data['nodes'][node])
 
@@ -144,9 +145,9 @@ class MapData(object):
 
 class Node(object):
     name = ''
-    coords = []
-    all_coords = []
-    types = []
+    coords = None
+    all_coords = None
+    types = None
     formation = ''
     night_battle = None
 
@@ -159,6 +160,7 @@ class Node(object):
         """
         self.name = name
         self.coords = node_data['coords']
+        self.all_coords = []
         self.all_coords.append(node_data['coords'])
         if 'altCoords' in node_data:
             self.all_coords.extend(node_data['altCoords'])
@@ -177,7 +179,7 @@ class Node(object):
             max_y = coord[1] + node_buffer
             if min_x <= x <= max_x and min_y <= y <= max_y:
                 return True
-            return False
+        return False
 
     def click_node(self, kc_region):
         rand_x = kc_region.x + randint(self.coords[0] - 5, self.coords[0] + 5)
