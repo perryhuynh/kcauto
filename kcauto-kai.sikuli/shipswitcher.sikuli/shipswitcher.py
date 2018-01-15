@@ -8,7 +8,7 @@ from util import Util
 
 
 # Order by NEW
-# - select NTH ship from START/END that is LOCKED/UNLOCKED/EITHER
+# - select NTH ship from END
 
 # Order by LEVEL
 # - select NTH ship from START/END that is LOCKED/UNLOCKED/EITHER
@@ -127,7 +127,37 @@ class ShipSwitcher(object):
             raise Exception(
                 "Invalid shiplist target page ({}) for number of known pages "
                 "({}).".format(target_page, self.ship_page_count))
-        current_page = self.curent_shiplist_page
+        current_page = self.current_shiplist_page
+        print("current page: {}".format(current_page))
+        while target_page != current_page:
+            page_delta = target_page - current_page
+            if (target_page <= 5
+                    and (current_page <= 3 or self.ship_page_count <= 5)):
+                self._change_shiplist_page(target_page)
+                current_page = target_page
+            elif (current_page >= self.ship_page_count - 2
+                    and target_page >= self.ship_page_count - 4):
+                self._change_shiplist_page(
+                    abs(self.ship_page_count - target_page - 5))
+                current_page = target_page
+            elif -3 < page_delta < 3:
+                self._change_shiplist_page(3 + page_delta)
+                current_page = current_page + page_delta
+            elif page_delta <= - 3:
+                if target_page <= 5:
+                    self._change_shiplist_page('first')
+                    current_page = 1
+                else:
+                    self._change_shiplist_page('prev')
+                    current_page -= 5
+            elif page_delta >= 3:
+                if target_page > self.ship_page_count - 5:
+                    self._change_shiplist_page('last')
+                    current_page = self.ship_page_count
+                else:
+                    self._change_shiplist_page('next')
+                    current_page += 5
+        self.current_shiplist_page = current_page
 
     def _choose_ship_by_position(self, position):
         """Method that chooses the ship in the specified position in the
@@ -166,10 +196,25 @@ class ShipSwitcher(object):
             return False
         return True
 
+    def _resolve_ship_page_and_position(self, reference, offset):
+        if reference == 'start':
+            start_offset = offset
+        if reference == 'end':
+            start_offset = self.ship_count - offset + 1
+        page = int(ceil(start_offset / float(self.SHIPS_PER_PAGE)))
+        position = (
+            start_offset % self.SHIPS_PER_PAGE
+            if start_offset % self.SHIPS_PER_PAGE is not 0
+            else self.SHIPS_PER_PAGE)
+        return (page, position)
+
     def _resolve_replacement_ship(self):
-        self._switch_shiplist_sorting('__TARGET')
-        self._navigate_to_shiplist_page(5)
-        self._choose_ship_by_position(4)
+        # self._switch_shiplist_sorting('__TARGET')
+        self.current_shiplist_page = 4  # x
+        page, position = self._resolve_ship_page_and_position('end', 23)
+        print('target page: {}, position: {}'.format(page, position))  # x
+        self._navigate_to_shiplist_page(page)
+        self._choose_ship_by_position(position)
         if self._check_ship_availability():
             # click switch button
             return True
