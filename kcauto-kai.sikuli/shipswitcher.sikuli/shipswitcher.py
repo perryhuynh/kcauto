@@ -20,6 +20,13 @@ from util import Util
 # [N/L][#][S/E][L/U/E]
 # T[L/U/E][SS/SSV/etc]
 
+# { slot: 1, ships: { sort order: 'new', offset: 50 }, {...} }
+# { slot: 1, ships: { sort order: 'new', start_offset: 50 }, {...} }
+# { slot: 1, ships: {sort order: 'level', start_offset: 50, class: 'sub', level: '<50'} }
+# { slot: 1, ships: {sort order: 'type', class: 'sub', level: '<50', locked: True } }
+# slot, sort_order, class, level, locked, sparkled
+# switch_criteria (damage, fatigue, sparkled)
+
 
 class ShipSwitcher(object):
     SHIPS_PER_PAGE = 10
@@ -36,9 +43,18 @@ class ShipSwitcher(object):
 
     def ship_switch_logic(self):
         self._set_shiplist_counts()
-        for i in range(1, 7):
-            if self._check_need_to_switch_ship(i):
-                self._press_switch_ship_button(i)
+        self.current_shiplist_page = 1
+        for slot in range(1, 7):
+            if slot not in self.config.ship_switcher:
+                continue
+            slot_config = self.config.ship_switcher[slot]
+            if self._check_need_to_switch_ship(slot_config):
+                Util.wait_and_click_and_wait(
+                    self.regions['__SHIP_PANEL_{}'.format(slot)],
+                    '__SHIP_SWITCH_INITIATE_BUTTON.png',
+                    self.regions['lower_right'],
+                    '__SHIP_SWITCH_BUTTON.png')
+                self._resolve_replacement_ship(slot_config)
                 # for '__OPTIONS':
                 #     self._resolve_replacement_ship()
 
@@ -70,12 +86,21 @@ class ShipSwitcher(object):
             self.regions['ship_counter'], 'shipcount_label.png', 'r', 48)
         return int(sub(r"\D", "", a))
 
-    def _check_need_to_switch_ship(self, position):
-        # check against settings in specific region: damage? fatigue?
-        pass
-
-    def _press_switch_ship_button(self, position):
-        pass
+    def _check_need_to_switch_ship(self, slot_config):
+        slot = slot_config['slot']
+        if 'damage' in slot_config['switch_criteria']:
+            if self.regions['__SHIP_PANEL_{}'.format(slot)].exists(
+                    '__HEAVY_DAMAGE.png'):
+                return True
+        if 'fatigue' in slot_config['switch_criteria']:
+            if self.regions['__SHIP_PANEL_{}'.format(slot)].exists(
+                    '__LOW_MORALE.png'):
+                return True
+        if 'sparkled' in slot_config['switch_criteria']:
+            if self.regions['__SHIP_PANEL_{}'.format(slot)].exists(
+                    '__SPARKLED_INDICATOR.png'):
+                return True
+        return False
 
     def _switch_shiplist_sorting(self, target):
         """Switches the shiplist sorting to the specified target mode. 'first',
@@ -190,11 +215,11 @@ class ShipSwitcher(object):
             Util.randint_gauss(y_start, y_stop))
         Util.kc_sleep(1)
 
-    def _check_ship_availability(self):
-        ship_not_available = False
-        if ship_not_available:
+    def _check_ship_availability(self, requirements):
+        if self.regions['__DAMAGE_CHECK'].exists('__HEAVY_DAMAGE'):
             return False
-        return True
+        return Util.check_and_click(
+            self.regions['lower_right'], '__SHIP_SWITCH_BUTTON.png')
 
     def _resolve_ship_page_and_position(self, reference, offset):
         if reference == 'start':
@@ -216,7 +241,8 @@ class ShipSwitcher(object):
         self._navigate_to_shiplist_page(page)
         self._choose_ship_by_position(position)
         if self._check_ship_availability():
-            # click switch button
             return True
         else:
+            Util.check_and_click(
+                self.regions['lower_right'], '__FIRST_ARROW_BUTTON.png')
             return False
