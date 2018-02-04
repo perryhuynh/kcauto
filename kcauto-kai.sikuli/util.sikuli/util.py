@@ -336,11 +336,6 @@ class Util(object):
         regions['formation_combinedfleet_4'] = Region(
             x + 580, y + 280, 160, 50)
 
-        # reduce the default max wait time in all regions for a more responsive
-        # kcauto-kai
-        for key in regions:
-            regions[key].setAutoWaitTimeout(1)
-
         return (kc, regions)
 
     @classmethod

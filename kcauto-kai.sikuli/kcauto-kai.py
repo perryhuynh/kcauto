@@ -25,6 +25,7 @@ sikuli.Settings.MinSimilarity = Globals.DEFAULT_SIMILARITY
 sikuli.Settings.WaitScanRate = Globals.SIKULI_SCANRATE
 sikuli.Settings.ObserveScanRate = Globals.SIKULI_SCANRATE
 sikuli.Settings.OcrTextRead = True
+sikuli.Settings.AutoWaitTimeout = 1
 sikuli.Settings.RepeatWaitTime = 0
 
 # check run-time args
