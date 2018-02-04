@@ -47,6 +47,7 @@ class Config(object):
     expeditions = {'enabled': False}
     pvp = {'enabled': False}
     combat = {'enabled': False}
+    ship_switcher = {'enabled': False}
     quests = {'enabled': False}
 
     def __init__(self, config_file):

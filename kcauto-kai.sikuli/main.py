@@ -78,10 +78,10 @@ class KCAutoKai(object):
         self.config.validate()
         # temp
         self._focus_kancolle()
-        ss = ShipSwitcher(self.config, self.stats, self.regions, None, None)
-        ss._set_shiplist_counts()
-        print(ss.ship_count)
-        ss._resolve_replacement_ship()
+        self.active_fleets[1] = CombatFleet(1)
+        self.combat_fleets[1] = self.active_fleets[1]
+        ss = ShipSwitcher(self.config, self.stats, self.regions, self.combat_fleets, None)
+        ss.ship_switch_logic()
         raise 0
         # end temp
 
