@@ -52,13 +52,27 @@ class ShipSwitcher(object):
                 'criteria': {
                     'damage': 'minor'
                 }
+            },
+            1: {
+                'slot': 1,
+                'ships': [
+                    {'sort_order': 'type', 'class': 'ss', 'level': '<50', 'locked': True, 'ringed': True}
+                ],
+                'criteria': {
+                    'sparkle': True
+                }
             }
         }
         x = self.kc_region.x
         y = self.kc_region.y
-        self.panel_regions = []
+        self.class_start_cache = {}
+        self.matched_ship_position_cache = []
+        self.shipswitcher_regions = {
+            'panels': [],
+            'shiplist_class_col': Region(x + 360, y + 120, 120, 315),
+        }
         for slot in range(0, 6):
-            self.panel_regions.append(Region(
+            self.shipswitcher_regions['panels'].append(Region(
                 x + 121 + (352 * (slot % 2)),
                 y + 135 + (113 * (slot / 2)),
                 330, 110))
@@ -73,11 +87,13 @@ class ShipSwitcher(object):
             slot_config = self.config.ship_switcher[slot]
             if self._check_need_to_switch_ship(slot, slot_config['criteria']):
                 Util.wait_and_click_and_wait(
-                    self.panel_regions[slot], 'shiplist_button.png',
-                    self.regions['lower_right'], 'page_first.png')
-                self._resolve_replacement_ship(slot_config)
-                # for '__OPTIONS':
-                #     self._resolve_replacement_ship()
+                    self.shipswitcher_regions['panels'][slot],
+                    'shiplist_button.png',
+                    self.regions['lower_right'],
+                    'page_first.png')
+                if not self._resolve_replacement_ship(slot_config):
+                    Util.check_and_click(
+                        self.regions['top_submenu'], 'fleet_1_active.png')
 
     def _set_shiplist_counts(self):
         """Method that sets the ship-list related internal counts based on the
@@ -108,17 +124,17 @@ class ShipSwitcher(object):
         return int(sub(r"\D", "", a))
 
     def _check_need_to_switch_ship(self, slot, criteria):
+        panel_regions = self.shipswitcher_regions['panels']
         if 'damage' in criteria:
-            if self.panel_regions[slot].exists('ship_state_dmg_{}.png'.format(
-                    criteria['damage'])):
+            if panel_regions[slot].exists(
+                    'ship_state_dmg_{}.png'.format(criteria['damage'])):
                 return True
         if 'fatigue' in criteria:
-            if self.panel_regions[slot].exists(
-                    '__LOW_MORALE.png'):
+            if panel_regions[slot].exists('__LOW_MORALE.png'):
                 return True
         if 'sparkle' in criteria:
             print('checking for sparkle')
-            if self.panel_regions[slot].exists('sparkle_indicator.png', 2):
+            if panel_regions[slot].exists('sparkle_indicator.png', 2):
                 return True
         return False
 
@@ -251,19 +267,44 @@ class ShipSwitcher(object):
             start_offset % self.SHIPS_PER_PAGE
             if start_offset % self.SHIPS_PER_PAGE is not 0
             else self.SHIPS_PER_PAGE)
-        return (page, position)
+        return (page, [position])
+
+    def _resolve_ship_position(self, ship_config):
+        ship_position_temp = []
+        matched_ships = Util.findAll_wrapper(
+            self.shipswitcher_regions['shiplist_class_col'],
+            'shiplist_class_{}.png'.format(ship_config['class']))
+        for ship in matched_ships:
+            ship_row = ship.left(1).right(435)
+            position = (ship_row.y - self.kc_region.y - 129) / 28
+            ship_position_temp.append(position)
+        ship_position_temp.sort()
+        return ship_position_temp
+
+    def _choose_and_check_availability_of_ship(self, position, criteria):
+        self._choose_ship_by_position(position)
+        if self._check_ship_availability(criteria):
+            return True
+        Util.check_and_click(
+            self.regions['lower_right'], 'page_first.png')
+        return False
 
     def _resolve_replacement_ship(self, slot_config):
+        positions = []
         for ship in slot_config['ships']:
             self._switch_shiplist_sorting(ship['sort_order'])
-            page, position = self._resolve_ship_page_and_position(
-                ship['offset_ref'], ship['offset'])
-            print('target page: {}, position: {}'.format(page, position))  # x
-            self._navigate_to_shiplist_page(page)
-            self._choose_ship_by_position(position)
-            if self._check_ship_availability(slot_config['criteria']):
-                return True
-            else:
-                Util.check_and_click(
-                    self.regions['lower_right'], 'page_first.png')
+            if 'offset_ref' in ship and 'offset' in ship:
+                page, positions = self._resolve_ship_page_and_position(
+                    ship['offset_ref'], ship['offset'])
+                self._navigate_to_shiplist_page(page)
+            if 'class' in ship:
+                while not positions and self.current_shiplist_page < self.ship_page_count:
+                    positions = self._resolve_ship_position(ship)
+                    if not positions:
+                        self._navigate_to_shiplist_page(self.current_shiplist_page + 1)
+
+            for position in positions:
+                if self._choose_and_check_availability_of_ship(
+                        position, slot_config['criteria']):
+                    return True
         return False
