@@ -79,7 +79,7 @@ class Util(object):
         return time - timedelta(hours=getattr(config, 'jst_offset', 0))
 
     @staticmethod
-    def read_ocr_number_text(kc_region, text_ref, dir, width):
+    def read_ocr_number_text(kc_region, text_ref=None, rdir=None, width=None):
         """Method for reading in text in reference to an asset or Match
         instance, and then cleaning up the OCR results, tuned for numbers.
 
@@ -88,7 +88,7 @@ class Util(object):
                 known location of the Kantai Collection game screen
             text_ref (str, Match): image name of reference or Match of
                 reference the OCR read should happen in relation to
-            dir (str): specifies in what direction relative to text_ref the
+            rdir (str): specifies in what direction relative to text_ref the
                 OCR read should occur: 'r' for 'right of text_ref' and 'l' for
                 'left of text_ref'
             width (int): width (in pixels) of the region the OCR read should
@@ -97,17 +97,21 @@ class Util(object):
         Returns:
             str: OCR read results, tuned for numbers
         """
-        if isinstance(text_ref, str):
-            if dir == 'r':
+        if text_ref is None and rdir is None and width is None:
+            text = kc_region.text().encode('utf-8')
+        if isinstance(text_ref, str) and rdir and width:
+            if rdir == 'r':
                 text = kc_region.find(text_ref).right(width).text().encode(
                     'utf-8')
-            elif dir == 'l':
+            elif rdir == 'l':
                 text = kc_region.find(text_ref).left(width).text().encode(
                     'utf-8')
-        elif isinstance(text_ref, Match) or isinstance(text_ref, JMatch):
-            if dir == 'r':
+        elif (
+                isinstance(text_ref, Match) or isinstance(text_ref, JMatch)
+                and rdir and width):
+            if rdir == 'r':
                 text = text_ref.right(width).text().encode('utf-8')
-            elif dir == 'l':
+            elif rdir == 'l':
                 text = text_ref.left(width).text().encode('utf-8')
         # replace characters to numbers
         text = (

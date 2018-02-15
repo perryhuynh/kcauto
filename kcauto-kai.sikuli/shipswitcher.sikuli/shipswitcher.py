@@ -26,6 +26,9 @@ from util import Util
 # { slot: 1, ships: {sort order: 'type', class: 'sub', level: '<50', locked: True } }
 # slot, order, class (only when sorting on class), level, locked, sparkled
 # switch_criteria (damage, fatigue, sparkled)
+# TODO: ADD "CUSTOM" SHIP-SPECIFIC SUPPORT
+# TODO: cache page position for class and custom
+# TODO: account for if matching ship cannot be found for class and custom
 
 
 class ShipSwitcher(object):
@@ -56,7 +59,7 @@ class ShipSwitcher(object):
             1: {
                 'slot': 1,
                 'ships': [
-                    {'sort_order': 'type', 'class': 'ss', 'level': '<50', 'locked': True, 'ringed': True}
+                    {'sort_order': 'type', 'class': 'ss', 'level': '>20'}
                 ],
                 'criteria': {
                     'sparkle': True
@@ -70,6 +73,7 @@ class ShipSwitcher(object):
         self.shipswitcher_regions = {
             'panels': [],
             'shiplist_class_col': Region(x + 360, y + 120, 120, 315),
+            'shiplist_class_ship_cols': Region(x + 360, y + 120, 190, 315),
         }
         for slot in range(0, 6):
             self.shipswitcher_regions['panels'].append(Region(
@@ -91,6 +95,7 @@ class ShipSwitcher(object):
                     'shiplist_button.png',
                     self.regions['lower_right'],
                     'page_first.png')
+                Util.rejigger_mouse(self.regions, 'top')
                 if not self._resolve_replacement_ship(slot_config):
                     Util.check_and_click(
                         self.regions['top_submenu'], 'fleet_1_active.png')
@@ -238,7 +243,7 @@ class ShipSwitcher(object):
         zero_position = position - 1
         # x start/stop do not change
         x_start = 389
-        x_stop = 715
+        x_stop = 700
         # y start/stop change depending on specified position; region has width
         # of 326 pixels, height of 23 pixels, with a 5-pixel padding between
         # each nth position on the list
@@ -275,9 +280,35 @@ class ShipSwitcher(object):
             self.shipswitcher_regions['shiplist_class_col'],
             'shiplist_class_{}.png'.format(ship_config['class']))
         for ship in matched_ships:
+            criteria_matched = True
             ship_row = ship.left(1).right(435)
+            ship_row.setAutoWaitTimeout(0)  # speed
             position = (ship_row.y - self.kc_region.y - 129) / 28
-            ship_position_temp.append(position)
+            if 'locked' in ship_config and criteria_matched:
+                ship_locked = (
+                    True if ship_row.exists('shiplist_lock.png') else False)
+                criteria_matched = (
+                    True if ship_config['locked'] == ship_locked else False)
+            if 'ringed' in ship_config and criteria_matched:
+                ship_ringed = (
+                    True if ship_row.exists('shiplist_ring.png') else False)
+                criteria_matched = (
+                    True if ship_config['ringed'] == ship_ringed else False)
+            if 'level' in ship_config and criteria_matched:
+                level_area = Region(
+                    ship_row.x + 160, ship_row.y, 50, ship_row.h)
+                ship_level = Util.read_ocr_number_text(level_area)
+                ship_level = 1 if not ship_level else ship_level
+                if ship_config['level'][0] == '<':
+                    criteria_matched = (
+                        True if ship_level <= int(ship_config['level'][1:])
+                        else False)
+                if ship_config['level'][0] == '>':
+                    criteria_matched = (
+                        True if ship_level >= int(ship_config['level'][1:])
+                        else False)
+            if criteria_matched:
+                ship_position_temp.append(position)
         ship_position_temp.sort()
         return ship_position_temp
 
