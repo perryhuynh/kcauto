@@ -1,7 +1,7 @@
 {
 	"world": "event",
 	"subworld": "1-1",
-	"nodes:": {
+	"nodes": {
 		"A": {
 			"coords": [144, 206],
 			"types": ["sub"]
@@ -46,7 +46,7 @@
 			"coords": [360, 119],
 			"types": ["boss", "sub"],
 			"altCoords": [
-				[366, 132],
+				[366, 132]
 			],
 		}
 	}
