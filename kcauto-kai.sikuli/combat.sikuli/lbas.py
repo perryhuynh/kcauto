@@ -76,7 +76,7 @@ class LBAS(object):
         if self.config.combat['map'][0] == 'E':
             resupply_menu_button = 'lbas_resupply_menu_button_event.png'
             resupply_menu_button_faded = (
-                'lbas_resupply_menu_button_event_faded.png')
+                'lbas_resupply_menu_button_faded_event.png')
             resupply_menu_button_region = self.regions['lower_left']
         else:
             resupply_menu_button = 'lbas_resupply_menu_button.png'
