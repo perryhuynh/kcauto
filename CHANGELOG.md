@@ -1,3 +1,7 @@
+#### 0.2.10
+
+* Bugfix in combat and fleet modules
+
 #### 0.2.9
 
 * Add support for LBAS in non-Event maps
