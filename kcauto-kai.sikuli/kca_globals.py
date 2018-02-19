@@ -10,8 +10,8 @@ class Globals(object):
 
     # similarity thresholds for various asset types
     DEFAULT_SIMILARITY = 0.8
-    DAMAGE_SIMILARITY = 0.7
-    FATIGUE_SIMILARITY = 0.8
+    DAMAGE_SIMILARITY = 0.85
+    FATIGUE_SIMILARITY = 0.85
     FLEET_ICON_SIMILARITY = 0.8
 
     # area expansion presets; format is in [left, right, up, down] relative to

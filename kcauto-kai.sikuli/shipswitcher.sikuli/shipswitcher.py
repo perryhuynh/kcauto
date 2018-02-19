@@ -52,10 +52,10 @@ class ShipSwitcher(object):
                 self.config.combat['repair_limit']) > 0:
             # if ships are damaged at or above threshold, attempt switch
             return True
-        if fleet.fatigue['medium'] > 0 or fleet.fatigue['high'] > 0:
-            # ships are fatigued; brute force check for now
-            # TODO: only True if fatigue check is part of config
-            return True
+        if 'CheckFatigue' in self.config.combat['misc_options']:
+            if fleet.fatigue['medium'] > 0 or fleet.fatigue['high'] > 0:
+                # if ships are known to be fatigued, attempt switch
+                return True
         return False
 
     def ship_switch_logic(self):
