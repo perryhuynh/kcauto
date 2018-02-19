@@ -28,7 +28,8 @@ from util import Util
 # slot, order, class (only when sorting on class), level, locked, sparkled
 # switch_criteria (damage, fatigue, sparkled)
 # TODO: cache page position for class and custom
-# TODO: account for if matching ship cannot be found for class and custom
+# TODO: change CombatFleet's next sortie time accordingly
+# TODO: support under repair status for ships
 
 
 class ShipSwitcher(object):
@@ -462,8 +463,15 @@ class ShipSwitcher(object):
             bool: True if a successful switch was made; False otherwise
         """
         ship_search_threads = []
+        cache_override = True
         self.temp_ship_position_dict = {}
         self._switch_shiplist_sorting('class')
+
+        # start search from cached position, if available
+        if slot_config['slot'] in self.position_cache:
+            self._navigate_to_shiplist_page(
+                self.position_cache[slot_config['slot']])
+
         for ship in slot_config['ships']:
             ship_search_threads.append(Thread(
                 target=self._match_shiplist_ships_func,
@@ -476,6 +484,12 @@ class ShipSwitcher(object):
 
             if not self.temp_ship_position_dict:
                 self._navigate_to_shiplist_page(self.current_shiplist_page + 1)
+                continue
+
+            if cache_override:
+                # update cache on first encounter
+                self._set_position_cache(slot_config['slot'])
+                cache_override = False
 
             for ship_positions in self.temp_ship_position_dict:
                 for position in ship_positions:
@@ -496,8 +510,15 @@ class ShipSwitcher(object):
             bool: True if a successful switch was made; False otherwise
         """
         ship_search_threads = []
+        cache_override = True
         self.temp_ship_position_list = []
         self._switch_shiplist_sorting('class')
+
+        # start search from cached position, if available
+        if slot_config['slot'] in self.position_cache:
+            self._navigate_to_shiplist_page(
+                self.position_cache[slot_config['slot']])
+
         for ship in slot_config['ships']:
             ship_search_threads.append(Thread(
                 target=self._match_shiplist_ships_func,
@@ -511,6 +532,11 @@ class ShipSwitcher(object):
                 self._navigate_to_shiplist_page(self.current_shiplist_page + 1)
                 continue
 
+            if cache_override:
+                # update cache on first encounter
+                self._set_position_cache(slot_config['slot'])
+                cache_override = False
+
             self.temp_ship_position_list.sort()
             for position in self.temp_ship_position_list:
                 if self._choose_and_check_availability_of_ship(
@@ -520,11 +546,13 @@ class ShipSwitcher(object):
         return False
 
     def _match_shiplist_ships_func(self, mode, name, ship_config):
-        """Child multithreaded method for checking damage states.
+        """Child multithreaded method for finding matching classes and ships.
 
         Args:
-            type (str): which damage state to check for
-            region (Region): Region in which to search for the damage state
+            mode (str): specifies whether or not the search is for 'ship's or
+                'class'es
+            name (str): name of class or ship
+            ship_config (dict): dictionary of ship criteria
         """
         img = (
             'shiplist_ship_{}.png'.format(name) if mode == 'ship'
@@ -539,3 +567,8 @@ class ShipSwitcher(object):
         elif mode == 'class':
             self.temp_ship_position_list.extend(ship_positions)
 
+    def _set_position_cache(self, name):
+        self.position_cache[name] = (
+            self.current_shiplist_page - 1
+            if self.current_shiplist_page - 1 > 0
+            else 1)
