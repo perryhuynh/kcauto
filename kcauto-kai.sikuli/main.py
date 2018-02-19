@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 from random import randint
-from combat import CombatModule, CombatFleet
-from expedition import ExpeditionModule, ExpeditionFleet
+from fleet import CombatFleet, ExpeditionFleet
+from combat import CombatModule
+from expedition import ExpeditionModule
 from pvp import PvPModule
 from quest import QuestModule
 from repair import RepairModule

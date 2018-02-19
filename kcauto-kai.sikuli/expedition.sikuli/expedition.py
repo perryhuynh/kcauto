@@ -1,5 +1,4 @@
 from sikuli import Pattern
-from random import choice
 from datetime import datetime, timedelta
 from fleet import Fleet
 from nav import Nav
@@ -164,58 +163,6 @@ class ExpeditionModule(object):
                 self.fleets[fleet_id].fleet_id,
                 self.fleets[fleet_id].return_time.strftime(
                     '%Y-%m-%d %H:%M:%S')))
-
-
-class ExpeditionFleet(Fleet):
-    def __init__(self, fleet_id, expeditions):
-        """Initializes the ExpeditionFleet object, an extension of the Fleet
-        class.
-
-        Args:
-            fleet_id (int): id of the fleet
-            expeditions (list): list of expeditions this expedition fleet
-                can be sent to
-        """
-        self.fleet_id = fleet_id
-        self.expeditions = expeditions
-        self.expedition = None
-        self.expedition_area = None
-        self.expedition_duration = None
-        self.dispatch_fleet_time = datetime.now()
-        self.return_time = datetime.now()
-
-    def choose_expedition(self):
-        """Method to randomly choose one of the expeditions specified in the
-        expedition fleet's valid expedition list
-        """
-        self.expedition = choice(self.expeditions)
-        expedition_info = get_expedition_info(self.expedition)
-        self.expedition_area = expedition_info['area']
-        self.expedition_duration = expedition_info['duration']
-
-    def dispatch_fleet(self):
-        """Method to set the proper flags of the ExpeditionFleet instance once
-        it has been sent on an expedition. Does not actually interact with the
-        game itself.
-        """
-        self.dispatch_fleet_time = datetime.now()
-        self.return_time = self.dispatch_fleet_time + self.expedition_duration
-        self.at_base = False
-        self.needs_resupply = False
-
-    def update_return_time(self, hours, minutes):
-        """Method to update the ExpeditionFleet's expected return time relative
-        to the current time.
-
-        Args:
-            hours (int): delta of number of hours
-            minutes (int): delta of number of minutes
-        """
-        self.dispatch_fleet_time = datetime.now()
-        self.return_time = self.dispatch_fleet_time + timedelta(
-            hours=hours, minutes=minutes)
-        self.at_base = False
-        self.needs_resupply = False
 
 
 def get_expedition_info(expedition):

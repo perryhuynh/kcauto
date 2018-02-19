@@ -1,7 +1,7 @@
 from sikuli import Pattern, Location
 from datetime import datetime, timedelta
 from globals import Globals
-from combat import CombatFleet
+from fleet import CombatFleet
 from nav import Nav
 from util import Util
 
