@@ -318,6 +318,19 @@ class ShipSwitcher(object):
             return 'conflict'
 
     def _resolve_ship_page_and_position(self, reference, offset):
+        """Given a start point (reference) and the offset, figure out the
+        page and position based off the current number of ships.
+
+        Args:
+            reference (str): 'start' or 'end', indiciating where the offset
+                begins from
+            offset (int): n-position from reference
+
+        Returns:
+            int: page where the specified ship is
+            list: list with one value indicating the position where the
+                specified ship is on the specified page
+        """
         if reference == 'start':
             start_offset = offset
         if reference == 'end':
@@ -330,12 +343,28 @@ class ShipSwitcher(object):
         return (page, [position])
 
     def _filter_ships(self, matched_ships, ship_config):
+        """Given a list of possible ship matches on the current ship list page,
+        filter on the ship criteria and return a list of valid positions on the
+        page.
+
+        Args:
+            matched_ships (list): list of regions, usually from a findAll
+                wrapper
+            ship_config (dict): dictionary of ship switch config
+
+        Returns:
+            list: list of positions of ships matching the criteria
+        """
         ship_position_temp = []
         for ship in matched_ships:
             criteria_matched = True
+            # create new region based on the match
             ship_row = ship.left(1).right(435)
             ship_row.setAutoWaitTimeout(0)  # speed
+            # find numeric position based on the new region's y-position
             position = (ship_row.y - self.kc_region.y - 129) / 28
+
+            # check against ship-specific criterias, if any
             if 'locked' in ship_config and criteria_matched:
                 ship_locked = (
                     True if ship_row.exists('shiplist_lock.png') else False)
@@ -359,12 +388,23 @@ class ShipSwitcher(object):
                     criteria_matched = (
                         True if ship_level >= int(ship_config['level'][1:])
                         else False)
+
             if criteria_matched:
                 ship_position_temp.append(position)
         ship_position_temp.sort()
         return ship_position_temp
 
     def _choose_and_check_availability_of_ship(self, position, criteria):
+        """Select a ship in the ship list based on the specified position,
+        and see if it available for switching in.
+
+        Args:
+            position (int): position in ship list
+            criteria (dict): dictionary of criteria
+
+        Returns:
+            bool or str: result of _check_ship_availability() call
+        """
         self._choose_ship_by_position(position)
         availability = self._check_ship_availability(criteria)
         if availability is True:
@@ -374,6 +414,15 @@ class ShipSwitcher(object):
         return availability
 
     def _resolve_replacement_ship(self, slot_config):
+        """Wrapper method to find and resolve a replacement ship.
+
+        Args:
+            slot_config (dict): dictionary containing the slot's config
+
+        Returns:
+            bool: True if a successful switch was made; False otherwise
+        """
+        # TODO: what happens when none of these specific methods dont' match???
         positions = []
         if slot_config['mode'] == 'position':
             return self._resolve_replacement_ship_by_position(slot_config)
@@ -383,6 +432,14 @@ class ShipSwitcher(object):
             return self._resolve_replacement_ship_by_class(slot_config)
 
     def _resolve_replacement_ship_by_position(self, slot_config):
+        """Method that finds a resolves a replacement ship by position.
+
+        Args:
+            slot_config (dict): dictionary containing the slot's config
+
+        Returns:
+            bool: True if a successful switch was made; False otherwise
+        """
         for ship in slot_config['ships']:
             self._switch_shiplist_sorting(ship['sort_order'])
             if 'offset_ref' in ship and 'offset' in ship:
@@ -396,6 +453,14 @@ class ShipSwitcher(object):
         return False
 
     def _resolve_replacement_ship_by_ship(self, slot_config):
+        """Method that finds a resolves a replacement ship by specific ship.
+
+        Args:
+            slot_config (dict): dictionary containing the slot's config
+
+        Returns:
+            bool: True if a successful switch was made; False otherwise
+        """
         ship_search_threads = []
         self.temp_ship_position_dict = {}
         self._switch_shiplist_sorting('class')
@@ -422,6 +487,14 @@ class ShipSwitcher(object):
                         break
 
     def _resolve_replacement_ship_by_class(self, slot_config):
+        """Method that finds a resolves a replacement ship by class.
+
+        Args:
+            slot_config (dict): dictionary containing the slot's config
+
+        Returns:
+            bool: True if a successful switch was made; False otherwise
+        """
         ship_search_threads = []
         self.temp_ship_position_list = []
         self._switch_shiplist_sorting('class')
