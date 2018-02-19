@@ -1,5 +1,4 @@
-from sikuli import (
-    Settings, Screen, App, Region, Location, Pattern, Match, Button)
+from sikuli import Screen, App, Region, Location, Pattern, Match, Button
 import org.sikuli.script.FindFailed as FindFailed
 # alternate Region class to check instasnce type against
 # https://answers.launchpad.net/sikuli/+question/269004

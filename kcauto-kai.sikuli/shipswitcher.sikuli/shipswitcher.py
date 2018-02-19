@@ -3,7 +3,7 @@ from math import ceil
 from re import sub
 from threading import Thread
 from kca_globals import Globals
-from fleet import Fleet
+from fleet import CombatFleet
 from nav import Nav
 from util import Util
 
@@ -92,6 +92,9 @@ class ShipSwitcher(object):
         self.current_shiplist_page = 1
 
     def ship_switch_logic(self):
+        """Primary logic loop which goes through the 6 ship slots and switches
+        ships as necessary. Only avilable for Fleet 1.
+        """
         self._set_shiplist_counts()
         for slot in range(0, 6):
             if slot not in self.config.ship_switcher:
@@ -111,7 +114,7 @@ class ShipSwitcher(object):
 
     def _set_shiplist_counts(self):
         """Method that sets the ship-list related internal counts based on the
-        number of ships in the port
+        number of ships in the port.
         """
         self.ship_count = self._get_ship_count()
         self.ship_page_count = int(
@@ -138,6 +141,17 @@ class ShipSwitcher(object):
         return int(sub(r"\D", "", a))
 
     def _check_need_to_switch_ship(self, slot, criteria):
+        """Method that checks whether or not the ship in the specified slot
+        needs to be switched out based on the criteria.
+
+        Args:
+            slot (int): slot ID (0-base)
+            criteria (dict): dictionary of criteria for the slot
+
+        Returns:
+            bool: True if the ship meets the criteria to be swapped out; False
+                otherwise
+        """
         panel_regions = self.module_regions['panels']
         if 'damage' in criteria:
             if panel_regions[slot].exists(
@@ -153,13 +167,10 @@ class ShipSwitcher(object):
         return False
 
     def _switch_shiplist_sorting(self, target):
-        """Switches the shiplist sorting to the specified target mode. 'first',
-        'prev', 'next', 'last' targets will click their respective buttons,
-        while an int target between 1 and 5 (inclusive) will click the page
-        number at that position at the bottom of the page (left to right).
+        """Switches the shiplist sorting to the specified target mode.
 
         Args:
-            target (str, int): the sorting to switch the shiplist to
+            target (str): the sorting to switch the shiplist to
         """
         while not self.regions['top_submenu'].exists(
                 'shiplist_sort_{}.png'.format(target)):
@@ -169,6 +180,15 @@ class ShipSwitcher(object):
                 Globals.EXPAND['shiplist_sort'])
 
     def _change_shiplist_page(self, target):
+        """Method that clicks on the arrow and page number navigation at the
+        bottom of the ship list. 'first', 'prev', 'next', 'last' targets will
+        click their respective arrow buttons, while an int target between 1 and
+        5 (inclusive) will click the page number at that position at the bottom
+        of the page (left to right).
+
+        Args:
+            target (str, int): specifies which navigation button to press
+        """
         if target == 'first':
             Util.check_and_click(
                 self.regions['lower'], 'page_first.png',
@@ -198,12 +218,24 @@ class ShipSwitcher(object):
                 Util.randint_gauss(y_start, y_stop))
 
     def _navigate_to_shiplist_page(self, target_page):
+        """Wrapper method that navigates the shiplist to the specified target
+        page from the known current page. Uses _change_shiplist_page for
+        navigation.
+
+        Args:
+            target_page (int): page to navigate to
+
+        Raises:
+            ValueError: invalid target_page specified
+        """
         if target_page > self.ship_page_count:
-            raise Exception(
+            raise ValueError(
                 "Invalid shiplist target page ({}) for number of known pages "
                 "({}).".format(target_page, self.ship_page_count))
+
         current_page = self.current_shiplist_page
-        print("current page: {}".format(current_page))
+        # logic that fires off the series of _change_shiplist_page method calls
+        # to navigate to the desired target page from the current page
         while target_page != current_page:
             page_delta = target_page - current_page
             if (target_page <= 5
@@ -235,18 +267,18 @@ class ShipSwitcher(object):
         self.current_shiplist_page = current_page
 
     def _choose_ship_by_position(self, position):
-        """Method that chooses the ship in the specified position in the
-        ship list.
+        """Method that clicks the ship in the specified position in the ship
+        list.
 
         Args:
             position (int): integer between 1 and 10 specifying the position
                 that should be clicked on the ship list
 
         Raises:
-            Exception: if position is not between 1 and 10
+            ValueError: invalid position specified
         """
         if not 1 <= position <= 10:
-            raise Exception(
+            raise ValueError(
                 "Invalid position passed to _choose_ship_by_position: {}"
                 .format(position))
         zero_position = position - 1
@@ -266,6 +298,17 @@ class ShipSwitcher(object):
         Util.kc_sleep(1)
 
     def _check_ship_availability(self, criteria):
+        """Checks the chosen ship's returns its availability for switching.
+
+        Args:
+            criteria (dict): dictionary containing shipswitch criteria
+
+        Returns:
+            bool or str: True if the ship is available; False if it does not
+                meet the criteria; 'conflict' if it meets the criteria but a
+                ship of the same type is already in the fleet
+        """
+        # TODO: check against criteria
         if self.regions['upper_right'].exists('ship_state_dmg_heavy.png'):
             return False
         if Util.check_and_click(
