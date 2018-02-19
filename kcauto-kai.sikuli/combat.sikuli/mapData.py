@@ -1,4 +1,3 @@
-from sikuli import Location, Button
 import json
 import os
 from random import randint

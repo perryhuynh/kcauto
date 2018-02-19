@@ -1,5 +1,5 @@
 from sikuli import Pattern
-from globals import Globals
+from kca_globals import Globals
 from nav import Nav
 from util import Util
 

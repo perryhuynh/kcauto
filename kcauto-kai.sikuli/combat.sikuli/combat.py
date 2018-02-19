@@ -1,6 +1,6 @@
 from sikuli import Region, Pattern, FOREVER
 from datetime import datetime, timedelta
-from globals import Globals
+from kca_globals import Globals
 from fleet import Fleet
 from lbas import LBAS
 from mapData import MapData

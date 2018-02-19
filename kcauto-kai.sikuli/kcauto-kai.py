@@ -13,7 +13,7 @@ sys.path.append(os.getcwd())
 
 # kcauto-kai imports
 from main import KCAutoKai  # noqa
-from globals import Globals  # noqa
+from kca_globals import Globals  # noqa
 from args import Args  # noqa
 from config import Config  # noqa
 from debug import Debug  # noqa

@@ -1,6 +1,5 @@
 from sikuli import (
-    Settings, Screen, App, Region, Location, Pattern, Match, FindFailed,
-    Button)
+    Settings, Screen, App, Region, Location, Pattern, Match, Button)
 import org.sikuli.script.FindFailed as FindFailed
 # alternate Region class to check instasnce type against
 # https://answers.launchpad.net/sikuli/+question/269004
@@ -12,7 +11,7 @@ from random import uniform, gauss
 from time import sleep
 from datetime import timedelta
 from re import match
-from globals import Globals
+from kca_globals import Globals
 
 
 class Util(object):

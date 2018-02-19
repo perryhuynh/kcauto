@@ -2,6 +2,7 @@ from sikuli import Pattern
 from random import choice
 from datetime import datetime, timedelta
 from threading import Thread
+from kca_globals import Globals
 from expedition import get_expedition_info
 from util import Util
 

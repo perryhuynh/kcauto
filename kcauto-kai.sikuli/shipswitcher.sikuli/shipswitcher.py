@@ -2,7 +2,7 @@ from sikuli import Region, Pattern
 from math import ceil
 from re import sub
 from threading import Thread
-from globals import Globals
+from kca_globals import Globals
 from fleet import Fleet
 from nav import Nav
 from util import Util
