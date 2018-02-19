@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta
 from random import randint
-from fleet import CombatFleet, ExpeditionFleet
-from combat import CombatModule
-from expedition import ExpeditionModule
+from combat import CombatModule, CombatFleet
+from expedition import ExpeditionModule, ExpeditionFleet
 from pvp import PvPModule
 from quest import QuestModule
 from repair import RepairModule
@@ -78,11 +77,11 @@ class KCAutoKai(object):
         self.config.read()
         self.config.validate()
         # temp
-        self._focus_kancolle()
-        self.active_fleets[1] = CombatFleet(1)
-        self.combat_fleets[1] = self.active_fleets[1]
-        ss = ShipSwitcher(self.config, self.stats, self.regions, self.combat_fleets, None)
-        ss.ship_switch_logic()
+        # self._focus_kancolle()
+        # self.active_fleets[1] = CombatFleet(1)
+        # self.combat_fleets[1] = self.active_fleets[1]
+        # ss = ShipSwitcher(self.config, self.stats, self.regions, self.combat_fleets, None)
+        # ss.ship_switch_logic()
         raise 0
         # end temp
 

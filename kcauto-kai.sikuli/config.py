@@ -97,6 +97,12 @@ class Config(object):
         else:
             self.combat = {'enabled': False}
 
+        if (config.getboolean('ShipSwitcher', 'Enabled') and
+                self.combat['enabled']):
+            self._read_ship_switcher(config)
+        else:
+            self.ship_switcher = {'enabled': False}
+
         if config.getboolean('Quests', 'Enabled'):
             self._read_quests(config)
         else:
@@ -326,6 +332,28 @@ class Config(object):
                 config, 'Combat', 'LBASGroup3Nodes')
         else:
             self.combat['lbas_enabled'] = False
+
+    def _read_ship_switcher(self, config):
+        """Method to parse the ShipSwitcher settings of the passed in config.
+        Only run if Combat is also enabled.
+
+        Args:
+            config (ConfigParser): ConfigParser instance
+        """
+
+        def _create_ship_switcher_dict(criteria, ships):
+            print(criteria)
+            print(ships)
+
+        self.ship_switcher['enabled'] = True
+        for slot in range(0, 6):
+            criteria = self._getlist(
+                config, 'ShipSwitcher', 'Slot{}Criteria'.format(slot + 1))
+            ships = self._getlist(
+                config, 'ShipSwitcher', 'Slot{}Criteria'.format(slot + 1))
+            if criteria and ships:
+                self.ship_switcher[slot] = _create_ship_switcher_dict(
+                    criteria, ships)
 
     def _read_quests(self, config):
         """Method to parse the Quest settings of the passed in config.

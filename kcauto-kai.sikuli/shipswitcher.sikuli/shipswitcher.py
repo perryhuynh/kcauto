@@ -3,7 +3,6 @@ from math import ceil
 from re import sub
 from threading import Thread
 from kca_globals import Globals
-from fleet import CombatFleet
 from nav import Nav
 from util import Util
 
@@ -27,10 +26,10 @@ from util import Util
 # { slot: 1, ships: {sort order: 'type', class: 'sub', level: '<50', locked: True } }
 # slot, order, class (only when sorting on class), level, locked, sparkled
 # switch_criteria (damage, fatigue, sparkled)
-# TODO: cache page position for class and custom
 # TODO: change CombatFleet's next sortie time accordingly
 # TODO: support under repair status for ships
-
+# N:E:20, N:S:32
+# C:SS:>20:L:R
 
 class ShipSwitcher(object):
     SHIPS_PER_PAGE = 10

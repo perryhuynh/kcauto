@@ -1,7 +1,7 @@
 from sikuli import Pattern, Location
 from datetime import datetime, timedelta
 from kca_globals import Globals
-from fleet import CombatFleet
+from combat import CombatFleet
 from nav import Nav
 from util import Util
 
