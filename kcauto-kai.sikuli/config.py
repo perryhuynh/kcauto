@@ -341,19 +341,61 @@ class Config(object):
             config (ConfigParser): ConfigParser instance
         """
 
-        def _create_ship_switcher_dict(criteria, ships):
-            print(criteria)
-            print(ships)
+        def _create_ship_switcher_dict(slot, criteria, ships):
+            slot_dict = {
+                'slot': slot,
+                'criteria': criteria,
+                'mode': None,
+                'ships': []
+            }
+
+            for ship in ships:
+                ship_dict = {}
+                ship_split = ship.split(':')
+                if ship_split[0] in ('C', 'S'):
+                    # class or shipname mode
+                    ship_dict['sort_order'] = 'class'
+                    if ship_split[0] == 'C':
+                        ship_dict['class'] = ship_split[1]
+                        slot_dict['mode'] = (
+                            'class' if slot_dict['mode'] is None else
+                            slot_dict['mode'])
+                    elif ship_split[0] == 'S':
+                        ship_dict['ship'] = ship_split[1]
+                        slot_dict['mode'] = (
+                            'ship' if slot_dict['mode'] is None else
+                            slot_dict['mode'])
+                    if ship_split[2] is not '_':
+                        ship_dict['level'] = ship_split[2]
+                    if ship_split[3] is not '_':
+                        ship_dict['locked'] = (
+                            True if ship_split[3] == 'L' else False)
+                    if ship_split[4] is not '_':
+                        ship_dict['ringed'] = (
+                            True if ship_split[4] == 'R' else False)
+                elif ship_split[0] in ('P'):
+                    # class in position mode
+                    ship_dict['sort_order'] = 'new'
+                    slot_dict['mode'] = (
+                        'position' if slot_dict['mode'] is None else
+                        slot_dict['mode'])
+                    if ship_split[1] == 'E':
+                        ship_dict['offset_ref'] = 'end'
+                    elif ship_split[1] == 'S':
+                        ship_dict['offset_ref'] = 'start'
+                    ship_dict['offset'] = int(ship_split[2])
+                slot_dict['ships'].append(ship_dict)
+            return slot_dict
 
         self.ship_switcher['enabled'] = True
         for slot in range(0, 6):
             criteria = self._getlist(
                 config, 'ShipSwitcher', 'Slot{}Criteria'.format(slot + 1))
             ships = self._getlist(
-                config, 'ShipSwitcher', 'Slot{}Criteria'.format(slot + 1))
+                config, 'ShipSwitcher', 'Slot{}Ships'.format(slot + 1))
             if criteria and ships:
                 self.ship_switcher[slot] = _create_ship_switcher_dict(
-                    criteria, ships)
+                    slot, criteria, ships)
 
     def _read_quests(self, config):
         """Method to parse the Quest settings of the passed in config.
