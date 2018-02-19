@@ -335,7 +335,7 @@ class ShipSwitcher(object):
         for ship in matched_ships:
             criteria_matched = True
             # create new region based on the match
-            ship_row = ship.left(1).right(435)
+            ship_row = ship.left(1).right(430)
             ship_row.setAutoWaitTimeout(0)  # speed
             # find numeric position based on the new region's y-position
             position = (ship_row.y - self.kc_region.y - 129) / 28

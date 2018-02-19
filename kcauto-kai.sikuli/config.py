@@ -385,12 +385,12 @@ class Config(object):
                     # class or shipname mode
                     ship_dict['sort_order'] = 'class'
                     if ship_split[0] == 'C':
-                        ship_dict['class'] = ship_split[1]
+                        ship_dict['class'] = ship_split[1].lower()
                         slot_dict['mode'] = (
                             'class' if slot_dict['mode'] is None else
                             slot_dict['mode'])
                     elif ship_split[0] == 'S':
-                        ship_dict['ship'] = ship_split[1]
+                        ship_dict['ship'] = ship_split[1].lower()
                         slot_dict['mode'] = (
                             'ship' if slot_dict['mode'] is None else
                             slot_dict['mode'])
