@@ -66,6 +66,8 @@ while True:
 
             kcauto_kai.run_repair_cycle()
 
+            kcauto_kai.run_ship_switch_cycle()
+
             kcauto_kai.run_resupply_cycle()
 
             kcauto_kai.run_quest_cycle()

@@ -230,6 +230,35 @@ class Config(object):
                     Util.log_error(
                         "Invalid Combat MiscOption: '{}'.".format(option))
                     self.ok = False
+        if self.ship_switcher['enabled']:
+            if self.combat['fleet_mode'] != '':
+                Util.log_error(
+                    "Ship Switcher can only be used with standard fleets")
+                self.ok = False
+            for slot in range(0, 6):
+                if slot not in self.ship_switcher:
+                    continue
+                criteria = self.ship_switcher[slot]['criteria']
+                for c in criteria:
+                    if c not in ('damage', 'fatigue', 'sparkle'):
+                        Util.log_error(
+                            "Invalid switch criteria for slot {}: '{}'".format(
+                                slot, c))
+                        self.ok = False
+                if self.ship_switcher[slot]['mode'] == 'position':
+                    for ship in self.ship_switcher[slot]['ships']:
+                        if len(ship) != 3:
+                            Util.log_error(
+                                "Invalid # of arguments for ship in slot {}"
+                                .format(slot))
+                            self.ok = False
+                if self.ship_switcher[slot]['mode'] == 'class':
+                    for ship in self.ship_switcher[slot]['ships']:
+                        if len(ship) < 2:
+                            Util.log_error(
+                                "Invalid # of arguments for ship in slot {}"
+                                .format(slot))
+                            self.ok = False
 
     def _read_general(self, config):
         """Method to parse the General settings of the passed in config.

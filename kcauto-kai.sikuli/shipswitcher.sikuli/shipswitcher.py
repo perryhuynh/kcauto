@@ -7,30 +7,6 @@ from nav import Nav
 from util import Util
 
 
-# Order by NEW
-# - select NTH ship from END
-
-# Order by LEVEL
-# - select NTH ship from START/END that is LOCKED/UNLOCKED/EITHER
-
-# Order by TYPE
-# - select ship of TYPE that is LOCKED/UNLOCKED/EITHER
-# - (for subs) select specific SHIP of TYPE that is LOCKED/UNLOCKED/EITHER
-
-# [N/L][#][S/E][L/U/E]
-# T[L/U/E][SS/SSV/etc]
-
-# { slot: 1, ships: { sort order: 'new', offset: 50 }, {...} }
-# { slot: 1, ships: { sort order: 'new', start_offset: 50 }, {...} }
-# { slot: 1, ships: {sort order: 'level', start_offset: 50, class: 'sub', level: '<50'} }
-# { slot: 1, ships: {sort order: 'type', class: 'sub', level: '<50', locked: True } }
-# slot, order, class (only when sorting on class), level, locked, sparkled
-# switch_criteria (damage, fatigue, sparkled)
-# TODO: change CombatFleet's next sortie time accordingly
-# TODO: support under repair status for ships
-# N:E:20, N:S:32
-# C:SS:>20:L:R
-
 class ShipSwitcher(object):
     SHIPS_PER_PAGE = 10
 
@@ -44,30 +20,6 @@ class ShipSwitcher(object):
         self.ship_page_count = 1
         self.ship_last_page_count = 1
         self.current_shiplist_page = 1
-        self.config.ship_switcher = {
-            'enabled': True,
-            7: {
-                'slot': 3,
-                'mode': 'position',
-                'ships': [
-                    {'sort_order': 'new', 'offset_ref': 'end', 'offset': 20},
-                    {'sort_order': 'new', 'offset_ref': 'start', 'offset': 32},
-                ],
-                'criteria': {
-                    'damage': 'heavy'
-                }
-            },
-            1: {
-                'slot': 1,
-                'mode': 'class',
-                'ships': [
-                    {'sort_order': 'class', 'class': 'ss', 'level': '>20'}
-                ],
-                'criteria': {
-                    'sparkle': True
-                }
-            }
-        }
 
         self.temp_ship_position_list = []
         self.temp_ship_position_dict = {}
@@ -91,14 +43,29 @@ class ShipSwitcher(object):
         Nav.goto(self.regions, 'fleetcomp')
         self.current_shiplist_page = 1
 
+    def check_need_to_switch(self):
+        fleet = self.fleets[1]
+        if fleet.damage_counts['repair'] > 0:
+            # if ships are being repaired, attempt switch
+            return True
+        if fleet.get_damage_counts_at_threshold(
+                self.config.combat['repair_limit']) > 0:
+            # if ships are damaged at or above threshold, attempt switch
+            return True
+        if fleet.fatigue['medium'] > 0 or fleet.fatigue['high'] > 0:
+            # ships are fatigued; brute force check for now
+            # TODO: only True if fatigue check is part of config
+            return True
+        return False
+
     def ship_switch_logic(self):
         """Primary logic loop which goes through the 6 ship slots and switches
         ships as necessary. Only avilable for Fleet 1.
         """
         self._set_shiplist_counts()
+        # loop through slots and switch ships as necessary
         for slot in range(0, 6):
             if slot not in self.config.ship_switcher:
-                print('skipping slot {}'.format(slot))
                 continue
             slot_config = self.config.ship_switcher[slot]
             if self._check_need_to_switch_ship(slot, slot_config['criteria']):
@@ -111,6 +78,15 @@ class ShipSwitcher(object):
                 if not self._resolve_replacement_ship(slot_config):
                     Util.check_and_click(
                         self.regions['top_submenu'], 'fleet_1_active.png')
+
+        # check new fleet status
+        fleet = self.fleets[1]
+        damage_counts = fleet.check_damages(self.kc_region)
+        if (fleet.get_damage_counts_at_threshold(
+                    self.config.combat['repair_limit']) == 0 and
+                damage_counts['repair'] == 0):
+            # all ships in fleet pass checks: continue sortie
+            fleet.set_next_combat_time()
 
     def _set_shiplist_counts(self):
         """Method that sets the ship-list related internal counts based on the

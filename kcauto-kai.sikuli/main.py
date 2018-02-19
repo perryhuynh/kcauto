@@ -46,6 +46,7 @@ class KCAutoKai(object):
         'pvp': None,
         'combat': None,
         'repair': None,
+        'ship_switcher': None,
         'expedition': None,
         'quest': None
     }
@@ -54,6 +55,7 @@ class KCAutoKai(object):
     active_fleets = {}
     combat_fleets = {}
     expedition_fleets = {}
+    combat_cycle = False
     next_scheduled_sleep_time = None
     sleep_wake_time = None
 
@@ -76,14 +78,6 @@ class KCAutoKai(object):
         """
         self.config.read()
         self.config.validate()
-        # temp
-        # self._focus_kancolle()
-        # self.active_fleets[1] = CombatFleet(1)
-        # self.combat_fleets[1] = self.active_fleets[1]
-        # ss = ShipSwitcher(self.config, self.stats, self.regions, self.combat_fleets, None)
-        # ss.ship_switch_logic()
-        raise 0
-        # end temp
 
         if self.config.changed:
             self.active_fleets = {}
@@ -127,6 +121,14 @@ class KCAutoKai(object):
             else:
                 self.modules['combat'] = None
                 self.modules['repair'] = None
+
+            # initialize ship switcher module
+            if self.config.ship_switcher['enabled'] and self.modules['combat']:
+                self.modules['ship_switcher'] = ShipSwitcher(
+                    self.config, self.stats, self.regions, self.combat_fleets,
+                    self.modules['combat'])
+            else:
+                self.modules['ship_switcher'] = None
 
             # initialize expedition module
             if self.config.expeditions['enabled']:
@@ -320,11 +322,16 @@ class KCAutoKai(object):
             self.modules['combat'].goto_combat()
 
             if self.modules['combat'].combat_logic_wrapper():
+                self.combat_cycle = True
                 if self.modules['expedition']:
                     self.modules['expedition'].reset_support_fleets()
+            else:
+                self.combat_cycle = False
 
             self._run_fast_expedition_check()
             return True
+        else:
+            self.combat_cycle = False
         return False
 
     def run_quest_cycle(self):
@@ -368,6 +375,21 @@ class KCAutoKai(object):
             self.modules['repair'].goto_repair()
 
             self.modules['repair'].repair_fleets()
+
+    def run_ship_switch_cycle(self):
+        """Method that runs the ship switch cycle.
+
+        Returns:
+            bool: False if there is no ShipSwitcher module
+        """
+        if not self.modules['ship_switcher']:
+            return False
+
+        if (self.modules['ship_switcher'].check_need_to_switch() and
+                self.combat_cycle):
+            self.modules['ship_switcher'].goto_fleetcomp()
+
+            self.modules['ship_switcher'].ship_switch_logic()
 
     def conduct_scheduled_sleep(self):
         """Method that schedules and conducts the scheduled sleep of

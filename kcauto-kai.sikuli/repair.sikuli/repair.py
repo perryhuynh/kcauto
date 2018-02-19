@@ -152,7 +152,7 @@ class RepairModule(object):
             self.config.combat['repair_limit'])
 
         for fleet_marker in fleet_markers:
-            fleet_id = int(fleet_marker[17])
+            fleet_id = int(fleet_marker[17])  # infer from filename
             fleet_instance = self.fleets[fleet_id]
 
             if fleet_instance.get_damage_counts_at_threshold(
@@ -177,6 +177,7 @@ class RepairModule(object):
                             target_region, damage_icon,
                             Globals.EXPAND['repair_list']):
                         fleet_instance.damage_counts[damage] -= 1
+                        fleet_instance.damage_counts['repair'] += 1
                         return True
         return False
 

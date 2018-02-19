@@ -123,8 +123,12 @@ class CombatModule(object):
         if self.combined_fleet:
             self.fleets[1].resolve_fcf_retreat_counts()
             self.fleets[2].resolve_fcf_retreat_counts()
+            self.fleets[2].damage_counts['repair'] = 0
         if self.striking_fleet:
             self.fleets[3].resolve_fcf_retreat_counts()
+            self.fleets[3].damage_counts['repair'] = 0
+        else:
+            self.fleets[1].damage_counts['repair'] = 0
 
         return True
 
@@ -820,7 +824,9 @@ class CombatFleet(Fleet):
         """
         self.fleet_id = fleet_id
         self.flagship_damaged = False
-        self.damage_counts = {}
+        self.damage_counts = {
+            'repair': 0
+        }
         self.damaged_fcf_retreat_count = 0
         self.fatigue = {}
 
@@ -901,6 +907,8 @@ class CombatFleet(Fleet):
 
         Args:
             region (Region): Region in which to search for the damage states
+            reset (bool, optional): specifies whether or not the damage count
+                should be reset to 0
 
         Returns:
             dict: dict of counts of the different damage states
@@ -911,9 +919,11 @@ class CombatFleet(Fleet):
             target=self._check_damages_func, args=('moderate', region, reset))
         thread_check_damages_minor = Thread(
             target=self._check_damages_func, args=('minor', region, reset))
+        thread_check_damages_repair = Thread(
+            target=self._check_damages_func, args=('repair', region, reset))
         Util.multithreader([
             thread_check_damages_heavy, thread_check_damages_moderate,
-            thread_check_damages_minor])
+            thread_check_damages_minor, thread_check_damages_repair])
         return self.damage_counts
 
     def _check_damages_func(self, type, region, reset):
@@ -922,6 +932,8 @@ class CombatFleet(Fleet):
         Args:
             type (str): which damage state to check for
             region (Region): Region in which to search for the damage state
+            reset (bool): specifies whether or not the damage count should be
+                reset to 0
         """
         if reset:
             self.damage_counts[type] = 0
