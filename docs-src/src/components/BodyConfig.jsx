@@ -1017,7 +1017,7 @@ class BodyConfig extends Component {
                       <Checkbox
                         checked={combatOptionReserveDocks}
                         onChange={(event, checked) => this.setState({ combatOptionReserveDocks: checked })}
-                        disabled={true}
+                        disabled={!combatEnabled}
                         value='combatOptionReserveDocks' />
                     }
                     label={<Localize field='bodyConfig.combatReserveDocks' />}
