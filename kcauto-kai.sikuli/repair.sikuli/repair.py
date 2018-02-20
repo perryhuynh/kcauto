@@ -85,12 +85,14 @@ class RepairModule(object):
             return False
         else:
             while self.kc_region.exists('dock_empty.png'):
+                Util.log_msg('empty dock exists')
                 # while there are empty docks, if there are ships to repair,
                 # continue repairing; otherwise, stop
                 if self.check_need_to_repair():
                     self._conduct_repair()
                 else:
                     break
+                Util.kc_sleep(1)
 
     def _conduct_repair(self):
         """Method that chooses an empty dock, chooses a ship, toggles the
@@ -126,6 +128,8 @@ class RepairModule(object):
                 self.kc_region.wait('dock_empty.png')
             else:
                 self._update_combat_next_sortie_time(repair_timer)
+                self.regions['lower_right'].waitVanish('page_prev.png')
+                Util.kc_sleep(1)
         Util.kc_sleep()
 
     def _pick_fleet_ship(self):

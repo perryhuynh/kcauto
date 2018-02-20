@@ -12,7 +12,11 @@ class Globals(object):
     DEFAULT_SIMILARITY = 0.8
     DAMAGE_SIMILARITY = 0.85
     FATIGUE_SIMILARITY = 0.85
+    SHIP_LIST_SIMILARITY = 0.96
     FLEET_ICON_SIMILARITY = 0.8
+
+    # how many combat sorties to conduct when sparkling
+    SPARKLING_RUN_COUNT = 3
 
     # area expansion presets; format is in [left, right, up, down] relative to
     # the center of the match

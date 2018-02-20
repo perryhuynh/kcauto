@@ -454,6 +454,7 @@ class CombatModule(object):
                 # spin compass
                 while (self.kc_region.exists('compass.png')):
                     Util.click_preset_region(self.regions, 'center')
+                    Util.rejigger_mouse(self.regions, 'lbas')
                     Util.kc_sleep(3)
             elif (self.regions['formation_line_ahead'].exists(
                         'formation_line_ahead.png') or

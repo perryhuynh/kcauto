@@ -24,6 +24,7 @@ class Stats(object):
         self.combat_done = 0
         self.resupplies_done = 0
         self.repairs_done = 0
+        self.ships_switched = 0
         self.buckets_used = 0
         self.quests_checked = 0
         self.quests_started = 0
@@ -47,6 +48,9 @@ class Stats(object):
         if self.config.combat['enabled']:
             Util.log_success("Combat done: {} / attempted: {}".format(
                 self.combat_done, self.combat_attempted))
+
+        if self.config.ship_switcher['enabled']:
+            Util.log_success("Ships switched: {}".format(self.ships_switched))
 
         if self.config.quests['enabled']:
             Util.log_success(
@@ -102,6 +106,9 @@ class Stats(object):
 
     def increment_buckets_used(self):
         self.buckets_used += 1
+
+    def increment_ships_switched(self):
+        self.ships_switched += 1
 
     def increment_quests_checked(self):
         self.quests_checked += 1

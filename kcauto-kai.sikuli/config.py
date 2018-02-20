@@ -385,15 +385,15 @@ class Config(object):
                     # class or shipname mode
                     ship_dict['sort_order'] = 'class'
                     if ship_split[0] == 'C':
-                        ship_dict['class'] = ship_split[1].lower()
                         slot_dict['mode'] = (
                             'class' if slot_dict['mode'] is None else
                             slot_dict['mode'])
+                        ship_dict['class'] = ship_split[1].lower()
                     elif ship_split[0] == 'S':
-                        ship_dict['ship'] = ship_split[1].lower()
                         slot_dict['mode'] = (
                             'ship' if slot_dict['mode'] is None else
                             slot_dict['mode'])
+                        ship_dict['ship'] = ship_split[1].lower()
                     if ship_split[2] is not '_':
                         ship_dict['level'] = ship_split[2]
                     if ship_split[3] is not '_':
@@ -404,15 +404,20 @@ class Config(object):
                             True if ship_split[4] == 'R' else False)
                 elif ship_split[0] in ('P'):
                     # class in position mode
-                    ship_dict['sort_order'] = 'new'
                     slot_dict['mode'] = (
                         'position' if slot_dict['mode'] is None else
                         slot_dict['mode'])
-                    if ship_split[1] == 'E':
+                    if ship_split[1] == 'N':
+                        ship_dict['sort_order'] = 'new'
+                    elif ship_split[1] == 'C':
+                        ship_dict['sort_order'] = 'class'
+                    elif ship_split[1] == 'L':
+                        ship_dict['sort_order'] = 'level'
+                    if ship_split[2] == 'E':
                         ship_dict['offset_ref'] = 'end'
-                    elif ship_split[1] == 'S':
+                    elif ship_split[2] == 'S':
                         ship_dict['offset_ref'] = 'start'
-                    ship_dict['offset'] = int(ship_split[2])
+                    ship_dict['offset'] = int(ship_split[3])
                 slot_dict['ships'].append(ship_dict)
             return slot_dict
 

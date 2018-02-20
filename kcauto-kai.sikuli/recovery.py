@@ -23,8 +23,9 @@ class Recovery(object):
         regions = kcauto_kai.regions
         recovery_method = 'kc3'
 
+        Util.log_warning(e)
         Util.log_warning(
-            "FindFailed error occurred; attempting basic recovery.")
+            "** FindFailed error occurred; attempting basic recovery. **")
 
         App.focus(kcauto_kai.config.program)
         kc_region.mouseMove(Location(1, 1))
@@ -90,6 +91,6 @@ class Recovery(object):
             return True
 
         # recovery failed
-        Util.log_error("Irrecoverable crash")
+        Util.log_error("** Irrecoverable crash. **")
         print(e)
         raise

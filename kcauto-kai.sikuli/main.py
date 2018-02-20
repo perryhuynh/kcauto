@@ -316,17 +316,15 @@ class KCAutoKai(object):
 
         if self.modules['combat'].check_need_to_sortie():
             self.print_stats_check = True
+            self.combat_cycle = True
             self._focus_kancolle()
             Nav.goto(self.regions, 'home')
             self._run_fast_expedition_check()
             self.modules['combat'].goto_combat()
 
             if self.modules['combat'].combat_logic_wrapper():
-                self.combat_cycle = True
                 if self.modules['expedition']:
                     self.modules['expedition'].reset_support_fleets()
-            else:
-                self.combat_cycle = False
 
             self._run_fast_expedition_check()
             return True
