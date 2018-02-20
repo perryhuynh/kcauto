@@ -106,7 +106,10 @@ class RepairModule(object):
             # TODO: only picks fleet ships at the moment... figure out logic
             # to repair other ships?? Or at least change the page?
             use_bucket = False
-            if (self.config.combat['repair_time_limit'] == 0):
+            if self.config.combat['repair_time_limit'] == 0:
+                use_bucket = True
+            elif ('ReserveDocks' in self.combat['misc_options'] and
+                    len(self.repair_timers) == self.repair_slots - 1):
                 use_bucket = True
             else:
                 repair_timer = Util.read_timer(

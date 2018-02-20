@@ -226,7 +226,7 @@ class Config(object):
             for option in self.combat['misc_options']:
                 if option not in (
                         'CheckFatigue', 'ReserveDocks', 'PortCheck',
-                        'MedalStop'):
+                        'ClearStop'):
                     Util.log_error(
                         "Invalid Combat MiscOption: '{}'.".format(option))
                     self.ok = False
