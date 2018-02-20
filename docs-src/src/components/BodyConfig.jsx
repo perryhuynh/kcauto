@@ -1,127 +1,27 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import Select, { Creatable } from 'react-select'
 import { withStyles } from 'material-ui/styles'
 import saveAs from 'save-as'
 
-import TimeInput from 'material-ui-time-picker'
 import Dropzone from 'react-dropzone'
 
 import Grid from 'material-ui/Grid'
 import Paper from 'material-ui/Paper'
-import { InputLabel } from 'material-ui/Input'
-import { FormControl, FormControlLabel } from 'material-ui/Form'
 import Typography from 'material-ui/Typography'
-import TextField from 'material-ui/TextField'
 import Divider from 'material-ui/Divider'
 import Button from 'material-ui/Button'
-import Checkbox from 'material-ui/Checkbox'
 import Switch from 'material-ui/Switch'
-import { ChevronRight, Upload, ContentSave } from 'mdi-material-ui'
+import { Upload, ContentSave } from 'mdi-material-ui'
 
 import Localize from 'containers/LocalizeContainer'
+import BodyConfigGeneral from 'components/BodyConfigGeneral'
+import BodyConfigScheduledSleep from 'components/BodyConfigScheduledSleep'
+import BodyConfigExpeditions from 'components/BodyConfigExpeditions'
+import BodyConfigPvP from 'components/BodyConfigPvP'
+import BodyConfigCombat from 'components/BodyConfigCombat'
+import BodyConfigQuests from 'components/BodyConfigQuests'
+import { styles } from 'components/BodyConfigStyles'
 
-const EXPEDITIONS = Array.from({ length: 40 }, (value, key) => ({ value: String(key + 1), label: String(key + 1) }))
-EXPEDITIONS.push({ value: '9998', label: 'Node Support' })
-EXPEDITIONS.push({ value: '9999', label: 'Boss Support' })
-const COMBAT_ENGINES = [
-  { value: 'legacy', label: <Localize field='bodyConfig.combatEngineLegacy' /> },
-  { value: 'live', label: <Localize field='bodyConfig.combatEngineLive' /> }]
-const MAPS = ['1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-1', '2-2', '2-3', '2-4', '2-5', '3-1', '3-2', '3-3', '3-4',
-  '3-5', '4-1', '4-2', '4-3', '4-4', '4-5', '5-1', '5-2', '5-3', '5-4', '5-5', '6-1', '6-2', '6-3', '6-4', '6-5',
-  'E-1', 'E-2', 'E-3', 'E-4', 'E-5', 'E-6', 'E-7', 'E-8']
-  .map(value => ({ value, label: value }))
-const COMBINED_FLEET_MODES = [
-  { value: '', label: <Localize field='bodyConfig.combatFleetModeStandard' /> },
-  { value: 'ctf', label: <Localize field='bodyConfig.combatFleetModeCTF' /> },
-  { value: 'stf', label: <Localize field='bodyConfig.combatFleetModeSTF' /> },
-  { value: 'transport', label: <Localize field='bodyConfig.combatFleetModeTransport' /> },
-  { value: 'striking', label: <Localize field='bodyConfig.combatFleetModeStriking' /> }]
-const COMBAT_NODE_COUNTS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'].map(value => (
-  { value, label: value }))
-const NODES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(value => ({ value, label: value }))
-NODES.push(...['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7', 'Z8', 'Z9', 'ZZ1', 'ZZ2', 'ZZ3'].map(value => (
-  { value, label: value })))
-const FORMATIONS = [
-  { value: 'line_ahead', label: <Localize field='bodyConfig.combatFormationLineAhead' /> },
-  { value: 'double_line', label: <Localize field='bodyConfig.combatFormationDoubleLine' /> },
-  { value: 'diamond', label: <Localize field='bodyConfig.combatFormationDiamond' /> },
-  { value: 'echelon', label: <Localize field='bodyConfig.combatFormationEchelon' /> },
-  { value: 'line_abreast', label: <Localize field='bodyConfig.combatFormationLineAbreast' /> },
-  { value: 'vanguard', label: <Localize field='bodyConfig.combatFormationVanguard' /> },
-  { value: 'combinedfleet_1', label: <Localize field='bodyConfig.combatFormationCombinedFleet1' /> },
-  { value: 'combinedfleet_2', label: <Localize field='bodyConfig.combatFormationCombinedFleet2' /> },
-  { value: 'combinedfleet_3', label: <Localize field='bodyConfig.combatFormationCombinedFleet3' /> },
-  { value: 'combinedfleet_4', label: <Localize field='bodyConfig.combatFormationCombinedFleet4' /> }]
-const NIGHT_BATTLES = [
-  { value: 'True', label: <Localize field='bodyConfig.combatNightBattleTrue' /> },
-  { value: 'False', label: <Localize field='bodyConfig.combatNightBattleFalse' /> }]
-const DAMAGE_STATES = [
-  { value: 'heavy', label: <Localize field='bodyConfig.combatDamageStateHeavy' /> },
-  { value: 'moderate', label: <Localize field='bodyConfig.combatDamageStateModerate' /> },
-  { value: 'minor', label: <Localize field='bodyConfig.combatDamageStateMinor' /> }]
-const LBAS_GROUPS = ['1', '2', '3'].map(value => ({ value, label: value }))
-
-const styles = () => ({
-  dropzoneOverlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    display: 'flex',
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontFamily: 'Roboto, sans-serif',
-    fontSize: 24,
-    fontWeight: 'bold',
-    background: 'rgba(255,255,255,0.8)',
-    zIndex: 9,
-  },
-  paper: {
-    marginTop: 10,
-    padding: 20,
-  },
-  pre: {
-    padding: 20,
-    fontFamily: '"Source Code Pro", monospace',
-    fontSize: 12,
-    overflowX: 'auto',
-  },
-  formGrid: {
-    padding: 8,
-    paddingTop: 0,
-    paddingBottom: 0,
-  },
-  formGridButton: {
-    padding: 0,
-    paddingTop: 14,
-    textAlign: 'center',
-  },
-  formControl: {
-    marginTop: 0,
-  },
-  switch: {
-    zIndex: 0,
-  },
-  reactSelectLabel: {
-    transform: 'translate(0, -15px) scale(0.75)',
-    minWidth: '150%',
-  },
-  reactSelect: {
-    fontFamily: 'Roboto, sans-serif',
-  },
-  reactSelectHalfWidth: {
-    width: '50%',
-    fontFamily: 'Roboto, sans-serif',
-  },
-  flexReset: {
-    display: 'flex',
-  },
-  saveButton: {
-    marginLeft: 10,
-  },
-})
 
 const createStateObjFromPythonConfig = (pyConfig) => {
   const pyConfigLines = pyConfig.split('\n')
@@ -167,9 +67,6 @@ const createStateObjFromPythonConfig = (pyConfig) => {
       )),
     scheduledSleepSleepLength: pyConfigObj.scheduledSleepSleepLength || null,
     expeditionsEnabled: pyConfigObj.expeditionsEnabled === 'True',
-    expeditionsFleet2Enabled: true,
-    expeditionsFleet3Enabled: true,
-    expeditionsFleet4Enabled: true,
     expeditionsFleet2: pyConfigObj.expeditionsFleet2 || null,
     expeditionsFleet3: pyConfigObj.expeditionsFleet3 || null,
     expeditionsFleet4: pyConfigObj.expeditionsFleet4 || null,
@@ -178,6 +75,9 @@ const createStateObjFromPythonConfig = (pyConfig) => {
     combatEngine: pyConfigObj.combatEngine || 'legacy',
     combatMap: pyConfigObj.combatMap || '1-1',
     combatFleetMode: pyConfigObj.combatFleetMode || '',
+    combatDisableExpeditionsFleet2: false,
+    combatDisableExpeditionsFleet3: false,
+    combatDisableExpeditionsFleet4: false,
     combatCombatNodes: pyConfigObj.combatCombatNodes || null,
     combatNodeSelect1: null,
     combatNodeSelect2: null,
@@ -206,13 +106,14 @@ const createStateObjFromPythonConfig = (pyConfig) => {
     combatOptionReserveDocks: pyConfigObj.combatMiscOptions.includes('ReserveDocks') || false,
     combatOptionPortCheck: pyConfigObj.combatMiscOptions.includes('PortCheck') || false,
     combatOptionMedalStop: pyConfigObj.combatMiscOptions.includes('MedalStop') || false,
+    shipSwitcherEnabled: pyConfigObj.shipSwitcherEnabled === 'True',
     questsEnabled: pyConfigObj.questsEnabled === 'True',
   }
 
   return jsonConfig
 }
 
-class BodyConfig extends Component {
+class BodyConfig extends PureComponent {
   // grab default states from the store; defaults are in reducers/config/config.jsx
   state = this.props.config.jsonConfig
 
@@ -362,6 +263,18 @@ class BodyConfig extends Component {
     return Math.max(...nodes.filter(node => parseFloat(node)).map(node => parseFloat(node)))
   }
 
+  configCallback = (config) => {
+    this.setState(config)
+  }
+
+  filterConfig = prefix => (
+    Object.keys(this.state).filter(key => key.startsWith(prefix)).reduce((obj, key) => {
+      const temp = obj
+      temp[key] = this.state[key]
+      return temp
+    }, {})
+  )
+
   render = () => {
     const {
       classes,
@@ -369,63 +282,9 @@ class BodyConfig extends Component {
     } = this.props
     const {
       dropzoneActive,
-      generalProgram,
-      generalJSTOffset,
-      scheduledSleepEnabled,
-      scheduledSleepStartTime,
-      scheduledSleepSleepLength,
-      expeditionsEnabled,
-      expeditionsFleet2Enabled,
-      expeditionsFleet3Enabled,
-      expeditionsFleet4Enabled,
-      expeditionsFleet2,
-      expeditionsFleet3,
-      expeditionsFleet4,
-      pvpEnabled,
-      combatEnabled,
-      combatEngine,
-      combatMap,
-      combatFleetMode,
-      combatCombatNodes,
-      combatNodeSelect1,
-      combatNodeSelect2,
-      combatNodeSelects,
-      combatFormationsNode,
-      combatFormationsFormation,
-      combatFormations,
-      combatNightBattlesNode,
-      combatNightBattlesMode,
-      combatNightBattles,
-      combatRetreatLimit,
-      combatRepairLimit,
-      combatRepairTimeLimit,
-      combatLBASGroups,
-      combatLBASGroup1Node1,
-      combatLBASGroup1Node2,
-      combatLBASGroup2Node1,
-      combatLBASGroup2Node2,
-      combatLBASGroup3Node1,
-      combatLBASGroup3Node2,
-      combatOptionCheckFatigue,
-      combatOptionReserveDocks,
-      combatOptionPortCheck,
-      combatOptionMedalStop,
-      questsEnabled,
+      shipSwitcherEnabled,
     } = this.state
 
-    const combatNodeSelectOptions = combatNodeSelects ?
-      combatNodeSelects.split(',').map(value => ({ value, label: value })) :
-      []
-    const combatFormationOptions = combatFormations ?
-      combatFormations.split(',').map(value => ({ value, label: value })) :
-      []
-    const combatNightBattleOptions = combatNightBattles ?
-      combatNightBattles.split(',').map(value => ({ value, label: value })) :
-      []
-    const combatLBASGroupsArray = combatLBASGroups ? combatLBASGroups.split(',') : []
-    const combatLBASGroup1NodesDisabled = !combatEnabled || combatLBASGroupsArray.indexOf('1') < 0
-    const combatLBASGroup2NodesDisabled = !combatEnabled || combatLBASGroupsArray.indexOf('2') < 0
-    const combatLBASGroup3NodesDisabled = !combatEnabled || combatLBASGroupsArray.indexOf('3') < 0
     let configLoad
 
     return (
@@ -442,626 +301,48 @@ class BodyConfig extends Component {
         <Grid container spacing={0}>
           <Grid item xs={12} md={8}>
             <Paper className={classes.paper} elevation={0}>
-              <Typography type='display1'><Localize field='bodyConfig.generalHeader' /></Typography>
-
-              <Grid container spacing={0}>
-                <Grid item xs={12} sm={8} className={classes.formGrid}>
-                  <TextField
-                    id='generalProgram'
-                    label={<Localize field='bodyConfig.generalProgram' />}
-                    value={generalProgram}
-                    onChange={event => this.setState({ generalProgram: event.target.value })}
-                    helperText={<Localize field='bodyConfig.generalProgramDesc' />}
-                    className={classes.formControl}
-                    fullWidth
-                    margin='normal' />
-                </Grid>
-                <Grid item xs={12} sm={4} className={classes.formGrid}>
-                  <TextField
-                    id='generalJSTOffset'
-                    label={<Localize field='bodyConfig.generalJSTOffset' />}
-                    value={generalJSTOffset}
-                    onChange={event => this.setState({ generalJSTOffset: event.target.value })}
-                    helperText={<Localize field='bodyConfig.generalJSTOffsetDesc' />}
-                    className={classes.formControl}
-                    fullWidth
-                    type='number'
-                    margin='normal' />
-                </Grid>
-              </Grid>
+              <BodyConfigGeneral callback={this.configCallback} config={this.filterConfig('general')} />
 
               <Divider />
 
-              <Typography type='display1'>
-                <Localize field='bodyConfig.scheduledSleepHeader' />
-                <Switch
-                  className={classes.switch}
-                  checked={scheduledSleepEnabled}
-                  onChange={(event, checked) => this.setState({ scheduledSleepEnabled: checked })} />
-              </Typography>
-
-              <Grid container spacing={0}>
-                <Grid item xs={12} sm={6} className={classes.formGrid}>
-                  <FormControl disabled={!scheduledSleepEnabled} className={classes.formControl} fullWidth>
-                    <InputLabel htmlFor='scheduledSleepStartTime'>
-                      <Localize field='bodyConfig.scheduledSleepStartTime' />
-                    </InputLabel>
-                    <TimeInput
-                      id='scheduledSleepStartTime'
-                      mode='24h'
-                      value={scheduledSleepStartTime}
-                      onChange={time => this.setState({ scheduledSleepStartTime: time })}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={6} className={classes.formGrid}>
-                  <TextField
-                    id='scheduledSleepSleepLength'
-                    label={<Localize field='bodyConfig.scheduledSleepLength' />}
-                    value={scheduledSleepSleepLength}
-                    onChange={event => this.setState({ scheduledSleepSleepLength: event.target.value })}
-                    helperText={<Localize field='bodyConfig.scheduledSleepLengthDesc' />}
-                    type='number'
-                    margin='normal'
-                    className={classes.formControl}
-                    disabled={!scheduledSleepEnabled}
-                    fullWidth />
-                </Grid>
-              </Grid>
+              <BodyConfigScheduledSleep callback={this.configCallback} config={this.filterConfig('scheduledSleep')} />
 
               <Divider />
 
-              <Typography type='display1'>
-                <Localize field='bodyConfig.expeditionsHeader' />
-                <Switch
-                  className={classes.switch}
-                  checked={expeditionsEnabled}
-                  onChange={(event, checked) => this.setState({ expeditionsEnabled: checked })} />
-              </Typography>
-
-              <Grid container spacing={0}>
-                <Grid item xs={12} sm={4} className={classes.formGrid}>
-                  <FormControl
-                    disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet2Enabled)}
-                    margin='normal'
-                    fullWidth
-                  >
-                    <InputLabel htmlFor='expeditionsFleet2' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.expeditionsFleet2' />
-                    </InputLabel>
-                    <Select
-                      multi
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='expeditionsFleet2'
-                      value={expeditionsFleet2}
-                      options={EXPEDITIONS}
-                      onChange={value => this.setState({ expeditionsFleet2: value })}
-                      disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet2Enabled)}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={4} className={classes.formGrid}>
-                  <FormControl
-                    disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet3Enabled)}
-                    margin='normal'
-                    fullWidth
-                  >
-                    <InputLabel htmlFor='expeditionsFleet3' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.expeditionsFleet3' />
-                    </InputLabel>
-                    <Select
-                      multi
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='expeditionsFleet3'
-                      value={expeditionsFleet3}
-                      options={EXPEDITIONS}
-                      onChange={value => this.setState({ expeditionsFleet3: value })}
-                      disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet3Enabled)}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={4} className={classes.formGrid}>
-                  <FormControl
-                    disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet4Enabled)}
-                    margin='normal'
-                    fullWidth
-                  >
-                    <InputLabel htmlFor='expeditionsFleet4' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.expeditionsFleet4' />
-                    </InputLabel>
-                    <Select
-                      multi
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='expeditionsFleet4'
-                      value={expeditionsFleet4}
-                      options={EXPEDITIONS}
-                      onChange={value => this.setState({ expeditionsFleet4: value })}
-                      disabled={!expeditionsEnabled || (combatEnabled && !expeditionsFleet4Enabled)}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-              </Grid>
+              <BodyConfigExpeditions
+                callback={this.configCallback}
+                config={this.filterConfig('expeditions')}
+                extraConfig={this.filterConfig('combat')} />
 
               <Divider />
 
-              <Typography type='display1'>
-                <Localize field='bodyConfig.pvpHeader' />
+              <BodyConfigPvP callback={this.configCallback} config={this.filterConfig('pvp')} />
+
+              <Divider />
+
+              <BodyConfigCombat callback={this.configCallback} config={this.filterConfig('combat')} />
+
+              <Divider />
+
+              <Typography variant='display1'>
+                <Localize field='bodyConfig.shipSwitcherHeader' />
                 <Switch
                   className={classes.switch}
-                  checked={pvpEnabled}
-                  onChange={(event, checked) => this.setState({ pvpEnabled: checked })} />
+                  checked={shipSwitcherEnabled}
+                  onChange={(event, checked) => this.setState({ shipSwitcherEnabled: checked })} />
               </Typography>
 
               <Divider />
 
-              <Typography type='display1'>
-                <Localize field='bodyConfig.combatHeader' />
-                <Switch
-                  className={classes.switch}
-                  checked={combatEnabled}
-                  onChange={this.handleCombatToggle} />
-              </Typography>
-
-              <Grid container spacing={0}>
-                <Grid item xs={12} sm={12} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatEngine' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatEngine' />
-                    </InputLabel>
-                    <Select
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatEngine'
-                      value={combatEngine}
-                      options={COMBAT_ENGINES}
-                      onChange={value => this.setState({ combatEngine: value })}
-                      disabled={!combatEnabled}
-                      clearable={false}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-              </Grid>
-
-              <Grid container spacing={0}>
-                <Grid item xs={12} sm={4} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatMap' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatMap' />
-                    </InputLabel>
-                    <Select
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatMap'
-                      value={combatMap}
-                      options={MAPS}
-                      onChange={value => this.setState({ combatMap: value })}
-                      disabled={!combatEnabled}
-                      clearable={false}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={4} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatFleetMode' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatFleetMode' />
-                    </InputLabel>
-                    <Select
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatFleetMode'
-                      value={combatFleetMode}
-                      options={COMBINED_FLEET_MODES}
-                      onChange={this.handleFleetModeChange}
-                      disabled={!combatEnabled}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={4} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatCombatNodes' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatCombatNodeCount' />
-                    </InputLabel>
-                    <Select
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatCombatNodes'
-                      value={combatCombatNodes}
-                      options={COMBAT_NODE_COUNTS}
-                      onChange={value => this.setState({ combatCombatNodes: value })}
-                      disabled={!combatEnabled}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={4} sm={2} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatNodeSelect1' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatNodeSelect1' />
-                    </InputLabel>
-                    <Select
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatNodeSelect1'
-                      value={combatNodeSelect1}
-                      options={NODES}
-                      onChange={value => this.setState({ combatNodeSelect1: value })}
-                      disabled={!combatEnabled}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} sm={2} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatNodeSelect2' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatNodeSelect2' />
-                    </InputLabel>
-                    <Select
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatNodeSelect2'
-                      value={combatNodeSelect2}
-                      options={NODES}
-                      onChange={value => this.setState({ combatNodeSelect2: value })}
-                      disabled={!combatEnabled}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} sm={1} className={classes.formGridButton}>
-                  <Button
-                    dense
-                    color='primary'
-                    disabled={!combatEnabled ||
-                      (!combatNodeSelect1 || !combatNodeSelect2 || combatNodeSelect1 === combatNodeSelect2)}
-                    onClick={() => this.handleCombatNodeSelectAdd(combatNodeSelect1, combatNodeSelect2)}
-                  >
-                    <Localize field='bodyConfig.combatNodeSelectAdd' />
-                    <ChevronRight />
-                  </Button>
-                </Grid>
-                <Grid item xs={12} sm={7} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatNodeSelects' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatNodeSelects' />
-                    </InputLabel>
-                    <Creatable
-                      multi
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatNodeSelects'
-                      value={combatNodeSelects}
-                      options={combatNodeSelectOptions}
-                      onChange={value => this.setState({ combatNodeSelects: value })}
-                      disabled={!combatEnabled}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={4} sm={2} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatFormationsNode' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatCustomFormation1' />
-                    </InputLabel>
-                    <Select
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatFormationsNode'
-                      value={combatFormationsNode}
-                      options={combatEngine === 'legacy' ? COMBAT_NODE_COUNTS : COMBAT_NODE_COUNTS.concat(NODES)}
-                      onChange={value => this.setState({ combatFormationsNode: value })}
-                      disabled={!combatEnabled}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} sm={3} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatFormationsFormation' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatCustomFormation2' />
-                    </InputLabel>
-                    <Select
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatFormationsFormation'
-                      value={combatFormationsFormation}
-                      options={FORMATIONS}
-                      onChange={value => this.setState({ combatFormationsFormation: value })}
-                      disabled={!combatEnabled}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} sm={1} className={classes.formGridButton}>
-                  <Button
-                    dense
-                    color='primary'
-                    disabled={!combatEnabled || !combatFormationsFormation}
-                    onClick={() => this.handleCombatFormationAdd(combatFormationsNode, combatFormationsFormation)}
-                  >
-                    <Localize field='bodyConfig.combatCustomFormationAdd' />
-                    <ChevronRight />
-                  </Button>
-                </Grid>
-                <Grid item xs={12} sm={6} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatFormations' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatCustomFormations' />
-                    </InputLabel>
-                    <Creatable
-                      multi
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatFormations'
-                      value={combatFormations}
-                      options={combatFormationOptions}
-                      onChange={value => this.setState({ combatFormations: value })}
-                      disabled={!combatEnabled}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={4} sm={2} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatNightBattlesNode' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatNightBattle1' />
-                    </InputLabel>
-                    <Select
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatNightBattlesNode'
-                      value={combatNightBattlesNode}
-                      options={combatEngine === 'legacy' ? COMBAT_NODE_COUNTS : COMBAT_NODE_COUNTS.concat(NODES)}
-                      onChange={value => this.setState({ combatNightBattlesNode: value })}
-                      disabled={!combatEnabled}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} sm={3} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatNightBattlesMode' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatNightBattle2' />
-                    </InputLabel>
-                    <Select
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatNightBattlesMode'
-                      value={combatNightBattlesMode}
-                      options={NIGHT_BATTLES}
-                      onChange={value => this.setState({ combatNightBattlesMode: value })}
-                      disabled={!combatEnabled}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} sm={1} className={classes.formGridButton}>
-                  <Button
-                    dense
-                    color='primary'
-                    disabled={!combatEnabled || !combatNightBattlesMode}
-                    onClick={() => this.handleCombatNightBattleAdd(combatNightBattlesNode, combatNightBattlesMode)}
-                  >
-                    <Localize field='bodyConfig.combatNightBattleAdd' />
-                    <ChevronRight />
-                  </Button>
-                </Grid>
-                <Grid item xs={12} sm={6} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatNightBattles' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatNightBattles' />
-                    </InputLabel>
-                    <Creatable
-                      multi
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatNightBattles'
-                      value={combatNightBattles}
-                      options={combatNightBattleOptions}
-                      onChange={value => this.setState({ combatNightBattles: value })}
-                      disabled={!combatEnabled}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12} sm={4} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatRetreatLimit' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatRetreatLimit' />
-                    </InputLabel>
-                    <Select
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatRetreatLimit'
-                      value={combatRetreatLimit}
-                      options={DAMAGE_STATES}
-                      onChange={value => this.setState({ combatRetreatLimit: value })}
-                      disabled={!combatEnabled}
-                      clearable={false}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={4} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatRepairLimit' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatRepairLimit' />
-                    </InputLabel>
-                    <Select
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatRepairLimit'
-                      value={combatRepairLimit}
-                      options={DAMAGE_STATES}
-                      onChange={value => this.setState({ combatRepairLimit: value })}
-                      disabled={!combatEnabled}
-                      clearable={false}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={4} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} fullWidth>
-                    <InputLabel htmlFor='combatRepairTimeLimit'>
-                      <Localize field='bodyConfig.combatRepairTimeLimit' />
-                    </InputLabel>
-                    <TimeInput
-                      id='combatRepairTimeLimit'
-                      mode='24h'
-                      value={combatRepairTimeLimit}
-                      onChange={time => this.setState({ combatRepairTimeLimit: time })}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12} sm={3} className={classes.formGrid}>
-                  <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatLBASGroups' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatLBASGroups' />
-                    </InputLabel>
-                    <Select
-                      multi
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      name='combatLBASGroups'
-                      value={combatLBASGroups}
-                      options={LBAS_GROUPS}
-                      onChange={this.handleLBASGroupSelect}
-                      disabled={!combatEnabled}
-                      fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={3} className={classes.formGrid}>
-                  <FormControl disabled={combatLBASGroup1NodesDisabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatLBASGroup1Nodes' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatLBASGroup1' />
-                    </InputLabel>
-                    <div className={classes.flexReset}>
-                      <Select
-                        className={classes.reactSelectHalfWidth}
-                        simpleValue={true}
-                        name='combatLBASGroup1Node1'
-                        value={combatLBASGroup1Node1}
-                        options={NODES}
-                        onChange={value => this.setState({ combatLBASGroup1Node1: value })}
-                        disabled={combatLBASGroup1NodesDisabled} />
-                      <Select
-                        className={classes.reactSelectHalfWidth}
-                        simpleValue={true}
-                        name='combatLBASGroup1Node2'
-                        value={combatLBASGroup1Node2}
-                        options={NODES}
-                        onChange={value => this.setState({ combatLBASGroup1Node2: value })}
-                        disabled={combatLBASGroup1NodesDisabled} />
-                    </div>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={3} className={classes.formGrid}>
-                  <FormControl disabled={combatLBASGroup2NodesDisabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatLBASGroup2Nodes' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatLBASGroup2' />
-                    </InputLabel>
-                    <div className={classes.flexReset}>
-                      <Select
-                        className={classes.reactSelectHalfWidth}
-                        simpleValue={true}
-                        name='combatLBASGroup2Node1'
-                        value={combatLBASGroup2Node1}
-                        options={NODES}
-                        onChange={value => this.setState({ combatLBASGroup2Node1: value })}
-                        disabled={combatLBASGroup2NodesDisabled} />
-                      <Select
-                        className={classes.reactSelectHalfWidth}
-                        simpleValue={true}
-                        name='combatLBASGroup2Node2'
-                        value={combatLBASGroup2Node2}
-                        options={NODES}
-                        onChange={value => this.setState({ combatLBASGroup2Node2: value })}
-                        disabled={combatLBASGroup2NodesDisabled} />
-                    </div>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={3} className={classes.formGrid}>
-                  <FormControl disabled={combatLBASGroup3NodesDisabled} margin='normal' fullWidth>
-                    <InputLabel htmlFor='combatLBASGroup3Nodes' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.combatLBASGroup3' />
-                    </InputLabel>
-                    <div className={classes.flexReset}>
-                      <Select
-                        className={classes.reactSelectHalfWidth}
-                        simpleValue={true}
-                        name='combatLBASGroup3Node1'
-                        value={combatLBASGroup3Node1}
-                        options={NODES}
-                        onChange={value => this.setState({ combatLBASGroup3Node1: value })}
-                        disabled={combatLBASGroup3NodesDisabled} />
-                      <Select
-                        className={classes.reactSelectHalfWidth}
-                        simpleValue={true}
-                        name='combatLBASGroup3Node2'
-                        value={combatLBASGroup3Node2}
-                        options={NODES}
-                        onChange={value => this.setState({ combatLBASGroup3Node2: value })}
-                        disabled={combatLBASGroup3NodesDisabled} />
-                    </div>
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12} sm={12} className={classes.formGrid}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={combatOptionCheckFatigue}
-                        onChange={(event, checked) => this.setState({ combatOptionCheckFatigue: checked })}
-                        disabled={!combatEnabled}
-                        value='combatOptionCheckFatigue' />
-                    }
-                    label={<Localize field='bodyConfig.combatCheckFatigue' />}
-                    disabled={!combatEnabled} />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={combatOptionReserveDocks}
-                        onChange={(event, checked) => this.setState({ combatOptionReserveDocks: checked })}
-                        disabled={!combatEnabled}
-                        value='combatOptionReserveDocks' />
-                    }
-                    label={<Localize field='bodyConfig.combatReserveDocks' />}
-                    disabled={true} />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={combatOptionPortCheck}
-                        onChange={(event, checked) => this.setState({ combatOptionPortCheck: checked })}
-                        disabled={!combatEnabled}
-                        value='combatOptionPortCheck' />
-                    }
-                    label={<Localize field='bodyConfig.combatPortCheck' />}
-                    disabled={!combatEnabled} />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={combatOptionMedalStop}
-                        onChange={(event, checked) => this.setState({ combatOptionMedalStop: checked })}
-                        disabled={true}
-                        value='combatOptionMedalStop' />
-                    }
-                    label={<Localize field='bodyConfig.combatMedalStop' />}
-                    disabled={true} />
-                </Grid>
-              </Grid>
-
-              <Divider />
-
-              <Typography type='display1'>
-                <Localize field='bodyConfig.questsHeader' />
-                <Switch
-                  className={classes.switch}
-                  checked={questsEnabled}
-                  onChange={(event, checked) => this.setState({ questsEnabled: checked })} />
-              </Typography>
+              <BodyConfigQuests callback={this.configCallback} config={this.filterConfig('quests')} />
             </Paper>
           </Grid>
           <Grid item xs={12} md={4}>
             <Paper className={classes.paper} elevation={0}>
-              <Typography type='display1' className={classes.flexReset}>
+              <Typography variant='display1' className={classes.flexReset}>
                 <Localize field='bodyConfig.configHeader' />
                 <Button
-                  dense
+                  size='small'
                   color='primary'
                   className={classes.saveButton}
                   onClick={() => configLoad.open()}
@@ -1070,7 +351,7 @@ class BodyConfig extends Component {
                   <Upload />
                 </Button>
                 <Button
-                  dense
+                  size='small'
                   color='primary'
                   className={classes.saveButton}
                   onClick={() => this.onSaveClick()}

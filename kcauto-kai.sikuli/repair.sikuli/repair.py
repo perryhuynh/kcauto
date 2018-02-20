@@ -108,7 +108,7 @@ class RepairModule(object):
             use_bucket = False
             if self.config.combat['repair_time_limit'] == 0:
                 use_bucket = True
-            elif ('ReserveDocks' in self.combat['misc_options'] and
+            elif ('ReserveDocks' in self.config.combat['misc_options'] and
                     len(self.repair_timers) == self.repair_slots - 1):
                 use_bucket = True
             else:

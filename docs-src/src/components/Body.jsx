@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
 import AppBar from 'material-ui/AppBar'
@@ -15,7 +15,7 @@ const styles = () => ({
   },
 })
 
-class Body extends Component {
+class Body extends PureComponent {
   state = {
     value: 0,
   }
