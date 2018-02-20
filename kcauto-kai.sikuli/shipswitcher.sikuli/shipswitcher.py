@@ -460,7 +460,6 @@ class ShipSwitcher(object):
         Returns:
             bool: True if a successful switch was made; False otherwise
         """
-        # TODO: what happens when none of these specific methods dont' match???
         positions = []
         if slot_config['mode'] == 'position':
             return self._resolve_replacement_ship_by_position(slot_config)
