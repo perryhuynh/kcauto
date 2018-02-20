@@ -532,7 +532,7 @@ class ShipSwitcher(object):
                 .format(
                     self.current_shiplist_page,
                     ", ".join([
-                        i for j
+                        str(i) for j
                         in [
                             self.temp_ship_position_dict[x]
                             for x in self.temp_ship_position_dict]
@@ -594,7 +594,8 @@ class ShipSwitcher(object):
                 "Potential replacement ships found in page {} positions {}"
                 .format(
                     self.current_shiplist_page,
-                    ", ".join(self.temp_ship_position_list)))
+                    ", ".join(
+                        [str(pos) for pos in self.temp_ship_position_list])))
             for position in self.temp_ship_position_list:
                 if self._choose_and_check_availability_of_ship(
                         position, slot_config['criteria']) is True:
