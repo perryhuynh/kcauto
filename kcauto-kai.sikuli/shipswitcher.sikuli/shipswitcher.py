@@ -117,7 +117,6 @@ class ShipSwitcher(object):
             fleet.print_damage_counts(repair=True)
             Util.log_msg("Fleet is still not ready to sortie.")
 
-
     def _set_shiplist_counts(self):
         """Method that sets the ship-list related internal counts based on the
         number of ships in the port.
@@ -283,6 +282,7 @@ class ShipSwitcher(object):
                     self._change_shiplist_page('next')
                     current_page += 5
         self.current_shiplist_page = current_page
+        Util.kc_sleep()
 
     def _choose_ship_by_position(self, position):
         """Method that clicks the ship in the specified position in the ship
