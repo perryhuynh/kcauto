@@ -32,7 +32,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "file-loader": "^1.1.5",
     "material-ui": "^1.0.0-beta.34",
-    "material-ui-time-picker": "^0.1.2",
+    "material-ui-time-picker": "^0.1.5",
     "mdi": "^2.0.46",
     "mdi-material-ui": "^2.0.1",
     "path": "^0.12.7",

@@ -21,40 +21,24 @@ class BodyConfigExpeditions extends PureComponent {
   state = this.props.config
 
   componentWillReceiveProps = (nextProps) => {
-    if (nextProps.extraConfig.combatDisableExpeditionsFleet2 &&
-        !this.props.extraConfig.combatDisableExpeditionsFleet2) {
-      this.setState({ expeditionsFleet2: [] })
-    }
-    if (nextProps.extraConfig.combatDisableExpeditionsFleet3 &&
-        !this.props.extraConfig.combatDisableExpeditionsFleet3) {
-      this.setState({ expeditionsFleet3: [] })
-    }
-    if (nextProps.extraConfig.combatEnabled && !this.props.extraConfig.combatEnabled) {
-      if (nextProps.extraConfig.combatDisableExpeditionsFleet2) {
-        this.setState({ expeditionsFleet2: [] })
-      }
-      if (nextProps.extraConfig.combatDisableExpeditionsFleet3) {
-        this.setState({ expeditionsFleet3: [] })
-      }
-    }
-  }
-
-  componentDidUpdate = (nextProp, nextState) => {
-    if (this.state !== nextState) {
-      this.props.callback(this.state)
+    if (this.props.config !== nextProps.config) {
+      this.setState(nextProps.config)
     }
   }
 
   render = () => {
     const {
       classes,
-      extraConfig,
     } = this.props
     const {
       expeditionsEnabled,
       expeditionsFleet2,
       expeditionsFleet3,
       expeditionsFleet4,
+      combatEnabled,
+      combatDisableExpeditionsFleet2,
+      combatDisableExpeditionsFleet3,
+      combatDisableExpeditionsFleet4,
     } = this.state
     return (
       <Fragment>
@@ -63,14 +47,18 @@ class BodyConfigExpeditions extends PureComponent {
           <Switch
             className={classes.switch}
             checked={expeditionsEnabled}
-            onChange={(event, checked) => this.setState({ expeditionsEnabled: checked })} />
+            onChange={
+              (event, checked) => this.setState(
+                { expeditionsEnabled: checked },
+                () => this.props.callback(this.state)
+              )} />
         </Typography>
 
         <Grid container spacing={0}>
           <Grid item xs={12} sm={4} className={classes.formGrid}>
             <FormControl
               disabled={
-                !expeditionsEnabled || (extraConfig.combatEnabled && extraConfig.combatDisableExpeditionsFleet2)}
+                !expeditionsEnabled || (combatEnabled && combatDisableExpeditionsFleet2)}
               margin='normal'
               fullWidth
             >
@@ -84,16 +72,16 @@ class BodyConfigExpeditions extends PureComponent {
                 name='expeditionsFleet2'
                 value={expeditionsFleet2}
                 options={EXPEDITIONS}
-                onChange={value => this.setState({ expeditionsFleet2: value })}
+                onChange={value => this.setState({ expeditionsFleet2: value }, () => this.props.callback(this.state))}
                 disabled={
-                  !expeditionsEnabled || (extraConfig.combatEnabled && extraConfig.combatDisableExpeditionsFleet2)}
+                  !expeditionsEnabled || (combatEnabled && combatDisableExpeditionsFleet2)}
                 fullWidth />
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4} className={classes.formGrid}>
             <FormControl
               disabled={
-                !expeditionsEnabled || (extraConfig.combatEnabled && extraConfig.combatDisableExpeditionsFleet3)}
+                !expeditionsEnabled || (combatEnabled && combatDisableExpeditionsFleet3)}
               margin='normal'
               fullWidth
             >
@@ -107,16 +95,16 @@ class BodyConfigExpeditions extends PureComponent {
                 name='expeditionsFleet3'
                 value={expeditionsFleet3}
                 options={EXPEDITIONS}
-                onChange={value => this.setState({ expeditionsFleet3: value })}
+                onChange={value => this.setState({ expeditionsFleet3: value }, () => this.props.callback(this.state))}
                 disabled={
-                  !expeditionsEnabled || (extraConfig.combatEnabled && extraConfig.combatDisableExpeditionsFleet3)}
+                  !expeditionsEnabled || (combatEnabled && combatDisableExpeditionsFleet3)}
                 fullWidth />
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4} className={classes.formGrid}>
             <FormControl
               disabled={
-                !expeditionsEnabled || (extraConfig.combatEnabled && extraConfig.combatDisableExpeditionsFleet4)}
+                !expeditionsEnabled || (combatEnabled && combatDisableExpeditionsFleet4)}
               margin='normal'
               fullWidth
             >
@@ -130,9 +118,9 @@ class BodyConfigExpeditions extends PureComponent {
                 name='expeditionsFleet4'
                 value={expeditionsFleet4}
                 options={EXPEDITIONS}
-                onChange={value => this.setState({ expeditionsFleet4: value })}
+                onChange={value => this.setState({ expeditionsFleet4: value }, () => this.props.callback(this.state))}
                 disabled={
-                  !expeditionsEnabled || (extraConfig.combatEnabled && extraConfig.combatDisableExpeditionsFleet4)}
+                  !expeditionsEnabled || (combatEnabled && combatDisableExpeditionsFleet4)}
                 fullWidth />
             </FormControl>
           </Grid>
@@ -145,7 +133,6 @@ class BodyConfigExpeditions extends PureComponent {
 BodyConfigExpeditions.propTypes = {
   classes: PropTypes.object.isRequired,
   config: PropTypes.object.isRequired,
-  extraConfig: PropTypes.object.isRequired,
   callback: PropTypes.func.isRequired,
 }
 

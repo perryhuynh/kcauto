@@ -12,9 +12,9 @@ import { styles } from 'components/BodyConfigStyles'
 class BodyConfigPvP extends PureComponent {
   state = this.props.config
 
-  componentDidUpdate = (nextProp, nextState) => {
-    if (this.state !== nextState) {
-      this.props.callback(this.state)
+  componentWillReceiveProps = (nextProps) => {
+    if (this.props.config !== nextProps.config) {
+      this.setState(nextProps.config)
     }
   }
 
@@ -31,7 +31,8 @@ class BodyConfigPvP extends PureComponent {
         <Switch
           className={classes.switch}
           checked={pvpEnabled}
-          onChange={(event, checked) => this.setState({ pvpEnabled: checked })} />
+          onChange={
+            (event, checked) => this.setState({ pvpEnabled: checked }, () => this.props.callback(this.state))} />
       </Typography>
     )
   }

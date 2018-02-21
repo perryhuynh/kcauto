@@ -13,9 +13,9 @@ import { styles } from 'components/BodyConfigStyles'
 class BodyConfigGeneral extends PureComponent {
   state = this.props.config
 
-  componentDidUpdate = (nextProp, nextState) => {
-    if (this.state !== nextState) {
-      this.props.callback(this.state)
+  componentWillReceiveProps = (nextProps) => {
+    if (this.props.config !== nextProps.config) {
+      this.setState(nextProps.config)
     }
   }
 
@@ -37,7 +37,8 @@ class BodyConfigGeneral extends PureComponent {
               id='generalProgram'
               label={<Localize field='bodyConfig.generalProgram' />}
               value={generalProgram}
-              onChange={event => this.setState({ generalProgram: event.target.value })}
+              onChange={
+                event => this.setState({ generalProgram: event.target.value }, () => this.props.callback(this.state))}
               helperText={<Localize field='bodyConfig.generalProgramDesc' />}
               className={classes.formControl}
               fullWidth
@@ -48,7 +49,8 @@ class BodyConfigGeneral extends PureComponent {
               id='generalJSTOffset'
               label={<Localize field='bodyConfig.generalJSTOffset' />}
               value={generalJSTOffset}
-              onChange={event => this.setState({ generalJSTOffset: event.target.value })}
+              onChange={
+                event => this.setState({ generalJSTOffset: event.target.value }, () => this.props.callback(this.state))}
               helperText={<Localize field='bodyConfig.generalJSTOffsetDesc' />}
               className={classes.formControl}
               fullWidth

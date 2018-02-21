@@ -18,7 +18,7 @@ const jsonConfigDefaults = {
   combatEnabled: false,
   combatEngine: 'legacy',
   combatMap: '1-1',
-  combatFleetMode: 'legacy',
+  combatFleetMode: '',
   combatCombatNodes: null,
   combatNodeSelect1: null,
   combatNodeSelect2: null,

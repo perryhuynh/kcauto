@@ -17,9 +17,9 @@ import { styles } from 'components/BodyConfigStyles'
 class BodyConfigScheduledSleep extends PureComponent {
   state = this.props.config
 
-  componentDidUpdate = (nextProp, nextState) => {
-    if (this.state !== nextState) {
-      this.props.callback(this.state)
+  componentWillReceiveProps = (nextProps) => {
+    if (this.props.config !== nextProps.config) {
+      this.setState(nextProps.config)
     }
   }
 
@@ -39,7 +39,11 @@ class BodyConfigScheduledSleep extends PureComponent {
           <Switch
             className={classes.switch}
             checked={scheduledSleepEnabled}
-            onChange={(event, checked) => this.setState({ scheduledSleepEnabled: checked })} />
+            onChange={
+              (event, checked) => this.setState(
+                { scheduledSleepEnabled: checked },
+                () => this.props.callback(this.state)
+              )} />
         </Typography>
 
         <Grid container spacing={0}>
@@ -52,7 +56,8 @@ class BodyConfigScheduledSleep extends PureComponent {
                 id='scheduledSleepStartTime'
                 mode='24h'
                 value={scheduledSleepStartTime}
-                onChange={time => this.setState({ scheduledSleepStartTime: time })}
+                onChange={
+                  time => this.setState({ scheduledSleepStartTime: time }, () => this.props.callback(this.state))}
                 fullWidth />
             </FormControl>
           </Grid>
@@ -61,7 +66,11 @@ class BodyConfigScheduledSleep extends PureComponent {
               id='scheduledSleepSleepLength'
               label={<Localize field='bodyConfig.scheduledSleepLength' />}
               value={scheduledSleepSleepLength}
-              onChange={event => this.setState({ scheduledSleepSleepLength: event.target.value })}
+              onChange={
+                event => this.setState(
+                  { scheduledSleepSleepLength: event.target.value },
+                  () => this.props.callback(this.state)
+                )}
               helperText={<Localize field='bodyConfig.scheduledSleepLengthDesc' />}
               type='number'
               margin='normal'

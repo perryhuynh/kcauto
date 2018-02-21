@@ -19,7 +19,6 @@ import Body from 'components/Body'
 import Footer from 'components/Footer'
 
 
-
 const theme = createMuiTheme({
   palette: {
     primary: blueGrey,

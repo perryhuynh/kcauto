@@ -1,4 +1,4 @@
-export const styles = () => ({
+export const styles = theme => ({
   dropzoneOverlay: {
     position: 'fixed',
     top: 0,
@@ -56,5 +56,12 @@ export const styles = () => ({
   },
   saveButton: {
     marginLeft: 10,
+  },
+  modal: {
+    position: 'absolute',
+    width: theme.spacing.unit * 80,
+    padding: theme.spacing.unit * 4,
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[5],
   },
 })

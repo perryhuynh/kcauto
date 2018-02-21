@@ -69,6 +69,30 @@ export const setPythonConfig = config => (
     if (config.combatOptionMedalStop) {
       combatOptions.push('MedalStop')
     }
+    if (!configTemp.shipSwitcherSlot1Criteria || !configTemp.shipSwitcherSlot1Ships) {
+      configTemp.shipSwitcherSlot1Criteria = ''
+      configTemp.shipSwitcherSlot1Ships = ''
+    }
+    if (!configTemp.shipSwitcherSlot2Criteria || !configTemp.shipSwitcherSlot2Ships) {
+      configTemp.shipSwitcherSlot2Criteria = ''
+      configTemp.shipSwitcherSlot2Ships = ''
+    }
+    if (!configTemp.shipSwitcherSlot3Criteria || !configTemp.shipSwitcherSlot3Ships) {
+      configTemp.shipSwitcherSlot3Criteria = ''
+      configTemp.shipSwitcherSlot3Ships = ''
+    }
+    if (!configTemp.shipSwitcherSlot4Criteria || !configTemp.shipSwitcherSlot4Ships) {
+      configTemp.shipSwitcherSlot4Criteria = ''
+      configTemp.shipSwitcherSlot4Ships = ''
+    }
+    if (!configTemp.shipSwitcherSlot5Criteria || !configTemp.shipSwitcherSlot5Ships) {
+      configTemp.shipSwitcherSlot5Criteria = ''
+      configTemp.shipSwitcherSlot5Ships = ''
+    }
+    if (!configTemp.shipSwitcherSlot6Criteria || !configTemp.shipSwitcherSlot6Ships) {
+      configTemp.shipSwitcherSlot6Criteria = ''
+      configTemp.shipSwitcherSlot6Ships = ''
+    }
 
     const pythonConfig = [
       '[General]',

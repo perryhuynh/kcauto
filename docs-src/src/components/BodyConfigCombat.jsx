@@ -58,22 +58,58 @@ const LBAS_GROUPS = ['1', '2', '3'].map(value => ({ value, label: value }))
 class BodyConfigCombat extends PureComponent {
   state = this.props.config
 
-  componentDidUpdate = (nextProp, nextState) => {
-    if (this.state !== nextState) {
-      this.props.callback(this.state)
+  componentWillReceiveProps = (nextProps) => {
+    if (this.props.config !== nextProps.config) {
+      this.setState(nextProps.config)
+    }
+  }
+
+  handleCombatToggle = (event, checked) => {
+    // when toggling the combat module, make sure to clear any conflicting expeditions as needed and disable the
+    // ship switcher as needed; these states are not actually used in here, but used to inform the other sections of
+    // available fields
+    if (checked) {
+      if (this.state.combatFleetMode === 'striking') {
+        this.setState({ combatEnabled: checked, expeditionsFleet3: [] }, () => this.props.callback(this.state))
+      } else if (['ctf', 'stf', 'transport'].includes(this.state.combatFleetMode)) {
+        this.setState({ combatEnabled: checked, expeditionsFleet2: [] }, () => this.props.callback(this.state))
+      } else {
+        this.setState({ combatEnabled: checked }, () => this.props.callback(this.state))
+      }
+    } else {
+      this.setState({ combatEnabled: checked, shipSwitcherEnabled: false }, () => this.props.callback(this.state))
     }
   }
 
   handleFleetModeChange = (value) => {
-    // when changing the fleet mode, make sure to disable and clear any conflicting expeditions as needed
+    // when changing the fleet mode, make sure to disable and clear any conflicting expeditions as needed; these states
+    // are not actually used in here, but used to inform the expedition section of available fields
     if (value === 'striking') {
-      this.setState({ combatDisableExpeditionsFleet2: false, combatDisableExpeditionsFleet3: true })
+      this.setState(
+        {
+          combatFleetMode: value,
+          combatDisableExpeditionsFleet2: false,
+          expeditionsFleet3: [],
+          combatDisableExpeditionsFleet3: true,
+        },
+        () => this.props.callback(this.state)
+      )
     } else if (['ctf', 'stf', 'transport'].indexOf(value) > -1) {
-      this.setState({ combatDisableExpeditionsFleet2: true, combatDisableExpeditionsFleet3: false })
+      this.setState(
+        {
+          combatFleetMode: value,
+          expeditionsFleet2: [],
+          combatDisableExpeditionsFleet2: true,
+          combatDisableExpeditionsFleet3: false,
+        },
+        () => this.props.callback(this.state)
+      )
     } else {
-      this.setState({ combatDisableExpeditionsFleet2: false, combatDisableExpeditionsFleet3: false })
+      this.setState(
+        { combatFleetMode: value, combatDisableExpeditionsFleet2: false, combatDisableExpeditionsFleet3: false },
+        () => this.props.callback(this.state)
+      )
     }
-    this.setState({ combatFleetMode: value })
   }
 
   handleCombatNodeSelectAdd = (node, targetNode) => {
@@ -84,7 +120,10 @@ class BodyConfigCombat extends PureComponent {
     tempCombatNodeSelectsObj[node] = targetNode
     const combatNodeSelects = Object.keys(tempCombatNodeSelectsObj).sort().map(key =>
       `${key}>${tempCombatNodeSelectsObj[key]}`).join(',')
-    this.setState({ combatNodeSelect1: null, combatNodeSelect2: null, combatNodeSelects })
+    this.setState(
+      { combatNodeSelect1: null, combatNodeSelect2: null, combatNodeSelects },
+      () => this.props.callback(this.state)
+    )
   }
 
   handleCombatFormationAdd = (node, formation) => {
@@ -98,7 +137,10 @@ class BodyConfigCombat extends PureComponent {
     tempCombatFormationsObj[targetNode] = formation
     const combatFormations = Object.keys(tempCombatFormationsObj).sort().map(key =>
       `${key}:${tempCombatFormationsObj[key]}`).join(',')
-    this.setState({ combatFormationsNode: null, combatFormationsFormation: null, combatFormations })
+    this.setState(
+      { combatFormationsNode: null, combatFormationsFormation: null, combatFormations },
+      () => this.props.callback(this.state)
+    )
   }
 
   handleCombatNightBattleAdd = (node, nightBattle) => {
@@ -111,19 +153,22 @@ class BodyConfigCombat extends PureComponent {
     tempCombatNightBattlesObj[targetNode] = nightBattle
     const combatNightBattles = Object.keys(tempCombatNightBattlesObj).sort().map(key =>
       `${key}:${tempCombatNightBattlesObj[key]}`).join(',')
-    this.setState({ combatNightBattlesNode: null, combatNightBattlesMode: null, combatNightBattles })
+    this.setState(
+      { combatNightBattlesNode: null, combatNightBattlesMode: null, combatNightBattles },
+      () => this.props.callback(this.state)
+    )
   }
 
   handleLBASGroupSelect = (value) => {
     // clear the LBAS node selects as needed based on the LBAS group selections
     if (!value.includes('1')) {
-      this.setState({ combatLBASGroup1Node1: null, combatLBASGroup1Node2: null })
+      this.setState({ combatLBASGroup1Node1: null, combatLBASGroup1Node2: null }, () => this.props.callback(this.state))
     }
     if (!value.includes('2')) {
-      this.setState({ combatLBASGroup2Node1: null, combatLBASGroup2Node2: null })
+      this.setState({ combatLBASGroup2Node1: null, combatLBASGroup2Node2: null }, () => this.props.callback(this.state))
     }
     if (!value.includes('3')) {
-      this.setState({ combatLBASGroup3Node1: null, combatLBASGroup3Node2: null })
+      this.setState({ combatLBASGroup3Node1: null, combatLBASGroup3Node2: null }, () => this.props.callback(this.state))
     }
     this.setState({ combatLBASGroups: value })
   }
@@ -209,7 +254,7 @@ class BodyConfigCombat extends PureComponent {
           <Switch
             className={classes.switch}
             checked={combatEnabled}
-            onChange={(event, checked) => this.setState({ combatEnabled: checked })} />
+            onChange={this.handleCombatToggle} />
         </Typography>
 
         <Grid container spacing={0}>
@@ -224,7 +269,7 @@ class BodyConfigCombat extends PureComponent {
                 name='combatEngine'
                 value={combatEngine}
                 options={COMBAT_ENGINES}
-                onChange={value => this.setState({ combatEngine: value })}
+                onChange={value => this.setState({ combatEngine: value }, () => this.props.callback(this.state))}
                 disabled={!combatEnabled}
                 clearable={false}
                 fullWidth />
@@ -244,7 +289,7 @@ class BodyConfigCombat extends PureComponent {
                 name='combatMap'
                 value={combatMap}
                 options={MAPS}
-                onChange={value => this.setState({ combatMap: value })}
+                onChange={value => this.setState({ combatMap: value }, () => this.props.callback(this.state))}
                 disabled={!combatEnabled}
                 clearable={false}
                 fullWidth />
@@ -277,7 +322,7 @@ class BodyConfigCombat extends PureComponent {
                 name='combatCombatNodes'
                 value={combatCombatNodes}
                 options={COMBAT_NODE_COUNTS}
-                onChange={value => this.setState({ combatCombatNodes: value })}
+                onChange={value => this.setState({ combatCombatNodes: value }, () => this.props.callback(this.state))}
                 disabled={!combatEnabled}
                 fullWidth />
             </FormControl>
@@ -339,7 +384,7 @@ class BodyConfigCombat extends PureComponent {
                 name='combatNodeSelects'
                 value={combatNodeSelects}
                 options={combatNodeSelectOptions}
-                onChange={value => this.setState({ combatNodeSelects: value })}
+                onChange={value => this.setState({ combatNodeSelects: value }, () => this.props.callback(this.state))}
                 disabled={!combatEnabled}
                 fullWidth />
             </FormControl>
@@ -372,7 +417,8 @@ class BodyConfigCombat extends PureComponent {
                 name='combatFormationsFormation'
                 value={combatFormationsFormation}
                 options={FORMATIONS}
-                onChange={value => this.setState({ combatFormationsFormation: value })}
+                onChange={
+                  value => this.setState({ combatFormationsFormation: value })}
                 disabled={!combatEnabled}
                 fullWidth />
             </FormControl>
@@ -400,7 +446,7 @@ class BodyConfigCombat extends PureComponent {
                 name='combatFormations'
                 value={combatFormations}
                 options={combatFormationOptions}
-                onChange={value => this.setState({ combatFormations: value })}
+                onChange={value => this.setState({ combatFormations: value }, () => this.props.callback(this.state))}
                 disabled={!combatEnabled}
                 fullWidth />
             </FormControl>
@@ -409,7 +455,7 @@ class BodyConfigCombat extends PureComponent {
           <Grid item xs={4} sm={2} className={classes.formGrid}>
             <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
               <InputLabel htmlFor='combatNightBattlesNode' shrink={true} className={classes.reactSelectLabel}>
-                <Localize field='bodyConfig.combatNightBattle1' />
+                <Localize field='bodyConfig.combatCustomNightBattle1' />
               </InputLabel>
               <Select
                 className={classes.reactSelect}
@@ -425,7 +471,7 @@ class BodyConfigCombat extends PureComponent {
           <Grid item xs={4} sm={3} className={classes.formGrid}>
             <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
               <InputLabel htmlFor='combatNightBattlesMode' shrink={true} className={classes.reactSelectLabel}>
-                <Localize field='bodyConfig.combatNightBattle2' />
+                <Localize field='bodyConfig.combatCustomNightBattle2' />
               </InputLabel>
               <Select
                 className={classes.reactSelect}
@@ -433,7 +479,8 @@ class BodyConfigCombat extends PureComponent {
                 name='combatNightBattlesMode'
                 value={combatNightBattlesMode}
                 options={NIGHT_BATTLES}
-                onChange={value => this.setState({ combatNightBattlesMode: value })}
+                onChange={
+                  value => this.setState({ combatNightBattlesMode: value })}
                 disabled={!combatEnabled}
                 fullWidth />
             </FormControl>
@@ -445,14 +492,14 @@ class BodyConfigCombat extends PureComponent {
               disabled={!combatEnabled || !combatNightBattlesMode}
               onClick={() => this.handleCombatNightBattleAdd(combatNightBattlesNode, combatNightBattlesMode)}
             >
-              <Localize field='bodyConfig.combatNightBattleAdd' />
+              <Localize field='bodyConfig.combatCustomNightBattleAdd' />
               <ChevronRight />
             </Button>
           </Grid>
           <Grid item xs={12} sm={6} className={classes.formGrid}>
             <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
               <InputLabel htmlFor='combatNightBattles' shrink={true} className={classes.reactSelectLabel}>
-                <Localize field='bodyConfig.combatNightBattles' />
+                <Localize field='bodyConfig.combatCustomNightBattles' />
               </InputLabel>
               <Creatable
                 multi
@@ -461,7 +508,7 @@ class BodyConfigCombat extends PureComponent {
                 name='combatNightBattles'
                 value={combatNightBattles}
                 options={combatNightBattleOptions}
-                onChange={value => this.setState({ combatNightBattles: value })}
+                onChange={value => this.setState({ combatNightBattles: value }, () => this.props.callback(this.state))}
                 disabled={!combatEnabled}
                 fullWidth />
             </FormControl>
@@ -478,7 +525,7 @@ class BodyConfigCombat extends PureComponent {
                 name='combatRetreatLimit'
                 value={combatRetreatLimit}
                 options={DAMAGE_STATES}
-                onChange={value => this.setState({ combatRetreatLimit: value })}
+                onChange={value => this.setState({ combatRetreatLimit: value }, () => this.props.callback(this.state))}
                 disabled={!combatEnabled}
                 clearable={false}
                 fullWidth />
@@ -495,7 +542,7 @@ class BodyConfigCombat extends PureComponent {
                 name='combatRepairLimit'
                 value={combatRepairLimit}
                 options={DAMAGE_STATES}
-                onChange={value => this.setState({ combatRepairLimit: value })}
+                onChange={value => this.setState({ combatRepairLimit: value }, () => this.props.callback(this.state))}
                 disabled={!combatEnabled}
                 clearable={false}
                 fullWidth />
@@ -510,7 +557,7 @@ class BodyConfigCombat extends PureComponent {
                 id='combatRepairTimeLimit'
                 mode='24h'
                 value={combatRepairTimeLimit}
-                onChange={time => this.setState({ combatRepairTimeLimit: time })}
+                onChange={time => this.setState({ combatRepairTimeLimit: time }, () => this.props.callback(this.state))}
                 fullWidth />
             </FormControl>
           </Grid>
@@ -544,7 +591,8 @@ class BodyConfigCombat extends PureComponent {
                   name='combatLBASGroup1Node1'
                   value={combatLBASGroup1Node1}
                   options={NODES}
-                  onChange={value => this.setState({ combatLBASGroup1Node1: value })}
+                  onChange={
+                    value => this.setState({ combatLBASGroup1Node1: value }, () => this.props.callback(this.state))}
                   disabled={combatLBASGroup1NodesDisabled} />
                 <Select
                   className={classes.reactSelectHalfWidth}
@@ -552,7 +600,8 @@ class BodyConfigCombat extends PureComponent {
                   name='combatLBASGroup1Node2'
                   value={combatLBASGroup1Node2}
                   options={NODES}
-                  onChange={value => this.setState({ combatLBASGroup1Node2: value })}
+                  onChange={
+                    value => this.setState({ combatLBASGroup1Node2: value }, () => this.props.callback(this.state))}
                   disabled={combatLBASGroup1NodesDisabled} />
               </div>
             </FormControl>
@@ -569,7 +618,8 @@ class BodyConfigCombat extends PureComponent {
                   name='combatLBASGroup2Node1'
                   value={combatLBASGroup2Node1}
                   options={NODES}
-                  onChange={value => this.setState({ combatLBASGroup2Node1: value })}
+                  onChange={
+                    value => this.setState({ combatLBASGroup2Node1: value }, () => this.props.callback(this.state))}
                   disabled={combatLBASGroup2NodesDisabled} />
                 <Select
                   className={classes.reactSelectHalfWidth}
@@ -577,7 +627,8 @@ class BodyConfigCombat extends PureComponent {
                   name='combatLBASGroup2Node2'
                   value={combatLBASGroup2Node2}
                   options={NODES}
-                  onChange={value => this.setState({ combatLBASGroup2Node2: value })}
+                  onChange={
+                    value => this.setState({ combatLBASGroup2Node2: value }, () => this.props.callback(this.state))}
                   disabled={combatLBASGroup2NodesDisabled} />
               </div>
             </FormControl>
@@ -594,7 +645,8 @@ class BodyConfigCombat extends PureComponent {
                   name='combatLBASGroup3Node1'
                   value={combatLBASGroup3Node1}
                   options={NODES}
-                  onChange={value => this.setState({ combatLBASGroup3Node1: value })}
+                  onChange={
+                    value => this.setState({ combatLBASGroup3Node1: value }, () => this.props.callback(this.state))}
                   disabled={combatLBASGroup3NodesDisabled} />
                 <Select
                   className={classes.reactSelectHalfWidth}
@@ -602,7 +654,8 @@ class BodyConfigCombat extends PureComponent {
                   name='combatLBASGroup3Node2'
                   value={combatLBASGroup3Node2}
                   options={NODES}
-                  onChange={value => this.setState({ combatLBASGroup3Node2: value })}
+                  onChange={
+                    value => this.setState({ combatLBASGroup3Node2: value }, () => this.props.callback(this.state))}
                   disabled={combatLBASGroup3NodesDisabled} />
               </div>
             </FormControl>
@@ -613,7 +666,11 @@ class BodyConfigCombat extends PureComponent {
               control={
                 <Checkbox
                   checked={combatOptionCheckFatigue}
-                  onChange={(event, checked) => this.setState({ combatOptionCheckFatigue: checked })}
+                  onChange={
+                    (event, checked) => this.setState(
+                      { combatOptionCheckFatigue: checked },
+                      () => this.props.callback(this.state)
+                    )}
                   disabled={!combatEnabled}
                   value='combatOptionCheckFatigue' />
               }
@@ -623,7 +680,11 @@ class BodyConfigCombat extends PureComponent {
               control={
                 <Checkbox
                   checked={combatOptionReserveDocks}
-                  onChange={(event, checked) => this.setState({ combatOptionReserveDocks: checked })}
+                  onChange={
+                    (event, checked) => this.setState(
+                      { combatOptionReserveDocks: checked },
+                      () => this.props.callback(this.state)
+                    )}
                   disabled={!combatEnabled}
                   value='combatOptionReserveDocks' />
               }
@@ -633,7 +694,11 @@ class BodyConfigCombat extends PureComponent {
               control={
                 <Checkbox
                   checked={combatOptionPortCheck}
-                  onChange={(event, checked) => this.setState({ combatOptionPortCheck: checked })}
+                  onChange={
+                    (event, checked) => this.setState(
+                      { combatOptionPortCheck: checked },
+                      () => this.props.callback(this.state)
+                    )}
                   disabled={!combatEnabled}
                   value='combatOptionPortCheck' />
               }
@@ -643,7 +708,11 @@ class BodyConfigCombat extends PureComponent {
               control={
                 <Checkbox
                   checked={combatOptionMedalStop}
-                  onChange={(event, checked) => this.setState({ combatOptionMedalStop: checked })}
+                  onChange={
+                    (event, checked) => this.setState(
+                      { combatOptionMedalStop: checked },
+                      () => this.props.callback(this.state)
+                    )}
                   disabled={true}
                   value='combatOptionMedalStop' />
               }

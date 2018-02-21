@@ -12,9 +12,9 @@ import { styles } from 'components/BodyConfigStyles'
 class BodyConfigQuests extends PureComponent {
   state = this.props.config
 
-  componentDidUpdate = (nextProp, nextState) => {
-    if (this.state !== nextState) {
-      this.props.callback(this.state)
+  componentWillReceiveProps = (nextProps) => {
+    if (this.props.config !== nextProps.config) {
+      this.setState(nextProps.config)
     }
   }
 
@@ -31,7 +31,8 @@ class BodyConfigQuests extends PureComponent {
         <Switch
           className={classes.switch}
           checked={questsEnabled}
-          onChange={(event, checked) => this.setState({ questsEnabled: checked })} />
+          onChange={
+            (event, checked) => this.setState({ questsEnabled: checked }, () => this.props.callback(this.state))} />
       </Typography>
     )
   }
