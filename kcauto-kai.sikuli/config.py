@@ -47,6 +47,7 @@ class Config(object):
     expeditions = {'enabled': False}
     pvp = {'enabled': False}
     combat = {'enabled': False}
+    ship_switcher = {'enabled': False}
     quests = {'enabled': False}
 
     def __init__(self, config_file):
@@ -95,6 +96,12 @@ class Config(object):
             self._read_combat(config)
         else:
             self.combat = {'enabled': False}
+
+        if (config.getboolean('ShipSwitcher', 'Enabled') and
+                self.combat['enabled']):
+            self._read_ship_switcher(config)
+        else:
+            self.ship_switcher = {'enabled': False}
 
         if config.getboolean('Quests', 'Enabled'):
             self._read_quests(config)
@@ -219,10 +226,39 @@ class Config(object):
             for option in self.combat['misc_options']:
                 if option not in (
                         'CheckFatigue', 'ReserveDocks', 'PortCheck',
-                        'MedalStop'):
+                        'ClearStop'):
                     Util.log_error(
                         "Invalid Combat MiscOption: '{}'.".format(option))
                     self.ok = False
+        if self.ship_switcher['enabled']:
+            if self.combat['fleet_mode'] != '':
+                Util.log_error(
+                    "Ship Switcher can only be used with standard fleets")
+                self.ok = False
+            for slot in range(0, 6):
+                if slot not in self.ship_switcher:
+                    continue
+                criteria = self.ship_switcher[slot]['criteria']
+                for c in criteria:
+                    if c not in ('damage', 'fatigue', 'sparkle'):
+                        Util.log_error(
+                            "Invalid switch criteria for slot {}: '{}'".format(
+                                slot, c))
+                        self.ok = False
+                if self.ship_switcher[slot]['mode'] == 'position':
+                    for ship in self.ship_switcher[slot]['ships']:
+                        if len(ship) != 3:
+                            Util.log_error(
+                                "Invalid # of arguments for ship in slot {}"
+                                .format(slot))
+                            self.ok = False
+                if self.ship_switcher[slot]['mode'] == 'class':
+                    for ship in self.ship_switcher[slot]['ships']:
+                        if len(ship) < 2:
+                            Util.log_error(
+                                "Invalid # of arguments for ship in slot {}"
+                                .format(slot))
+                            self.ok = False
 
     def _read_general(self, config):
         """Method to parse the General settings of the passed in config.
@@ -325,6 +361,75 @@ class Config(object):
                 config, 'Combat', 'LBASGroup3Nodes')
         else:
             self.combat['lbas_enabled'] = False
+
+    def _read_ship_switcher(self, config):
+        """Method to parse the ShipSwitcher settings of the passed in config.
+        Only run if Combat is also enabled.
+
+        Args:
+            config (ConfigParser): ConfigParser instance
+        """
+
+        def _create_ship_switcher_dict(slot, criteria, ships):
+            slot_dict = {
+                'slot': slot,
+                'criteria': criteria,
+                'mode': None,
+                'ships': []
+            }
+
+            for ship in ships:
+                ship_dict = {}
+                ship_split = ship.split(':')
+                if ship_split[0] in ('C', 'S'):
+                    # class or shipname mode
+                    ship_dict['sort_order'] = 'class'
+                    if ship_split[0] == 'C':
+                        slot_dict['mode'] = (
+                            'class' if slot_dict['mode'] is None else
+                            slot_dict['mode'])
+                        ship_dict['class'] = ship_split[1].lower()
+                    elif ship_split[0] == 'S':
+                        slot_dict['mode'] = (
+                            'ship' if slot_dict['mode'] is None else
+                            slot_dict['mode'])
+                        ship_dict['ship'] = ship_split[1].lower()
+                    if ship_split[2] is not '_':
+                        ship_dict['level'] = ship_split[2]
+                    if ship_split[3] is not '_':
+                        ship_dict['locked'] = (
+                            True if ship_split[3] == 'L' else False)
+                    if ship_split[4] is not '_':
+                        ship_dict['ringed'] = (
+                            True if ship_split[4] == 'R' else False)
+                elif ship_split[0] in ('P'):
+                    # class in position mode
+                    slot_dict['mode'] = (
+                        'position' if slot_dict['mode'] is None else
+                        slot_dict['mode'])
+                    if ship_split[1] == 'N':
+                        ship_dict['sort_order'] = 'new'
+                    elif ship_split[1] == 'C':
+                        ship_dict['sort_order'] = 'class'
+                    elif ship_split[1] == 'L':
+                        ship_dict['sort_order'] = 'level'
+                    if ship_split[2] == 'E':
+                        ship_dict['offset_ref'] = 'end'
+                    elif ship_split[2] == 'S':
+                        ship_dict['offset_ref'] = 'start'
+                    ship_dict['offset'] = int(ship_split[3])
+                slot_dict['ships'].append(ship_dict)
+            return slot_dict
+
+        self.ship_switcher['enabled'] = True
+        for slot in range(0, 6):
+            criteria = self._getlist(
+                config, 'ShipSwitcher', 'Slot{}Criteria'.format(slot + 1))
+            ships = self._getlist(
+                config, 'ShipSwitcher', 'Slot{}Ships'.format(slot + 1))
+            if criteria and ships:
+                self.ship_switcher[slot] = _create_ship_switcher_dict(
+                    slot, criteria, ships)
 
     def _read_quests(self, config):
         """Method to parse the Quest settings of the passed in config.

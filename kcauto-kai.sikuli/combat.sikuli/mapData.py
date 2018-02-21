@@ -1,4 +1,3 @@
-from sikuli import Location, Button
 import json
 import os
 from random import randint
@@ -155,8 +154,9 @@ class Node(object):
         """Initializes a Node instance for a map.
 
         Args:
-            name (TYPE): Description
-            node_data (TYPE): Description
+            name (str): name of node
+            node_data (dict): dictionary of JSON object containing the node's
+                data, extracted from the JSON file
         """
         self.name = name
         self.coords = node_data['coords']
@@ -171,6 +171,17 @@ class Node(object):
             node_data['nightBattle'] if 'nightBattle' in node_data else None)
 
     def coord_match(self, x, y):
+        """Method to loop through the all coordinates for the node (including
+        backup coords) and match against the passed in x,y coordinates to see
+        if there is a match.
+
+        Args:
+            x (int): x-coords in pixels, relative to the upper-left of the game
+            y (int): y-coords in pixels, relative to the upper-left of the game
+
+        Returns:
+            bool: True if the x,y coordinates match the Node's, False otherwise
+        """
         node_buffer = 35 if 'boss' in self.types else 20
         for coord in self.all_coords:
             min_x = coord[0] - node_buffer
@@ -182,13 +193,16 @@ class Node(object):
         return False
 
     def click_node(self, kc_region):
-        rand_x = kc_region.x + randint(self.coords[0] - 5, self.coords[0] + 5)
-        rand_y = kc_region.y + randint(self.coords[1] - 5, self.coords[1] + 5)
+        """Method to click the node on-screen. Used for node selects.
 
-        kc_region.mouseMove(Location(rand_x, rand_y))
-        kc_region.mouseDown(Button.LEFT)
-        Util.kc_sleep()
-        kc_region.mouseUp(Button.LEFT)
+        Args:
+            kc_region (Region): sikuli Region instance containing the last
+                known location of the Kantai Collection game screen
+        """
+        rand_x = randint(self.coords[0] - 5, self.coords[0] + 5)
+        rand_y = randint(self.coords[1] - 5, self.coords[1] + 5)
+
+        Util.click_coords(kc_region, rand_x, rand_y)
 
     def __str__(self):
         return self.name

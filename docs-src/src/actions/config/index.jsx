@@ -66,8 +66,32 @@ export const setPythonConfig = config => (
     if (config.combatOptionPortCheck) {
       combatOptions.push('PortCheck')
     }
-    if (config.combatOptionMedalStop) {
-      combatOptions.push('MedalStop')
+    if (config.combatOptionClearStop) {
+      combatOptions.push('ClearStop')
+    }
+    if (!configTemp.shipSwitcherSlot1Criteria || !configTemp.shipSwitcherSlot1Ships) {
+      configTemp.shipSwitcherSlot1Criteria = ''
+      configTemp.shipSwitcherSlot1Ships = ''
+    }
+    if (!configTemp.shipSwitcherSlot2Criteria || !configTemp.shipSwitcherSlot2Ships) {
+      configTemp.shipSwitcherSlot2Criteria = ''
+      configTemp.shipSwitcherSlot2Ships = ''
+    }
+    if (!configTemp.shipSwitcherSlot3Criteria || !configTemp.shipSwitcherSlot3Ships) {
+      configTemp.shipSwitcherSlot3Criteria = ''
+      configTemp.shipSwitcherSlot3Ships = ''
+    }
+    if (!configTemp.shipSwitcherSlot4Criteria || !configTemp.shipSwitcherSlot4Ships) {
+      configTemp.shipSwitcherSlot4Criteria = ''
+      configTemp.shipSwitcherSlot4Ships = ''
+    }
+    if (!configTemp.shipSwitcherSlot5Criteria || !configTemp.shipSwitcherSlot5Ships) {
+      configTemp.shipSwitcherSlot5Criteria = ''
+      configTemp.shipSwitcherSlot5Ships = ''
+    }
+    if (!configTemp.shipSwitcherSlot6Criteria || !configTemp.shipSwitcherSlot6Ships) {
+      configTemp.shipSwitcherSlot6Criteria = ''
+      configTemp.shipSwitcherSlot6Ships = ''
     }
 
     const pythonConfig = [
@@ -106,6 +130,21 @@ export const setPythonConfig = config => (
       `LBASGroup2Nodes: ${combatLBASGroup2Nodes}`,
       `LBASGroup3Nodes: ${combatLBASGroup3Nodes}`,
       `MiscOptions: ${combatOptions.join(',')}`,
+      '',
+      '[ShipSwitcher]',
+      `Enabled: ${configTemp.shipSwitcherEnabled}`,
+      `Slot1Criteria: ${configTemp.shipSwitcherSlot1Criteria}`,
+      `Slot1Ships: ${configTemp.shipSwitcherSlot1Ships}`,
+      `Slot2Criteria: ${configTemp.shipSwitcherSlot2Criteria}`,
+      `Slot2Ships: ${configTemp.shipSwitcherSlot2Ships}`,
+      `Slot3Criteria: ${configTemp.shipSwitcherSlot3Criteria}`,
+      `Slot3Ships: ${configTemp.shipSwitcherSlot3Ships}`,
+      `Slot4Criteria: ${configTemp.shipSwitcherSlot4Criteria}`,
+      `Slot4Ships: ${configTemp.shipSwitcherSlot4Ships}`,
+      `Slot5Criteria: ${configTemp.shipSwitcherSlot5Criteria}`,
+      `Slot5Ships: ${configTemp.shipSwitcherSlot5Ships}`,
+      `Slot6Criteria: ${configTemp.shipSwitcherSlot6Criteria}`,
+      `Slot6Ships: ${configTemp.shipSwitcherSlot6Ships}`,
       '',
       '[Quests]',
       `Enabled: ${configTemp.questsEnabled}`,

@@ -1,4 +1,4 @@
-from globals import Globals
+from kca_globals import Globals
 from util import Util
 
 
