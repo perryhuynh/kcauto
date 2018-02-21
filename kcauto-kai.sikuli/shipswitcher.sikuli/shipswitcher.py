@@ -428,6 +428,7 @@ class ShipSwitcher(object):
                 level_area = Region(
                     ship_row.x + 160, ship_row.y, 50, ship_row.h)
                 ship_level = Util.read_ocr_number_text(level_area)
+                ship_level = int(sub(r"\D", "", ship_level))
                 ship_level = 1 if not ship_level else ship_level
                 if ship_config['level'][0] == '<':
                     criteria_matched = (
