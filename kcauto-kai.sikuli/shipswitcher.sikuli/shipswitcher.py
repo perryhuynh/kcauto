@@ -141,9 +141,13 @@ class ShipSwitcher(object):
         Returns:
             int: number of ships in port
         """
-        a = Util.read_ocr_number_text(
+        initial_read = Util.read_ocr_number_text(
             self.regions['ship_counter'], 'shipcount_label.png', 'r', 48)
-        return int(sub(r"\D", "", a))
+        number_read = sub(r"\D", "", initial_read)
+        if len(number_read > 3):
+            # the read number is too long; truncate anything past the 3rd digit
+            number_read = number_read[:3]
+        return int(number_read)
 
     def _check_need_to_switch_ship(self, slot, criteria):
         """Method that checks whether or not the ship in the specified slot
