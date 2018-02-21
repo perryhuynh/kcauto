@@ -527,24 +527,24 @@ class ShipSwitcher(object):
                 self._set_position_cache(slot_config['slot'])
                 cache_override = False
 
+            ship_positions_list = [
+                i for j in [
+                    self.temp_ship_position_dict[x]
+                    for x in self.temp_ship_position_dict]
+                for i in j]
+            ship_positions_list.sort()
             Util.log_msg(
                 "Potential replacement ships found in page {} positions {}"
                 .format(
                     self.current_shiplist_page,
-                    ", ".join([
-                        str(i) for j
-                        in [
-                            self.temp_ship_position_dict[x]
-                            for x in self.temp_ship_position_dict]
-                        for i in j])))
-            for ship_positions in self.temp_ship_position_dict:
-                for position in ship_positions:
-                    availability = self._choose_and_check_availability_of_ship(
-                            position, slot_config['criteria'])
-                    if availability is True:
-                        return True
-                    elif availability == 'dupe':
-                        break
+                    ", ".join([str(i) for j in ship_positions_list])))
+            for position in ship_positions_list:
+                availability = self._choose_and_check_availability_of_ship(
+                    position, slot_config['criteria'])
+                if availability is True:
+                    return True
+                elif availability == 'dupe':
+                    break
 
             # no available ships on this page; reset matches and continue loop
             self.temp_ship_position_dict = {}
