@@ -1,7 +1,7 @@
 from sikuli import Region, Pattern, FOREVER
 from datetime import datetime, timedelta
 from threading import Thread
-from globals import Globals
+from kca_globals import Globals
 from fleet import Fleet
 from lbas import LBAS
 from mapData import MapData
@@ -19,10 +19,13 @@ class CombatModule(object):
             regions (dict): dict of pre-defined kcauto-kai regions
             fleets (dict): dict of active CombatFleet instances
         """
+        self.enabled = True
         self.config = config
         self.stats = stats
         self.regions = regions
         self.kc_region = regions['game']
+        self.fast_kc_region = Region(self.kc_region)
+        self.fast_kc_region.setAutoWaitTimeout(0)
         self.observeRegion = Region(self.kc_region)
         self.fleets = fleets
         self.next_combat_time = datetime.now()
@@ -47,6 +50,18 @@ class CombatModule(object):
             LBAS(config, regions, self.map)
             if self.config.combat['lbas_enabled'] else None)
 
+        # combat-related regions
+        x = self.kc_region.x
+        y = self.kc_region.y
+        self.module_regions = {
+            'check_fatigue': Region(x + 500, y + 135, 22, 290),
+            'check_damage': Region(x + 461, y + 130, 48, 300),
+            'check_damage_7th': Region(x + 461, y + 376, 48, 50),
+            'check_damage_flagship': Region(x + 290, y + 185, 70, 50),
+            'check_damage_combat': Region(x + 290, y + 140, 70, 320),
+            'event_next': Region(x + 720, y + 340, 80, 70),
+        }
+
     def goto_combat(self):
         """Method to navigate to the combat menu.
         """
@@ -59,6 +74,8 @@ class CombatModule(object):
         Returns:
             bool: True if the combat fleets need to sortie, False otherwise
         """
+        if not self.enabled:
+            return False
         if self.next_combat_time < datetime.now():
             return True
         return False
@@ -123,8 +140,12 @@ class CombatModule(object):
         if self.combined_fleet:
             self.fleets[1].resolve_fcf_retreat_counts()
             self.fleets[2].resolve_fcf_retreat_counts()
+            self.fleets[2].damage_counts['repair'] = 0
         if self.striking_fleet:
             self.fleets[3].resolve_fcf_retreat_counts()
+            self.fleets[3].damage_counts['repair'] = 0
+        else:
+            self.fleets[1].damage_counts['repair'] = 0
 
         return True
 
@@ -173,7 +194,7 @@ class CombatModule(object):
             self.kc_region.wait('event_chalkboard.png', 10)
             while self.kc_region.exists('event_chalkboard'):
                 Util.kc_sleep(1)
-                Util.click_screen(self.regions, 'center')
+                Util.click_preset_region(self.regions, 'center')
                 Util.kc_sleep(1)
                 if self.regions['lower_right'].exists('sortie_select.png'):
                     break
@@ -212,7 +233,7 @@ class CombatModule(object):
             Fleet.switch(self.regions['top_submenu'], 2)
             two_needs_resupply, fleet_two_damages, fleet_two_fatigue = (
                 self._run_pre_sortie_fleet_check_logic(self.fleets[2]))
-            Fleet.switch(self.regions['top_submenu'], 3)
+            Fleet.switch(self.regions['top_submenu'], 1)
 
             self.dmg = self._combine_fleet_damages(self.dmg, fleet_two_damages)
             for key in fleet_fatigue:
@@ -280,14 +301,14 @@ class CombatModule(object):
             fleet.needs_resupply = True
             needs_resupply = True
         fleet_damages = (
-            fleet.check_damages_7th(self.regions)
+            fleet.check_damages_7th(self.module_regions)
             if self.config.combat['fleet_mode'] == 'striking'
-            else fleet.check_damages(self.regions['check_damage']))
-        fleet.print_damage_counts()
+            else fleet.check_damages(self.module_regions['check_damage']))
+        fleet.print_damage_counts(repair=True)
 
         if 'CheckFatigue' in self.config.combat['misc_options']:
             fleet_fatigue = fleet.check_fatigue(
-                self.regions['check_fatigue'])
+                self.module_regions['check_fatigue'])
             fleet.print_fatigue_states()
             return (needs_resupply, fleet_damages, fleet_fatigue)
         return (needs_resupply, fleet_damages, {})
@@ -311,6 +332,8 @@ class CombatModule(object):
         # primary combat loop
         sortieing = True
         self.nodes_run = []
+        disable_combat = False
+        post_combat_screens = []
         while sortieing:
             at_node, dialogue_click = self._run_loop_between_nodes()
 
@@ -322,13 +345,18 @@ class CombatModule(object):
                 # arrived at combat node
                 self._increment_nodes_run()
 
+                # reset ClearStop temp variables
+                if 'ClearStop' in self.config.combat['misc_options']:
+                    disable_combat = False
+                    post_combat_screens = []
+
                 if dialogue_click:
                     # click to get rid of initial boss dialogue in case it
                     # exists
                     Util.kc_sleep(5)
-                    Util.click_screen(self.regions, 'center')
+                    Util.click_preset_region(self.regions, 'center')
                     Util.kc_sleep()
-                    Util.click_screen(self.regions, 'center')
+                    Util.click_preset_region(self.regions, 'center')
                     Util.rejigger_mouse(self.regions, 'lbas')
 
                 combat_result = self._run_loop_during_battle()
@@ -341,18 +369,23 @@ class CombatModule(object):
                 self.regions['lower_right_corner'].wait('next.png', 30)
 
                 # battle complete; resolve combat results
-                Util.click_screen(self.regions, 'center')
+                Util.click_preset_region(self.regions, 'center')
                 self.regions['game'].wait('mvp_marker.png', 30)
                 self.dmg = self.primary_fleet.check_damages(
-                    self.regions['check_damage_combat'])
+                    self.module_regions['check_damage_combat'])
                 self.primary_fleet.print_damage_counts()
+                if 'ClearStop' in self.config.combat['misc_options']:
+                    # check for a medal drop here if ClearStop is enabled
+                    self.regions['lower_right_corner'].wait('next.png', 30)
+                    if self.regions['right'].exists('medal_marker.png'):
+                        disable_combat = True
                 if self.combined_fleet:
                     self.regions['lower_right_corner'].wait('next.png', 30)
-                    Util.click_screen(self.regions, 'center')
+                    Util.click_preset_region(self.regions, 'center')
                     Util.kc_sleep(2)
                     self.regions['game'].wait('mvp_marker.png', 30)
                     fleet_two_damages = self.fleets[2].check_damages(
-                        self.regions['check_damage_combat'])
+                        self.module_regions['check_damage_combat'])
                     self.fleets[2].print_damage_counts()
                     self.dmg = self._combine_fleet_damages(
                         self.dmg, fleet_two_damages)
@@ -360,20 +393,30 @@ class CombatModule(object):
                     # damaged if necessary
                     if (fleet_two_damages['heavy'] == 1 and
                             not self.fleets[2].flagship_damaged):
-                        self.fleets[2].check_damage_flagship(self.regions)
+                        self.fleets[2].check_damage_flagship(
+                            self.module_regions)
                 Util.rejigger_mouse(self.regions, 'lbas')
                 # click through while not next battle or home
                 while not (
-                        self.kc_region.exists('home_menu_sortie.png') or
-                        self.kc_region.exists('combat_flagship_dmg.png') or
-                        self.kc_region.exists('combat_retreat.png')):
+                        self.fast_kc_region.exists('home_menu_sortie.png') or
+                        self.fast_kc_region.exists('combat_flagship_dmg.png')
+                        or self.fast_kc_region.exists('combat_retreat.png')):
                     if self.regions['lower_right_corner'].exists('next.png'):
-                        Util.click_screen(self.regions, 'shipgirl')
+                        Util.click_preset_region(self.regions, 'center')
                         Util.rejigger_mouse(self.regions, 'top')
+                        if 'ClearStop' in self.config.combat['misc_options']:
+                            post_combat_screens.append('next')
                     elif self.regions['lower_right_corner'].exists(
                             'next_alt.png'):
-                        Util.click_screen(self.regions, 'shipgirl')
+                        Util.click_preset_region(self.regions, 'center')
                         Util.rejigger_mouse(self.regions, 'top')
+                        if 'ClearStop' in self.config.combat['misc_options']:
+                            post_combat_screens.append('next_alt')
+                    elif self.map.world == 'event':
+                        # if the 'next' asset exists in this region during an
+                        # event map sortie, the map is cleared
+                        if self.module_regions.exists('next.png'):
+                            disable_combat = True
                     elif self.combined_fleet or self.striking_fleet:
                         self._resolve_fcf()
                         Util.rejigger_mouse(self.regions, 'top')
@@ -388,7 +431,7 @@ class CombatModule(object):
                     'combat_flagship_dmg.png'):
                 # flagship retreat; sortie complete
                 Util.log_msg("Flagship damaged. Automatic retreat.")
-                Util.click_screen(self.regions, 'game')
+                Util.click_preset_region(self.regions, 'game')
                 self.regions['left'].wait('home_menu_sortie.png', 30)
                 self._print_sortie_complete_msg(self.nodes_run)
                 sortieing = False
@@ -397,7 +440,7 @@ class CombatModule(object):
             if self.regions['lower_right_corner'].exists('next_alt.png'):
                 # resource node end; sortie complete
                 while not self.regions['left'].exists('home_menu_sortie.png'):
-                    Util.click_screen(self.regions, 'shipgirl')
+                    Util.click_preset_region(self.regions, 'shipgirl')
                     Util.rejigger_mouse(self.regions, 'top')
                     Util.kc_sleep(1)
                 sortieing = False
@@ -415,6 +458,19 @@ class CombatModule(object):
                     self._print_sortie_complete_msg(self.nodes_run)
                     sortieing = False
                     break
+        # after sortie is complete, check the dismissed post-combat screens to
+        # see if combat should be disabled
+        if ('ClearStop' in self.config.combat['misc_options'] and
+                not disable_combat):
+            # TODO: additional logic needed to resolve end of 1-6
+            if self.map.world == 'event' and len(post_combat_screens) > 2:
+                # event map and more than 2 post-combat screens dismissed;
+                # assume that it means that event map is cleared
+                disable_combat = True
+
+        # if the disable combat flag is set, disable the combat module
+        if disable_combat:
+            self.disable_combat_module()
 
     def _print_sortie_complete_msg(self, nodes_run):
         """Method that prints the post-sortie status report indicating number
@@ -446,10 +502,11 @@ class CombatModule(object):
             self._start_fleet_observer()
 
         while not at_node:
-            if self.kc_region.exists('compass.png'):
+            if self.fast_kc_region.exists('compass.png'):
                 # spin compass
                 while (self.kc_region.exists('compass.png')):
-                    Util.click_screen(self.regions, 'center')
+                    Util.click_preset_region(self.regions, 'center')
+                    Util.rejigger_mouse(self.regions, 'lbas')
                     Util.kc_sleep(3)
             elif (self.regions['formation_line_ahead'].exists(
                         'formation_line_ahead.png') or
@@ -465,7 +522,7 @@ class CombatModule(object):
                 Util.rejigger_mouse(self.regions, 'lbas')
                 at_node = True
                 return (True, True)
-            elif self.kc_region.exists('combat_node_select.png'):
+            elif self.fast_kc_region.exists('combat_node_select.png'):
                 # node select dialog option exists; resolve fleet location and
                 # select node
                 if self.config.combat['engine'] == 'legacy':
@@ -480,8 +537,8 @@ class CombatModule(object):
                         next_node, self.current_node))
                     self.map.nodes[next_node].click_node(self.regions['game'])
                     Util.rejigger_mouse(self.regions, 'lbas')
-            elif (self.regions['lower_right_corner'].exists('next.png') or
-                    self.kc_region.exists('combat_nb_fight.png')):
+            elif (self.regions['lower_right_corner'].exists('next.png')
+                    or self.fast_kc_region.exists('combat_nb_fight.png')):
                 # post-combat or night battle select without selecting a
                 # formation
                 self._print_current_node()
@@ -733,10 +790,14 @@ class CombatModule(object):
         if nb:
             Util.log_msg("Commencing night battle.")
             Util.check_and_click(self.kc_region, 'combat_nb_fight.png')
+            self.kc_region.waitVanish('combat_nb_fight.png')
+            Util.kc_sleep()
             return True
         else:
             Util.log_msg("Declining night battle.")
             Util.check_and_click(self.kc_region, 'combat_nb_retreat.png')
+            self.kc_region.waitVanish('combat_nb_retreat.png')
+            Util.kc_sleep()
             return False
 
     def _select_continue_sortie(self, continue_sortie):
@@ -749,9 +810,13 @@ class CombatModule(object):
         if continue_sortie:
             Util.log_msg("Continuing sortie.")
             Util.check_and_click(self.kc_region, 'combat_continue.png')
+            self.kc_region.waitVanish('combat_continue.png')
+            Util.kc_sleep()
         else:
             Util.log_msg("Retreating from sortie.")
             Util.check_and_click(self.kc_region, 'combat_retreat.png')
+            self.kc_region.waitVanish('combat_retreat.png')
+            Util.kc_sleep()
 
     def _resolve_fcf(self):
         """Method that resolves the FCF prompt. Does not use FCF if there are
@@ -804,6 +869,10 @@ class CombatModule(object):
             combined[key] = main[key] + escort[key]
         return combined
 
+    def disable_combat_module(self):
+        Util.log_warning("Disabling combat module.")
+        self.enabled = False
+
     def print_status(self):
         """Method that prints the next sortie time status of the Combat module.
         """
@@ -820,7 +889,9 @@ class CombatFleet(Fleet):
         """
         self.fleet_id = fleet_id
         self.flagship_damaged = False
-        self.damage_counts = {}
+        self.damage_counts = {
+            'repair': 0
+        }
         self.damaged_fcf_retreat_count = 0
         self.fatigue = {}
 
@@ -848,15 +919,26 @@ class CombatFleet(Fleet):
             self.damaged_fcf_retreat_count += 1
             self.damage_counts['heavy'] -= 1
 
-    def print_damage_counts(self):
+    def print_damage_counts(self, repair=False):
         """Method to report the fleet's damage counts in a more human-readable
         format
         """
-        Util.log_msg(
-            "Fleet {} damage counts: {} heavy / {} moderate / {} minor"
-            .format(
-                self.fleet_id, self.damage_counts['heavy'],
-                self.damage_counts['moderate'], self.damage_counts['minor']))
+        if repair:
+            Util.log_msg(
+                (
+                    "Fleet {} damage counts: {} heavy / {} moderate / "
+                    "{} minor / {} under repair")
+                .format(
+                    self.fleet_id, self.damage_counts['heavy'],
+                    self.damage_counts['moderate'],
+                    self.damage_counts['minor'], self.damage_counts['repair']))
+        else:
+            Util.log_msg(
+                "Fleet {} damage counts: {} heavy / {} moderate / {} minor"
+                .format(
+                    self.fleet_id, self.damage_counts['heavy'],
+                    self.damage_counts['moderate'],
+                    self.damage_counts['minor']))
 
     def print_fatigue_states(self):
         """Method to report the fleet's fatigue state in a more human-readable
@@ -901,6 +983,8 @@ class CombatFleet(Fleet):
 
         Args:
             region (Region): Region in which to search for the damage states
+            reset (bool, optional): specifies whether or not the damage count
+                should be reset to 0
 
         Returns:
             dict: dict of counts of the different damage states
@@ -911,9 +995,11 @@ class CombatFleet(Fleet):
             target=self._check_damages_func, args=('moderate', region, reset))
         thread_check_damages_minor = Thread(
             target=self._check_damages_func, args=('minor', region, reset))
+        thread_check_damages_repair = Thread(
+            target=self._check_damages_func, args=('repair', region, reset))
         Util.multithreader([
             thread_check_damages_heavy, thread_check_damages_moderate,
-            thread_check_damages_minor])
+            thread_check_damages_minor, thread_check_damages_repair])
         return self.damage_counts
 
     def _check_damages_func(self, type, region, reset):
@@ -922,6 +1008,8 @@ class CombatFleet(Fleet):
         Args:
             type (str): which damage state to check for
             region (Region): Region in which to search for the damage state
+            reset (bool): specifies whether or not the damage count should be
+                reset to 0
         """
         if reset:
             self.damage_counts[type] = 0
@@ -945,7 +1033,7 @@ class CombatFleet(Fleet):
                 of the 7th ship
         """
         self.check_damages(regions['check_damage'])
-        Util.click_screen(regions, '7th_next')
+        Util.click_preset_region(regions, '7th_next')
         return self.check_damages(regions['check_damage_7th'], reset=False)
 
     def check_damage_flagship(self, regions):

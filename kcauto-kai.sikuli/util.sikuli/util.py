@@ -1,6 +1,4 @@
-from sikuli import (
-    Settings, Screen, App, Region, Location, Pattern, Match, FindFailed,
-    Button)
+from sikuli import Screen, App, Region, Location, Pattern, Match, Button
 import org.sikuli.script.FindFailed as FindFailed
 # alternate Region class to check instasnce type against
 # https://answers.launchpad.net/sikuli/+question/269004
@@ -12,7 +10,7 @@ from random import uniform, gauss
 from time import sleep
 from datetime import timedelta
 from re import match
-from globals import Globals
+from kca_globals import Globals
 
 
 class Util(object):
@@ -79,7 +77,7 @@ class Util(object):
         return time - timedelta(hours=getattr(config, 'jst_offset', 0))
 
     @staticmethod
-    def read_ocr_number_text(kc_region, text_ref, dir, width):
+    def read_ocr_number_text(kc_region, text_ref=None, rdir=None, width=None):
         """Method for reading in text in reference to an asset or Match
         instance, and then cleaning up the OCR results, tuned for numbers.
 
@@ -88,7 +86,7 @@ class Util(object):
                 known location of the Kantai Collection game screen
             text_ref (str, Match): image name of reference or Match of
                 reference the OCR read should happen in relation to
-            dir (str): specifies in what direction relative to text_ref the
+            rdir (str): specifies in what direction relative to text_ref the
                 OCR read should occur: 'r' for 'right of text_ref' and 'l' for
                 'left of text_ref'
             width (int): width (in pixels) of the region the OCR read should
@@ -97,17 +95,21 @@ class Util(object):
         Returns:
             str: OCR read results, tuned for numbers
         """
-        if isinstance(text_ref, str):
-            if dir == 'r':
+        if text_ref is None and rdir is None and width is None:
+            text = kc_region.text().encode('utf-8')
+        if isinstance(text_ref, str) and rdir and width:
+            if rdir == 'r':
                 text = kc_region.find(text_ref).right(width).text().encode(
                     'utf-8')
-            elif dir == 'l':
+            elif rdir == 'l':
                 text = kc_region.find(text_ref).left(width).text().encode(
                     'utf-8')
-        elif isinstance(text_ref, Match) or isinstance(text_ref, JMatch):
-            if dir == 'r':
+        elif (
+                isinstance(text_ref, Match) or isinstance(text_ref, JMatch)
+                and rdir and width):
+            if rdir == 'r':
                 text = text_ref.right(width).text().encode('utf-8')
-            elif dir == 'l':
+            elif rdir == 'l':
                 text = text_ref.left(width).text().encode('utf-8')
         # replace characters to numbers
         text = (
@@ -305,21 +307,13 @@ class Util(object):
         regions['top_submenu'] = Region(x + 100, y + 100, 700, 45)
         regions['quest_status'] = Region(x + 710, y + 110, 65, 340)
         regions['check_supply'] = Region(x + 465, y + 155, 65, 285)
+        regions['ship_counter'] = Region(x + 570, y, 105, 30)
         # repair-related regions
         regions['repair_panel'] = Region(x + 600, y + 110, 100, 340)
         regions['repair_shiplist_fleet_markers'] = Region(
             x + 375, y + 125, 28, 310)
-        # lbas-related regions
-        regions['check_lbas_fatigue'] = Region(x + 575, y + 230, 22, 225)
-        regions['lbas_mode_switcher'] = Region(x + 761, y + 135, 28, 46)
         # combat-related regions
-        regions['check_fatigue'] = Region(x + 500, y + 135, 22, 290)
-        regions['check_damage'] = Region(x + 461, y + 130, 48, 300)
-        regions['check_damage_7th'] = Region(x + 461, y + 376, 48, 50)
-        regions['check_damage_flagship'] = Region(x + 290, y + 185, 70, 50)
-        regions['check_damage_combat'] = Region(x + 290, y + 140, 70, 320)
         regions['enemy_pvp_fleet'] = Region(x + 400, y, 400, 480)
-        # formation-related regions
         regions['formation_line_ahead'] = Region(x + 390, y + 160, 175, 50)
         regions['formation_double_line'] = Region(x + 520, y + 160, 175, 50)
         regions['formation_diamond'] = Region(x + 650, y + 160, 120, 50)
@@ -334,11 +328,6 @@ class Util(object):
             x + 420, y + 280, 160, 50)
         regions['formation_combinedfleet_4'] = Region(
             x + 580, y + 280, 160, 50)
-
-        # reduce the default max wait time in all regions for a more responsive
-        # kcauto-kai
-        for key in regions:
-            regions[key].setAutoWaitTimeout(1)
 
         return (kc, regions)
 
@@ -382,7 +371,7 @@ class Util(object):
         regions['game'].mouseMove(Location(rand_x, rand_y))
 
     @classmethod
-    def click_screen(cls, regions, preset):
+    def click_preset_region(cls, regions, preset):
         """Method to move the mouse to one of the preset regions defined in
         rejigger_mouse() and simulate clicking the mouse in the location.
 
@@ -391,9 +380,38 @@ class Util(object):
             preset (str): name of preset-area to move the mouse to
         """
         cls.rejigger_mouse(regions, preset)
-        regions['game'].mouseDown(Button.LEFT)
+        cls.click_mouse(regions['game'])
+
+    @classmethod
+    def click_coords(cls, region, x, y):
+        """Method to move the mouse to the specified x,y coordinates and
+        simulate clicking the mouse on the location.
+
+        Args:
+            region (Region): sikuli Region instance containing the last known
+                location of the Kantai Collection game screen
+            x (int): x-coords in pixels, relative to upper-left corner of game
+            y (int): y-coords in pixels, relative to upper-left corner of game
+        """
+        # offset x,y coords relative to upper-left corner of game to upper-left
+        # corner of screen
+        offset_x = region.x + x
+        offset_y = region.y + y
+        # move the mouse to offset location
+        region.mouseMove(Location(offset_x, offset_y))
+        cls.click_mouse(region)
+
+    @classmethod
+    def click_mouse(cls, region):
+        """Method to simulate clicking the mouse at its present location.
+
+        Args:
+            region (Region): sikuli Region instance containing the last known
+                location of the Kantai Collection game screen
+        """
+        region.mouseDown(Button.LEFT)
         cls.kc_sleep()
-        regions['game'].mouseUp(Button.LEFT)
+        region.mouseUp(Button.LEFT)
 
     @classmethod
     def check_and_click(cls, region, target, expand=[]):

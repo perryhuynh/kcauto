@@ -10,12 +10,18 @@ class Globals(object):
 
     # similarity thresholds for various asset types
     DEFAULT_SIMILARITY = 0.8
-    DAMAGE_SIMILARITY = 0.7
-    FATIGUE_SIMILARITY = 0.8
+    DAMAGE_SIMILARITY = 0.85
+    FATIGUE_SIMILARITY = 0.85
+    SHIP_LIST_SIMILARITY = 0.96
     FLEET_ICON_SIMILARITY = 0.8
 
-    # area expansion presets
+    # how many combat sorties to conduct when sparkling
+    SPARKLING_RUN_COUNT = 3
+
+    # area expansion presets; format is in [left, right, up, down] relative to
+    # the center of the match
     EXPAND = {
         'repair_list': [-325, 35, -10, 6],
-        'arrow_navigation': [-10, 10, -5, 5]
+        'arrow_navigation': [-10, 10, -5, 5],
+        'shiplist_sort': [-4, 36, -10, 10]
     }

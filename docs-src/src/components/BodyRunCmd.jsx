@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
 
@@ -37,7 +37,7 @@ const styles = () => ({
   },
 })
 
-class BodyRunCmd extends Component {
+class BodyRunCmd extends PureComponent {
   state = {
     sikuliPath: this.props.runCmd.sikuliPath,
     kcautoKaiPath: this.props.runCmd.kcautoKaiPath,
@@ -68,7 +68,7 @@ class BodyRunCmd extends Component {
       <Grid container justify='center' spacing={0}>
         <Grid item xs={6}>
           <Paper className={classes.paper} elevation={0}>
-            <Typography type='body1' className={classes.paragraph}>
+            <Typography variant='body1' className={classes.paragraph}>
               <Localize field='bodyRunCmd.intro' />
             </Typography>
 
@@ -99,7 +99,7 @@ class BodyRunCmd extends Component {
               </Grid>
             </Grid>
 
-            <Typography type='title' className={classes.title}>
+            <Typography variant='title' className={classes.title}>
               <Localize field='bodyRunCmd.commandHeader' />
             </Typography>
             {sikuliPath && kcautoKaiPath ?
@@ -109,7 +109,7 @@ class BodyRunCmd extends Component {
                   {kcautoKaiPath || '<placeholder>'}{kcautoKaiPathSlash}kcauto-kai.sikuli
                 </pre>
               </Paper> :
-              <Typography type='body1' className={classes.paragraph}>
+              <Typography variant='body1' className={classes.paragraph}>
                 <Localize field='bodyRunCmd.noCommandNotice' />
               </Typography>
             }
