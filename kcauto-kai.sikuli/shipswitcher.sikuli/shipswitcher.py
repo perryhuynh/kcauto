@@ -104,6 +104,7 @@ class ShipSwitcher(object):
 
         # check new fleet status
         # TODO: only checks on damage and repair states only, not fatigue!
+        Util.kc_sleep(2)
         fleet = self.fleets[1]
         damage_counts = fleet.check_damages(self.kc_region)
         if (fleet.get_damage_counts_at_threshold(
