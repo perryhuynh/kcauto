@@ -493,13 +493,14 @@ class ShipSwitcher(object):
         Returns:
             bool: True if a successful switch was made; False otherwise
         """
-        positions = []
         if slot_config['mode'] == 'position':
             return self._resolve_replacement_ship_by_position(slot_config)
         elif slot_config['mode'] == 'ship':
-            return self._resolve_replacement_ship_by_ship(slot_config)
+            return self._resolve_replacement_ship_by_asset(
+                'ship', slot_config)
         elif slot_config['mode'] == 'class':
-            return self._resolve_replacement_ship_by_class(slot_config)
+            return self._resolve_replacement_ship_by_asset(
+                'class', slot_config)
 
     def _resolve_replacement_ship_by_position(self, slot_config):
         """Method that finds a resolves a replacement ship by position.
@@ -522,17 +523,20 @@ class ShipSwitcher(object):
                 return True
         return False
 
-    def _resolve_replacement_ship_by_ship(self, slot_config):
-        """Method that finds a resolves a replacement ship by specific ship.
+    def _resolve_replacement_ship_by_asset(self, mode, slot_config):
+        """Method that finds a resolves a replacement ship by class or ship
+        asset.
 
         Args:
+            mode (str): specifies whether the resolution is by 'ship' or
+                'class'
             slot_config (dict): dictionary containing the slot's config
 
         Returns:
             bool: True if a successful switch was made; False otherwise
         """
-
         cache_override = True
+        self.temp_ship_position_list = []
         self.temp_ship_position_dict = {}
         self._switch_shiplist_sorting('class')
 
@@ -543,16 +547,18 @@ class ShipSwitcher(object):
             self._navigate_to_shiplist_page(
                 self.position_cache[slot_config['slot']])
 
-        while (not self.temp_ship_position_dict
+        while ((not self.temp_ship_position_list and
+                not self.temp_ship_position_dict)
                 and self.current_shiplist_page < self.ship_page_count):
             ship_search_threads = []
             for ship in slot_config['ships']:
                 ship_search_threads.append(Thread(
                     target=self._match_shiplist_ships_func,
-                    args=('ship', ship['ship'], ship)))
+                    args=(mode, ship['class'], ship)))
             Util.multithreader(ship_search_threads)
 
-            if not self.temp_ship_position_dict:
+            if (not self.temp_ship_position_list and
+                    not self.temp_ship_position_dict):
                 # no matches on this page; continue loop
                 self._navigate_to_shiplist_page(self.current_shiplist_page + 1)
                 continue
@@ -562,91 +568,47 @@ class ShipSwitcher(object):
                 self._set_position_cache(slot_config['slot'])
                 cache_override = False
 
-            ship_positions_list = [
-                i for j in [
-                    self.temp_ship_position_dict[x]
-                    for x in self.temp_ship_position_dict]
-                for i in j]
-            ship_positions_list.sort()
-            ship_positions_list = self._filter_ships_on_level(
-                ship_positions_list, ship)
+            ship_position_list = []
+            if mode == 'ship':
+                ship_position_list = [
+                    i for j in [
+                        self.temp_ship_position_dict[x]
+                        for x in self.temp_ship_position_dict]
+                    for i in j]
+                ship_position_list.sort()
+                ship_position_list = self._filter_ships_on_level(
+                    ship_position_list, ship)
+            elif mode == 'class':
+                ship_position_list = self._filter_ships_on_level(
+                    self.temp_ship_position_list, ship)
             Util.log_msg(
                 "Potential replacement ships found in page {} positions {}"
                 .format(
                     self.current_shiplist_page,
-                    ", ".join([str(i) for j in ship_positions_list])))
-            for ship in self.temp_ship_position_dict:
-                for position in self.temp_ship_position_dict[ship]:
-                    if position not in ship_positions_list:
-                        # ship in position did not pass filtering on level
-                        continue
-                    availability = self._choose_and_check_availability_of_ship(
-                        position, slot_config['criteria'])
-                    if availability is True:
+                    ", ".join([str(i) for j in ship_position_list])))
+
+            if mode == 'ship':
+                for ship in self.temp_ship_position_dict:
+                    for position in self.temp_ship_position_dict[ship]:
+                        if position not in ship_position_list:
+                            # ship in position did not pass filtering on level
+                            continue
+                        availability = (
+                            self._choose_and_check_availability_of_ship(
+                                position, slot_config['criteria']))
+                        if availability is True:
+                            return True
+                        elif availability == 'dupe':
+                            break
+            elif mode == 'class':
+                for position in ship_position_list:
+                    if self._choose_and_check_availability_of_ship(
+                            position, slot_config['criteria']) is True:
                         return True
-                    elif availability == 'dupe':
-                        break
-
-            # no available ships on this page; reset matches and continue loop
-            self.temp_ship_position_dict = {}
-            self._navigate_to_shiplist_page(self.current_shiplist_page + 1)
-
-    def _resolve_replacement_ship_by_class(self, slot_config):
-        """Method that finds a resolves a replacement ship by class.
-
-        Args:
-            slot_config (dict): dictionary containing the slot's config
-
-        Returns:
-            bool: True if a successful switch was made; False otherwise
-        """
-        cache_override = True
-        self.temp_ship_position_list = []
-        self._switch_shiplist_sorting('class')
-
-        # start search from cached position, if available
-        if slot_config['slot'] in self.position_cache:
-            Util.log_msg("Jumping to cached page {}.".format(
-                self.position_cache[slot_config['slot']]))
-            self._navigate_to_shiplist_page(
-                self.position_cache[slot_config['slot']])
-
-        while (not self.temp_ship_position_list
-                and self.current_shiplist_page < self.ship_page_count):
-            ship_search_threads = []
-            for ship in slot_config['ships']:
-                ship_search_threads.append(Thread(
-                    target=self._match_shiplist_ships_func,
-                    args=('class', ship['class'], ship)))
-            Util.multithreader(ship_search_threads)
-
-            if not self.temp_ship_position_list:
-                # no matches on this page; continue loop
-                self._navigate_to_shiplist_page(self.current_shiplist_page + 1)
-                continue
-
-            if cache_override:
-                # update cache on first encounter
-                self._set_position_cache(slot_config['slot'])
-                cache_override = False
-
-            self.temp_ship_position_list.sort()
-            ship_positions_list = self._filter_ships_on_level(
-                self.temp_ship_position_list, ship)
-
-            Util.log_msg(
-                "Potential replacement ships found in page {} positions {}"
-                .format(
-                    self.current_shiplist_page,
-                    ", ".join(
-                        [str(pos) for pos in ship_positions_list])))
-            for position in ship_positions_list:
-                if self._choose_and_check_availability_of_ship(
-                        position, slot_config['criteria']) is True:
-                    return True
 
             # no available ships on this page; reset matches and continue loop
             self.temp_ship_position_list = []
+            self.temp_ship_position_dict = {}
             self._navigate_to_shiplist_page(self.current_shiplist_page + 1)
         return False
 
