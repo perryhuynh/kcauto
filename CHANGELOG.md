@@ -1,3 +1,17 @@
+#### 0.3.0
+
+* Implements the ShipSwitcher module
+  * Allows for switching of ships based on class, ship, or position on a per-slot basis and based on damage, fatigue, or sparkled status
+  * Due to the complexity of the config, it is strongly recommended that the [webUI](https://mrmin123.github.io/kcauto-kai/) be used to generate the relevant config
+  * May be buggy
+* Implements `ClearStop` combat option
+  * Like the `MedalStop` option of kancolle-auto, but also works for Event maps
+  * May be buggy
+* New damage-state assets for more accurate damage state detection of ringed ships
+* Major refactor of webUI
+* Various performance and memory optimizations
+* Various tweaks and bugfixes
+
 #### 0.2.10
 
 * Bugfix in combat and fleet modules
