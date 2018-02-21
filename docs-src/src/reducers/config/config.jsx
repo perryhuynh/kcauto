@@ -42,7 +42,7 @@ const jsonConfigDefaults = {
   combatOptionCheckFatigue: false,
   combatOptionReserveDocks: false,
   combatOptionPortCheck: false,
-  combatOptionMedalStop: false,
+  combatOptionClearStop: false,
   shipSwitcherEnabled: false,
   shipSwitcherSlot1Criteria: null,
   shipSwitcherSlot1Ships: null,

@@ -109,7 +109,7 @@ const createStateObjFromPythonConfig = (pyConfig) => {
     combatOptionCheckFatigue: pyConfigObj.combatMiscOptions.includes('CheckFatigue') || false,
     combatOptionReserveDocks: pyConfigObj.combatMiscOptions.includes('ReserveDocks') || false,
     combatOptionPortCheck: pyConfigObj.combatMiscOptions.includes('PortCheck') || false,
-    combatOptionMedalStop: pyConfigObj.combatMiscOptions.includes('MedalStop') || false,
+    combatOptionClearStop: pyConfigObj.combatMiscOptions.includes('ClearStop') || false,
     shipSwitcherEnabled: pyConfigObj.shipSwitcherEnabled === 'True',
     shipSwitcherSlot1Criteria: pyConfigObj.shipSwitcherSlot1Criteria || null,
     shipSwitcherSlot1Ships: pyConfigObj.shipSwitcherSlot1Ships || null,

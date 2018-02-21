@@ -66,8 +66,8 @@ export const setPythonConfig = config => (
     if (config.combatOptionPortCheck) {
       combatOptions.push('PortCheck')
     }
-    if (config.combatOptionMedalStop) {
-      combatOptions.push('MedalStop')
+    if (config.combatOptionClearStop) {
+      combatOptions.push('ClearStop')
     }
     if (!configTemp.shipSwitcherSlot1Criteria || !configTemp.shipSwitcherSlot1Ships) {
       configTemp.shipSwitcherSlot1Criteria = ''

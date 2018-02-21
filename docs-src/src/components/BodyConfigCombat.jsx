@@ -230,7 +230,7 @@ class BodyConfigCombat extends PureComponent {
       combatOptionCheckFatigue,
       combatOptionReserveDocks,
       combatOptionPortCheck,
-      combatOptionMedalStop,
+      combatOptionClearStop,
     } = this.state
 
     const combatNodeSelectOptions = combatNodeSelects ?
@@ -707,17 +707,17 @@ class BodyConfigCombat extends PureComponent {
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={combatOptionMedalStop}
+                  checked={combatOptionClearStop}
                   onChange={
                     (event, checked) => this.setState(
-                      { combatOptionMedalStop: checked },
+                      { combatOptionClearStop: checked },
                       () => this.props.callback(this.state)
                     )}
-                  disabled={true}
-                  value='combatOptionMedalStop' />
+                  disabled={!combatEnabled}
+                  value='combatOptionClearStop' />
               }
-              label={<Localize field='bodyConfig.combatMedalStop' />}
-              disabled={true} />
+              label={<Localize field='bodyConfig.combatClearStop' />}
+              disabled={!combatEnabled} />
           </Grid>
         </Grid>
       </Fragment>
