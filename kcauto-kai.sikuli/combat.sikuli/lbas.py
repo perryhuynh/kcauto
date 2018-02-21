@@ -1,4 +1,4 @@
-from sikuli import Pattern
+from sikuli import Region, Pattern
 from threading import Thread
 from kca_globals import Globals
 from util import Util
@@ -18,6 +18,14 @@ class LBAS(object):
         self.kc_region = regions['game']
         self.map = map
         self.fatigue = {}
+
+        # lbas-related regions
+        x = self.kc_region.x
+        y = self.kc_region.y
+        self.module_regions = {
+            'check_lbas_fatigue': Region(x + 575, y + 230, 22, 225),
+            'lbas_mode_switcher': Region(x + 761, y + 135, 28, 46)
+        }
 
     def assign_groups(self):
         """Method for assigning sortied LBAS groups to their respective nodes
@@ -151,7 +159,7 @@ class LBAS(object):
             final_mode (str): the mode to switch the LBAS group to
         """
         Util.rejigger_mouse(self.regions, 'top')
-        while not self.regions['lbas_mode_switcher'].exists(
+        while not self.module_regions['lbas_mode_switcher'].exists(
                 'lbas_group_mode_{}.png'.format(final_mode)):
             Util.click_preset_region(self.regions, 'lbas_mode_switch_button')
             Util.rejigger_mouse(self.regions, 'top')
@@ -181,7 +189,7 @@ class LBAS(object):
         """
         self.fatigue[mode] = (
             True
-            if (self.regions['check_lbas_fatigue'].exists(
+            if (self.module_regions['check_lbas_fatigue'].exists(
                 Pattern('ship_state_fatigue_{}.png'.format(mode))
                 .similar(Globals.FATIGUE_SIMILARITY)))
             else False)

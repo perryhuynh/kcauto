@@ -312,17 +312,8 @@ class Util(object):
         regions['repair_panel'] = Region(x + 600, y + 110, 100, 340)
         regions['repair_shiplist_fleet_markers'] = Region(
             x + 375, y + 125, 28, 310)
-        # lbas-related regions
-        regions['check_lbas_fatigue'] = Region(x + 575, y + 230, 22, 225)
-        regions['lbas_mode_switcher'] = Region(x + 761, y + 135, 28, 46)
         # combat-related regions
-        regions['check_fatigue'] = Region(x + 500, y + 135, 22, 290)
-        regions['check_damage'] = Region(x + 461, y + 130, 48, 300)
-        regions['check_damage_7th'] = Region(x + 461, y + 376, 48, 50)
-        regions['check_damage_flagship'] = Region(x + 290, y + 185, 70, 50)
-        regions['check_damage_combat'] = Region(x + 290, y + 140, 70, 320)
         regions['enemy_pvp_fleet'] = Region(x + 400, y, 400, 480)
-        # formation-related regions
         regions['formation_line_ahead'] = Region(x + 390, y + 160, 175, 50)
         regions['formation_double_line'] = Region(x + 520, y + 160, 175, 50)
         regions['formation_diamond'] = Region(x + 650, y + 160, 120, 50)
