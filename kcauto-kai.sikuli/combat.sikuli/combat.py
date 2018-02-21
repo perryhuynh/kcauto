@@ -58,7 +58,8 @@ class CombatModule(object):
             'check_damage': Region(x + 461, y + 130, 48, 300),
             'check_damage_7th': Region(x + 461, y + 376, 48, 50),
             'check_damage_flagship': Region(x + 290, y + 185, 70, 50),
-            'check_damage_combat': Region(x + 290, y + 140, 70, 320)
+            'check_damage_combat': Region(x + 290, y + 140, 70, 320),
+            'event_next': Region(x + 720, y + 340, 80, 70),
         }
 
     def goto_combat(self):
@@ -340,14 +341,14 @@ class CombatModule(object):
             if self.config.combat['engine'] == 'live':
                 self.observeRegion.stopObserver()
 
-            # reset ClearStop temp variables
-            if 'ClearStop' in self.config.combat['misc_options']:
-                disable_combat = False
-                post_combat_screens = []
-
             if at_node:
                 # arrived at combat node
                 self._increment_nodes_run()
+
+                # reset ClearStop temp variables
+                if 'ClearStop' in self.config.combat['misc_options']:
+                    disable_combat = False
+                    post_combat_screens = []
 
                 if dialogue_click:
                     # click to get rid of initial boss dialogue in case it
@@ -411,6 +412,11 @@ class CombatModule(object):
                         Util.rejigger_mouse(self.regions, 'top')
                         if 'ClearStop' in self.config.combat['misc_options']:
                             post_combat_screens.append('next_alt')
+                    elif self.map.world == 'event':
+                        # if the 'next' asset exists in this region during an
+                        # event map sortie, the map is cleared
+                        if self.module_regions.exists('next.png'):
+                            disable_combat = True
                     elif self.combined_fleet or self.striking_fleet:
                         self._resolve_fcf()
                         Util.rejigger_mouse(self.regions, 'top')
@@ -452,8 +458,17 @@ class CombatModule(object):
                     self._print_sortie_complete_msg(self.nodes_run)
                     sortieing = False
                     break
-        # after sortie is complete, if the disable combat flag is set, disable
-        # the combat module
+        # after sortie is complete, check the dismissed post-combat screens to
+        # see if combat should be disabled
+        if ('ClearStop' in self.config.combat['misc_options'] and
+                not disable_combat):
+            # TODO: additional logic needed to resolve end of 1-6
+            if self.map.world == 'event' and len(post_combat_screens) > 2:
+                # event map and more than 2 post-combat screens dismissed;
+                # assume that it means that event map is cleared
+                disable_combat = True
+
+        # if the disable combat flag is set, disable the combat module
         if disable_combat:
             self.disable_combat_module()
 
