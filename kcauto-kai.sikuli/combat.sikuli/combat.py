@@ -508,9 +508,9 @@ class CombatModule(object):
                     Util.click_preset_region(self.regions, 'center')
                     Util.rejigger_mouse(self.regions, 'lbas')
                     Util.kc_sleep(3)
-            elif (self.fast_kc_region['formation_line_ahead'].exists(
+            elif (self.regions['formation_line_ahead'].exists(
                         'formation_line_ahead.png') or
-                    self.fast_kc_region['formation_combinedfleet_1'].exists(
+                    self.regions['formation_combinedfleet_1'].exists(
                         'formation_combinedfleet_1.png')):
                 # check for both single fleet and combined fleet formations
                 # since combined fleets can have single fleet battles
@@ -537,7 +537,7 @@ class CombatModule(object):
                         next_node, self.current_node))
                     self.map.nodes[next_node].click_node(self.regions['game'])
                     Util.rejigger_mouse(self.regions, 'lbas')
-            elif (self.fast_kc_region['lower_right_corner'].exists('next.png')
+            elif (self.regions['lower_right_corner'].exists('next.png')
                     or self.fast_kc_region.exists('combat_nb_fight.png')):
                 # post-combat or night battle select without selecting a
                 # formation
