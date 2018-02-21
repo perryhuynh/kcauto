@@ -738,10 +738,14 @@ class CombatModule(object):
         if nb:
             Util.log_msg("Commencing night battle.")
             Util.check_and_click(self.kc_region, 'combat_nb_fight.png')
+            self.kc_region.waitVanish('combat_nb_fight.png')
+            Util.kc_sleep()
             return True
         else:
             Util.log_msg("Declining night battle.")
             Util.check_and_click(self.kc_region, 'combat_nb_retreat.png')
+            self.kc_region.waitVanish('combat_nb_retreat.png')
+            Util.kc_sleep()
             return False
 
     def _select_continue_sortie(self, continue_sortie):
@@ -754,9 +758,13 @@ class CombatModule(object):
         if continue_sortie:
             Util.log_msg("Continuing sortie.")
             Util.check_and_click(self.kc_region, 'combat_continue.png')
+            self.kc_region.waitVanish('combat_continue.png')
+            Util.kc_sleep()
         else:
             Util.log_msg("Retreating from sortie.")
             Util.check_and_click(self.kc_region, 'combat_retreat.png')
+            self.kc_region.waitVanish('combat_retreat.png')
+            Util.kc_sleep()
 
     def _resolve_fcf(self):
         """Method that resolves the FCF prompt. Does not use FCF if there are
