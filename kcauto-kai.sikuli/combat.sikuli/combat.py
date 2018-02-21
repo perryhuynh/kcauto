@@ -216,7 +216,7 @@ class CombatModule(object):
             Fleet.switch(self.regions['top_submenu'], 2)
             two_needs_resupply, fleet_two_damages, fleet_two_fatigue = (
                 self._run_pre_sortie_fleet_check_logic(self.fleets[2]))
-            Fleet.switch(self.regions['top_submenu'], 3)
+            Fleet.switch(self.regions['top_submenu'], 1)
 
             self.dmg = self._combine_fleet_damages(self.dmg, fleet_two_damages)
             for key in fleet_fatigue:
