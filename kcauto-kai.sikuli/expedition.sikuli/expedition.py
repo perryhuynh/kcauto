@@ -1,9 +1,9 @@
 from sikuli import Pattern
-import random
 from datetime import datetime, timedelta
-from util import Util
-from nav import Nav
+from random import choice
 from fleet import Fleet
+from nav import Nav
+from util import Util
 
 
 class ExpeditionModule(object):
@@ -108,12 +108,7 @@ class ExpeditionModule(object):
         Util.rejigger_mouse(self.regions, 'top')
         # switch fleet as necessary
         if fleet.fleet_id != 2:
-            Util.wait_and_click_and_wait(
-                self.regions['top_submenu'],
-                'fleet_{:d}.png'.format(fleet.fleet_id),
-                self.regions['top_submenu'],
-                'fleet_{:d}_active.png'.format(fleet.fleet_id))
-            Util.kc_sleep()
+            Fleet.switch(self.regions['top_submenu'], fleet.fleet_id)
 
         if self.kc_region.exists('ship_state_busy.png'):
             # fleet is already on an expedition
@@ -193,7 +188,7 @@ class ExpeditionFleet(Fleet):
         """Method to randomly choose one of the expeditions specified in the
         expedition fleet's valid expedition list
         """
-        self.expedition = random.choice(self.expeditions)
+        self.expedition = choice(self.expeditions)
         expedition_info = get_expedition_info(self.expedition)
         self.expedition_area = expedition_info['area']
         self.expedition_duration = expedition_info['duration']

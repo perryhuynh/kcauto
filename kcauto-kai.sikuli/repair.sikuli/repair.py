@@ -1,6 +1,6 @@
 from sikuli import Pattern, Location
 from datetime import datetime, timedelta
-from globals import Globals
+from kca_globals import Globals
 from combat import CombatFleet
 from nav import Nav
 from util import Util
@@ -85,12 +85,14 @@ class RepairModule(object):
             return False
         else:
             while self.kc_region.exists('dock_empty.png'):
+                Util.log_msg('empty dock exists')
                 # while there are empty docks, if there are ships to repair,
                 # continue repairing; otherwise, stop
                 if self.check_need_to_repair():
                     self._conduct_repair()
                 else:
                     break
+                Util.kc_sleep(1)
 
     def _conduct_repair(self):
         """Method that chooses an empty dock, chooses a ship, toggles the
@@ -104,7 +106,10 @@ class RepairModule(object):
             # TODO: only picks fleet ships at the moment... figure out logic
             # to repair other ships?? Or at least change the page?
             use_bucket = False
-            if (self.config.combat['repair_time_limit'] == 0):
+            if self.config.combat['repair_time_limit'] == 0:
+                use_bucket = True
+            elif ('ReserveDocks' in self.config.combat['misc_options'] and
+                    len(self.repair_timers) == self.repair_slots - 1):
                 use_bucket = True
             else:
                 repair_timer = Util.read_timer(
@@ -126,6 +131,8 @@ class RepairModule(object):
                 self.kc_region.wait('dock_empty.png')
             else:
                 self._update_combat_next_sortie_time(repair_timer)
+                self.regions['lower_right'].waitVanish('page_prev.png')
+                Util.kc_sleep(1)
         Util.kc_sleep()
 
     def _pick_fleet_ship(self):
@@ -152,7 +159,7 @@ class RepairModule(object):
             self.config.combat['repair_limit'])
 
         for fleet_marker in fleet_markers:
-            fleet_id = int(fleet_marker[17])
+            fleet_id = int(fleet_marker[17])  # infer from filename
             fleet_instance = self.fleets[fleet_id]
 
             if fleet_instance.get_damage_counts_at_threshold(
@@ -177,6 +184,7 @@ class RepairModule(object):
                             target_region, damage_icon,
                             Globals.EXPAND['repair_list']):
                         fleet_instance.damage_counts[damage] -= 1
+                        fleet_instance.damage_counts['repair'] += 1
                         return True
         return False
 

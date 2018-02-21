@@ -23,23 +23,23 @@ const BodyAbout = ({ classes }) => (
   <Grid container justify='center' spacing={0}>
     <Grid item xs={6}>
       <Paper className={classes.paper} elevation={0}>
-        <Typography type='body1' className={classes.paragraph}>
+        <Typography variant='body1' className={classes.paragraph}>
           <Localize field='bodyAbout.intro1' />
         </Typography>
 
-        <Typography type='body1' className={classes.paragraph}>
+        <Typography variant='body1' className={classes.paragraph}>
           <Localize field='bodyAbout.intro2' />
         </Typography>
 
-        <Typography type='title'>
+        <Typography variant='title'>
           <Localize field='bodyAbout.disclaimerHeader' />
         </Typography>
 
-        <Typography type='body2' className={classes.paragraph}>
+        <Typography variant='body2' className={classes.paragraph}>
           <Localize field='bodyAbout.disclaimer1' />
         </Typography>
 
-        <Typography type='body2' className={classes.paragraph}>
+        <Typography variant='body2' className={classes.paragraph}>
           <Localize field='bodyAbout.disclaimer2' />
         </Typography>
       </Paper>

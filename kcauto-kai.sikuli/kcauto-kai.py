@@ -13,7 +13,7 @@ sys.path.append(os.getcwd())
 
 # kcauto-kai imports
 from main import KCAutoKai  # noqa
-from globals import Globals  # noqa
+from kca_globals import Globals  # noqa
 from args import Args  # noqa
 from config import Config  # noqa
 from debug import Debug  # noqa
@@ -25,6 +25,7 @@ sikuli.Settings.MinSimilarity = Globals.DEFAULT_SIMILARITY
 sikuli.Settings.WaitScanRate = Globals.SIKULI_SCANRATE
 sikuli.Settings.ObserveScanRate = Globals.SIKULI_SCANRATE
 sikuli.Settings.OcrTextRead = True
+sikuli.Settings.AutoWaitTimeout = 1
 sikuli.Settings.RepeatWaitTime = 0
 
 # check run-time args
@@ -64,6 +65,8 @@ while True:
             kcauto_kai.run_combat_cycle()
 
             kcauto_kai.run_repair_cycle()
+
+            kcauto_kai.run_ship_switch_cycle()
 
             kcauto_kai.run_resupply_cycle()
 

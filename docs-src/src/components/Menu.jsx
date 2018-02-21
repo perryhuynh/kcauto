@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { withStyles } from 'material-ui/styles'
 import PropTypes from 'prop-types'
 import AppBar from 'material-ui/AppBar'
@@ -31,9 +31,12 @@ const styles = () => ({
     width: 30,
     height: 30,
   },
+  menuLink: {
+    color: '#fff',
+  },
 })
 
-class Menu extends Component {
+class Menu extends PureComponent {
   state = {
     languageDropdownAnchor: null,
   }
@@ -56,12 +59,12 @@ class Menu extends Component {
       <div className={classes.root}>
         <AppBar position='static'>
           <Toolbar>
-            <Typography type='title' color='inherit' className={classes.flex}>
+            <Typography variant='title' color='inherit' className={classes.flex}>
               <Ferry /> kcauto-kai
             </Typography>
 
             <IconButton
-              color='contrast'
+              color='inherit'
               className={classes.langaugeButton}
               onClick={event => this.setState({ languageDropdownAnchor: event.currentTarget })}
               title='change webUI language'
@@ -93,13 +96,14 @@ class Menu extends Component {
               ))}
             </MuiMenu>
 
-            <a href={urls.DISCORD_LINK}>
-              <IconButton color='contrast' title='kcauto-kai Discord'>
+            <a href={urls.DISCORD_LINK} className={classes.menuLink}>
+              <IconButton color='inherit' title='kcauto-kai Discord'>
                 <Discord className={classes.largeIcon} />
               </IconButton>
             </a>
-            <a href={urls.GITHUB_LINK}>
-              <IconButton color='contrast' title='kcauto-kai Github'>
+
+            <a href={urls.GITHUB_LINK} className={classes.menuLink}>
+              <IconButton color='inherit' title='kcauto-kai Github'>
                 <GithubCircle className={classes.largeIcon} />
               </IconButton>
             </a>

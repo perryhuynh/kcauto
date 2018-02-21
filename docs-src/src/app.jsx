@@ -7,6 +7,9 @@ import thunk from 'redux-thunk'
 import { createLogger } from 'redux-logger'
 
 import Grid from 'material-ui/Grid'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import { createMuiTheme } from 'material-ui/styles'
+import blueGrey from 'material-ui/colors/blueGrey'
 
 import { getUIMode } from 'actions/ui/mode'
 import { setUILanguage } from 'actions/ui/language'
@@ -14,6 +17,16 @@ import Reducers from 'reducers/'
 import MenuContainer from 'containers/MenuContainer'
 import Body from 'components/Body'
 import Footer from 'components/Footer'
+
+
+const theme = createMuiTheme({
+  palette: {
+    primary: blueGrey,
+    secondary: blueGrey,
+    contrastText: blueGrey[50],
+    contrastThreshold: 3,
+  },
+})
 
 let store = Reducers
 
@@ -28,11 +41,13 @@ store.dispatch(setUILanguage('en'))
 
 render(
   <Provider store={store}>
-    <Grid container>
-      <MenuContainer />
-      <Body />
-      <Footer />
-    </Grid>
+    <MuiThemeProvider theme={theme}>
+      <Grid container>
+        <MenuContainer />
+        <Body />
+        <Footer />
+      </Grid>
+    </MuiThemeProvider>
   </Provider>,
   document.getElementById('app')
 )

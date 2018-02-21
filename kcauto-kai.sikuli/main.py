@@ -6,6 +6,7 @@ from pvp import PvPModule
 from quest import QuestModule
 from repair import RepairModule
 from resupply import ResupplyModule
+from shipswitcher import ShipSwitcher
 from nav import Nav
 from stats import Stats
 from util import Util
@@ -45,6 +46,7 @@ class KCAutoKai(object):
         'pvp': None,
         'combat': None,
         'repair': None,
+        'ship_switcher': None,
         'expedition': None,
         'quest': None
     }
@@ -53,6 +55,7 @@ class KCAutoKai(object):
     active_fleets = {}
     combat_fleets = {}
     expedition_fleets = {}
+    combat_cycle = False
     next_scheduled_sleep_time = None
     sleep_wake_time = None
 
@@ -118,6 +121,14 @@ class KCAutoKai(object):
             else:
                 self.modules['combat'] = None
                 self.modules['repair'] = None
+
+            # initialize ship switcher module
+            if self.config.ship_switcher['enabled'] and self.modules['combat']:
+                self.modules['ship_switcher'] = ShipSwitcher(
+                    self.config, self.stats, self.regions, self.combat_fleets,
+                    self.modules['combat'])
+            else:
+                self.modules['ship_switcher'] = None
 
             # initialize expedition module
             if self.config.expeditions['enabled']:
@@ -212,13 +223,13 @@ class KCAutoKai(object):
             bool: True if expeditions were received, False otherwise
         """
         if self.regions['expedition_flag'].exists('expedition_flag.png'):
-            Util.click_screen(self.regions, 'center')
+            Util.click_preset_region(self.regions, 'center')
             if self.modules['expedition']:
                 # expedition module is enabled
                 self.modules['expedition'].receive_expedition()
             self.regions['lower_right_corner'].wait('next.png', 30)
             while not self.regions['home_menu'].exists('home_menu_sortie.png'):
-                Util.click_screen(self.regions, 'shipgirl')
+                Util.click_preset_region(self.regions, 'shipgirl')
                 Util.kc_sleep()
             # recurse in case there are more expedition fleets to receive
             self.run_receive_expedition_cycle()
@@ -305,6 +316,7 @@ class KCAutoKai(object):
 
         if self.modules['combat'].check_need_to_sortie():
             self.print_stats_check = True
+            self.combat_cycle = True
             self._focus_kancolle()
             Nav.goto(self.regions, 'home')
             self._run_fast_expedition_check()
@@ -316,6 +328,8 @@ class KCAutoKai(object):
 
             self._run_fast_expedition_check()
             return True
+        else:
+            self.combat_cycle = False
         return False
 
     def run_quest_cycle(self):
@@ -359,6 +373,21 @@ class KCAutoKai(object):
             self.modules['repair'].goto_repair()
 
             self.modules['repair'].repair_fleets()
+
+    def run_ship_switch_cycle(self):
+        """Method that runs the ship switch cycle.
+
+        Returns:
+            bool: False if there is no ShipSwitcher module
+        """
+        if not self.modules['ship_switcher']:
+            return False
+
+        if (self.modules['ship_switcher'].check_need_to_switch() and
+                self.combat_cycle):
+            self.modules['ship_switcher'].goto_fleetcomp()
+
+            self.modules['ship_switcher'].ship_switch_logic()
 
     def conduct_scheduled_sleep(self):
         """Method that schedules and conducts the scheduled sleep of
