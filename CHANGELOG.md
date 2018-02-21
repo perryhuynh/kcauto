@@ -8,6 +8,7 @@
   * Like the `MedalStop` option of kancolle-auto, but also works for Event maps
   * May be buggy
 * New damage-state assets for more accurate damage state detection of ringed ships
+* Added Patreon link to UI, in case you want to support the dev!
 * Major refactor of webUI
 * Various performance and memory optimizations
 * Various tweaks and bugfixes
