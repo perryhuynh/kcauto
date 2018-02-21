@@ -287,7 +287,7 @@ class CombatModule(object):
             fleet.check_damages_7th(self.regions)
             if self.config.combat['fleet_mode'] == 'striking'
             else fleet.check_damages(self.regions['check_damage']))
-        fleet.print_damage_counts()
+        fleet.print_damage_counts(repair=True)
 
         if 'CheckFatigue' in self.config.combat['misc_options']:
             fleet_fatigue = fleet.check_fatigue(
@@ -855,15 +855,26 @@ class CombatFleet(Fleet):
             self.damaged_fcf_retreat_count += 1
             self.damage_counts['heavy'] -= 1
 
-    def print_damage_counts(self):
+    def print_damage_counts(self, repair=False):
         """Method to report the fleet's damage counts in a more human-readable
         format
         """
-        Util.log_msg(
-            "Fleet {} damage counts: {} heavy / {} moderate / {} minor"
-            .format(
-                self.fleet_id, self.damage_counts['heavy'],
-                self.damage_counts['moderate'], self.damage_counts['minor']))
+        if repair:
+            Util.log_msg(
+                (
+                    "Fleet {} damage counts: {} heavy / {} moderate / "
+                    "{} minor / {} under repair")
+                .format(
+                    self.fleet_id, self.damage_counts['heavy'],
+                    self.damage_counts['moderate'],
+                    self.damage_counts['minor'], self.damage_counts['repair']))
+        else:
+            Util.log_msg(
+                "Fleet {} damage counts: {} heavy / {} moderate / {} minor"
+                .format(
+                    self.fleet_id, self.damage_counts['heavy'],
+                    self.damage_counts['moderate'],
+                    self.damage_counts['minor']))
 
     def print_fatigue_states(self):
         """Method to report the fleet's fatigue state in a more human-readable

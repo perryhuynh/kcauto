@@ -103,13 +103,20 @@ class ShipSwitcher(object):
                 self.module_regions['panels'][0].wait('shiplist_button.png', 2)
 
         # check new fleet status
+        # TODO: only checks on damage and repair states only, not fatigue!
         fleet = self.fleets[1]
         damage_counts = fleet.check_damages(self.kc_region)
         if (fleet.get_damage_counts_at_threshold(
                     self.config.combat['repair_limit']) == 0 and
                 damage_counts['repair'] == 0):
             # all ships in fleet pass checks: continue sortie
+            Util.log_msg(
+                "Fleet is ready to sortie. Updating next sortie time.")
             self.combat.set_next_combat_time()
+        else:
+            fleet.print_damage_counts(repair=True)
+            Util.log_msg("Fleet is still not ready to sortie.")
+
 
     def _set_shiplist_counts(self):
         """Method that sets the ship-list related internal counts based on the
