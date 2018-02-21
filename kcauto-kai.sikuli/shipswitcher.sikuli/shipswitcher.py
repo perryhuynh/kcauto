@@ -554,7 +554,7 @@ class ShipSwitcher(object):
             for ship in slot_config['ships']:
                 ship_search_threads.append(Thread(
                     target=self._match_shiplist_ships_func,
-                    args=(mode, ship['class'], ship)))
+                    args=(mode, ship[mode], ship)))
             Util.multithreader(ship_search_threads)
 
             if (not self.temp_ship_position_list and
