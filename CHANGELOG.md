@@ -1,6 +1,11 @@
+#### 0.3.1
+
+* Bugfixes to ShipSwitcher (thanks to @Perry for heavy testing)
+* Updates to webUI
+
 #### 0.3.0
 
-* Implements the ShipSwitcher module
+* Implements the ShipSwitcher module (thanks to @Perry for heavy testing)
   * Allows for switching of ships based on class, ship, or position on a per-slot basis and based on damage, fatigue, or sparkled status
   * Due to the complexity of the config, it is strongly recommended that the [webUI](https://mrmin123.github.io/kcauto-kai/) be used to generate the relevant config
   * May be buggy
