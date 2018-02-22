@@ -37,26 +37,24 @@ const styles = () => ({
 
 const Footer = (props) => {
   const { classes } = props
-  const displayDivider = () => <span className={classes.divider}>|</span>
-  const displayVersion = () => <span>version <strong>{process.version}</strong></span>
-  const displaySupportIcon = () => (
-    <a href={urls.PATREON_LINK} className={classes.link}><WalletGiftcard className={classes.icon} /></a>
-  )
-  const displaySupportLink = () => (
-    <a href={urls.PATREON_LINK} className={classes.link}>support the dev</a>
-  )
-  const displayCopy = () => <span>&copy; 2017-2018</span>
+  const renderDivider = () => <span className={classes.divider}>|</span>
+  const renderVersion = () => <span>version <strong>{process.version}</strong></span>
+  const renderSupportIcon = () => <WalletGiftcard className={classes.icon} />
+  const renderPatreonLink = () => <a href={urls.PATREON_LINK} className={classes.link}>Patreon</a>
+  const renderMakerSupportLink = () => <a href={urls.MAKERSUPPORT_LINK} className={classes.link}>MakerSupport</a>
+  const renderSupportText = () => <span>support the dev on {renderPatreonLink()} or {renderMakerSupportLink()}</span>
+  const renderCopy = () => <span>&copy; 2017-2018</span>
 
   return (
     <div className={classes.root}>
       <Divider />
       <div className={classes.flex}>
-        {displayVersion()}
-        {displayDivider()}
-        {displaySupportIcon()}
-        {displaySupportLink()}
-        {displayDivider()}
-        {displayCopy()}
+        {renderVersion()}
+        {renderDivider()}
+        {renderSupportIcon()}
+        {renderSupportText()}
+        {renderDivider()}
+        {renderCopy()}
       </div>
     </div>
   )
