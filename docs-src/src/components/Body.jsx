@@ -15,20 +15,23 @@ const styles = () => ({
   },
 })
 
+const TABS = ['config', 'runcmd', 'about']
+
 class Body extends PureComponent {
   state = {
-    value: 0,
+    tab: window.location.hash ? window.location.hash.substr(1) : 'config',
   }
 
   render = () => {
     const { classes } = this.props
+    const { tab } = this.state
 
     return (
       <div className={classes.root}>
         <AppBar position='static' color='default'>
           <Tabs
-            value={this.state.value}
-            onChange={(event, value) => this.setState({ value })}
+            value={TABS.indexOf(tab)}
+            onChange={(event, value) => this.setState({ tab: TABS[value] })}
             indicatorColor='primary'
             textColor='primary'
             centered
@@ -38,13 +41,13 @@ class Body extends PureComponent {
             <Tab icon={<InformationOutline />} label='About' />
           </Tabs>
         </AppBar>
-        { this.state.value === 0 ?
+        { tab === 'config' ?
           <BodyConfigContainer /> :
           null}
-        { this.state.value === 1 ?
+        { tab === 'runcmd' ?
           <BodyRunCmdContainer /> :
           null}
-        { this.state.value === 2 ?
+        { tab === 'about' ?
           <BodyAbout /> :
           null}
       </div>

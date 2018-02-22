@@ -6,7 +6,7 @@ import Toolbar from 'material-ui/Toolbar'
 import MuiMenu, { MenuItem } from 'material-ui/Menu'
 import Typography from 'material-ui/Typography'
 import IconButton from 'material-ui/IconButton'
-import { Ferry, Earth, GithubCircle, Discord, WalletGiftcard } from 'mdi-material-ui'
+import { Ferry, Earth, GithubCircle, Discord } from 'mdi-material-ui'
 
 import * as urls from 'urls'
 import { availableLocalizations } from 'localizations'
@@ -105,12 +105,6 @@ class Menu extends PureComponent {
             <a href={urls.GITHUB_LINK} className={classes.menuLink}>
               <IconButton color='inherit' title='kcauto-kai Github'>
                 <GithubCircle className={classes.largeIcon} />
-              </IconButton>
-            </a>
-
-            <a href={urls.PATREON_LINK} className={classes.menuLink}>
-              <IconButton color='inherit' title='Support the dev'>
-                <WalletGiftcard className={classes.largeIcon} />
               </IconButton>
             </a>
           </Toolbar>
