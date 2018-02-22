@@ -394,12 +394,12 @@ class Config(object):
                             'ship' if slot_dict['mode'] is None else
                             slot_dict['mode'])
                         ship_dict['ship'] = ship_split[1].lower()
-                    if ship_split[2] is not '_':
+                    if ship_split[2] != '_':
                         ship_dict['level'] = ship_split[2]
-                    if ship_split[3] is not '_':
+                    if ship_split[3] != '_':
                         ship_dict['locked'] = (
                             True if ship_split[3] == 'L' else False)
-                    if ship_split[4] is not '_':
+                    if ship_split[4] != '_':
                         ship_dict['ringed'] = (
                             True if ship_split[4] == 'R' else False)
                 elif ship_split[0] in ('P'):
