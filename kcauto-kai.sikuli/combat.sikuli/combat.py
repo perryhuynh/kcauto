@@ -412,15 +412,15 @@ class CombatModule(object):
                         Util.rejigger_mouse(self.regions, 'top')
                         if 'ClearStop' in self.config.combat['misc_options']:
                             post_combat_screens.append('next_alt')
-                    elif self.combined_fleet or self.striking_fleet:
-                        self._resolve_fcf()
-                        Util.rejigger_mouse(self.regions, 'top')
-                    elif self.map.world == 'event':
+                    if self.map.world == 'event':
                         # if the 'next' asset exists in this region during an
                         # event map sortie, the map is cleared
                         if self.module_regions['event_next'].exists(
                                 'next.png'):
                             disable_combat = True
+                    if self.combined_fleet or self.striking_fleet:
+                        self._resolve_fcf()
+                        Util.rejigger_mouse(self.regions, 'top')
 
             if self.regions['left'].exists('home_menu_sortie.png'):
                 # arrived at home; sortie complete
