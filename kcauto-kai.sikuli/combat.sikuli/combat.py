@@ -415,7 +415,8 @@ class CombatModule(object):
                     elif self.map.world == 'event':
                         # if the 'next' asset exists in this region during an
                         # event map sortie, the map is cleared
-                        if self.module_regions.exists('next.png'):
+                        if self.module_regions['event_next'].exists(
+                                'next.png'):
                             disable_combat = True
                     elif self.combined_fleet or self.striking_fleet:
                         self._resolve_fcf()
