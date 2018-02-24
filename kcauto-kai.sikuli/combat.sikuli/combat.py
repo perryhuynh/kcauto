@@ -672,8 +672,14 @@ class CombatModule(object):
             # count basis; if a custom formation is not defined, default to
             # combinedfleet_1 or line_ahead
             if next_node_count in custom_formations:
+                Util.log_msg(
+                    "Custom formation specified for node #{}.".format(
+                        str(next_node_count)))
                 return (custom_formations[next_node_count], )
             else:
+                Util.log_msg(
+                    "No custom formation specified for node #{}.".format(
+                        str(next_node_count)))
                 return (
                     'combinedfleet_1' if self.combined_fleet else 'line_ahead',
                     )
@@ -683,10 +689,19 @@ class CombatModule(object):
             # mapData instance's resolve_formation method
             if (self.current_node and
                     self.current_node.name in custom_formations):
+                Util.log_msg(
+                    "Custom formation specified for node {}.".format(
+                        self.current_node.name))
                 return (custom_formations[self.current_node.name], )
             elif next_node_count in custom_formations:
+                Util.log_msg(
+                    "Custom formation specified for node #{}.".format(
+                        str(next_node_count)))
                 return (custom_formations[next_node_count], )
             else:
+                Util.log_msg(
+                    "Formation specified for node {} via map data.".format(
+                        self.current_node.name))
                 return self.map.resolve_formation(self.current_node)
 
     def _resolve_night_battle(self):
@@ -705,8 +720,14 @@ class CombatModule(object):
             # on a node count basis; if a custom night battle mode is not
             # defined, default to True
             if next_node_count in custom_night_battles:
+                Util.log_msg(
+                    "Custom night battle specified for node #{}.".format(
+                        str(next_node_count)))
                 return custom_night_battles[next_node_count]
             else:
+                Util.log_msg(
+                    "No night battle specified for node #{}.".format(
+                        str(next_node_count)))
                 return False
         elif self.config.combat['engine'] == 'live':
             # if live engine, custom night battle modes can be applied by node
@@ -714,10 +735,19 @@ class CombatModule(object):
             # defer to the mapData instance's resolve_night_battle method
             if (self.current_node and
                     self.current_node.name in custom_night_battles):
+                Util.log_msg(
+                    "Custom night battle specified for node {}.".format(
+                        self.current_node.name))
                 return custom_night_battles[self.current_node.name]
             elif next_node_count in custom_night_battles:
+                Util.log_msg(
+                    "Custom night battle specified for node #{}.".format(
+                        str(next_node_count)))
                 return custom_night_battles[next_node_count]
             else:
+                Util.log_msg(
+                    "Night battle specified for node {} via map data.".format(
+                        self.current_node.name))
                 return self.map.resolve_night_battle(self.current_node)
 
     def _resolve_continue_sortie(self):
