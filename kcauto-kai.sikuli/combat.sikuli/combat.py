@@ -20,6 +20,7 @@ class CombatModule(object):
             fleets (dict): dict of active CombatFleet instances
         """
         self.enabled = True
+        self.disabled_time = None
         self.config = config
         self.stats = stats
         self.regions = regions
@@ -901,14 +902,19 @@ class CombatModule(object):
         return combined
 
     def disable_combat_module(self):
-        Util.log_warning("Disabling combat module.")
+        Util.log_success("Safely disabling the combat module.")
         self.enabled = False
+        self.disabled_time = datetime.now()
 
     def print_status(self):
         """Method that prints the next sortie time status of the Combat module.
         """
-        Util.log_success("Next combat sortie at {}".format(
-            self.next_combat_time.strftime('%Y-%m-%d %H:%M:%S')))
+        if self.enabled:
+            Util.log_success("Next combat sortie at {}".format(
+                self.next_combat_time.strftime('%Y-%m-%d %H:%M:%S')))
+        else:
+            Util.log_success("Combat module disabled as of {}".format(
+                self.disabled_time.strftime('%Y-%m-%d %H:%M:%S')))
 
 
 class CombatFleet(Fleet):
