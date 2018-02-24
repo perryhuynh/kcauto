@@ -172,7 +172,6 @@ class ShipSwitcher(object):
                 self.config.combat['repair_limit']))
             valid_damages.append('repair')
             for damage in valid_damages:
-                print(damage)
                 if panel_regions[slot].exists(
                         Pattern('ship_state_dmg_{}.png'.format(damage))
                         .similar(Globals.DAMAGE_SIMILARITY)):
@@ -589,7 +588,7 @@ class ShipSwitcher(object):
                 "Potential replacement ships found in page {} positions {}"
                 .format(
                     self.current_shiplist_page,
-                    ", ".join([str(i) for j in ship_position_list])))
+                    ", ".join([str(i) for i in ship_position_list])))
 
             if mode == 'ship':
                 for ship in self.temp_ship_position_dict:
