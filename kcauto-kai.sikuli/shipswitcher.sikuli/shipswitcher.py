@@ -53,6 +53,7 @@ class ShipSwitcher(object):
         """Method to navigate to the fleet composition menu.
         """
         Nav.goto(self.regions, 'fleetcomp')
+        self.module_regions['panels'][0].wait('shiplist_button.png', 2)
         self.current_shiplist_page = 1
 
     def check_need_to_switch(self):
@@ -129,6 +130,8 @@ class ShipSwitcher(object):
             self.ship_count % self.SHIPS_PER_PAGE
             if self.ship_count % self.SHIPS_PER_PAGE is not 0
             else self.SHIPS_PER_PAGE)
+        Util.log_msg("Detecting {} ships across {} pages.".format(
+            self.ship_count, self.ship_page_count))
 
     def _get_ship_count(self):
         """Method that returns the number of ships in the port via the counter
@@ -162,7 +165,7 @@ class ShipSwitcher(object):
             bool: True if the ship meets the criteria to be swapped out; False
                 otherwise
         """
-        Util.log_msg("Checking ship in slot {}.".format(slot))
+        Util.log_msg("Checking ship in slot {}.".format(slot + 1))
         panel_regions = self.module_regions['panels']
         if 'damage' in criteria:
             valid_damages = list(self.fleets[1].get_damages_at_threshold(
@@ -453,8 +456,8 @@ class ShipSwitcher(object):
                     self.kc_region.y + 128 + (28 * position),
                     50, 22)
                 ship_level = Util.read_ocr_number_text(level_area)
-                ship_level = int(sub(r"\D", "", ship_level))
-                ship_level = 1 if not ship_level else ship_level
+                ship_level = sub(r"\D", "", ship_level)
+                ship_level = 1 if not ship_level else int(ship_level)
                 if ship_config['level'][0] == '<':
                     if ship_level <= int(ship_config['level'][1:]):
                         temp_ship_positions.append(position)
@@ -511,16 +514,24 @@ class ShipSwitcher(object):
         Returns:
             bool: True if a successful switch was made; False otherwise
         """
-        for ship in slot_config['ships']:
+        for ship in list(slot_config['ships']):
             self._switch_shiplist_sorting(ship['sort_order'])
             if 'offset_ref' in ship and 'offset' in ship:
                 page, positions = self._resolve_ship_page_and_position(
                     ship['offset_ref'], ship['offset'])
                 self._navigate_to_shiplist_page(page)
+            if 'sparkle' in slot_config['criteria']:
+                # if in sparkle mode, remove the checked ship from the list of
+                # possible ships so we don't go back to it
+                slot_config['ships'].pop(0)
             # there should only be one returned position
             if self._choose_and_check_availability_of_ship(
                     positions[0], slot_config['criteria']) is True:
                 return True
+        if 'sparkle' in slot_config['criteria']:
+            # if in sparkle mode and we reach this point, we've exhausted the
+            # list of possible ships; disable the combat module
+            self.combat.disable_combat_module()
         return False
 
     def _resolve_replacement_ship_by_asset(self, mode, slot_config):
@@ -585,7 +596,7 @@ class ShipSwitcher(object):
                 "Potential replacement ships found in page {} positions {}"
                 .format(
                     self.current_shiplist_page,
-                    ", ".join([str(i) for j in ship_position_list])))
+                    ", ".join([str(i) for i in ship_position_list])))
 
             if mode == 'ship':
                 for ship in self.temp_ship_position_dict:
