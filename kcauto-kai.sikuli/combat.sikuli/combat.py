@@ -674,12 +674,12 @@ class CombatModule(object):
             if next_node_count in custom_formations:
                 Util.log_msg(
                     "Custom formation specified for node #{}.".format(
-                        str(next_node_count)))
+                        next_node_count))
                 return (custom_formations[next_node_count], )
             else:
                 Util.log_msg(
                     "No custom formation specified for node #{}.".format(
-                        str(next_node_count)))
+                        next_node_count))
                 return (
                     'combinedfleet_1' if self.combined_fleet else 'line_ahead',
                     )
@@ -696,7 +696,7 @@ class CombatModule(object):
             elif next_node_count in custom_formations:
                 Util.log_msg(
                     "Custom formation specified for node #{}.".format(
-                        str(next_node_count)))
+                        next_node_count))
                 return (custom_formations[next_node_count], )
             else:
                 Util.log_msg(
@@ -722,12 +722,12 @@ class CombatModule(object):
             if next_node_count in custom_night_battles:
                 Util.log_msg(
                     "Custom night battle specified for node #{}.".format(
-                        str(next_node_count)))
+                        next_node_count))
                 return custom_night_battles[next_node_count]
             else:
                 Util.log_msg(
                     "No night battle specified for node #{}.".format(
-                        str(next_node_count)))
+                        next_node_count))
                 return False
         elif self.config.combat['engine'] == 'live':
             # if live engine, custom night battle modes can be applied by node
@@ -742,7 +742,7 @@ class CombatModule(object):
             elif next_node_count in custom_night_battles:
                 Util.log_msg(
                     "Custom night battle specified for node #{}.".format(
-                        str(next_node_count)))
+                        next_node_count))
                 return custom_night_battles[next_node_count]
             else:
                 Util.log_msg(

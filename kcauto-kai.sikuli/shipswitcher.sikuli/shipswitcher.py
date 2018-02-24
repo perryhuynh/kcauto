@@ -162,7 +162,7 @@ class ShipSwitcher(object):
             bool: True if the ship meets the criteria to be swapped out; False
                 otherwise
         """
-        Util.log_msg("Checking ship in slot {}.".format(slot))
+        Util.log_msg("Checking ship in slot {}.".format(slot + 1))
         panel_regions = self.module_regions['panels']
         if 'damage' in criteria:
             valid_damages = list(self.fleets[1].get_damages_at_threshold(
