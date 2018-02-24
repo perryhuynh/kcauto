@@ -453,8 +453,8 @@ class ShipSwitcher(object):
                     self.kc_region.y + 128 + (28 * position),
                     50, 22)
                 ship_level = Util.read_ocr_number_text(level_area)
-                ship_level = int(sub(r"\D", "", ship_level))
-                ship_level = 1 if not ship_level else ship_level
+                ship_level = sub(r"\D", "", ship_level)
+                ship_level = 1 if not ship_level else int(ship_level)
                 if ship_config['level'][0] == '<':
                     if ship_level <= int(ship_config['level'][1:]):
                         temp_ship_positions.append(position)
