@@ -1,3 +1,16 @@
+#### 0.3.2
+
+* Changes and bugfixes to ShipSwitcher
+  * More console messages
+  * When sparkling, ShipSwitcher will no longer re-visit previously checked ships
+  * When sparkling, ShipSwitcher will disable the Combat module if there are no more potential ships to switch to, avoiding infinite sorties with the last ship
+* Changes and bugfixes to Combat module
+  * More console messages
+  * Better handling of post-combat screens
+  * Combat stats will report when the module was disabled
+* Bugfix to Repair module
+  * Repair module should not get stuck trying to repair damaged ships in fleet when all docks are full
+
 #### 0.3.1
 
 * Bugfixes to ShipSwitcher (thanks to @Perry for heavy testing)

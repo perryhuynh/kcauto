@@ -20,6 +20,7 @@ class CombatModule(object):
             fleets (dict): dict of active CombatFleet instances
         """
         self.enabled = True
+        self.disabled_time = None
         self.config = config
         self.stats = stats
         self.regions = regions
@@ -412,12 +413,13 @@ class CombatModule(object):
                         Util.rejigger_mouse(self.regions, 'top')
                         if 'ClearStop' in self.config.combat['misc_options']:
                             post_combat_screens.append('next_alt')
-                    elif self.map.world == 'event':
+                    if self.map.world == 'event':
                         # if the 'next' asset exists in this region during an
                         # event map sortie, the map is cleared
-                        if self.module_regions.exists('next.png'):
+                        if self.module_regions['event_next'].exists(
+                                'next.png'):
                             disable_combat = True
-                    elif self.combined_fleet or self.striking_fleet:
+                    if self.combined_fleet or self.striking_fleet:
                         self._resolve_fcf()
                         Util.rejigger_mouse(self.regions, 'top')
 
@@ -671,8 +673,14 @@ class CombatModule(object):
             # count basis; if a custom formation is not defined, default to
             # combinedfleet_1 or line_ahead
             if next_node_count in custom_formations:
+                Util.log_msg(
+                    "Custom formation specified for node #{}.".format(
+                        next_node_count))
                 return (custom_formations[next_node_count], )
             else:
+                Util.log_msg(
+                    "No custom formation specified for node #{}.".format(
+                        next_node_count))
                 return (
                     'combinedfleet_1' if self.combined_fleet else 'line_ahead',
                     )
@@ -682,10 +690,19 @@ class CombatModule(object):
             # mapData instance's resolve_formation method
             if (self.current_node and
                     self.current_node.name in custom_formations):
+                Util.log_msg(
+                    "Custom formation specified for node {}.".format(
+                        self.current_node.name))
                 return (custom_formations[self.current_node.name], )
             elif next_node_count in custom_formations:
+                Util.log_msg(
+                    "Custom formation specified for node #{}.".format(
+                        next_node_count))
                 return (custom_formations[next_node_count], )
             else:
+                Util.log_msg(
+                    "Formation specified for node {} via map data.".format(
+                        self.current_node.name))
                 return self.map.resolve_formation(self.current_node)
 
     def _resolve_night_battle(self):
@@ -704,8 +721,14 @@ class CombatModule(object):
             # on a node count basis; if a custom night battle mode is not
             # defined, default to True
             if next_node_count in custom_night_battles:
+                Util.log_msg(
+                    "Custom night battle specified for node #{}.".format(
+                        next_node_count))
                 return custom_night_battles[next_node_count]
             else:
+                Util.log_msg(
+                    "No night battle specified for node #{}.".format(
+                        next_node_count))
                 return False
         elif self.config.combat['engine'] == 'live':
             # if live engine, custom night battle modes can be applied by node
@@ -713,10 +736,19 @@ class CombatModule(object):
             # defer to the mapData instance's resolve_night_battle method
             if (self.current_node and
                     self.current_node.name in custom_night_battles):
+                Util.log_msg(
+                    "Custom night battle specified for node {}.".format(
+                        self.current_node.name))
                 return custom_night_battles[self.current_node.name]
             elif next_node_count in custom_night_battles:
+                Util.log_msg(
+                    "Custom night battle specified for node #{}.".format(
+                        next_node_count))
                 return custom_night_battles[next_node_count]
             else:
+                Util.log_msg(
+                    "Night battle specified for node {} via map data.".format(
+                        self.current_node.name))
                 return self.map.resolve_night_battle(self.current_node)
 
     def _resolve_continue_sortie(self):
@@ -870,14 +902,19 @@ class CombatModule(object):
         return combined
 
     def disable_combat_module(self):
-        Util.log_warning("Disabling combat module.")
+        Util.log_success("Safely disabling the combat module.")
         self.enabled = False
+        self.disabled_time = datetime.now()
 
     def print_status(self):
         """Method that prints the next sortie time status of the Combat module.
         """
-        Util.log_success("Next combat sortie at {}".format(
-            self.next_combat_time.strftime('%Y-%m-%d %H:%M:%S')))
+        if self.enabled:
+            Util.log_success("Next combat sortie at {}".format(
+                self.next_combat_time.strftime('%Y-%m-%d %H:%M:%S')))
+        else:
+            Util.log_success("Combat module disabled as of {}".format(
+                self.disabled_time.strftime('%Y-%m-%d %H:%M:%S')))
 
 
 class CombatFleet(Fleet):
