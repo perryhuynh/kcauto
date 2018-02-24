@@ -53,6 +53,7 @@ class ShipSwitcher(object):
         """Method to navigate to the fleet composition menu.
         """
         Nav.goto(self.regions, 'fleetcomp')
+        self.module_regions['panels'][0].wait('shiplist_button.png', 2)
         self.current_shiplist_page = 1
 
     def check_need_to_switch(self):
@@ -129,6 +130,8 @@ class ShipSwitcher(object):
             self.ship_count % self.SHIPS_PER_PAGE
             if self.ship_count % self.SHIPS_PER_PAGE is not 0
             else self.SHIPS_PER_PAGE)
+        Util.log_msg("Detecting {} ships across {} pages.".format(
+            self.ship_count, self.ship_page_count))
 
     def _get_ship_count(self):
         """Method that returns the number of ships in the port via the counter
@@ -169,6 +172,7 @@ class ShipSwitcher(object):
                 self.config.combat['repair_limit']))
             valid_damages.append('repair')
             for damage in valid_damages:
+                print(damage)
                 if panel_regions[slot].exists(
                         Pattern('ship_state_dmg_{}.png'.format(damage))
                         .similar(Globals.DAMAGE_SIMILARITY)):
