@@ -1,3 +1,7 @@
+#### 0.3.3
+
+* Bugfix to ShipSwitcher where specifying multiple ships via level would only apply the level rules of the last specified ship
+
 #### 0.3.2
 
 * Changes and bugfixes to ShipSwitcher
