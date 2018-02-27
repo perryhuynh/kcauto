@@ -441,16 +441,16 @@ class KCAutoKai(object):
         """Method that pauses the script, much like scheduled sleep. Still
         allows for config updates to happen.
         """
-        if self.config.general['pause']:
+        if self.config.pause:
             if not self.paused:
                 # first time getting paused
-                Util.log_success("Pausing kcauto-kai.")
+                Util.log_success("Pausing kcauto-kai!")
                 self.paused = True
             return True
         else:
             if self.paused:
                 # unpausing
-                Util.log_success("Resuming kcauto-kai.")
+                Util.log_success("Resuming kcauto-kai!")
                 self.paused = False
         return False
 

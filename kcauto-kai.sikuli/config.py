@@ -42,6 +42,7 @@ class Config(object):
     recovery_method = ''
     basic_recovery = False
     jst_offset = 0
+    pause = False
 
     scheduled_sleep = {'enabled': False}
     expeditions = {'enabled': False}
