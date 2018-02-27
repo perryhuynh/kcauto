@@ -519,7 +519,7 @@ class CombatModule(object):
                     Util.rejigger_mouse(self.regions, 'lbas')
                     Util.kc_sleep(3)
             elif (self.regions['formation_line_ahead'].exists(
-                        'formation_line_ahead.png') or
+                    'formation_line_ahead.png') or
                     self.regions['formation_combinedfleet_1'].exists(
                         'formation_combinedfleet_1.png')):
                 # check for both single fleet and combined fleet formations
@@ -691,7 +691,7 @@ class CombatModule(object):
                         next_node_count))
                 return (
                     'combinedfleet_1' if self.combined_fleet else 'line_ahead',
-                    )
+                )
         elif self.config.combat['engine'] == 'live':
             # if live engine, custom formation can be applied by node name or
             # node count; if a custom formation is not defined, defer to the

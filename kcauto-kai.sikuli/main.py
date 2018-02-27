@@ -149,7 +149,8 @@ class KCAutoKai(object):
                     self.expedition_fleets[4] = fleet4
 
                 self.modules['expedition'] = ExpeditionModule(
-                 self.config, self.stats, self.regions, self.expedition_fleets)
+                    self.config, self.stats, self.regions,
+                    self.expedition_fleets)
             else:
                 self.modules['expedition'] = None
 
@@ -433,6 +434,12 @@ class KCAutoKai(object):
                 self.next_scheduled_sleep_time + timedelta(days=1))
             return True
         return False
+
+    def conduct_pause(self):
+        """Method that pauses the script, much like scheduled sleep. Still
+        allows for config updates to happen.
+        """
+        pass
 
     def print_cycle_stats(self):
         """Method to print a summary of the stats stored in the different
