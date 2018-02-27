@@ -443,9 +443,14 @@ class CombatModule(object):
             if self.regions['lower_right_corner'].exists('next_alt.png'):
                 # resource node end; sortie complete
                 while not self.regions['left'].exists('home_menu_sortie.png'):
-                    Util.click_preset_region(self.regions, 'shipgirl')
-                    Util.rejigger_mouse(self.regions, 'top')
-                    Util.kc_sleep(1)
+                    if self.regions['lower_right_corner'].exists('next.png'):
+                        Util.click_preset_region(self.regions, 'center')
+                        Util.rejigger_mouse(self.regions, 'top')
+                    elif self.regions['lower_right_corner'].exists(
+                            'next_alt.png'):
+                        Util.click_preset_region(self.regions, 'center')
+                        Util.rejigger_mouse(self.regions, 'top')
+                self._print_sortie_complete_msg(self.nodes_run)
                 sortieing = False
                 break
 
