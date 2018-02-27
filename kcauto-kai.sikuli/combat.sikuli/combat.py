@@ -55,6 +55,7 @@ class CombatModule(object):
         x = self.kc_region.x
         y = self.kc_region.y
         self.module_regions = {
+            'game': self.kc_region,
             'check_fatigue': Region(x + 500, y + 135, 22, 290),
             'check_damage': Region(x + 461, y + 130, 48, 300),
             'check_damage_7th': Region(x + 461, y + 376, 48, 50),
@@ -418,6 +419,8 @@ class CombatModule(object):
                         # event map sortie, the map is cleared
                         if self.module_regions['event_next'].exists(
                                 'next.png'):
+                            Util.click_preset_region(self.regions, 'center')
+                            Util.rejigger_mouse(self.regions, 'top')
                             disable_combat = True
                     if self.combined_fleet or self.striking_fleet:
                         self._resolve_fcf()
@@ -442,9 +445,14 @@ class CombatModule(object):
             if self.regions['lower_right_corner'].exists('next_alt.png'):
                 # resource node end; sortie complete
                 while not self.regions['left'].exists('home_menu_sortie.png'):
-                    Util.click_preset_region(self.regions, 'shipgirl')
-                    Util.rejigger_mouse(self.regions, 'top')
-                    Util.kc_sleep(1)
+                    if self.regions['lower_right_corner'].exists('next.png'):
+                        Util.click_preset_region(self.regions, 'center')
+                        Util.rejigger_mouse(self.regions, 'top')
+                    elif self.regions['lower_right_corner'].exists(
+                            'next_alt.png'):
+                        Util.click_preset_region(self.regions, 'center')
+                        Util.rejigger_mouse(self.regions, 'top')
+                self._print_sortie_complete_msg(self.nodes_run)
                 sortieing = False
                 break
 
