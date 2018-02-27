@@ -419,6 +419,8 @@ class CombatModule(object):
                         # event map sortie, the map is cleared
                         if self.module_regions['event_next'].exists(
                                 'next.png'):
+                            Util.click_preset_region(self.regions, 'center')
+                            Util.rejigger_mouse(self.regions, 'top')
                             disable_combat = True
                     if self.combined_fleet or self.striking_fleet:
                         self._resolve_fcf()
