@@ -98,6 +98,7 @@ export const setPythonConfig = config => (
       '[General]',
       `Program: ${configTemp.generalProgram}`,
       `JSTOffset: ${configTemp.generalJSTOffset}`,
+      `Pause: ${configTemp.generalPause}`,
       '',
       '[ScheduledSleep]',
       `Enabled: ${configTemp.scheduledSleepEnabled}`,

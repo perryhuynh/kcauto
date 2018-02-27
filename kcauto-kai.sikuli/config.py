@@ -42,6 +42,7 @@ class Config(object):
     recovery_method = ''
     basic_recovery = False
     jst_offset = 0
+    pause = False
 
     scheduled_sleep = {'enabled': False}
     expeditions = {'enabled': False}
@@ -268,6 +269,7 @@ class Config(object):
         """
         self.program = config.get('General', 'Program')
         self.jst_offset = config.getint('General', 'JSTOffset')
+        self.pause = config.getboolean('General', 'Pause')
 
     def _read_scheduled_sleep(self, config):
         """Method to parse the Scheduled Sleep settings of the passed in
