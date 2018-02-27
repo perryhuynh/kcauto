@@ -31,6 +31,7 @@ class KCAutoKai(object):
             should occur
         regions (dict): dictionary of pre-calculated game regions for faster
             searching and matching
+        paused (bool): whether or not the script was in a paused state
         print_stats_check (bool): whether or not the stats should be displayed
             at the end of the loop
         sleep_wake_time (datetime): when the script should exit out of
@@ -51,6 +52,7 @@ class KCAutoKai(object):
         'quest': None
     }
     print_stats_check = True
+    paused = False
     regions = {}
     active_fleets = {}
     combat_fleets = {}
@@ -439,7 +441,18 @@ class KCAutoKai(object):
         """Method that pauses the script, much like scheduled sleep. Still
         allows for config updates to happen.
         """
-        pass
+        if self.config.general['pause']:
+            if not self.paused:
+                # first time getting paused
+                Util.log_success("Pausing kcauto-kai.")
+                self.paused = True
+            return True
+        else:
+            if self.paused:
+                # unpausing
+                Util.log_success("Resuming kcauto-kai.")
+                self.paused = False
+        return False
 
     def print_cycle_stats(self):
         """Method to print a summary of the stats stored in the different
