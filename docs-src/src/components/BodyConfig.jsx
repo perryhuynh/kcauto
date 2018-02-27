@@ -138,14 +138,6 @@ class BodyConfig extends PureComponent {
     this.props.setPythonConfig(this.state)
   }
 
-  componentDidUpdate = (nextProp, nextState) => {
-    // if (this.state !== nextState && this.state.dropzoneActive === nextState.dropzoneActive) {
-    //   // try not to fire the setConfig'ers if it's just the dropzone state changing
-    //   this.props.setJsonConfig(this.state)
-    //   this.props.setPythonConfig(this.state)
-    // }
-  }
-
   onConfigLoadEnter = () => {
     this.setState({ dropzoneActive: true })
   }
@@ -174,7 +166,7 @@ class BodyConfig extends PureComponent {
       let configTemp = config
       configTemp += `${line}\n`
       return configTemp
-    }, '# config automatically generated from kcauto-kai frontend\n\n')
+    }, `# config automatically generated from kcauto-kai frontend (v${process.version})\n\n`)
     const configBlob = new Blob([configOutput], { type: 'text/plain;charset=utf-8' })
     saveAs(configBlob, 'config.ini', true)
   }
