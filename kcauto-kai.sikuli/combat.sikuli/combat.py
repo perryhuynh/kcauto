@@ -679,7 +679,7 @@ class CombatModule(object):
         if self.config.combat['engine'] == 'legacy':
             # if legacy engine, custom formation can only be applied on a node
             # count basis; if a custom formation is not defined, default to
-            # combinedfleet_1 or line_ahead
+            # combinedfleet_4 or line_ahead
             if next_node_count in custom_formations:
                 Util.log_msg(
                     "Custom formation specified for node #{}.".format(
@@ -690,7 +690,7 @@ class CombatModule(object):
                     "No custom formation specified for node #{}.".format(
                         next_node_count))
                 return (
-                    'combinedfleet_1' if self.combined_fleet else 'line_ahead',
+                    'combinedfleet_4' if self.combined_fleet else 'line_ahead',
                 )
         elif self.config.combat['engine'] == 'live':
             # if live engine, custom formation can be applied by node name or
