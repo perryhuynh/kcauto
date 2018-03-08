@@ -274,6 +274,7 @@ class Config(object):
         Args:
             config (ConfigParser): ConfigParser instance
         """
+        # just loop through these if possible
         self.scheduled_sleep['kca_sleep_enabled'] = config.getboolean(
             'ScheduledSleep', 'Enabled')
         self.scheduled_sleep['kca_sleep_start_time'] = "{:04d}".format(

@@ -240,7 +240,8 @@ class KCAutoKai(object):
         Returns:
             bool: False if there is no Expeditions module
         """
-        if not self.modules['expedition']:
+        if not (self.modules['expedition']
+                and self.modules['expedition'].enabled):
             return False
 
         if self.modules['expedition'].expect_returned_fleet():

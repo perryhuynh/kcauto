@@ -910,9 +910,14 @@ class CombatModule(object):
         return combined
 
     def disable_combat_module(self):
-        Util.log_success("Safely disabling the combat module.")
+        Util.log_success("De-activating the combat module.")
         self.enabled = False
         self.disabled_time = datetime.now()
+
+    def enable_combat_module(self):
+        Util.log_success("Re-activating the combat module.")
+        self.enabled = True
+        self.disabled_time = None
 
     def print_status(self):
         """Method that prints the next sortie time status of the Combat module.
