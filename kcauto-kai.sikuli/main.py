@@ -72,7 +72,6 @@ class KCAutoKai(object):
         self.config = config
         self.stats = Stats(self.config)
         self.scheduler = Scheduler(self.config)
-        self._reset_scheduled_sleep()
 
     def refresh_config(self):
         """Method that allows for the hot-reloading of the config files. Run at
@@ -86,7 +85,7 @@ class KCAutoKai(object):
             self.active_fleets = {}
             self.combat_fleets = {}
             self.expedition_fleets = {}
-            self._reset_scheduled_sleep()
+            self.scheduler.reset_scheduled_sleep_all()
             self._focus_kancolle()
 
             # initialize pvp module
@@ -171,12 +170,6 @@ class KCAutoKai(object):
             # reset the config module's changed status
             self.config.changed = False
             self.print_stats_check = True
-
-    def _reset_scheduled_sleep(self):
-        """Method to reset the scheduled sleep attributes.
-        """
-        self.next_scheduled_sleep_time = None
-        self.sleep_wake_time = datetime.now()
 
     def _focus_kancolle(self):
         """Method that focuses the specified Kantai Collection game window,
@@ -401,7 +394,7 @@ class KCAutoKai(object):
             bool: False if scheduled sleep is disabled or if it is not time
                 for the scheduled sleep, otherwise True
         """
-        return Scheduler.conduct_kca_sleep()
+        return Scheduler.conduct_module_sleep('kca')
 
     def conduct_pause(self):
         """Method that pauses the script, much like scheduled sleep. Still
