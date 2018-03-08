@@ -480,7 +480,7 @@ class CombatModule(object):
 
         # if the disable combat flag is set, disable the combat module
         if disable_combat:
-            self.disable_combat_module()
+            self.disable_module()
 
     def _print_sortie_complete_msg(self, nodes_run):
         """Method that prints the post-sortie status report indicating number
@@ -909,12 +909,12 @@ class CombatModule(object):
             combined[key] = main[key] + escort[key]
         return combined
 
-    def disable_combat_module(self):
+    def disable_module(self):
         Util.log_success("De-activating the combat module.")
         self.enabled = False
         self.disabled_time = datetime.now()
 
-    def enable_combat_module(self):
+    def enable_module(self):
         Util.log_success("Re-activating the combat module.")
         self.enabled = True
         self.disabled_time = None

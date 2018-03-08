@@ -397,6 +397,17 @@ class KCAutoKai(object):
         """
         return Scheduler.conduct_module_sleep('kca')
 
+    def conduct_module_sleeps(self):
+        for module in ('expedition', 'combat'):
+            if (self.config.scheduled_sleep['{}_sleep_enabled'.format(module)]
+                    and self.modules[module]):
+                if (Scheduler.conduct_module_sleep(module)
+                        and self.modules[module].enabled):
+                    self.modules[module].disable_module()
+                else:
+                    if not self.modules[module].enabled:
+                        self.modules[module].enable_module()
+
     def conduct_pause(self):
         """Method that pauses the script, much like scheduled sleep. Still
         allows for config updates to happen.

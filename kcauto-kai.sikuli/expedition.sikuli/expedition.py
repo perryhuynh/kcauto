@@ -158,12 +158,12 @@ class ExpeditionModule(object):
                 fleet.at_base = True
                 fleet.needs_resupply = True
 
-    def disable_expedition_module(self):
+    def disable_module(self):
         Util.log_success("De-activating the expedition module.")
         self.enabled = False
         self.disabled_time = datetime.now()
 
-    def enable_expedition_module(self):
+    def enable_module(self):
         Util.log_success("Re-activating the expedition module.")
         self.enabled = True
         self.disabled_time = None
