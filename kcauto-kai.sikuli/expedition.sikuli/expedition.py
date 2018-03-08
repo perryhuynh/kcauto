@@ -16,6 +16,7 @@ class ExpeditionModule(object):
             regions (dict): dict of pre-defined kcauto-kai regions
             fleets (dict): dict of active ExpeditionFleet instances
         """
+        self.enabled = True
         self.config = config
         self.stats = stats
         self.regions = regions

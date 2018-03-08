@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from random import randint
+from scheduler import Scheduler
 from combat import CombatModule, CombatFleet
 from expedition import ExpeditionModule, ExpeditionFleet
 from pvp import PvPModule
@@ -42,6 +43,7 @@ class KCAutoKai(object):
     kc_region = None
     config = None
     stats = None
+    scheduler = None
     modules = {
         'resupply': None,
         'pvp': None,
@@ -58,8 +60,6 @@ class KCAutoKai(object):
     combat_fleets = {}
     expedition_fleets = {}
     combat_cycle = False
-    next_scheduled_sleep_time = None
-    sleep_wake_time = None
 
     def __init__(self, config):
         """Initializes the primary kcauto-kai instance with the passed in
@@ -71,6 +71,7 @@ class KCAutoKai(object):
         """
         self.config = config
         self.stats = Stats(self.config)
+        self.scheduler = Scheduler(self.config)
         self._reset_scheduled_sleep()
 
     def refresh_config(self):
@@ -400,42 +401,7 @@ class KCAutoKai(object):
             bool: False if scheduled sleep is disabled or if it is not time
                 for the scheduled sleep, otherwise True
         """
-        if not self.config.scheduled_sleep['enabled']:
-            return False
-
-        cur_time = datetime.now()
-
-        # if a scheduled sleep time is not set, set it
-        if not self.next_scheduled_sleep_time:
-            self.next_scheduled_sleep_time = datetime.now().replace(
-                hour=int(self.config.scheduled_sleep['start_time'][:2]),
-                minute=int(self.config.scheduled_sleep['start_time'][2:]),
-                second=0, microsecond=0)
-            if cur_time >= self.next_scheduled_sleep_time:
-                # specified time has already passed today, set to next day
-                self.next_scheduled_sleep_time = (
-                    self.next_scheduled_sleep_time + timedelta(days=1))
-
-        # if the current time is before the wake time, stay asleep
-        if cur_time < self.sleep_wake_time:
-            return True
-
-        # if the current time is past the schedule sleep time, go to sleep
-        if cur_time >= self.next_scheduled_sleep_time:
-            sleep_length = self.config.scheduled_sleep['sleep_length']
-            Util.log_warning(
-                "Scheduled Sleep beginning. Resuming in ~{} hours.".format(
-                    sleep_length))
-            # set the wake time when going to sleep so the previous conditional
-            # is triggered
-            self.sleep_wake_time = cur_time + timedelta(
-                hours=int(sleep_length),
-                minutes=int(sleep_length % 1 * 60) + randint(1, 15))
-            # set the next scheduled sleep time as well
-            self.next_scheduled_sleep_time = (
-                self.next_scheduled_sleep_time + timedelta(days=1))
-            return True
-        return False
+        return Scheduler.conduct_kca_sleep()
 
     def conduct_pause(self):
         """Method that pauses the script, much like scheduled sleep. Still
