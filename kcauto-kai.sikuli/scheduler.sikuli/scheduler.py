@@ -4,8 +4,9 @@ from util import Util
 
 
 class Scheduler(object):
-    def __init__(self, config):
+    def __init__(self, config, stats):
         self.config = config
+        self.stats = stats
         self.next_scheduled_sleep_time = {
             'kca': None,
             'expedition': None,
@@ -19,15 +20,24 @@ class Scheduler(object):
         self.reset_scheduled_sleep_all()
 
     def conduct_module_sleep(self, module):
+        """Method that holds the primary sleep logic for a given module,
+        including setting the sleep start and wake times.
+
+        Args:
+            module (str): 'kca', 'expedition', or 'combat'
+
+        Returns:
+            bool: True if the module should be asleep; False otherwise
+        """
         if not self.config.scheduled_sleep['{}_sleep_enabled'.format(module)]:
+            # if scheduled sleep for a particular module is not enabled, just
+            # return False
             return False
 
-        return self.set_and_check_timers(
-            'kca',
-            self.config.scheduled_sleep['{}_sleep_start_time'.format(module)],
-            self.config.scheduled_sleep['{}_sleep_length'.format(module)])
-
-    def set_and_check_timers(self, module, start_time, sleep_length):
+        start_time = self.config.scheduled_sleep[
+            '{}_sleep_start_time'.format(module)]
+        sleep_length = self.config.scheduled_sleep[
+            '{}_sleep_length'.format(module)]
         cur_time = datetime.now()
 
         # if a scheduled sleep time is not set, set it
@@ -47,9 +57,14 @@ class Scheduler(object):
 
         # if the current time is past the schedule sleep time, go to sleep
         if cur_time >= self.next_scheduled_sleep_time[module]:
-            Util.log_warning(
-                "Scheduled Sleep beginning. Resuming in ~{} hours.".format(
-                    sleep_length))
+            if module == 'kca':
+                Util.log_warning(
+                    "Beginning scheduled sleep. Resuming in ~{} hours.".format(
+                        sleep_length))
+            else:
+                Util.log_warning(
+                    "Beginning scheduled sleep for {} module. "
+                    "Resuming in ~{} hours.".format(module, sleep_length))
             # set the wake time when going to sleep so the previous conditional
             # is triggered
             self.sleep_wake_time[module] = cur_time + timedelta(
@@ -61,12 +76,15 @@ class Scheduler(object):
             return True
         return False
 
-    def reset_scheduled_sleep(self, module):
+    def _reset_scheduled_sleep(self, module):
         """Method to reset the scheduled sleep attributes of a specific module.
         """
         self.next_scheduled_sleep_time[module] = None
         self.sleep_wake_time[module] = datetime.now()
 
     def reset_scheduled_sleep_all(self):
+        """Method to reset the scheduled sleep attributes of all modules, using
+        the _reset_scheduled_sleep private method.
+        """
         for module in self.next_scheduled_sleep_time:
-            self.reset_scheduled_sleep(module)
+            self._reset_scheduled_sleep(module)

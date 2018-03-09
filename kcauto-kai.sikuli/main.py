@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-from random import randint
 from scheduler import Scheduler
 from combat import CombatModule, CombatFleet
 from expedition import ExpeditionModule, ExpeditionFleet
@@ -28,15 +26,11 @@ class KCAutoKai(object):
         kc_region (Region): sikuli Region instance containing the last known
             location of the Kantai Collection game screen
         modules (dict): dictionary of individual module instances
-        next_scheduled_sleep_time (datetime): when the next scheduled sleep
-            should occur
         regions (dict): dictionary of pre-calculated game regions for faster
             searching and matching
         paused (bool): whether or not the script was in a paused state
         print_stats_check (bool): whether or not the stats should be displayed
             at the end of the loop
-        sleep_wake_time (datetime): when the script should exit out of
-            scheduled sleep
         stats (Stats): Stats instance
     """
 
@@ -71,7 +65,7 @@ class KCAutoKai(object):
         """
         self.config = config
         self.stats = Stats(self.config)
-        self.scheduler = Scheduler(self.config)
+        self.scheduler = Scheduler(self.config, self.stats)
 
     def refresh_config(self):
         """Method that allows for the hot-reloading of the config files. Run at
@@ -388,22 +382,25 @@ class KCAutoKai(object):
             self.modules['ship_switcher'].ship_switch_logic()
 
     def conduct_scheduled_sleep(self):
-        """Method that schedules and conducts the scheduled sleep of
-        kcauto-kai.
+        """Method that checks the sleep status of kcauto-kai, main logic
+        deferred to the Scheduler module.
 
         Returns:
-            bool: False if scheduled sleep is disabled or if it is not time
-                for the scheduled sleep, otherwise True
+            bool: True if kcauto-kai should be conducting scheduled sleep;
+                False otherwise
         """
-        return Scheduler.conduct_module_sleep('kca')
+        return self.scheduler.conduct_module_sleep('kca')
 
     def conduct_module_sleeps(self):
+        """Method that checks the sleep status of the expedition and combat
+        modules, enabling and disabling the modules as necessary.
+        """
         for module in ('expedition', 'combat'):
             if (self.config.scheduled_sleep['{}_sleep_enabled'.format(module)]
                     and self.modules[module]):
-                if (Scheduler.conduct_module_sleep(module)
-                        and self.modules[module].enabled):
-                    self.modules[module].disable_module()
+                if self.scheduler.conduct_module_sleep(module):
+                    if self.modules[module].enabled:
+                        self.modules[module].disable_module()
                 else:
                     if not self.modules[module].enabled:
                         self.modules[module].enable_module()
