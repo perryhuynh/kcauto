@@ -1,3 +1,15 @@
+#### 0.4.0
+
+* Pause capability
+  * If set to True, kcauto-kai will pause operations until you set it to False again, allowing you to interact with the game with no time pressure without having to stop and restart kcauto-kai
+* Expanded Scheduled Sleep options
+  * You can now set separate scheduled sleeps for the Expedition and Combat modules
+  * Note that the kcauto-kai scheduled sleep overrides both Expedition and Combat module-level sleeps
+* Better handling of ending on resource nodes - should alleviate instances of infinite looping while clicking on the screen after ending on a resource node
+* Bugfix to Combat where the program would crash when attempting to sortie a Striking Fleet
+* Added `ISSUE_TEMPLATE.md` and preliminary `CONTRIBUTING.md`
+* Minor tweaks to webUI
+
 #### 0.3.3
 
 * Bugfix to ShipSwitcher where specifying multiple ships via level would only apply the level rules of the last specified ship
