@@ -39,9 +39,17 @@ export const setPythonConfig = config => (
       }
       return temp
     }, {})
-    const scheduledSleepStartTime = config.scheduledSleepStartTime ?
-      `${String(config.scheduledSleepStartTime.getHours()).padStart(2, '0')}` +
-      `${String(config.scheduledSleepStartTime.getMinutes()).padStart(2, '0')}` :
+    const scheduledSleepSleepStartTime = config.scheduledSleepSleepStartTime ?
+      `${String(config.scheduledSleepSleepStartTime.getHours()).padStart(2, '0')}` +
+      `${String(config.scheduledSleepSleepStartTime.getMinutes()).padStart(2, '0')}` :
+      ''
+    const scheduledSleepExpeditionSleepStartTime = config.scheduledSleepExpeditionSleepStartTime ?
+      `${String(config.scheduledSleepExpeditionSleepStartTime.getHours()).padStart(2, '0')}` +
+      `${String(config.scheduledSleepExpeditionSleepStartTime.getMinutes()).padStart(2, '0')}` :
+      ''
+    const scheduledSleepCombatSleepStartTime = config.scheduledSleepCombatSleepStartTime ?
+      `${String(config.scheduledSleepCombatSleepStartTime.getHours()).padStart(2, '0')}` +
+      `${String(config.scheduledSleepCombatSleepStartTime.getMinutes()).padStart(2, '0')}` :
       ''
     const combatRepairTimeLimit = config.combatRepairTimeLimit ?
       `${String(config.combatRepairTimeLimit.getHours()).padStart(2, '0')}` +
@@ -101,9 +109,15 @@ export const setPythonConfig = config => (
       `Pause: ${configTemp.generalPause}`,
       '',
       '[ScheduledSleep]',
-      `Enabled: ${configTemp.scheduledSleepEnabled}`,
-      `StartTime: ${scheduledSleepStartTime}`,
+      `SleepEnabled: ${configTemp.scheduledSleepSleepEnabled}`,
+      `SleepStartTime: ${scheduledSleepSleepStartTime}`,
       `SleepLength: ${configTemp.scheduledSleepSleepLength}`,
+      `ExpeditionSleepEnabled: ${configTemp.scheduledSleepExpeditionSleepEnabled}`,
+      `ExpeditionSleepStartTime: ${scheduledSleepExpeditionSleepStartTime}`,
+      `ExpeditionSleepLength: ${configTemp.scheduledSleepExpeditionSleepLength}`,
+      `CombatSleepEnabled: ${configTemp.scheduledSleepCombatSleepEnabled}`,
+      `CombatSleepStartTime: ${scheduledSleepCombatSleepStartTime}`,
+      `CombatSleepLength: ${configTemp.scheduledSleepCombatSleepLength}`,
       '',
       '[Expeditions]',
       `Enabled: ${configTemp.expeditionsEnabled}`,
