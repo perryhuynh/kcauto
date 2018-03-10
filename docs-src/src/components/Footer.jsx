@@ -19,6 +19,7 @@ const styles = () => ({
     color: blueGrey[500],
     fontSize: 14,
     textDecoration: 'none',
+    fontWeight: 'bold',
   },
   icon: {
     width: 22,
@@ -38,7 +39,8 @@ const styles = () => ({
 const Footer = (props) => {
   const { classes } = props
   const renderDivider = () => <span className={classes.divider}>|</span>
-  const renderVersion = () => <span>version <strong>{process.version}</strong></span>
+  const renderVersion = () => (
+    <span>version <a href={urls.CHANGELOG_LINK} className={classes.link}>{process.version}</a></span>)
   const renderSupportIcon = () => <WalletGiftcard className={classes.icon} />
   const renderPatreonLink = () => <a href={urls.PATREON_LINK} className={classes.link}>Patreon</a>
   const renderMakerSupportLink = () => <a href={urls.MAKERSUPPORT_LINK} className={classes.link}>MakerSupport</a>

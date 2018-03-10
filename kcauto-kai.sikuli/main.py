@@ -1,5 +1,4 @@
-from datetime import datetime, timedelta
-from random import randint
+from scheduler import Scheduler
 from combat import CombatModule, CombatFleet
 from expedition import ExpeditionModule, ExpeditionFleet
 from pvp import PvPModule
@@ -27,20 +26,18 @@ class KCAutoKai(object):
         kc_region (Region): sikuli Region instance containing the last known
             location of the Kantai Collection game screen
         modules (dict): dictionary of individual module instances
-        next_scheduled_sleep_time (datetime): when the next scheduled sleep
-            should occur
         regions (dict): dictionary of pre-calculated game regions for faster
             searching and matching
+        paused (bool): whether or not the script was in a paused state
         print_stats_check (bool): whether or not the stats should be displayed
             at the end of the loop
-        sleep_wake_time (datetime): when the script should exit out of
-            scheduled sleep
         stats (Stats): Stats instance
     """
 
     kc_region = None
     config = None
     stats = None
+    scheduler = None
     modules = {
         'resupply': None,
         'pvp': None,
@@ -51,13 +48,12 @@ class KCAutoKai(object):
         'quest': None
     }
     print_stats_check = True
+    paused = False
     regions = {}
     active_fleets = {}
     combat_fleets = {}
     expedition_fleets = {}
     combat_cycle = False
-    next_scheduled_sleep_time = None
-    sleep_wake_time = None
 
     def __init__(self, config):
         """Initializes the primary kcauto-kai instance with the passed in
@@ -69,7 +65,7 @@ class KCAutoKai(object):
         """
         self.config = config
         self.stats = Stats(self.config)
-        self._reset_scheduled_sleep()
+        self.scheduler = Scheduler(self.config, self.stats)
 
     def refresh_config(self):
         """Method that allows for the hot-reloading of the config files. Run at
@@ -83,7 +79,7 @@ class KCAutoKai(object):
             self.active_fleets = {}
             self.combat_fleets = {}
             self.expedition_fleets = {}
-            self._reset_scheduled_sleep()
+            self.scheduler.reset_scheduled_sleep_all()
             self._focus_kancolle()
 
             # initialize pvp module
@@ -149,7 +145,8 @@ class KCAutoKai(object):
                     self.expedition_fleets[4] = fleet4
 
                 self.modules['expedition'] = ExpeditionModule(
-                 self.config, self.stats, self.regions, self.expedition_fleets)
+                    self.config, self.stats, self.regions,
+                    self.expedition_fleets)
             else:
                 self.modules['expedition'] = None
 
@@ -167,12 +164,6 @@ class KCAutoKai(object):
             # reset the config module's changed status
             self.config.changed = False
             self.print_stats_check = True
-
-    def _reset_scheduled_sleep(self):
-        """Method to reset the scheduled sleep attributes.
-        """
-        self.next_scheduled_sleep_time = None
-        self.sleep_wake_time = datetime.now()
 
     def _focus_kancolle(self):
         """Method that focuses the specified Kantai Collection game window,
@@ -243,7 +234,8 @@ class KCAutoKai(object):
         Returns:
             bool: False if there is no Expeditions module
         """
-        if not self.modules['expedition']:
+        if not (self.modules['expedition']
+                and self.modules['expedition'].enabled):
             return False
 
         if self.modules['expedition'].expect_returned_fleet():
@@ -390,48 +382,44 @@ class KCAutoKai(object):
             self.modules['ship_switcher'].ship_switch_logic()
 
     def conduct_scheduled_sleep(self):
-        """Method that schedules and conducts the scheduled sleep of
-        kcauto-kai.
+        """Method that checks the sleep status of kcauto-kai, main logic
+        deferred to the Scheduler module.
 
         Returns:
-            bool: False if scheduled sleep is disabled or if it is not time
-                for the scheduled sleep, otherwise True
+            bool: True if kcauto-kai should be conducting scheduled sleep;
+                False otherwise
         """
-        if not self.config.scheduled_sleep['enabled']:
-            return False
+        return self.scheduler.conduct_module_sleep('kca')
 
-        cur_time = datetime.now()
+    def conduct_module_sleeps(self):
+        """Method that checks the sleep status of the expedition and combat
+        modules, enabling and disabling the modules as necessary.
+        """
+        for module in ('expedition', 'combat'):
+            if (self.config.scheduled_sleep['{}_sleep_enabled'.format(module)]
+                    and self.modules[module]):
+                if self.scheduler.conduct_module_sleep(module):
+                    if self.modules[module].enabled:
+                        self.modules[module].disable_module()
+                else:
+                    if not self.modules[module].enabled:
+                        self.modules[module].enable_module()
 
-        # if a scheduled sleep time is not set, set it
-        if not self.next_scheduled_sleep_time:
-            self.next_scheduled_sleep_time = datetime.now().replace(
-                hour=int(self.config.scheduled_sleep['start_time'][:2]),
-                minute=int(self.config.scheduled_sleep['start_time'][2:]),
-                second=0, microsecond=0)
-            if cur_time >= self.next_scheduled_sleep_time:
-                # specified time has already passed today, set to next day
-                self.next_scheduled_sleep_time = (
-                    self.next_scheduled_sleep_time + timedelta(days=1))
-
-        # if the current time is before the wake time, stay asleep
-        if cur_time < self.sleep_wake_time:
+    def conduct_pause(self):
+        """Method that pauses the script, much like scheduled sleep. Still
+        allows for config updates to happen.
+        """
+        if self.config.pause:
+            if not self.paused:
+                # first time getting paused
+                Util.log_success("Pausing kcauto-kai!")
+                self.paused = True
             return True
-
-        # if the current time is past the schedule sleep time, go to sleep
-        if cur_time >= self.next_scheduled_sleep_time:
-            sleep_length = self.config.scheduled_sleep['sleep_length']
-            Util.log_warning(
-                "Scheduled Sleep beginning. Resuming in ~{} hours.".format(
-                    sleep_length))
-            # set the wake time when going to sleep so the previous conditional
-            # is triggered
-            self.sleep_wake_time = cur_time + timedelta(
-                hours=int(sleep_length),
-                minutes=int(sleep_length % 1 * 60) + randint(1, 15))
-            # set the next scheduled sleep time as well
-            self.next_scheduled_sleep_time = (
-                self.next_scheduled_sleep_time + timedelta(days=1))
-            return True
+        else:
+            if self.paused:
+                # unpausing
+                Util.log_success("Resuming kcauto-kai!")
+                self.paused = False
         return False
 
     def print_cycle_stats(self):

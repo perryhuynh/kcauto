@@ -55,6 +55,7 @@ class CombatModule(object):
         x = self.kc_region.x
         y = self.kc_region.y
         self.module_regions = {
+            'game': self.kc_region,
             'check_fatigue': Region(x + 500, y + 135, 22, 290),
             'check_damage': Region(x + 461, y + 130, 48, 300),
             'check_damage_7th': Region(x + 461, y + 376, 48, 50),
@@ -418,6 +419,8 @@ class CombatModule(object):
                         # event map sortie, the map is cleared
                         if self.module_regions['event_next'].exists(
                                 'next.png'):
+                            Util.click_preset_region(self.regions, 'center')
+                            Util.rejigger_mouse(self.regions, 'top')
                             disable_combat = True
                     if self.combined_fleet or self.striking_fleet:
                         self._resolve_fcf()
@@ -442,9 +445,14 @@ class CombatModule(object):
             if self.regions['lower_right_corner'].exists('next_alt.png'):
                 # resource node end; sortie complete
                 while not self.regions['left'].exists('home_menu_sortie.png'):
-                    Util.click_preset_region(self.regions, 'shipgirl')
-                    Util.rejigger_mouse(self.regions, 'top')
-                    Util.kc_sleep(1)
+                    if self.regions['lower_right_corner'].exists('next.png'):
+                        Util.click_preset_region(self.regions, 'center')
+                        Util.rejigger_mouse(self.regions, 'top')
+                    elif self.regions['lower_right_corner'].exists(
+                            'next_alt.png'):
+                        Util.click_preset_region(self.regions, 'center')
+                        Util.rejigger_mouse(self.regions, 'top')
+                self._print_sortie_complete_msg(self.nodes_run)
                 sortieing = False
                 break
 
@@ -472,7 +480,7 @@ class CombatModule(object):
 
         # if the disable combat flag is set, disable the combat module
         if disable_combat:
-            self.disable_combat_module()
+            self.disable_module()
 
     def _print_sortie_complete_msg(self, nodes_run):
         """Method that prints the post-sortie status report indicating number
@@ -511,7 +519,7 @@ class CombatModule(object):
                     Util.rejigger_mouse(self.regions, 'lbas')
                     Util.kc_sleep(3)
             elif (self.regions['formation_line_ahead'].exists(
-                        'formation_line_ahead.png') or
+                    'formation_line_ahead.png') or
                     self.regions['formation_combinedfleet_1'].exists(
                         'formation_combinedfleet_1.png')):
                 # check for both single fleet and combined fleet formations
@@ -671,7 +679,7 @@ class CombatModule(object):
         if self.config.combat['engine'] == 'legacy':
             # if legacy engine, custom formation can only be applied on a node
             # count basis; if a custom formation is not defined, default to
-            # combinedfleet_1 or line_ahead
+            # combinedfleet_4 or line_ahead
             if next_node_count in custom_formations:
                 Util.log_msg(
                     "Custom formation specified for node #{}.".format(
@@ -682,8 +690,8 @@ class CombatModule(object):
                     "No custom formation specified for node #{}.".format(
                         next_node_count))
                 return (
-                    'combinedfleet_1' if self.combined_fleet else 'line_ahead',
-                    )
+                    'combinedfleet_4' if self.combined_fleet else 'line_ahead',
+                )
         elif self.config.combat['engine'] == 'live':
             # if live engine, custom formation can be applied by node name or
             # node count; if a custom formation is not defined, defer to the
@@ -901,10 +909,15 @@ class CombatModule(object):
             combined[key] = main[key] + escort[key]
         return combined
 
-    def disable_combat_module(self):
-        Util.log_success("Safely disabling the combat module.")
+    def disable_module(self):
+        Util.log_success("De-activating the combat module.")
         self.enabled = False
         self.disabled_time = datetime.now()
+
+    def enable_module(self):
+        Util.log_success("Re-activating the combat module.")
+        self.enabled = True
+        self.disabled_time = None
 
     def print_status(self):
         """Method that prints the next sortie time status of the Combat module.

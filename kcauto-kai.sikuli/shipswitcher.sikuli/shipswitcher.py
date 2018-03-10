@@ -109,7 +109,7 @@ class ShipSwitcher(object):
         fleet = self.fleets[1]
         damage_counts = fleet.check_damages(self.kc_region)
         if (fleet.get_damage_counts_at_threshold(
-                    self.config.combat['repair_limit']) == 0 and
+                self.config.combat['repair_limit']) == 0 and
                 damage_counts['repair'] == 0):
             # all ships in fleet pass checks: continue sortie
             Util.log_msg(
@@ -344,7 +344,7 @@ class ShipSwitcher(object):
 
         # check damage state; repair and heavy checked by default
         valid_damages = list(self.fleets[1].get_damages_at_threshold(
-                self.config.combat['repair_limit']))
+            self.config.combat['repair_limit']))
         valid_damages.extend(['repair', 'heavy'])
         for damage in set(valid_damages):
             if temp_region.exists(
@@ -538,7 +538,7 @@ class ShipSwitcher(object):
         if 'sparkle' in slot_config['criteria']:
             # if in sparkle mode and we reach this point, we've exhausted the
             # list of possible ships; disable the combat module
-            self.combat.disable_combat_module()
+            self.combat.disable_module()
         return False
 
     def _resolve_replacement_ship_by_asset(self, mode, slot_config):
