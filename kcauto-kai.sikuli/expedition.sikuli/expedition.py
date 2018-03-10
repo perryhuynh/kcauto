@@ -16,6 +16,8 @@ class ExpeditionModule(object):
             regions (dict): dict of pre-defined kcauto-kai regions
             fleets (dict): dict of active ExpeditionFleet instances
         """
+        self.enabled = True
+        self.disabled_time = None
         self.config = config
         self.stats = stats
         self.regions = regions
@@ -156,14 +158,28 @@ class ExpeditionModule(object):
                 fleet.at_base = True
                 fleet.needs_resupply = True
 
+    def disable_module(self):
+        Util.log_success("De-activating the expedition module.")
+        self.enabled = False
+        self.disabled_time = datetime.now()
+
+    def enable_module(self):
+        Util.log_success("Re-activating the expedition module.")
+        self.enabled = True
+        self.disabled_time = None
+
     def print_status(self):
         """Method to print the arrival times of the expedition fleets.
         """
-        for fleet_id in self.fleets:
-            Util.log_success("Fleet {}: Expedition returns at {}".format(
-                self.fleets[fleet_id].fleet_id,
-                self.fleets[fleet_id].return_time.strftime(
-                    '%Y-%m-%d %H:%M:%S')))
+        if self.enabled:
+            for fleet_id in self.fleets:
+                Util.log_success("Fleet {}: Expedition returns at {}".format(
+                    self.fleets[fleet_id].fleet_id,
+                    self.fleets[fleet_id].return_time.strftime(
+                        '%Y-%m-%d %H:%M:%S')))
+        else:
+            Util.log_success("Expedition module disabled as of {}".format(
+                self.disabled_time.strftime('%Y-%m-%d %H:%M:%S')))
 
 
 class ExpeditionFleet(Fleet):

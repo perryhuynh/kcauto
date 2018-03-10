@@ -538,7 +538,7 @@ class ShipSwitcher(object):
         if 'sparkle' in slot_config['criteria']:
             # if in sparkle mode and we reach this point, we've exhausted the
             # list of possible ships; disable the combat module
-            self.combat.disable_combat_module()
+            self.combat.disable_module()
         return False
 
     def _resolve_replacement_ship_by_asset(self, mode, slot_config):

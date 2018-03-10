@@ -556,6 +556,7 @@ class BodyConfigCombat extends PureComponent {
               <TimeInput
                 id='combatRepairTimeLimit'
                 mode='24h'
+                autoOk={true}
                 value={combatRepairTimeLimit}
                 onChange={time => this.setState({ combatRepairTimeLimit: time }, () => this.props.callback(this.state))}
                 fullWidth />

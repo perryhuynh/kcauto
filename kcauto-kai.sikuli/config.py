@@ -44,7 +44,7 @@ class Config(object):
     jst_offset = 0
     pause = False
 
-    scheduled_sleep = {'enabled': False}
+    scheduled_sleep = {}
     expeditions = {'enabled': False}
     pvp = {'enabled': False}
     combat = {'enabled': False}
@@ -77,11 +77,7 @@ class Config(object):
         config.read(self.config_file)
 
         self._read_general(config)
-
-        if config.getboolean('ScheduledSleep', 'Enabled'):
-            self._read_scheduled_sleep(config)
-        else:
-            self.scheduled_sleep = {'enabled': False}
+        self._read_scheduled_sleep(config)
 
         if config.getboolean('Expeditions', 'Enabled'):
             self._read_expeditions(config)
@@ -278,11 +274,17 @@ class Config(object):
         Args:
             config (ConfigParser): ConfigParser instance
         """
-        self.scheduled_sleep['enabled'] = True
-        self.scheduled_sleep['start_time'] = "{:04d}".format(
-            config.getint('ScheduledSleep', 'StartTime'))
-        self.scheduled_sleep['sleep_length'] = config.getfloat(
-            'ScheduledSleep', 'SleepLength')
+        for module in ('kca', 'expedition', 'combat'):
+            module_cfg = '' if module == 'kca' else module.title()
+            self.scheduled_sleep['{}_sleep_enabled'.format(module)] = (
+                config.getboolean(
+                    'ScheduledSleep', '{}SleepEnabled'.format(module_cfg)))
+            self.scheduled_sleep['{}_sleep_start_time'.format(module)] = (
+                "{:04d}".format(config.getint(
+                    'ScheduledSleep', '{}SleepStartTime'.format(module_cfg))))
+            self.scheduled_sleep['{}_sleep_length'.format(module)] = (
+                config.getfloat(
+                    'ScheduledSleep', '{}SleepLength'.format(module_cfg)))
 
     def _read_expeditions(self, config):
         """Method to parse the Expedition settings of the passed in config.
