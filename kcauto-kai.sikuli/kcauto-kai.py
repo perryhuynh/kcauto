@@ -52,7 +52,8 @@ while True:
         # update config on every main loop
         kcauto_kai.refresh_config()
 
-        if not kcauto_kai.conduct_scheduled_sleep():
+        if not (kcauto_kai.conduct_scheduled_sleep()
+                or kcauto_kai.conduct_pause()):
 
             kcauto_kai.run_receive_expedition_cycle()
 
@@ -71,6 +72,8 @@ while True:
             kcauto_kai.run_resupply_cycle()
 
             kcauto_kai.run_quest_cycle()
+
+            kcauto_kai.conduct_module_sleeps()
 
             kcauto_kai.print_cycle_stats()
 
