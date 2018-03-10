@@ -1,3 +1,8 @@
+#### 0.4.1
+
+* Add 2018 Winter Event assets (thanks to @perryhuynh and @twisting2017)
+* Bugfix to LBAS assets
+
 #### 0.4.0
 
 * Pause capability
