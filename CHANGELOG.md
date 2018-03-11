@@ -4,6 +4,7 @@
   * When sparkling while specifying ships by class, ShipSwitcher will no longer revisit pages that did had valid ships but no available ships
   * When sparkling while specifying ships by class, ShipSwitcher will end the combat module if there are no ships in the port available to be sparkled
   * When specifying ships by position, ShipSwitcher will no longer switch in ships already in other fleets (thanks to @angryturbot)
+  * Better detection of Musashi Kai Ni sparkle state
 * Revised and fixed Basic and Catbomb Recoveries
 * Defaults Striking Fleet formations to Vanguard
 * Bugfix to rare navigation bug after an expedition is received, not resupplied, then the script goes into recovery
