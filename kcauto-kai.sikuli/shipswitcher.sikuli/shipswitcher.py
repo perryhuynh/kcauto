@@ -489,6 +489,14 @@ class ShipSwitcher(object):
         Returns:
             bool or str: result of _check_ship_availability() call
         """
+        fleet_indicator_area = Region(
+            self.kc_region.x + 360, self.kc_region.y + 128 + (28 * position),
+            25, 25)
+        if fleet_indicator_area.exists(
+                Pattern('fleet_indicator_shiplist.png').similar(
+                    Globals.SHIP_LIST_FLEET_ICON_SIMILARITY)):
+            # if the ship is already in a fleet, skip it
+            return False
         self._choose_ship_by_position(position)
         availability = self._check_ship_availability(criteria)
         if availability is True:
