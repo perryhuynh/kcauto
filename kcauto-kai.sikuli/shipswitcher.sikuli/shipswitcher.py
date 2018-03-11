@@ -632,7 +632,15 @@ class ShipSwitcher(object):
             # no available ships on this page; reset matches and continue loop
             self.temp_ship_config_dict = {}
             self.temp_ship_position_dict = {}
+            if 'sparkle' in slot_config['criteria']:
+                # if in sparkle mode and we didn't see any valid ships here,
+                # don't jump to this page on the next pass
+                cache_override = True
             self._navigate_to_shiplist_page(self.current_shiplist_page + 1)
+        if 'sparkle' in slot_config['criteria']:
+            # if in sparkle mode and we reach this point, we've exhausted the
+            # list of possible ships; disable the combat module
+            self.combat.disable_module()
         return False
 
     def _match_shiplist_ships_func(self, mode, name, ship_config):
