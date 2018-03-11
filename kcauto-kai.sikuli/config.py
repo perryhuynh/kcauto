@@ -13,8 +13,6 @@ class Config(object):
     kcauto-kai
 
     Attributes:
-        basic_recovery (bool): indicates whether or not basic recovery is on
-            (UNUSED)
         changed (bool): indicates whether or not the config has changed from
             the previously stored config
         combat (dict): dict of combat-related config settings
@@ -30,8 +28,6 @@ class Config(object):
         program (str): name of window Kantai Collection is running in
         pvp (dict): dict of pvp-related config settings
         quests (dict): dict of quest-related config settings
-        recovery_method (str): specifies the recovery method to be attempted
-            by kcauto-kai (UNUSED)
         scheduled_sleep (dict): dict of scheduled sleep-related config settings
     """
 
@@ -39,8 +35,6 @@ class Config(object):
     initialized = False
     changed = False
     program = ''
-    recovery_method = ''
-    basic_recovery = False
     jst_offset = 0
     pause = False
 
