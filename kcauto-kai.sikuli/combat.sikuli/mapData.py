@@ -105,7 +105,8 @@ class MapData(object):
             # default to line ahead or combinedfleet 4
             if self.config.combat['combined_fleet']:
                 return ('combinedfleet_4', )
-            elif self.config.combat['striking_fleet']:
+            elif (self.config.combat['striking_fleet']
+                    and 'boss' not in node.types):
                 return ('vanguard', )
             else:
                 return ('line_ahead', )
