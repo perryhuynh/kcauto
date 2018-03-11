@@ -244,7 +244,7 @@ class KCAutoKai(object):
                     Nav.goto(self.regions, 'refresh_home')
             self.run_receive_expedition_cycle()
 
-        self.run_resupply_cycle()
+        self.run_resupply_cycle(True)
 
         if self.modules['expedition'].fleets_at_base():
             self.print_stats_check = True
@@ -343,11 +343,15 @@ class KCAutoKai(object):
             return True
         return False
 
-    def run_resupply_cycle(self):
+    def run_resupply_cycle(self, go_home=False):
         """Method that runs the resupply cycle.
         """
         if self.modules['resupply'].check_need_to_resupply():
             self.print_stats_check = True
+            if go_home:
+                # navigate to home before attempting to go to resupply
+                Nav.goto(self.regions, 'home')
+                self._run_fast_expedition_check()
             Nav.goto(self.regions, 'resupply')
             self.modules['resupply'].resupply_fleets()
             Nav.goto(self.regions, 'home')

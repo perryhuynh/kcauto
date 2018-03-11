@@ -151,6 +151,9 @@ class ShipSwitcher(object):
         if len(number_read) > 3:
             # the read number is too long; truncate anything past the 3rd digit
             number_read = number_read[:3]
+        if number_read > 370:
+            # to account for edge cases where a digit is appended at the end
+            number_read = number_read / 10
         return int(number_read)
 
     def _check_need_to_switch_ship(self, slot, criteria):
@@ -486,6 +489,14 @@ class ShipSwitcher(object):
         Returns:
             bool or str: result of _check_ship_availability() call
         """
+        fleet_indicator_area = Region(
+            self.kc_region.x + 360, self.kc_region.y + 128 + (28 * position),
+            25, 25)
+        if fleet_indicator_area.exists(
+                Pattern('fleet_indicator_shiplist.png').similar(
+                    Globals.SHIP_LIST_FLEET_ICON_SIMILARITY)):
+            # if the ship is already in a fleet, skip it
+            return False
         self._choose_ship_by_position(position)
         availability = self._check_ship_availability(criteria)
         if availability is True:
@@ -621,7 +632,15 @@ class ShipSwitcher(object):
             # no available ships on this page; reset matches and continue loop
             self.temp_ship_config_dict = {}
             self.temp_ship_position_dict = {}
+            if 'sparkle' in slot_config['criteria']:
+                # if in sparkle mode and we didn't see any valid ships here,
+                # don't jump to this page on the next pass
+                cache_override = True
             self._navigate_to_shiplist_page(self.current_shiplist_page + 1)
+        if 'sparkle' in slot_config['criteria']:
+            # if in sparkle mode and we reach this point, we've exhausted the
+            # list of possible ships; disable the combat module
+            self.combat.disable_module()
         return False
 
     def _match_shiplist_ships_func(self, mode, name, ship_config):
