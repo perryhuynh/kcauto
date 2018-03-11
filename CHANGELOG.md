@@ -1,3 +1,7 @@
+#### 0.4.3
+
+* Bugfix to ShipSwitcher
+
 #### 0.4.2
 
 * Fixes and improvements to ShipSwitcher
