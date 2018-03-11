@@ -14,6 +14,7 @@ class Globals(object):
     FATIGUE_SIMILARITY = 0.85
     SHIP_LIST_SIMILARITY = 0.96
     FLEET_ICON_SIMILARITY = 0.8
+    SHIP_LIST_FLEET_ICON_SIMILARITY = 0.75
 
     # how many combat sorties to conduct when sparkling
     SPARKLING_RUN_COUNT = 3

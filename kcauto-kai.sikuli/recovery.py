@@ -21,7 +21,6 @@ class Recovery(object):
         """
         kc_region = kcauto_kai.kc_region
         regions = kcauto_kai.regions
-        recovery_method = 'kc3'
 
         Util.log_warning(e)
         Util.log_warning(
@@ -31,8 +30,9 @@ class Recovery(object):
         kc_region.mouseMove(Location(1, 1))
 
         # basic recovery attempt
-        type(Key.ESC)
+        Region.type(kc_region, Key.ESC)
         sleep(1)
+        Region.type(kc_region, Key.SPACE)
         if kc_region.exists(Pattern('kc_reference_point.png').exact()):
             # reference point exists, so we are in-game
             Util.log_success("Recovery successful.")
@@ -53,40 +53,24 @@ class Recovery(object):
                 return True
 
         # catbomb recovery
-        if kc_region.exists('catbomb.png') and recovery_method != 'None':
-            if recovery_method == 'browser':
-                Region.type(Key.F5)
-            elif recovery_method == 'kc3':
-                Region.type(Key.F5)
-                sleep(1)
-                Region.type(Key.SPACE)
-                sleep(1)
-                Region.type(Key.TAB)
-                sleep(1)
-                Region.type(Key.SPACE)
-            elif recovery_method == 'kcv':
-                Region.type(Key.F5)
-            elif recovery_method == 'kct':
-                Region.type(Key.ALT)
-                sleep(1)
-                Region.type(Key.DOWN)
-                sleep(1)
-                Region.type(Key.DOWN)
-                sleep(1)
-                Region.type(Key.ENTER)
-            elif recovery_method == 'eo':
-                Region.type(Key.F5)
-                sleep(1)
-                Region.type(Key.TAB)
-                sleep(1)
-                Region.type(Key.SPACE)
+        if kc_region.exists('catbomb.png'):
+            Util.log_warning("** Catbomb detected. **")
+            # generic f5-space-tab-space keystrokes to mimick refresh attempt
+            Region.type(kc_region, Key.F5)
+            sleep(1)
+            Region.type(kc_region, Key.SPACE)
+            sleep(1)
+            Region.type(kc_region, Key.TAB)
+            sleep(1)
+            Region.type(kc_region, Key.SPACE)
             sleep(3)
-            kc_region.mouseMove(Location(0, 0))
+            # clear mouse
+            kc_region.mouseMove(Location(1, 1))
             sleep(3)
             Util.wait_and_click(
                 kc_region, Pattern('game_start.png').similar(0.999), 60)
             sleep(5)
-            Util.log_success("Recovery successful.")
+            Util.log_success("Catbomb recovery successful.")
             kcauto_kai.stats.increment_recoveries()
             return True
 

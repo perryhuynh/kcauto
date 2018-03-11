@@ -97,12 +97,16 @@ class MapData(object):
             else:
                 if self.config.combat['combined_fleet']:
                     return ('combinedfleet_4', )
+                elif self.config.combat['striking_fleet']:
+                    return ('vanguard', )
                 else:
                     return ('line_ahead', )
         else:
             # default to line ahead or combinedfleet 4
             if self.config.combat['combined_fleet']:
                 return ('combinedfleet_4', )
+            elif self.config.combat['striking_fleet']:
+                return ('vanguard', )
             else:
                 return ('line_ahead', )
 
