@@ -16,6 +16,9 @@ class Globals(object):
     FLEET_ICON_SIMILARITY = 0.8
     SHIP_LIST_FLEET_ICON_SIMILARITY = 0.75
 
+    # how many minutes to wait between sorties to allow for natural fatigue
+    # recovery
+    COMBAT_BUFFER_MINUTES = 6
     # how many combat sorties to conduct when sparkling
     SPARKLING_RUN_COUNT = 3
 

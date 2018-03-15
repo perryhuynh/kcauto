@@ -92,7 +92,8 @@ class CombatModule(object):
         """
         self.next_combat_time = datetime.now() + timedelta(
             hours=delta['hours'] if 'hours' in delta else 0,
-            minutes=delta['minutes'] if 'minutes' in delta else 0,
+            minutes=delta['minutes'] if 'minutes' in delta
+            else Globals.COMBAT_BUFFER_MINUTES,
             seconds=delta['seconds'] if 'seconds' in delta else 0)
 
     def combat_logic_wrapper(self):
