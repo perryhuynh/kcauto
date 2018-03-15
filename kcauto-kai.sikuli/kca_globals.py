@@ -18,7 +18,7 @@ class Globals(object):
 
     # how many minutes to wait between sorties to allow for natural fatigue
     # recovery
-    COMBAT_BUFFER_MINUTES = 6
+    COMBAT_BUFFER_MINUTES = 0
     # how many combat sorties to conduct when sparkling
     SPARKLING_RUN_COUNT = 3
 
