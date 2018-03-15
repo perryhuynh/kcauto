@@ -57,10 +57,11 @@ class LBAS(object):
                     self.kc_region.hover('lbas_panel_side.png')
                 node_obj.click_node(self.kc_region)
                 Util.rejigger_mouse(self.regions, 'lbas')
-                Util.kc_sleep()
+                Util.kc_sleep(1)
             Util.check_and_click(
                 self.regions['upper'], 'lbas_assign_confirm.png')
             Util.rejigger_mouse(self.regions, 'lbas')
+            Util.kc_sleep(2)
 
     def resupply_groups(self, check_fatigue):
         """Method for resupplying the LBAS groups. If check_fatigue is set to
