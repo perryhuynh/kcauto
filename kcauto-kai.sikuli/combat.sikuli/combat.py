@@ -1103,6 +1103,8 @@ class CombatFleet(Fleet):
                 'ship_state_dmg_heavy.png').similar(
                     Globals.FATIGUE_SIMILARITY))):
             self.flagship_damaged = True
+        else:
+            self.flagship_damaged = False
 
     def check_fatigue(self, region):
         """Method to multithread the detection of fatigue states of the fleet.
