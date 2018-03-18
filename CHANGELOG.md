@@ -1,3 +1,11 @@
+#### 0.4.4
+
+* Add ability to set buffer time between sorties in `kca_globals` to allow for natural fatigue recovery
+* Improvements to Catbomb Recovery and Recovery module in general
+* Bugfix in LBAS module to support newer versions of Sikuli
+* Bugfix in Combat module to ensure proper handling of damaged escort fleet flagship
+* Hopeful bugfix to address proper handling of receiving two or more expeditions in close proximity of each other
+
 #### 0.4.3
 
 * Bugfix to ShipSwitcher
