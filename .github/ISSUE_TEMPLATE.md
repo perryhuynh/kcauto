@@ -2,7 +2,7 @@
 
 #### Environment details
 
-* kcauto-kai version (date on first line of CHANGELOG.md):
+* kcauto-kai version (version on first line of CHANGELOG.md):
 * Viewer/browser:
 * Operating system:
 
@@ -11,14 +11,14 @@ Is the issue consistent (can be reproduced consistently) or is it intermittent (
 
 #### Issue
 
-Please provide a thorough description of the issue. Screenshots, videos, and step-by-step description of what is happening in the game are all helpful and often necessary to debug.
+Please provide a thorough description of the issue. Screenshots, videos, or at least a step-by-step description of what is happening in the game is typically necessary to debug.
 
-#### Log (if applicable)
+#### Log
 ```
-[insert ~50 lines of console log here]
+[insert ~50 lines of console log (or more) here]
 ```
 
-#### Config (if applicable)
+#### Config
 ```
 [insert relevant config sections here]
 ```
