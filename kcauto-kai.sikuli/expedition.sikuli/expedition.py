@@ -61,7 +61,7 @@ class ExpeditionModule(object):
         instances.
         """
         for fleet_id, fleet in self.fleets.items():
-            if fleet.return_time < datetime.now() and not fleet.needs_resupply:
+            if fleet.return_time < datetime.now() and not fleet.at_base:
                 Util.log_msg(
                     "An expedition fleet has returned. Probably fleet {:d}"
                     .format(fleet_id))

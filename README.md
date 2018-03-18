@@ -43,6 +43,7 @@ Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)
 * Scheduled sleep/pausing of script
 * Stats Module &mdash; keeps stats on various actions performed
 * Random variations in navigation, timers, and click positions to combat bot detection
+* Open-source codebase and no reporting or phoning home
 * [Web interface](https://mrmin123.github.io/kcauto-kai/) to generate and modify config files
 
 

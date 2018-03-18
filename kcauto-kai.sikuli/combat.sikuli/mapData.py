@@ -97,7 +97,8 @@ class MapData(object):
             else:
                 if self.config.combat['combined_fleet']:
                     return ('combinedfleet_4', )
-                elif self.config.combat['striking_fleet']:
+                elif (self.config.combat['striking_fleet']
+                        and 'boss' not in node.types):
                     return ('vanguard', )
                 else:
                     return ('line_ahead', )
@@ -203,8 +204,8 @@ class Node(object):
             kc_region (Region): sikuli Region instance containing the last
                 known location of the Kantai Collection game screen
         """
-        rand_x = randint(self.coords[0] - 5, self.coords[0] + 5)
-        rand_y = randint(self.coords[1] - 5, self.coords[1] + 5)
+        rand_x = randint(self.coords[0] - 3, self.coords[0] + 3)
+        rand_y = randint(self.coords[1] - 3, self.coords[1] + 3)
 
         Util.click_coords(kc_region, rand_x, rand_y)
 
