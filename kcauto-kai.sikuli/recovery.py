@@ -8,17 +8,21 @@ class Recovery(object):
     """
 
     @staticmethod
-    def recover(kcauto_kai, e):
+    def recover(kcauto_kai, config, e):
         """Attempts very basic recovery actions on a FindFailed exception. WIP
         and does not integrate with the config.
 
         Args:
             kcauto_kai (KCAutoKai): KCAutoKai instance
+            config (Config): Config instance
             e (Exception): Exception
 
         Returns:
             bool: True on successful recovery, otherwise raises an error
         """
+        kc_region = (
+            kcauto_kai.kc_region if kcauto_kai.kc_region
+            else Util.focus_kc(config))
         kc_region = kcauto_kai.kc_region
         regions = kcauto_kai.regions
 
@@ -53,19 +57,32 @@ class Recovery(object):
                 return True
 
         # catbomb recovery
-        if kc_region.exists('catbomb.png'):
+        if kc_region.exists('catbomb.png', 10):
             Util.log_warning("** Catbomb detected. **")
-            # generic f5-space-tab-space keystrokes to mimick refresh attempt
-            Region.type(kc_region, Key.F5)
-            sleep(1)
-            Region.type(kc_region, Key.SPACE)
-            sleep(1)
-            Region.type(kc_region, Key.TAB)
-            sleep(1)
-            Region.type(kc_region, Key.SPACE)
-            sleep(3)
-            # clear mouse
-            kc_region.mouseMove(Location(1, 1))
+            catbombed = True
+            catbomb_n = 0
+            while catbombed and catbomb_n < 7:
+                # generic f5-space-tab-space keystrokes to mimick refresh
+                # attempt
+                Region.type(kc_region, Key.F5)
+                sleep(1)
+                Region.type(kc_region, Key.SPACE)
+                sleep(1)
+                Region.type(kc_region, Key.TAB)
+                sleep(1)
+                Region.type(kc_region, Key.SPACE)
+                sleep(3)
+                # clear mouse
+                kc_region.mouseMove(Location(1, 1))
+                if kc_region.exists('catbomb.png'):
+                    sleep_len = pow(2, catbomb_n + 4)
+                    Util.log_warning(
+                        "Catbomb recovery attempt {} failed; trying again in "
+                        "{} seconds!".format(catbomb_n + 1, sleep_len))
+                    sleep(sleep_len)
+                    catbomb_n += 1
+                else:
+                    catbombed = False
             sleep(3)
             Util.wait_and_click(
                 kc_region, Pattern('game_start.png').similar(0.999), 60)

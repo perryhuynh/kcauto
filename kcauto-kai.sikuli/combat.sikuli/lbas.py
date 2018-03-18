@@ -32,7 +32,7 @@ class LBAS(object):
         on the sortie map.
         """
         self.kc_region.wait('lbas_panel_ready.png', 10)
-        Util.kc_sleep(1)
+        Util.kc_sleep(2)
         Util.log_msg("Assign LBAS groups to nodes.")
         for lbas_group_nodes in (
                 'lbas_group_1_nodes', 'lbas_group_2_nodes',
@@ -58,9 +58,9 @@ class LBAS(object):
                 node_obj.click_node(self.kc_region)
                 Util.rejigger_mouse(self.regions, 'lbas')
                 Util.kc_sleep()
-            Util.check_and_click(
-                self.regions['upper'], 'lbas_assign_confirm.png')
+            self.regions['upper'].click('lbas_assign_confirm.png')
             Util.rejigger_mouse(self.regions, 'lbas')
+            Util.kc_sleep(1)
 
     def resupply_groups(self, check_fatigue):
         """Method for resupplying the LBAS groups. If check_fatigue is set to
@@ -103,8 +103,9 @@ class LBAS(object):
             if group != 1:
                 self.regions['right'].click('lbas_group_tab_{}.png'.format(
                     str(group)))
-            Util.check_and_click(self.regions['right'], 'lbas_resupply.png')
-            self.regions['right'].waitVanish('lbas_resupply.png', 10)
+            if Util.check_and_click(
+                    self.regions['right'], 'lbas_resupply.png'):
+                self.regions['right'].waitVanish('lbas_resupply.png', 10)
             if check_fatigue:
                 fatigue = self._check_and_manage_lbas_fatigue(fatigue, group)
             Util.kc_sleep(1)

@@ -79,4 +79,4 @@ while True:
 
         sleep(Globals.LOOP_SLEEP_LENGTH)
     except FindFailed as e:
-        Recovery.recover(kcauto_kai, e)
+        Recovery.recover(kcauto_kai, config, e)
