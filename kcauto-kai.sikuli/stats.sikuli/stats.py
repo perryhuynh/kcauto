@@ -49,7 +49,7 @@ class Stats(object):
         pretty_string = "{} days ".format(delta.days) if delta.days else ""
         hours, remainder = divmod(delta.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
-        pretty_string += "{} hours {} minutes {} seconds".format(
+        pretty_string += "{} hours {} minutes".format(
             hours, minutes, seconds)
         return pretty_string
 
@@ -74,11 +74,6 @@ class Stats(object):
         """
         delta = datetime.now() - self.start_time
         hours = delta.total_seconds() / 3600
-
-        Util.log_success(
-            "kcauto-kai has been running for {} (started on {})".format(
-                self._pretty_timedelta(delta),
-                self.start_time.strftime('%Y-%m-%d %H:%M:%S')))
 
         if self.config.expeditions['enabled']:
             Util.log_success(
@@ -114,6 +109,11 @@ class Stats(object):
             self._pretty_perhour(self.buckets_used, hours)))
 
         Util.log_success("Recoveries done: {}".format(self.recoveries))
+
+        Util.log_success(
+            "kcauto-kai has been running for {} (started on {})".format(
+                self._pretty_timedelta(delta),
+                self.start_time.strftime('%Y-%m-%d %H:%M:%S')))
 
     def increment_cycles_completed(self):
         self.cycles_completed += 1
