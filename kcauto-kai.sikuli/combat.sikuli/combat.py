@@ -691,11 +691,11 @@ class CombatModule(object):
                 Util.log_msg(
                     "No custom formation specified for node #{}.".format(
                         next_node_count))
-                default_formation = 'line_ahead'
+                default_formation = ('line_ahead', )
                 if self.combined_fleet:
-                    default_formation = 'combinedfleet_4'
+                    default_formation = ('combinedfleet_4', 'combinedfleet_2')
                 elif self.striking_fleet:
-                    default_formation = 'vanguard'
+                    default_formation = ('vanguard', )
                 return default_formation
         elif self.config.combat['engine'] == 'live':
             # if live engine, custom formation can be applied by node name or
