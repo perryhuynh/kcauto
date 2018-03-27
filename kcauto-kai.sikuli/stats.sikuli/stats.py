@@ -55,7 +55,7 @@ class Stats(object):
 
     def _pretty_perhour(self, count, hours):
         """Generate a sensible count and count-per-hour string representation,
-        returning just the count if the hours count is below 1.
+        returning just the count if the hours count is below 1 or count is 0.
 
         Args:
             count (int): total count
@@ -63,9 +63,9 @@ class Stats(object):
 
         Returns:
             str: count and human-readable representation of count-per-hour if
-                hours > 1
+                hours < 1 or count is 0
         """
-        if hours < 1:
+        if hours < 1 or count == 0:
             return count
         return "{} ({:0.2f}/hr)".format(count, count / hours)
 
