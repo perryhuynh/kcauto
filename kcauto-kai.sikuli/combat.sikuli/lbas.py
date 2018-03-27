@@ -99,12 +99,14 @@ class LBAS(object):
             Pattern(resupply_menu_button_faded).exact())
         Util.kc_sleep(1)
         for group in self.config.combat['lbas_groups']:
-            Util.log_msg("Resupplying LBAS group {}.".format(group))
+            Util.log_msg("Checking LBAS group {} state.".format(group))
             if group != 1:
                 self.regions['right'].click('lbas_group_tab_{}.png'.format(
                     str(group)))
+                Util.kc_sleep()
             if Util.check_and_click(
                     self.regions['right'], 'lbas_resupply.png'):
+                Util.log_msg("Resupplying LBAS group {}.".format(group))
                 self.regions['right'].waitVanish('lbas_resupply.png', 10)
             if check_fatigue:
                 fatigue = self._check_and_manage_lbas_fatigue(fatigue, group)
