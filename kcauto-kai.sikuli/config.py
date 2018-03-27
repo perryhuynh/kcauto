@@ -221,7 +221,14 @@ class Config(object):
                             Util.log_error(
                                 "LBAS Group {} has nodes assigned to it but "
                                 "is not active. Either clear the nodes or "
-                                "activate the LBAS Group.".format(group))
+                                "activate the LBAS Group".format(group))
+                            self.ok = False
+                        elif (len(self.combat['lbas_group_{}_nodes'.format(
+                                group)]) != 2):
+                            Util.log_error(
+                                "LBAS Group {} does not have 2 nodes assigned "
+                                " to it".format(group))
+                            self.ok = False
             # validate the misc options
             for option in self.combat['misc_options']:
                 if option not in (
