@@ -64,10 +64,10 @@ const createStateObjFromPythonConfig = (pyConfig) => {
     generalProgram: pyConfigObj.generalProgram,
     generalJSTOffset: parseInt(pyConfigObj.generalJSTOffset, 10) || 0,
     scheduledSleepEnabled: pyConfigObj.scheduledSleepEnabled === 'True',
-    scheduledSleepStartTime: new Date(new Date()
+    scheduledSleepSleepStartTime: new Date(new Date()
       .setHours(
-        parseInt(pyConfigObj.scheduledSleepStartTime.substr(0, 2), 10),
-        parseInt(pyConfigObj.scheduledSleepStartTime.substr(2, 2), 10), 0, 0
+        parseInt(pyConfigObj.scheduledSleepSleepStartTime.substr(0, 2), 10),
+        parseInt(pyConfigObj.scheduledSleepSleepStartTime.substr(2, 2), 10), 0, 0
       )),
     scheduledSleepSleepLength: pyConfigObj.scheduledSleepSleepLength || null,
     expeditionsEnabled: pyConfigObj.expeditionsEnabled === 'True',
