@@ -53,7 +53,7 @@ Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)
 ### Installation and Usage
 
 1. Install [Java JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
-2. Install the latest [SikuliX Nightly](http://nightly.sikuli.de/) with option 1 (Pack 1) selected
+2. Install the latest [SikuliX Nightly](https://raiman.github.io/SikuliX1/nightly.html) with option 1 (Pack 1) selected
 3. Download kcauto-kai either by downloading the repo or cloning it
 4. Set up kcauto-kai's config file using the [web interface](https://mrmin123.github.io/kcauto-kai/) or by opening the local copy of `docs/index.html` in a browser
 5. Run Kantai Collection in your favorite browser or viewer
