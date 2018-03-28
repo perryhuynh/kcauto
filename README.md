@@ -40,17 +40,20 @@ Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)
 * Ship Switcher Module &mdash; automatic switching of ships based on specified criteria between combat sorties
 * Quests Module &mdash; automatic quest management
 * Repair & Resupply Modules &mdash; automatic resupply and repair of fleet ships
-* Scheduled sleep/pausing of script
 * Stats Module &mdash; keeps stats on various actions performed
+* Scheduled and manual sleep (pausing) of script
+* Automatic catbomb and script recovery
+* Browser/viewer-agnostic
 * Random variations in navigation, timers, and click positions to combat bot detection
 * Open-source codebase and no reporting or phoning home
+* Hot-reload config files
 * [Web interface](https://mrmin123.github.io/kcauto-kai/) to generate and modify config files
 
 
 ### Installation and Usage
 
 1. Install [Java JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
-2. Install the latest [SikuliX Nightly](http://nightly.sikuli.de/) with option 1 (Pack 1) selected
+2. Install the latest [SikuliX Nightly](https://raiman.github.io/SikuliX1/nightly.html) with option 1 (Pack 1) selected
 3. Download kcauto-kai either by downloading the repo or cloning it
 4. Set up kcauto-kai's config file using the [web interface](https://mrmin123.github.io/kcauto-kai/) or by opening the local copy of `docs/index.html` in a browser
 5. Run Kantai Collection in your favorite browser or viewer

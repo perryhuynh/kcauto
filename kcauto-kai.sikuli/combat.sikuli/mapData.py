@@ -85,10 +85,10 @@ class MapData(object):
             elif 'air' in node.types:
                 if self.config.combat['combined_fleet']:
                     # formation 3 might not be available possibly due to FCF;
-                    # provide formation 4 as fallback
-                    return ('combinedfleet_3', 'combinedfleet_4')
+                    # provide formation 2 as fallback
+                    return ('combinedfleet_3', 'combinedfleet_2')
                 else:
-                    return ('diamond', )
+                    return ('diamond', 'double_line')
             elif 'mixed' in node.types:
                 if self.config.combat['combined_fleet']:
                     return ('combinedfleet_2', )
@@ -105,7 +105,7 @@ class MapData(object):
         else:
             # default to line ahead or combinedfleet 4
             if self.config.combat['combined_fleet']:
-                return ('combinedfleet_4', )
+                return ('combinedfleet_4', 'combinedfleet_2')
             elif self.config.combat['striking_fleet']:
                 return ('vanguard', )
             else:

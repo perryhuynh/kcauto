@@ -213,6 +213,22 @@ class Config(object):
                         self.ok = False
                 if self.ok and night_battles:
                     self.combat['night_battles'] = night_battles
+            # validate lbas setup
+            if self.combat['lbas_enabled']:
+                for group in (1, 2, 3):
+                    if self.combat['lbas_group_{}_nodes'.format(group)]:
+                        if group not in self.combat['lbas_groups']:
+                            Util.log_error(
+                                "LBAS Group {} has nodes assigned to it but "
+                                "is not active. Either clear the nodes or "
+                                "activate the LBAS Group".format(group))
+                            self.ok = False
+                        elif (len(self.combat['lbas_group_{}_nodes'.format(
+                                group)]) != 2):
+                            Util.log_error(
+                                "LBAS Group {} does not have 2 nodes assigned "
+                                " to it".format(group))
+                            self.ok = False
             # validate the misc options
             for option in self.combat['misc_options']:
                 if option not in (

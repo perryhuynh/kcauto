@@ -677,6 +677,13 @@ class CombatModule(object):
         next_node_count = len(self.nodes_run) + 1
         custom_formations = self.config.combat['formations']
 
+        # fall back to combinedfleet 4, then combinedfleet2 for CFs;
+        # fall back to vanguard, then double_line for non-CFs
+        fallback_formations = (
+            ('combinedfleet_4', 'combinedfleet_2')
+            if self.combined_fleet
+            else ('vanguard', 'double_line'))
+
         if self.config.combat['engine'] == 'legacy':
             # if legacy engine, custom formation can only be applied on a node
             # count basis; if a custom formation is not defined, default to
@@ -686,16 +693,18 @@ class CombatModule(object):
                 Util.log_msg(
                     "Custom formation specified for node #{}.".format(
                         next_node_count))
-                return (custom_formations[next_node_count], )
+                return (
+                    (custom_formations[next_node_count], )
+                    + fallback_formations)
             else:
                 Util.log_msg(
                     "No custom formation specified for node #{}.".format(
                         next_node_count))
-                default_formation = 'line_ahead'
+                default_formation = ('line_ahead', )
                 if self.combined_fleet:
-                    default_formation = 'combinedfleet_4'
+                    default_formation = ('combinedfleet_4', 'combinedfleet_2')
                 elif self.striking_fleet:
-                    default_formation = 'vanguard'
+                    default_formation = ('vanguard', )
                 return default_formation
         elif self.config.combat['engine'] == 'live':
             # if live engine, custom formation can be applied by node name or
@@ -706,12 +715,16 @@ class CombatModule(object):
                 Util.log_msg(
                     "Custom formation specified for node {}.".format(
                         self.current_node.name))
-                return (custom_formations[self.current_node.name], )
+                return (
+                    (custom_formations[self.current_node.name], )
+                    + fallback_formations)
             elif next_node_count in custom_formations:
                 Util.log_msg(
                     "Custom formation specified for node #{}.".format(
                         next_node_count))
-                return (custom_formations[next_node_count], )
+                return (
+                    (custom_formations[next_node_count], )
+                    + fallback_formations)
             else:
                 Util.log_msg(
                     "Formation specified for node {} via map data.".format(

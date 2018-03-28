@@ -61,11 +61,16 @@ class ExpeditionModule(object):
         instances.
         """
         for fleet_id, fleet in self.fleets.items():
-            if fleet.return_time < datetime.now() and not fleet.at_base:
+            if fleet.return_time < datetime.now() and not fleet.needs_resupply:
                 Util.log_msg(
                     "An expedition fleet has returned. Probably fleet {:d}"
                     .format(fleet_id))
                 self.stats.increment_expeditions_received()
+                # update_return_time so that this expedition is not expected
+                # immediately after being resupplied (above check); call this
+                # and then immediately set at_base and needs_resupply to True
+                # since they are set to False by update_return_time
+                fleet.update_return_time(0, 5)
                 fleet.at_base = True
                 fleet.needs_resupply = True
                 break
