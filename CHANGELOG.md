@@ -8,6 +8,7 @@
 * Additional checks in config reader regarding LBAS setups
 * Hopeful bugfix where sometimes LBAS resupply action fails
 * Bugfix to webUI where importing previous configs did not work
+* Additional stats reported at end of cycle
 
 #### 0.4.4
 
