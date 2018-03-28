@@ -40,10 +40,13 @@ Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)
 * Ship Switcher Module &mdash; automatic switching of ships based on specified criteria between combat sorties
 * Quests Module &mdash; automatic quest management
 * Repair & Resupply Modules &mdash; automatic resupply and repair of fleet ships
-* Scheduled sleep/pausing of script
 * Stats Module &mdash; keeps stats on various actions performed
+* Scheduled and manual sleep (pausing) of script
+* Automatic catbomb and script recovery
+* Browser/viewer-agnostic
 * Random variations in navigation, timers, and click positions to combat bot detection
 * Open-source codebase and no reporting or phoning home
+* Hot-reload config files
 * [Web interface](https://mrmin123.github.io/kcauto-kai/) to generate and modify config files
 
 
