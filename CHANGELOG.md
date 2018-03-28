@@ -1,3 +1,14 @@
+#### 0.4.5
+
+* Archive 2018 Winter Event assets
+* Add 6-5 support (thanks to @perryhuynh)
+* Add additional fallback formations to combat module
+* Better handling of expedition retrieval
+* Bugfix with formation selections with legacy combat engine
+* Additional checks in config reader regarding LBAS setups
+* Hopeful bugfix where sometimes LBAS resupply action fails
+* Bugfix to webUI where importing previous configs did not work
+
 #### 0.4.4
 
 * Add ability to set buffer time between sorties in `kca_globals` to allow for natural fatigue recovery
