@@ -226,13 +226,13 @@ class RepairModule(object):
         """Method to go through the existing repair timers and remove them if
         they are past, implying that the repairs are done and the dock is free
         """
-        now = datetime.now()
         self.repair_timers = [
-            timer for timer in self.repair_timers if timer > now]
+            timer for timer in self.repair_timers if timer > datetime.now()]
 
     def _update_combat_next_sortie_time(self, timer):
-        """Method to update the combat module's next sortie time based on the
-        passed in timer.
+        """Method to update the internally tracked list of timers and update
+        the combat module's next sortie time based on the shortest stored
+        timer.
 
         Args:
             timer (datetime): datetime instance of when the repair that just
@@ -240,9 +240,11 @@ class RepairModule(object):
         """
         repair_end_time = self._timer_to_datetime(timer)
         self.repair_timers.append(repair_end_time)
+        self.repair_timers.sort()
+        shortest_timer = self.repair_timers[0]
 
-        if repair_end_time > self.combat.next_combat_time:
-            timer['minutes'] += 1
-            self.combat.set_next_combat_time(timer)
+        if shortest_timer > self.combat.next_combat_time:
+            self.combat.next_combat_time = shortest_timer + timedelta(
+                minutes=1)
             Util.log_msg("Delaying next combat sortie to {}".format(
                 self.combat.next_combat_time.strftime('%Y-%m-%d %H:%M:%S')))
