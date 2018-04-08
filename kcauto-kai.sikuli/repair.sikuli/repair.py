@@ -48,6 +48,9 @@ class RepairModule(object):
                     # ongoing repairs so do not attempt repairs yet
                     return False
                 return True
+            elif fleet.force_check_repair:
+                fleet.force_check_repair = False
+                return True
         return False
 
     def repair_fleets(self):
