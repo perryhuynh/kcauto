@@ -112,6 +112,7 @@ class ShipSwitcher(object):
                 self.config.combat['repair_limit']) == 0 and
                 damage_counts['repair'] == 0):
             # all ships in fleet pass checks: continue sortie
+            fleet.needs_resupply = True  # force resupply attempt
             Util.log_msg(
                 "Fleet is ready to sortie. Updating next sortie time.")
             self.combat.set_next_combat_time()
