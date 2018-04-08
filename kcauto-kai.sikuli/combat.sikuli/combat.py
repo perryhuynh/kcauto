@@ -272,6 +272,14 @@ class CombatModule(object):
             self.set_next_combat_time()
             cancel_sortie = True
 
+        if self.dmg['repair'] > 0:
+            Util.log_warning(
+                "Canceling combat sortie: {:d} ships are being repaired."
+                .format(self.dmg['repair']))
+            self.set_next_combat_time()
+            self.primary_fleet.force_check_repair = True
+            cancel_sortie = True
+
         if ('PortCheck' in self.config.combat['misc_options'] or
                 self.map.world == 'event'):
             port_full_notice = (
@@ -960,6 +968,7 @@ class CombatFleet(Fleet):
         self.damage_counts = {
             'repair': 0
         }
+        self.force_check_repair = False
         self.damaged_fcf_retreat_count = 0
         self.fatigue = {}
 
