@@ -5,7 +5,6 @@
 * Force resupply after ship switching
 * Longer transient waits in Ship Switcher module
 
-
 #### 0.4.5
 
 * Archive 2018 Winter Event assets
