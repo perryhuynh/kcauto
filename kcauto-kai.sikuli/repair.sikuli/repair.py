@@ -40,6 +40,13 @@ class RepairModule(object):
         """
         self._remove_old_timers()
         for fleet_id, fleet in self.fleets.items():
+            # first check if there is a forced check
+            if fleet.force_check_repair:
+                # immediately unset this flag so it does not cause false
+                # positives later on
+                fleet.force_check_repair = False
+                return True
+            # then check against damage counts
             if fleet.get_damage_counts_at_threshold(
                     self.config.combat['repair_limit']) > 0:
                 if (len(self.repair_timers) == self.repair_slots and
@@ -57,7 +64,7 @@ class RepairModule(object):
         Util.log_msg("Begin repairing fleets.")
 
         # find busy docks and resolve existing repair timers
-        self.repair_timers = []
+        self.repair_timers = []  # clear previously tracked timers
         dock_busy_matches = Util.findAll_wrapper(
             self.kc_region, 'dock_timer.png')
         dock_busy_count = 0
@@ -96,6 +103,7 @@ class RepairModule(object):
                 else:
                     # no empty docks, so just exit out of loop
                     break
+        self._update_combat_next_sortie_time()
 
     def _conduct_repair(self):
         """Method that chooses an empty dock, chooses a ship, toggles the
@@ -133,7 +141,7 @@ class RepairModule(object):
                 self.stats.increment_buckets_used()
                 self.kc_region.wait('dock_empty.png')
             else:
-                self._update_combat_next_sortie_time(repair_timer)
+                self._add_to_repair_timers(repair_timer)
                 self.regions['lower_right'].waitVanish('page_prev.png')
                 Util.kc_sleep(1)
         Util.kc_sleep()
@@ -226,12 +234,11 @@ class RepairModule(object):
         """Method to go through the existing repair timers and remove them if
         they are past, implying that the repairs are done and the dock is free
         """
-        now = datetime.now()
         self.repair_timers = [
-            timer for timer in self.repair_timers if timer > now]
+            timer for timer in self.repair_timers if timer > datetime.now()]
 
-    def _update_combat_next_sortie_time(self, timer):
-        """Method to update the combat module's next sortie time based on the
+    def _add_to_repair_timers(self, timer):
+        """Method to add to the internally tracked list of timers with the
         passed in timer.
 
         Args:
@@ -240,9 +247,18 @@ class RepairModule(object):
         """
         repair_end_time = self._timer_to_datetime(timer)
         self.repair_timers.append(repair_end_time)
+        Util.log_msg("Repair will complete at {}".format(
+            repair_end_time.strftime('%Y-%m-%d %H:%M:%S')))
 
-        if repair_end_time > self.combat.next_combat_time:
-            timer['minutes'] += 1
-            self.combat.set_next_combat_time(timer)
+    def _update_combat_next_sortie_time(self):
+        """Method to update the Combat module's next sortie timer based on the
+        shortest timer in the internal repair timers list.
+        """
+        self.repair_timers.sort()
+        shortest_timer = self.repair_timers[0]
+
+        if shortest_timer > self.combat.next_combat_time:
+            self.combat.next_combat_time = shortest_timer + timedelta(
+                minutes=1)
             Util.log_msg("Delaying next combat sortie to {}".format(
                 self.combat.next_combat_time.strftime('%Y-%m-%d %H:%M:%S')))

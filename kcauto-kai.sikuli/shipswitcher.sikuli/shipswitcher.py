@@ -53,7 +53,7 @@ class ShipSwitcher(object):
         """Method to navigate to the fleet composition menu.
         """
         Nav.goto(self.regions, 'fleetcomp')
-        self.module_regions['panels'][0].wait('shiplist_button.png', 2)
+        self.module_regions['panels'][0].wait('shiplist_button.png', 10)
         self.current_shiplist_page = 1
 
     def check_need_to_switch(self):
@@ -112,6 +112,7 @@ class ShipSwitcher(object):
                 self.config.combat['repair_limit']) == 0 and
                 damage_counts['repair'] == 0):
             # all ships in fleet pass checks: continue sortie
+            fleet.needs_resupply = True  # force resupply attempt
             Util.log_msg(
                 "Fleet is ready to sortie. Updating next sortie time.")
             self.combat.set_next_combat_time()
@@ -340,7 +341,7 @@ class ShipSwitcher(object):
         """
         # wait until the panel is ready before speeding through checks
         self.regions['lower_right'].wait(
-            Pattern('shiplist_shipswitch_button.png').similar(0.75))
+            Pattern('shiplist_shipswitch_button.png').similar(0.75), 5)
 
         # temp region for speed matching
         temp_region = Region(self.regions['upper_right'])
