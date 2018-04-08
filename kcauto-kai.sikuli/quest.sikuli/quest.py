@@ -1,4 +1,6 @@
 from sikuli import Pattern
+from datetime import datetime, timedelta
+from random import randint
 from kca_globals import Globals
 from nav import Nav
 from util import Util
@@ -13,11 +15,11 @@ class QuestModule(object):
             stats (Stats): kcauto-kai Stats instance
             regions (dict): dict of pre-defined kcauto-kai regions
         """
-        self.first_run = True
         self.config = config
         self.stats = stats
         self.regions = regions
         self.kc_region = self.regions['game']
+        self.next_reset_time = datetime.now()
         self.quest_list = []
         self.active_quests = []
         self.active_quest_types = []
@@ -33,18 +35,16 @@ class QuestModule(object):
         """
         Nav.goto(self.regions, 'quests')
 
-    def reset_quests(self):
-        pass
-
     def check_need_to_check_quests(self):
         """Method to check whether or not quests need to be checked.
 
         Returns:
             bool: True if quests need to be checked, False otherwise
         """
-        if self.first_run:
-            # if first run, always check quests
-            self.first_run = False
+        if self._quests_reset():
+            # if daily reset is detected (or is first start), always check
+            # quests
+            Util.log_msg("Quests reset.")
             return True
 
         combat_checkpoint = next(iter(self.combat_checkpoints), None)
@@ -131,6 +131,23 @@ class QuestModule(object):
         if len(msg_array) > 0:
             Util.log_success("Next quest check after {}".format(
                 ", or ".join(msg_array)))
+
+    def _quests_reset(self):
+        """Method that checks and sets the quest reset time.
+
+        Returns:
+            bool: True if a quest reset has been detected, False otherwise
+        """
+        if datetime.now() > self.next_reset_time:
+            jst_time = Util.convert_to_jst(datetime.now(), self.config)
+            if jst_time.hour > 4:
+                # already past the 5 AM reset time; fast forward next reset
+                # time to next day
+                jst_time += timedelta(days=1)
+            jst_time = jst_time.replace(hour=5, minute=randint(0, 5))
+            self.next_reset_time = Util.convert_from_jst(jst_time, self.config)
+            return True
+        return False
 
     def _ooyodo_dismiss(self):
         """Method to dismiss the Ooyodo popup.
