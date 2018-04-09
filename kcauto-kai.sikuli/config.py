@@ -375,6 +375,11 @@ class Config(object):
                 config, 'Combat', 'LBASGroup3Nodes')
         else:
             self.combat['lbas_enabled'] = False
+        if config.get('Combat', 'ForceRetreatNodes'):
+            self.combat['force_retreat_nodes'] = set(self._getlist(
+                config, 'Combat', 'ForceRetreatNodes'))
+        else:
+            self.combat['force_retreat_nodes'] = {}
 
     def _read_ship_switcher(self, config):
         """Method to parse the ShipSwitcher settings of the passed in config.

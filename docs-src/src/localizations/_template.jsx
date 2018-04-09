@@ -80,6 +80,8 @@ export const TMP = {
     combatLBASGroup1Nodes: null,
     combatLBASGroup2Nodes: null,
     combatLBASGroup3Nodes: null,
+    combatForceRetreatNode1: null,
+    combatForceRetreatNodes: null,
     combatCheckFatigue: null,
     combatReserveDocks: null,
     combatPortCheck: null,
