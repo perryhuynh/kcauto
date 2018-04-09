@@ -73,7 +73,7 @@ export const en = {
     combatLBASGroup1Nodes: 'Group 1 Nodes',
     combatLBASGroup2Nodes: 'Group 2 Nodes',
     combatLBASGroup3Nodes: 'Group 3 Nodes',
-    combatForceRetreatNode1: 'Retreat after battle at this node...',
+    combatForceRetreatNode1: 'Retreat after battle at this Node...',
     combatForceRetreatNodeAdd: 'Add',
     combatForceRetreatNodes: 'All Retreat Nodes',
     combatCheckFatigue: 'Check Fatigue',
