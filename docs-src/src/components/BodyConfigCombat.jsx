@@ -684,8 +684,6 @@ class BodyConfigCombat extends PureComponent {
             </FormControl>
           </Grid>
 
-
-
           <Grid item xs={4} sm={2} className={classes.formGrid}>
             <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
               <InputLabel htmlFor='combatForceRetreatNode1' shrink={true} className={classes.reactSelectLabel}>
@@ -730,8 +728,6 @@ class BodyConfigCombat extends PureComponent {
                 fullWidth />
             </FormControl>
           </Grid>
-
-
 
           <Grid item xs={12} sm={12} className={classes.formGrid}>
             <FormControlLabel
