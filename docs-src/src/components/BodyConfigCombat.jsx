@@ -173,6 +173,23 @@ class BodyConfigCombat extends PureComponent {
     this.setState({ combatLBASGroups: value })
   }
 
+  handleCombatForceRetreatNodeAdd = (node) => {
+    const tempCombatForceRetreatNodes = this.state.combatForceRetreatNodes ? this.state.combatForceRetreatNodes : ''
+    let tempcombatForceRetreatNodesArr = tempCombatForceRetreatNodes.split(',')
+    if (tempcombatForceRetreatNodesArr[0] == '') {
+      tempcombatForceRetreatNodesArr = []
+    }
+    const tempCombatForceRetreatNodesSet = new Set(tempcombatForceRetreatNodesArr)
+    tempCombatForceRetreatNodesSet.add(node)
+    const combatForceRetreatNodesArr = Array.from(tempCombatForceRetreatNodesSet)
+    combatForceRetreatNodesArr.sort()
+    const combatForceRetreatNodes = combatForceRetreatNodesArr.join(',')
+    this.setState(
+      { combatForceRetreatNode1: null, combatForceRetreatNodes: combatForceRetreatNodes },
+      () => this.props.callback(this.state)
+    )
+  }
+
   optionsNodeSplitter = (rawOption, divider) => {
     // helper method to convert a list of comma-separated values divided in two via a divider into an object with the
     // value left of the divider as the key, and the value right of the divider as the value
@@ -227,6 +244,8 @@ class BodyConfigCombat extends PureComponent {
       combatLBASGroup2Node2,
       combatLBASGroup3Node1,
       combatLBASGroup3Node2,
+      combatForceRetreatNode1,
+      combatForceRetreatNodes,
       combatOptionCheckFatigue,
       combatOptionReserveDocks,
       combatOptionPortCheck,
@@ -246,6 +265,9 @@ class BodyConfigCombat extends PureComponent {
     const combatLBASGroup1NodesDisabled = !combatEnabled || combatLBASGroupsArray.indexOf('1') < 0
     const combatLBASGroup2NodesDisabled = !combatEnabled || combatLBASGroupsArray.indexOf('2') < 0
     const combatLBASGroup3NodesDisabled = !combatEnabled || combatLBASGroupsArray.indexOf('3') < 0
+    const combatForceRetreatNodesOptions = combatForceRetreatNodes ?
+      combatForceRetreatNodes.split(',').map(value => ({ value, label: value })) :
+      []
 
     return (
       <Fragment>
@@ -661,6 +683,55 @@ class BodyConfigCombat extends PureComponent {
               </div>
             </FormControl>
           </Grid>
+
+
+
+          <Grid item xs={4} sm={2} className={classes.formGrid}>
+            <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+              <InputLabel htmlFor='combatForceRetreatNode1' shrink={true} className={classes.reactSelectLabel}>
+                <Localize field='bodyConfig.combatForceRetreatNode1' />
+              </InputLabel>
+              <Select
+                className={classes.reactSelect}
+                simpleValue={true}
+                name='combatForceRetreatNode1'
+                value={combatForceRetreatNode1}
+                options={NODES}
+                onChange={value => this.setState({ combatForceRetreatNode1: value })}
+                disabled={!combatEnabled}
+                fullWidth />
+            </FormControl>
+          </Grid>
+          <Grid item xs={4} sm={1} className={classes.formGridButton}>
+            <Button
+              size='small'
+              color='primary'
+              disabled={!combatEnabled || !combatForceRetreatNode1}
+              onClick={() => this.handleCombatForceRetreatNodeAdd(combatForceRetreatNode1)}
+            >
+              <Localize field='bodyConfig.combatForceRetreatNodeAdd' />
+              <ChevronRight />
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={7} className={classes.formGrid}>
+            <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
+              <InputLabel htmlFor='combatForceRetreatNodes' shrink={true} className={classes.reactSelectLabel}>
+                <Localize field='bodyConfig.combatForceRetreatNodes' />
+              </InputLabel>
+              <Creatable
+                multi
+                className={classes.reactSelect}
+                simpleValue={true}
+                name='combatForceRetreatNodes'
+                value={combatForceRetreatNodes}
+                options={combatForceRetreatNodesOptions}
+                onChange={value => this.setState({ combatForceRetreatNodes: value }, () => this.props.callback(this.state))}
+                disabled={!combatEnabled}
+                fullWidth />
+            </FormControl>
+          </Grid>
+
+
 
           <Grid item xs={12} sm={12} className={classes.formGrid}>
             <FormControlLabel

@@ -106,6 +106,7 @@ const createStateObjFromPythonConfig = (pyConfig) => {
     combatLBASGroup2Node2: pyConfigObj.combatLBASGroup2Nodes[1] || null,
     combatLBASGroup3Node1: pyConfigObj.combatLBASGroup3Nodes[0] || null,
     combatLBASGroup3Node2: pyConfigObj.combatLBASGroup3Nodes[1] || null,
+    combatForceRetreatNodes: pyConfigObj.combatForceRetreatNodes || null,
     combatOptionCheckFatigue: pyConfigObj.combatMiscOptions.includes('CheckFatigue') || false,
     combatOptionReserveDocks: pyConfigObj.combatMiscOptions.includes('ReserveDocks') || false,
     combatOptionPortCheck: pyConfigObj.combatMiscOptions.includes('PortCheck') || false,
