@@ -310,10 +310,8 @@ class CombatModule(object):
         fleet.print_damage_counts(repair=True)
 
         if 'CheckFatigue' in self.config.combat['misc_options']:
-            print('checking fatigue')
             fleet_fatigue = fleet.check_fatigue(
                 self.module_regions['check_fatigue'])
-            print(fleet_fatigue)
             fleet.print_fatigue_states()
             return (needs_resupply, fleet_damages, fleet_fatigue)
         return (needs_resupply, fleet_damages, {})
