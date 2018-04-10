@@ -254,14 +254,10 @@ class RepairModule(object):
         """Method to update the Combat module's next sortie timer based on the
         shortest timer in the internal repair timers list.
         """
-        if len(self.repair_timers) > 0:
-            if len(self.repair_timers) > 1:
-                self.repair_timers.sort()
-            shortest_timer = self.repair_timers[0]
-        else:
-            shortest_timer = datetime.now()
+        self.repair_timers.sort()
+        shortest_timer = self.repair_timers[0]
 
-        if shortest_timer < self.combat.next_combat_time:
+        if shortest_timer > self.combat.next_combat_time:
             self.combat.next_combat_time = shortest_timer + timedelta(
                 minutes=1)
             Util.log_msg("Delaying next combat sortie to {}".format(
