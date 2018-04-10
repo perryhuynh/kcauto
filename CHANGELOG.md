@@ -1,3 +1,7 @@
+#### 0.4.6-bugfix
+
+* Bugfix to repair module crashing if no timers are stored (thanks to @perryhuynh)
+
 #### 0.4.6
 
 * Improvements to setting of next combat timer based on repair timers in various situations
