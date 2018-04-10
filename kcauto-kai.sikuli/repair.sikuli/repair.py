@@ -103,7 +103,8 @@ class RepairModule(object):
                 else:
                     # no empty docks, so just exit out of loop
                     break
-        self._update_combat_next_sortie_time()
+        if len(self.repair_timers) > dock_busy_count:
+            self._update_combat_next_sortie_time()
 
     def _conduct_repair(self):
         """Method that chooses an empty dock, chooses a ship, toggles the
