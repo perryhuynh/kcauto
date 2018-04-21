@@ -237,7 +237,7 @@ class ShipSwitcher(object):
                 Globals.EXPAND['arrow_navigation'])
         elif 1 <= target <= 5:
             zero_target = target - 1
-            x_start = 512 + (zero_target * 21) + (zero_target * 11)
+            x_start = 506 + (zero_target * 21) + (zero_target * 11)
             x_stop = x_start + 11
             y_start = 444
             y_stop = 452
