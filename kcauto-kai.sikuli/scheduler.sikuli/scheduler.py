@@ -99,6 +99,7 @@ class Scheduler(object):
         #   * code cleanup
         #   * check for enabled and existing expedition combat modules
         #   * print stats before exiting script
+        #   * add reset method to reset target timers and counts on cfg refresh
         # script stop section; only stops script
         if self.config.scheduled_stop['script_stop_enabled']:
             if self.config.scheduled_stop['script_stop_count']:
@@ -121,7 +122,7 @@ class Scheduler(object):
         # expedition stop section
         if self.config.scheduled_stop['expedition_stop_enabled']:
             if self.config.scheduled_stop['expedition_stop_count']:
-                if (self.config.scheduled_stop['expeditions_sent'] >=
+                if (self.config.expeditions_sent >=
                         self.config.scheduled_stop['expedition_stop_count']):
                     if (self.config.scheduled_stop['expedition_stop_mode'] ==
                             'script'):
@@ -158,7 +159,7 @@ class Scheduler(object):
         # combat stop section
         if self.config.scheduled_stop['combat_stop_enabled']:
             if self.config.scheduled_stop['combat_stop_count']:
-                if (self.config.scheduled_stop['combat_done'] >=
+                if (self.stats.combat_done >=
                         self.config.scheduled_stop['combat_stop_count']):
                     if (self.config.scheduled_stop['combat_stop_mode'] ==
                             'script'):
