@@ -128,6 +128,16 @@ class Config(object):
             Util.log_msg("Validating config")
         self.ok = True
 
+        if self.scheduled_stop:
+            for module in ('expedition', 'combat'):
+                stop_key = '{}_stop_mode'.format(module)
+                if self.scheduled_stop[stop_key] not in (
+                        '', 'script', 'module'):
+                    Util.log_error(
+                        "Invalid Stop Mode for {}: '{}'".format(
+                            module.title(), self.scheduled_stop[stop_key]))
+                    self.ok = False
+
         if self.expeditions['enabled']:
             valid_expeditions = range(1, 41) + [
                 'A1', 'A2', 'A3', 'B1', 9998, 9999]
