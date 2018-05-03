@@ -321,6 +321,9 @@ class Config(object):
             self.scheduled_stop['{}_stop_enabled'.format(module)] = (
                 config.getboolean(
                     'ScheduledStop', '{}StopEnabled'.format(module_title)))
+            self.scheduled_stop['{}_stop_count'.format(module)] = (
+                config.getint(
+                    'ScheduledStop', '{}StopCount'.format(module_title)))
             self.scheduled_stop['{}_stop_time'.format(module)] = (
                 "{:04d}".format(config.getint(
                     'ScheduledStop', '{}SleepStartTime'.format(module_title))))
@@ -328,9 +331,6 @@ class Config(object):
                 self.scheduled_stop['{}_stop_mode'.format(module)] = (
                     config.get(
                         'ScheduledStop', '{}StopMode'.format(module_title)))
-                self.scheduled_stop['{}_stop_count'.format(module)] = (
-                    config.getint(
-                        'ScheduledStop', '{}StopCount'.format(module_title)))
 
     def _read_expeditions(self, config):
         """Method to parse the Expedition settings of the passed in config.
