@@ -29,6 +29,7 @@ class Config(object):
         pvp (dict): dict of pvp-related config settings
         quests (dict): dict of quest-related config settings
         scheduled_sleep (dict): dict of scheduled sleep-related config settings
+        scheduled_stop (dict): dict of scheduled stop-related config settings
     """
 
     ok = False
@@ -39,6 +40,7 @@ class Config(object):
     pause = False
 
     scheduled_sleep = {}
+    scheduled_stop = {}
     expeditions = {'enabled': False}
     pvp = {'enabled': False}
     combat = {'enabled': False}
@@ -72,6 +74,7 @@ class Config(object):
 
         self._read_general(config)
         self._read_scheduled_sleep(config)
+        self._read_scheduled_stop(config)
 
         if config.getboolean('Expeditions', 'Enabled'):
             self._read_expeditions(config)
@@ -296,6 +299,29 @@ class Config(object):
                 config.getfloat(
                     'ScheduledSleep', '{}SleepLength'.format(module_cfg)))
 
+    def _read_scheduled_stop(self, config):
+        """Method to parse the Scheduled Stop settings of the passed in
+        config.
+
+        Args:
+            config (ConfigParser): ConfigParser instance
+        """
+        for module in ('script', 'expedition', 'combat'):
+            module_title = module.title()
+            self.scheduled_stop['{}_stop_enabled'.format(module)] = (
+                config.getboolean(
+                    'ScheduledStop', '{}StopEnabled'.format(module_title)))
+            self.scheduled_stop['{}_stop_time'.format(module)] = (
+                "{:04d}".format(config.getint(
+                    'ScheduledStop', '{}SleepStartTime'.format(module_title))))
+            if module in ('expedition', 'combat'):
+                self.scheduled_stop['{}_stop_mode'.format(module)] = (
+                    config.get(
+                        'ScheduledStop', '{}StopMode'.format(module_title)))
+                self.scheduled_stop['{}_stop_count'.format(module)] = (
+                    config.getint(
+                        'ScheduledStop', '{}StopCount'.format(module_title)))
+
     def _read_expeditions(self, config):
         """Method to parse the Expedition settings of the passed in config.
 
@@ -324,7 +350,7 @@ class Config(object):
             self.expeditions.pop('fleet4', None)
 
     def _read_pvp(self, config):
-        """Method to parse the Ovo settings of the passed in config.
+        """Method to parse the PvP settings of the passed in config.
 
         Args:
             config (ConfigParser): ConfigParser instance
