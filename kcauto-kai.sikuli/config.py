@@ -330,7 +330,7 @@ class Config(object):
             try:
                 self.scheduled_stop['{}_stop_time'.format(module)] = (
                     "{:04d}".format(config.getint(
-                        'ScheduledStop', '{}SleepStartTime'.format(
+                        'ScheduledStop', '{}StopTime'.format(
                             module_title))))
             except ValueError:
                 self.scheduled_stop['{}_stop_time'.format(module)] = None
