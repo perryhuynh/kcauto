@@ -95,8 +95,10 @@ class Scheduler(object):
         """Method to conduct scheduled stop of scripts and modules as defined
         by the config.
         """
-        # TODO: code cleanup; check for enabled and existing expedition
-        # and combat modules...
+        # TODO:
+        #   * code cleanup
+        #   * check for enabled and existing expedition combat modules
+        #   * print stats before exiting script
         # script stop section; only stops script
         if self.config.scheduled_stop['script_stop_enabled']:
             if self.config.scheduled_stop['script_stop_count']:
