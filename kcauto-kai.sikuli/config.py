@@ -321,12 +321,19 @@ class Config(object):
             self.scheduled_stop['{}_stop_enabled'.format(module)] = (
                 config.getboolean(
                     'ScheduledStop', '{}StopEnabled'.format(module_title)))
-            self.scheduled_stop['{}_stop_count'.format(module)] = (
-                config.getint(
-                    'ScheduledStop', '{}StopCount'.format(module_title)))
-            self.scheduled_stop['{}_stop_time'.format(module)] = (
-                "{:04d}".format(config.getint(
-                    'ScheduledStop', '{}SleepStartTime'.format(module_title))))
+            try:
+                self.scheduled_stop['{}_stop_count'.format(module)] = (
+                    config.getint(
+                        'ScheduledStop', '{}StopCount'.format(module_title)))
+            except ValueError:
+                self.scheduled_stop['{}_stop_count'.format(module)] = None
+            try:
+                self.scheduled_stop['{}_stop_time'.format(module)] = (
+                    "{:04d}".format(config.getint(
+                        'ScheduledStop', '{}SleepStartTime'.format(
+                            module_title))))
+            except ValueError:
+                self.scheduled_stop['{}_stop_time'.format(module)] = None
             if module in ('expedition', 'combat'):
                 self.scheduled_stop['{}_stop_mode'.format(module)] = (
                     config.get(
