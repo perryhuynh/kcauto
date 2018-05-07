@@ -39,9 +39,9 @@ export const setPythonConfig = config => (
       }
       return temp
     }, {})
-    const scheduledSleepSleepStartTime = config.scheduledSleepSleepStartTime ?
-      `${String(config.scheduledSleepSleepStartTime.getHours()).padStart(2, '0')}` +
-      `${String(config.scheduledSleepSleepStartTime.getMinutes()).padStart(2, '0')}` :
+    const scheduledSleepScriptSleepStartTime = config.scheduledSleepScriptSleepStartTime ?
+      `${String(config.scheduledSleepScriptSleepStartTime.getHours()).padStart(2, '0')}` +
+      `${String(config.scheduledSleepScriptSleepStartTime.getMinutes()).padStart(2, '0')}` :
       ''
     const scheduledSleepExpeditionSleepStartTime = config.scheduledSleepExpeditionSleepStartTime ?
       `${String(config.scheduledSleepExpeditionSleepStartTime.getHours()).padStart(2, '0')}` +
@@ -109,9 +109,9 @@ export const setPythonConfig = config => (
       `Pause: ${configTemp.generalPause}`,
       '',
       '[ScheduledSleep]',
-      `SleepEnabled: ${configTemp.scheduledSleepSleepEnabled}`,
-      `SleepStartTime: ${scheduledSleepSleepStartTime}`,
-      `SleepLength: ${configTemp.scheduledSleepSleepLength}`,
+      `ScriptSleepEnabled: ${configTemp.scheduledSleepScriptSleepEnabled}`,
+      `ScriptSleepStartTime: ${scheduledSleepScriptSleepStartTime}`,
+      `ScriptSleepLength: ${configTemp.scheduledSleepScriptSleepLength}`,
       `ExpeditionSleepEnabled: ${configTemp.scheduledSleepExpeditionSleepEnabled}`,
       `ExpeditionSleepStartTime: ${scheduledSleepExpeditionSleepStartTime}`,
       `ExpeditionSleepLength: ${configTemp.scheduledSleepExpeditionSleepLength}`,
