@@ -11,12 +11,12 @@ class Scheduler(object):
         self.expedition = None
         self.combat = None
         self.next_scheduled_sleep_time = {
-            'kca': None,
+            'script': None,
             'expedition': None,
             'combat': None
         }
         self.sleep_wake_time = {
-            'kca': None,
+            'script': None,
             'expedition': None,
             'combat': None
         }
@@ -36,7 +36,7 @@ class Scheduler(object):
         including setting the sleep start and wake times.
 
         Args:
-            module (str): 'kca', 'expedition', or 'combat'
+            module (str): 'script', 'expedition', or 'combat'
 
         Returns:
             bool: True if the module should be asleep; False otherwise
@@ -63,7 +63,7 @@ class Scheduler(object):
 
         # if the current time is past the schedule sleep time, go to sleep
         if cur_time >= self.next_scheduled_sleep_time[module]:
-            if module == 'kca':
+            if module == 'script':
                 Util.log_warning(
                     "Beginning scheduled sleep. Resuming in ~{} hours.".format(
                         sleep_length))

@@ -297,17 +297,18 @@ class Config(object):
         Args:
             config (ConfigParser): ConfigParser instance
         """
-        for module in ('kca', 'expedition', 'combat'):
-            module_cfg = '' if module == 'kca' else module.title()
+        for module in ('script', 'expedition', 'combat'):
+            module_title = module.title()
             self.scheduled_sleep['{}_sleep_enabled'.format(module)] = (
                 config.getboolean(
-                    'ScheduledSleep', '{}SleepEnabled'.format(module_cfg)))
+                    'ScheduledSleep', '{}SleepEnabled'.format(module_title)))
             self.scheduled_sleep['{}_sleep_start_time'.format(module)] = (
                 "{:04d}".format(config.getint(
-                    'ScheduledSleep', '{}SleepStartTime'.format(module_cfg))))
+                    'ScheduledSleep', '{}SleepStartTime'.format(
+                        module_title))))
             self.scheduled_sleep['{}_sleep_length'.format(module)] = (
                 config.getfloat(
-                    'ScheduledSleep', '{}SleepLength'.format(module_cfg)))
+                    'ScheduledSleep', '{}SleepLength'.format(module_title)))
 
     def _read_scheduled_stop(self, config):
         """Method to parse the Scheduled Stop settings of the passed in

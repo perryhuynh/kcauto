@@ -401,7 +401,7 @@ class KCAutoKai(object):
             bool: True if kcauto-kai should be conducting scheduled sleep;
                 False otherwise
         """
-        return self.scheduler.conduct_module_sleep('kca')
+        return self.scheduler.conduct_module_sleep('script')
 
     def conduct_module_sleeps(self):
         """Method that checks the sleep status of the expedition and combat
