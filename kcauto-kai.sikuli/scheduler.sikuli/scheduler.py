@@ -25,7 +25,11 @@ class Scheduler(object):
             'expedition': None,
             'combat': None
         }
-        self.reset_scheduled_sleep_all()
+        self.stop_count_marker = {
+            'expedition': None,
+            'combat': None
+        }
+        self.reset_scheduler()
 
     def conduct_module_sleep(self, module):
         """Method that holds the primary sleep logic for a given module,
@@ -78,28 +82,17 @@ class Scheduler(object):
             return True
         return False
 
-    def _reset_scheduled_sleep(self, module):
-        """Method to reset the scheduled sleep attributes of a specific module.
-        """
-        self.next_scheduled_sleep_time[module] = None
-        self.sleep_wake_time[module] = datetime.now()
-
-    def reset_scheduled_sleep_all(self):
-        """Method to reset the scheduled sleep attributes of all modules, using
-        the _reset_scheduled_sleep private method.
+    def _reset_scheduled_sleep(self):
+        """Method to reset the scheduled sleep attributes of all modules.
         """
         for module in self.next_scheduled_sleep_time:
-            self._reset_scheduled_sleep(module)
+            self.next_scheduled_sleep_time[module] = None
+            self.sleep_wake_time[module] = datetime.now()
 
     def conduct_scheduled_stops(self):
         """Method to conduct scheduled stop of scripts and modules as defined
         by the config.
         """
-        # TODO:
-        #   * code cleanup
-        #   * check for enabled and existing expedition combat modules
-        #   * print stats before exiting script
-        #   * add reset method to reset target timers and counts on cfg refresh
         # script stop section; only stops script
         if self.config.scheduled_stop['script_stop_enabled']:
             if self.config.scheduled_stop['script_stop_count']:
@@ -107,6 +100,7 @@ class Scheduler(object):
                 if delta >= self.config.scheduled_stop['script_stop_count']:
                     Util.log_success(
                         "Ran the designated number of hours. Stopping script.")
+                    self.stats.print_stats()
                     sys.exit(0)
             if self.config.scheduled_stop['script_stop_time']:
                 # set the script stop time if it is notbeing tracked internally
@@ -117,83 +111,96 @@ class Scheduler(object):
                 if datetime.now() > self.stop_time['script']:
                     Util.log_success(
                         "Ran until the designated time. Stopping script.")
+                    self.stats.print_stats()
                     sys.exit(0)
 
         # expedition stop section
-        if self.config.scheduled_stop['expedition_stop_enabled']:
-            if self.config.scheduled_stop['expedition_stop_count']:
-                if (self.config.expeditions_sent >=
-                        self.config.scheduled_stop['expedition_stop_count']):
-                    if (self.config.scheduled_stop['expedition_stop_mode'] ==
-                            'script'):
-                        Util.log_success(
-                            "Ran the designated number of expeditions. "
-                            "Stopping script.")
-                        sys.exit(0)
-                    elif (self.config.scheduled_stop['expedition_stop_mode'] ==
-                            'module'):
-                        Util.log_success(
-                            "Ran the designated number of expeditions. "
-                            "Stopping expedition module.")
-                        self.expedition.disable_module()
-            if self.config.scheduled_stop['expedition_stop_time']:
-                # set the script stop time if it is notbeing tracked internally
-                if not self.stop_time['expedition']:
-                    self.stop_time['expedition'] = (
-                        self._get_next_timer_datetime(
-                            self.config.scheduled_stop['script_stop_time']))
-                if datetime.now() > self.stop_time['expedition']:
-                    if (self.config.scheduled_stop['expedition_stop_mode'] ==
-                            'script'):
-                        Util.log_success(
-                            "Ran expeditions until the designated time. "
-                            "Stopping script.")
-                        sys.exit(0)
-                    elif (self.config.scheduled_stop['expedition_stop_mode'] ==
-                            'module'):
-                        Util.log_success(
-                            "Ran expeditions until the designated time. "
-                            "Stopping expedition module.")
-                        self.expedition.disable_module()
+        if self.expedition and self.expedition.enabled:
+            self._conduct_module_stop(
+                self.expedition, 'expedition', self.stats.expeditions_sent)
 
         # combat stop section
-        if self.config.scheduled_stop['combat_stop_enabled']:
-            if self.config.scheduled_stop['combat_stop_count']:
-                if (self.stats.combat_done >=
-                        self.config.scheduled_stop['combat_stop_count']):
-                    if (self.config.scheduled_stop['combat_stop_mode'] ==
-                            'script'):
+        if self.combat and self.combat.enabled:
+            self._conduct_module_stop(
+                self.combat, 'combat', self.stats.combat_done)
+
+    def _conduct_module_stop(self, module, mname, done_count):
+        """Logic that encompasses for checking and conducting scheduled stop.
+
+        Args:
+            module (CombatModule or ExpeditionModule): module instances
+            mname (str): string name of module
+            done_count (int): count of combat or expeditions completed or sent
+        """
+        # local variables
+        log_display = 'combat sortie' if mname == 'combat' else mname
+        stop_mode = '{}_stop_mode'.format(mname)
+        stop_count = '{}_stop_count'.format(mname)
+        stop_time = '{}_stop_time'.format(mname)
+
+        if self.config.scheduled_stop['{}_stop_enabled'.format(mname)]:
+            if self.config.scheduled_stop[stop_count]:
+                if (done_count >= self.stop_count_marker[module] +
+                        self.config.scheduled_stop[stop_count]):
+                    if self.config.scheduled_stop[stop_mode] == 'script':
                         Util.log_success(
-                            "Ran the designated number of combat sorties. "
-                            "Stopping script.")
+                            "Ran the designated number of {}s. Stopping "
+                            "script.".format(log_display))
+                        self.stats.print_stats()
                         sys.exit(0)
-                    elif (self.config.scheduled_stop['combat_stop_mode'] ==
-                            'module'):
+                    elif self.config.scheduled_stop[stop_mode] == 'module':
                         Util.log_success(
-                            "Ran the designated number of combat sorties. "
-                            "Stopping combat module.")
-                        self.combat.disable_module()
-            if self.config.scheduled_stop['combat_stop_time']:
-                # set the script stop time if it is notbeing tracked internally
-                if not self.stop_time['combat']:
-                    self.stop_time['combat'] = (
+                            "Ran the designated number of {}s. Stopping {} "
+                            "module.".format(log_display, mname))
+                        module.disable_module()
+            if self.config.scheduled_stop[stop_time]:
+                # set the script stop time if it is notbeing tracked
+                # internally
+                if not self.stop_time[mname]:
+                    self.stop_time[mname] = (
                         self._get_next_timer_datetime(
-                            self.config.scheduled_stop['combat_stop_time']))
-                if datetime.now() > self.stop_time['combat']:
-                    if (self.config.scheduled_stop['combat_stop_mode'] ==
-                            'script'):
+                            self.config.scheduled_stop[stop_time]))
+                if datetime.now() > self.stop_time[mname]:
+                    if self.config.scheduled_stop[stop_mode] == 'script':
                         Util.log_success(
-                            "Ran combat sorties until the designated time. "
-                            "Stopping script.")
+                            "Ran {}s until the designated time. Stopping "
+                            "script.".format(log_display))
+                        self.stats.print_stats()
                         sys.exit(0)
-                    elif (self.config.scheduled_stop['combat_stop_mode'] ==
-                            'module'):
+                    elif self.config.scheduled_stop[stop_mode] == 'module':
                         Util.log_success(
-                            "Ran combat sorties until the designated time. "
-                            "Stopping combat module.")
-                        self.combat.disable_module()
+                            "Ran {}s until the designated time. Stopping {} "
+                            "module.".format(log_display, mname))
+                        module.disable_module()
+
+    def _reset_scheduled_stop(self):
+        """Method to reset the scheduled stop attributes of all modules.
+        """
+        for module in self.stop_times:
+            self.stop_times[module] = None
+        # manually set the expedition and comabt done markers; scheduled stop
+        # will use this as the start value
+        self.stop_count_marker['expedition'] = self.stats.expeditions_sent
+        self.stop_count_marker['combat'] = self.stats.combat_done
+
+    def reset_scheduler(self):
+        """Method to reset the scheduled sleep and scheduled stop attributes of
+        all modules.
+        """
+        self._reset_scheduled_sleep()
+        self._reset_scheduled_stop()
 
     def _get_next_timer_datetime(self, timer):
+        """Method to generate a datetime object based on the passed in timer.
+        If the generated datetime is in the past, this method automatically
+        rolls it over to the next day to ensure it is in the future.
+
+        Args:
+            timer (str): timer in 'hhmm' format
+
+        Returns:
+            datetime: future datetime object based on timer
+        """
         temp_datetime = datetime.now().replace(
             hour=int(timer[:2]),
             minute=int(timer[2:]),

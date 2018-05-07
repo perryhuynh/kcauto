@@ -79,7 +79,7 @@ class KCAutoKai(object):
             self.active_fleets = {}
             self.combat_fleets = {}
             self.expedition_fleets = {}
-            self.scheduler.reset_scheduled_sleep_all()
+            self.scheduler.reset_scheduler()
             self._focus_kancolle()
 
             # initialize pvp module
