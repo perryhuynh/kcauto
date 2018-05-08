@@ -11,41 +11,7 @@ from util import Util
 class Config(object):
     """Config module that reads and validates the config to be passed to
     kcauto-kai
-
-    Attributes:
-        changed (bool): indicates whether or not the config has changed from
-            the previously stored config
-        combat (dict): dict of combat-related config settings
-        config_file (str): name of config file
-        expeditions (dict): dict of expedition-related config settings
-        expeditions_all (list): list of all expeditions to be passed in to the
-            expedition module
-        initialized (bool): indicates whether or not kcauto-kai has been
-            initialized with the current config
-        jst_offset (int): hours offset from JST
-        ok (bool): indicates whether or not the recently passed in config
-            passes validation or not
-        program (str): name of window Kantai Collection is running in
-        pvp (dict): dict of pvp-related config settings
-        quests (dict): dict of quest-related config settings
-        scheduled_sleep (dict): dict of scheduled sleep-related config settings
-        scheduled_stop (dict): dict of scheduled stop-related config settings
     """
-
-    ok = False
-    initialized = False
-    changed = False
-    program = ''
-    jst_offset = 0
-    pause = False
-
-    scheduled_sleep = {}
-    scheduled_stop = {}
-    expeditions = {'enabled': False}
-    pvp = {'enabled': False}
-    combat = {'enabled': False}
-    ship_switcher = {'enabled': False}
-    quests = {'enabled': False}
 
     def __init__(self, config_file):
         """Initializes the config file by changing the working directory to the
@@ -57,7 +23,22 @@ class Config(object):
         Util.log_msg("Initializing config module")
         os.chdir(getBundlePath())
         os.chdir('..')
+
         self.config_file = config_file
+        self.ok = False
+        self.initialized = False
+        self.changed = False
+        self.program = ''
+        self.jst_offset = 0
+        self.pause = False
+        self.scheduled_sleep = {}
+        self.scheduled_stop = {}
+        self.expeditions = {'enabled': False}
+        self.pvp = {'enabled': False}
+        self.combat = {'enabled': False}
+        self.ship_switcher = {'enabled': False}
+        self.quests = {'enabled': False}
+
         self.read()
 
     def read(self):
