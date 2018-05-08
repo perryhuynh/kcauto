@@ -51,6 +51,18 @@ export const setPythonConfig = config => (
       `${String(config.scheduledSleepCombatSleepStartTime.getHours()).padStart(2, '0')}` +
       `${String(config.scheduledSleepCombatSleepStartTime.getMinutes()).padStart(2, '0')}` :
       ''
+    const scheduledStopScriptStopTime = config.scheduledStopScriptStopTime ?
+      `${String(config.scheduledStopScriptStopTime.getHours()).padStart(2, '0')}` +
+      `${String(config.scheduledStopScriptStopTime.getMinutes()).padStart(2, '0')}` :
+      ''
+    const scheduledStopExpeditionStopTime = config.scheduledStopExpeditionStopTime ?
+      `${String(config.scheduledStopExpeditionStopTime.getHours()).padStart(2, '0')}` +
+      `${String(config.scheduledStopExpeditionStopTime.getMinutes()).padStart(2, '0')}` :
+      ''
+    const scheduledStopCombatStopTime = config.scheduledStopCombatStopTime ?
+      `${String(config.scheduledStopCombatStopTime.getHours()).padStart(2, '0')}` +
+      `${String(config.scheduledStopCombatStopTime.getMinutes()).padStart(2, '0')}` :
+      ''
     const combatRepairTimeLimit = config.combatRepairTimeLimit ?
       `${String(config.combatRepairTimeLimit.getHours()).padStart(2, '0')}` +
       `${String(config.combatRepairTimeLimit.getMinutes()).padStart(2, '0')}` :
@@ -118,6 +130,20 @@ export const setPythonConfig = config => (
       `CombatSleepEnabled: ${configTemp.scheduledSleepCombatSleepEnabled}`,
       `CombatSleepStartTime: ${scheduledSleepCombatSleepStartTime}`,
       `CombatSleepLength: ${configTemp.scheduledSleepCombatSleepLength}`,
+      '',
+      '[ScheduledStop]',
+      `ScriptStopEnabled: ${configTemp.scheduledStopScriptStopEnabled}`,
+      `ScriptStopCount: ${configTemp.scheduledStopScriptStopCount}`,
+      `ScriptStopTime: ${scheduledStopScriptStopTime}`,
+      `ExpeditionStopEnabled: ${configTemp.scheduledStopExpeditionStopEnabled}`,
+      `ExpeditionStopMode: ${configTemp.scheduledStopExpeditionStopMode}`,
+      `ExpeditionStopCount: ${configTemp.scheduledStopExpeditionStopCount}`,
+      `ExpeditionStopTime: ${scheduledStopExpeditionStopTime}`,
+      `CombatStopEnabled: ${configTemp.scheduledStopCombatStopEnabled}`,
+      `CombatStopMode: ${configTemp.scheduledStopCombatStopMode}`,
+      `CombatStopCount: ${configTemp.scheduledStopCombatStopCount}`,
+      `CombatStopTime: ${scheduledStopCombatStopTime}`,
+      '',
       '',
       '[Expeditions]',
       `Enabled: ${configTemp.expeditionsEnabled}`,
