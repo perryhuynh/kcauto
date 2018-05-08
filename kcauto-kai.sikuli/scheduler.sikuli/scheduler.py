@@ -96,7 +96,8 @@ class Scheduler(object):
         # script stop section; only stops script
         if self.config.scheduled_stop['script_stop_enabled']:
             if self.config.scheduled_stop['script_stop_count']:
-                delta = datetime.now() - self.stats.start_time // 3600
+                delta = datetime.now() - self.stats.start_time
+                delta = delta.seconds // 3600
                 if delta >= self.config.scheduled_stop['script_stop_count']:
                     Util.log_success(
                         "Ran the designated number of hours. Stopping script.")
