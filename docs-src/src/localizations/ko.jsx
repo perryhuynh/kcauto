@@ -33,7 +33,7 @@ export const ko = {
     scheduledStopExpeditionStopEnabled: null,
     scheduledStopExpeditionStopMode: null,
     scheduledStopExpeditionStopCount: null,
-    schedueldStopExpeditionStopTime: null,
+    scheduledStopExpeditionStopTime: null,
     scheduledStopCombatStopEnabled: null,
     scheduledStopCombatStopMode: null,
     scheduledStopCombatStopCount: null,

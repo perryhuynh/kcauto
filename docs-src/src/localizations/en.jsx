@@ -29,7 +29,7 @@ export const en = {
     scheduledStopExpeditionStopEnabled: 'Enable Expedition Stop',
     scheduledStopExpeditionStopMode: 'Expedition Stop Mode',
     scheduledStopExpeditionStopCount: 'Expedition Stop Count',
-    schedueldStopExpeditionStopTime: 'Expedition Stop Time',
+    scheduledStopExpeditionStopTime: 'Expedition Stop Time',
     scheduledStopCombatStopEnabled: 'Enable Combat Stop',
     scheduledStopCombatStopMode: 'Combat Stop Mode',
     scheduledStopCombatStopCount: 'Combat Stop Count',

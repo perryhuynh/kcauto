@@ -25,7 +25,13 @@ class BodyConfigScheduledStop extends PureComponent {
 
   componentWillReceiveProps = (nextProps) => {
     if (this.props.config !== nextProps.config) {
-      this.setState(nextProps.config)
+      const nextConfig = nextProps.config
+      // manually set the displayed StopTime value since passing in null crashes material-ui-timepicker
+      // https://github.com/TeamWertarbyte/material-ui-time-picker/issues/14
+      nextConfig.scheduledStopScriptStopTimeDisplay = nextConfig.scheduledStopScriptStopTime || new Date()
+      nextConfig.scheduledStopExpeditionStopTimeDisplay = nextConfig.scheduledStopExpeditionStopTime || new Date()
+      nextConfig.scheduledStopCombatStopTimeDisplay = nextConfig.scheduledStopCombatStopTime || new Date()
+      this.setState(nextConfig)
     }
   }
 
@@ -86,20 +92,33 @@ class BodyConfigScheduledStop extends PureComponent {
                   null }
               </Grid>
               <Grid item xs={12} sm={3} className={classes.formGrid}>
-                <TextField
-                  id={`scheduledStop${module}StopCount`}
-                  label={<Localize field={`bodyConfig.scheduledStop${module}StopCount`} />}
-                  value={this.state[`scheduledStop${module}StopCount`]}
-                  onChange={
-                    event => this.setState(
-                      { [`scheduledStop${module}StopCount`]: event.target.value },
-                      () => this.props.callback(this.state)
-                    )}
-                  type='number'
-                  margin='normal'
-                  className={classes.formControl}
-                  disabled={!this.state[`scheduledStop${module}StopEnabled`]}
-                  fullWidth />
+                <FormControl>
+                  <TextField
+                    id={`scheduledStop${module}StopCount`}
+                    label={<Localize field={`bodyConfig.scheduledStop${module}StopCount`} />}
+                    value={this.state[`scheduledStop${module}StopCount`]}
+                    onChange={
+                      event => this.setState(
+                        { [`scheduledStop${module}StopCount`]: event.target.value },
+                        () => this.props.callback(this.state)
+                      )}
+                    type='number'
+                    margin='normal'
+                    className={classes.formControl}
+                    disabled={!this.state[`scheduledStop${module}StopEnabled`]}
+                    fullWidth />
+                  { this.state[`scheduledStop${module}StopEnabled`] && this.state[`scheduledStop${module}StopCount`] ?
+                    <button
+                      onClick={() => this.setState(
+                        { [`scheduledStop${module}StopCount`]: '' },
+                        () => this.props.callback(this.state)
+                      )}
+                      className={`${classes.clearFormIcon} ${classes.clearFormIconIntInput}`}
+                    >
+                      &times;
+                    </button> :
+                    null }
+                </FormControl>
               </Grid>
               <Grid item xs={12} sm={3} className={classes.formGrid}>
                 <FormControl
@@ -113,13 +132,29 @@ class BodyConfigScheduledStop extends PureComponent {
                     id={`scheduledStop${module}StopTime`}
                     mode='24h'
                     autoOk={true}
-                    value={this.state[`scheduledStop${module}StopTime`]}
+                    value={this.state[`scheduledStop${module}StopTimeDisplay`]}
                     onChange={
                       time => this.setState(
-                        { [`scheduledStop${module}StopTime`]: time },
+                        {
+                          [`scheduledStop${module}StopTime`]: time,
+                          [`scheduledStop${module}StopTimeDisplay`]: time,
+                        },
+                        () => this.props.callback(this.state)
+                      )} />
+                  { this.state[`scheduledStop${module}StopEnabled`] && this.state[`scheduledStop${module}StopTime`] ?
+                    <button
+                      onClick={() => this.setState(
+                        {
+                          [`scheduledStop${module}StopTime`]: null,
+                          [`scheduledStop${module}StopTimeDisplay`]: new Date(),
+                        },
                         () => this.props.callback(this.state)
                       )}
-                    fullWidth />
+                      className={classes.clearFormIcon}
+                    >
+                      &times;
+                    </button> :
+                    null }
                 </FormControl>
               </Grid>
             </Fragment>

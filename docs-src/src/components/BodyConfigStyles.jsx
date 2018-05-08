@@ -51,6 +51,21 @@ export const styles = theme => ({
     width: '50%',
     fontFamily: 'Roboto, sans-serif',
   },
+  clearFormIcon: {
+    position: 'absolute',
+    bottom: 5,
+    right: 2,
+    border: 0,
+    background: 'none',
+    fontFamily: 'Roboto, sans-serif',
+    fontSize: 16,
+    outline: 'none',
+    cursor: 'pointer',
+  },
+  clearFormIconIntInput: {
+    bottom: 13,
+    right: 14,
+  },
   flexReset: {
     display: 'flex',
   },
