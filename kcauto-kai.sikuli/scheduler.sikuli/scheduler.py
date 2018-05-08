@@ -140,7 +140,7 @@ class Scheduler(object):
 
         if self.config.scheduled_stop['{}_stop_enabled'.format(mname)]:
             if self.config.scheduled_stop[stop_count]:
-                if (done_count >= self.stop_count_marker[module] +
+                if (done_count >= self.stop_count_marker[mname] +
                         self.config.scheduled_stop[stop_count]):
                     if self.config.scheduled_stop[stop_mode] == 'script':
                         Util.log_success(
