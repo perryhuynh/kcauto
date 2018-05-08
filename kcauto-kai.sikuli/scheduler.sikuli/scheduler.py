@@ -104,11 +104,11 @@ class Scheduler(object):
                     sys.exit(0)
             if self.config.scheduled_stop['script_stop_time']:
                 # set the script stop time if it is notbeing tracked internally
-                if not self.stop_time['script']:
-                    self.stop_time['script'] = (
+                if not self.stop_times['script']:
+                    self.stop_times['script'] = (
                         self._get_next_timer_datetime(
                             self.config.scheduled_stop['script_stop_time']))
-                if datetime.now() > self.stop_time['script']:
+                if datetime.now() > self.stop_times['script']:
                     Util.log_success(
                         "Ran until the designated time. Stopping script.")
                     self.stats.print_stats()
