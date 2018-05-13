@@ -83,7 +83,6 @@ class Menu extends PureComponent {
                 horizontal: 'center',
               }}
               open={dropdownOpen}
-              onRequestClose={() => this.setState({ languageDropdownAnchor: null })}
             >
               {Object.keys(availableLocalizations).map(localization => (
                 <MenuItem
