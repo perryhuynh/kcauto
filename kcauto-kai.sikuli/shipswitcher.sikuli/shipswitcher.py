@@ -8,8 +8,6 @@ from util import Util
 
 
 class ShipSwitcher(object):
-    SHIPS_PER_PAGE = 10
-
     def __init__(self, config, stats, regions, fleets, combat):
         self.config = config
         self.stats = stats
@@ -124,39 +122,10 @@ class ShipSwitcher(object):
         """Method that sets the ship-list related internal counts based on the
         number of ships in the port.
         """
-        self.ship_count = self._get_ship_count()
-        self.ship_page_count = int(
-            ceil(self.ship_count / float(self.SHIPS_PER_PAGE)))
-        self.ship_last_page_count = (
-            self.ship_count % self.SHIPS_PER_PAGE
-            if self.ship_count % self.SHIPS_PER_PAGE is not 0
-            else self.SHIPS_PER_PAGE)
+        self.ship_count, self.ship_page_count, self.ship_last_page_count = (
+            Util.get_shiplist_counts(self.regions))
         Util.log_msg("Detecting {} ships across {} pages.".format(
             self.ship_count, self.ship_page_count))
-
-    def _get_ship_count(self):
-        """Method that returns the number of ships in the port via the counter
-        at the top of the screen when at home. Directly calls the
-        read_ocr_number_text method then strips all non-number characters
-        because Tesseract OCR has issues detecting short number of characters
-        that are also white font on black backgrounds. Trick this by capturing
-        more of the region than is needed (includes a bit of the bucket icon)
-        then stripping out the superfluous/mis-recognized characters.
-
-        Returns:
-            int: number of ships in port
-        """
-        initial_read = Util.read_ocr_number_text(
-            self.regions['ship_counter'], 'shipcount_label.png', 'r', 48)
-        number_read = sub(r"\D", "", initial_read)
-        if len(number_read) > 3:
-            # the read number is too long; truncate anything past the 3rd digit
-            number_read = number_read[:3]
-        number_read = int(number_read)
-        if number_read > 370:
-            # to account for edge cases where a digit is appended at the end
-            number_read = number_read / 10
-        return number_read
 
     def _check_need_to_switch_ship(self, slot, criteria):
         """Method that checks whether or not the ship in the specified slot
@@ -325,11 +294,11 @@ class ShipSwitcher(object):
             start_offset = offset
         if reference == 'end':
             start_offset = self.ship_count - offset + 1
-        page = int(ceil(start_offset / float(self.SHIPS_PER_PAGE)))
+        page = int(ceil(start_offset / float(Globals.SHIPS_PER_PAGE)))
         position = (
-            start_offset % self.SHIPS_PER_PAGE
-            if start_offset % self.SHIPS_PER_PAGE is not 0
-            else self.SHIPS_PER_PAGE)
+            start_offset % Globals.SHIPS_PER_PAGE
+            if start_offset % Globals.SHIPS_PER_PAGE is not 0
+            else Globals.SHIPS_PER_PAGE)
         return (page, [position])
 
     def _filter_ships(self, matched_ships, ship_config):
