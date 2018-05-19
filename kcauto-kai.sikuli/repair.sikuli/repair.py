@@ -23,6 +23,11 @@ class RepairModule(object):
         self.kc_region = self.regions['game']
         self.fleets = fleets
         self.combat = combat
+
+        self.ship_count = 1
+        self.ship_page_count = 1
+        self.ship_last_page_count = 1
+        self.current_shiplist_page = 1
         self.repair_slots = 0
         self.repair_timers = []
 
@@ -62,6 +67,7 @@ class RepairModule(object):
         menu.
         """
         Util.log_msg("Begin repairing fleets.")
+        self._set_shiplist_counts()
 
         # find busy docks and resolve existing repair timers
         self.repair_timers = []  # clear previously tracked timers
@@ -217,6 +223,15 @@ class RepairModule(object):
                     Globals.EXPAND['repair_list']):
                 return True
         return False
+
+    def _set_shiplist_counts(self):
+        """Method that sets the ship-list related internal counts based on the
+        number of ships in the port.
+        """
+        self.ship_count, self.ship_page_count, self.ship_last_page_count = (
+            Util.get_shiplist_counts(self.regions))
+        Util.log_msg("Detecting {} ships across {} pages.".format(
+            self.ship_count, self.ship_page_count))
 
     def _timer_to_datetime(self, timer):
         """Method to convert the passed in timer dict to a datetime object
