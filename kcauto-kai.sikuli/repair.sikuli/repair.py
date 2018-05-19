@@ -35,6 +35,7 @@ class RepairModule(object):
         """Method to navigate to the repair menu.
         """
         Nav.goto(self.regions, 'repair')
+        self.current_shiplist_page = 1
 
     def check_need_to_repair(self):
         """Method to check whether or not ships need to be repaired in the
