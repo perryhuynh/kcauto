@@ -3,13 +3,11 @@ from math import ceil
 from re import sub
 from threading import Thread
 from kca_globals import Globals
-from nav import Nav
+from nav import Nav, NavList
 from util import Util
 
 
 class ShipSwitcher(object):
-    SHIPS_PER_PAGE = 10
-
     def __init__(self, config, stats, regions, fleets, combat):
         self.config = config
         self.stats = stats
@@ -124,39 +122,10 @@ class ShipSwitcher(object):
         """Method that sets the ship-list related internal counts based on the
         number of ships in the port.
         """
-        self.ship_count = self._get_ship_count()
-        self.ship_page_count = int(
-            ceil(self.ship_count / float(self.SHIPS_PER_PAGE)))
-        self.ship_last_page_count = (
-            self.ship_count % self.SHIPS_PER_PAGE
-            if self.ship_count % self.SHIPS_PER_PAGE is not 0
-            else self.SHIPS_PER_PAGE)
+        self.ship_count, self.ship_page_count, self.ship_last_page_count = (
+            Util.get_shiplist_counts(self.regions))
         Util.log_msg("Detecting {} ships across {} pages.".format(
             self.ship_count, self.ship_page_count))
-
-    def _get_ship_count(self):
-        """Method that returns the number of ships in the port via the counter
-        at the top of the screen when at home. Directly calls the
-        read_ocr_number_text method then strips all non-number characters
-        because Tesseract OCR has issues detecting short number of characters
-        that are also white font on black backgrounds. Trick this by capturing
-        more of the region than is needed (includes a bit of the bucket icon)
-        then stripping out the superfluous/mis-recognized characters.
-
-        Returns:
-            int: number of ships in port
-        """
-        initial_read = Util.read_ocr_number_text(
-            self.regions['ship_counter'], 'shipcount_label.png', 'r', 48)
-        number_read = sub(r"\D", "", initial_read)
-        if len(number_read) > 3:
-            # the read number is too long; truncate anything past the 3rd digit
-            number_read = number_read[:3]
-        number_read = int(number_read)
-        if number_read > 370:
-            # to account for edge cases where a digit is appended at the end
-            number_read = number_read / 10
-        return number_read
 
     def _check_need_to_switch_ship(self, slot, criteria):
         """Method that checks whether or not the ship in the specified slot
@@ -209,47 +178,9 @@ class ShipSwitcher(object):
                 'shiplist_sort_arrow.png',
                 Globals.EXPAND['shiplist_sort'])
 
-    def _change_shiplist_page(self, target):
-        """Method that clicks on the arrow and page number navigation at the
-        bottom of the ship list. 'first', 'prev', 'next', 'last' targets will
-        click their respective arrow buttons, while an int target between 1 and
-        5 (inclusive) will click the page number at that position at the bottom
-        of the page (left to right).
-
-        Args:
-            target (str, int): specifies which navigation button to press
-        """
-        if target == 'first':
-            Util.check_and_click(
-                self.regions['lower'], 'page_first.png',
-                Globals.EXPAND['arrow_navigation'])
-        elif target == 'prev':
-            Util.check_and_click(
-                self.regions['lower'], 'page_prev.png',
-                Globals.EXPAND['arrow_navigation'])
-        elif target == 'next':
-            Util.check_and_click(
-                self.regions['lower'], 'page_next.png',
-                Globals.EXPAND['arrow_navigation'])
-        elif target == 'last':
-            Util.check_and_click(
-                self.regions['lower'], 'page_last.png',
-                Globals.EXPAND['arrow_navigation'])
-        elif 1 <= target <= 5:
-            zero_target = target - 1
-            x_start = 506 + (zero_target * 21) + (zero_target * 11)
-            x_stop = x_start + 11
-            y_start = 444
-            y_stop = 452
-
-            Util.click_coords(
-                self.kc_region,
-                Util.randint_gauss(x_start, x_stop),
-                Util.randint_gauss(y_start, y_stop))
-
     def _navigate_to_shiplist_page(self, target_page):
         """Wrapper method that navigates the shiplist to the specified target
-        page from the known current page. Uses _change_shiplist_page for
+        page from the known current page. Uses NavList's navigate_to_page for
         navigation.
 
         Args:
@@ -263,39 +194,9 @@ class ShipSwitcher(object):
                 "Invalid shiplist target page ({}) for number of known pages "
                 "({}).".format(target_page, self.ship_page_count))
 
-        current_page = self.current_shiplist_page
-        # logic that fires off the series of _change_shiplist_page method calls
-        # to navigate to the desired target page from the current page
-        while target_page != current_page:
-            page_delta = target_page - current_page
-            if (target_page <= 5
-                    and (current_page <= 3 or self.ship_page_count <= 5)):
-                self._change_shiplist_page(target_page)
-                current_page = target_page
-            elif (current_page >= self.ship_page_count - 2
-                    and target_page >= self.ship_page_count - 4):
-                self._change_shiplist_page(
-                    abs(self.ship_page_count - target_page - 5))
-                current_page = target_page
-            elif -3 < page_delta < 3:
-                self._change_shiplist_page(3 + page_delta)
-                current_page = current_page + page_delta
-            elif page_delta <= - 3:
-                if target_page <= 5:
-                    self._change_shiplist_page('first')
-                    current_page = 1
-                else:
-                    self._change_shiplist_page('prev')
-                    current_page -= 5
-            elif page_delta >= 3:
-                if target_page > self.ship_page_count - 5:
-                    self._change_shiplist_page('last')
-                    current_page = self.ship_page_count
-                else:
-                    self._change_shiplist_page('next')
-                    current_page += 5
-        self.current_shiplist_page = current_page
-        Util.kc_sleep()
+        self.current_shiplist_page = NavList.navigate_to_page(
+            self.regions, self.ship_page_count, self.current_shiplist_page,
+            target_page)
 
     def _choose_ship_by_position(self, position):
         """Method that clicks the ship in the specified position in the ship
@@ -393,11 +294,11 @@ class ShipSwitcher(object):
             start_offset = offset
         if reference == 'end':
             start_offset = self.ship_count - offset + 1
-        page = int(ceil(start_offset / float(self.SHIPS_PER_PAGE)))
+        page = int(ceil(start_offset / float(Globals.SHIPS_PER_PAGE)))
         position = (
-            start_offset % self.SHIPS_PER_PAGE
-            if start_offset % self.SHIPS_PER_PAGE is not 0
-            else self.SHIPS_PER_PAGE)
+            start_offset % Globals.SHIPS_PER_PAGE
+            if start_offset % Globals.SHIPS_PER_PAGE is not 0
+            else Globals.SHIPS_PER_PAGE)
         return (page, [position])
 
     def _filter_ships(self, matched_ships, ship_config):

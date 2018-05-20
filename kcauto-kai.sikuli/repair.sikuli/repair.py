@@ -2,7 +2,7 @@ from sikuli import Pattern, Location
 from datetime import datetime, timedelta
 from kca_globals import Globals
 from combat import CombatFleet
-from nav import Nav
+from nav import Nav, NavList
 from util import Util
 
 
@@ -23,6 +23,11 @@ class RepairModule(object):
         self.kc_region = self.regions['game']
         self.fleets = fleets
         self.combat = combat
+
+        self.ship_count = 1
+        self.ship_page_count = 1
+        self.ship_last_page_count = 1
+        self.current_shiplist_page = 1
         self.repair_slots = 0
         self.repair_timers = []
 
@@ -30,6 +35,7 @@ class RepairModule(object):
         """Method to navigate to the repair menu.
         """
         Nav.goto(self.regions, 'repair')
+        self.current_shiplist_page = 1
 
     def check_need_to_repair(self):
         """Method to check whether or not ships need to be repaired in the
@@ -62,6 +68,7 @@ class RepairModule(object):
         menu.
         """
         Util.log_msg("Begin repairing fleets.")
+        self._set_shiplist_counts()
 
         # find busy docks and resolve existing repair timers
         self.repair_timers = []  # clear previously tracked timers
@@ -170,34 +177,54 @@ class RepairModule(object):
         valid_damages = CombatFleet.get_damages_at_threshold(
             self.config.combat['repair_limit'])
 
-        for fleet_marker in fleet_markers:
-            fleet_id = int(fleet_marker[17])  # infer from filename
-            fleet_instance = self.fleets[fleet_id]
+        while self.current_shiplist_page <= self.ship_page_count:
+            for fleet_marker in fleet_markers:
+                fleet_id = int(fleet_marker[17])  # infer from filename
+                fleet_instance = self.fleets[fleet_id]
 
-            if fleet_instance.get_damage_counts_at_threshold(
-                    self.config.combat['repair_limit']) == 0:
-                # if this fleet has no longer has ships that need repair,
-                # don't search for its marker
-                continue
+                if fleet_instance.get_damage_counts_at_threshold(
+                        self.config.combat['repair_limit']) == 0:
+                    # if this fleet has no longer has ships that need repair,
+                    # don't search for its marker
+                    continue
 
-            ship_matches = Util.findAll_wrapper(
-                self.regions['repair_shiplist_fleet_markers'],
-                Pattern(fleet_marker).similar(0.9))
-            for ship_match in ship_matches:
-                target_region = ship_match.offset(Location(342, 0)).nearby(5)
+                ship_matches = Util.findAll_wrapper(
+                    self.regions['repair_shiplist_fleet_markers'],
+                    Pattern(fleet_marker).similar(0.9))
+                for ship_match in ship_matches:
+                    target_region = ship_match.offset(
+                        Location(342, 0)).nearby(5)
+                    for damage in valid_damages:
+                        if fleet_instance.damage_counts[damage] == 0:
+                            # if no ships in this fleet are at this damage
+                            # state, don't search for it
+                            continue
+
+                        damage_icon = 'repairlist_dmg_{}.png'.format(damage)
+                        if Util.check_and_click(
+                                target_region, damage_icon,
+                                Globals.EXPAND['repair_list']):
+                            fleet_instance.damage_counts[damage] -= 1
+                            fleet_instance.damage_counts['repair'] += 1
+                            return True
+            if self.current_shiplist_page < self.ship_page_count:
+                # check if there were even any damaged ships on the page
+                damage_exists = False
                 for damage in valid_damages:
-                    if fleet_instance.damage_counts[damage] == 0:
-                        # if no ships in this fleet are at this damage state,
-                        # don't search for it
-                        continue
-
                     damage_icon = 'repairlist_dmg_{}.png'.format(damage)
-                    if Util.check_and_click(
-                            target_region, damage_icon,
-                            Globals.EXPAND['repair_list']):
-                        fleet_instance.damage_counts[damage] -= 1
-                        fleet_instance.damage_counts['repair'] += 1
-                        return True
+                    if self.regions['right'].exists(damage_icon):
+                        damage_exists = True
+                        break
+                if damage_exists:
+                    # did not select a ship but damaged ships exist; go to next
+                    # page
+                    self._navigate_to_shiplist_page(
+                        self.current_shiplist_page + 1)
+                else:
+                    # no more ships of valid damage state exists in list;
+                    # return to the first page
+                    self._navigate_to_shiplist_page('first')
+                    return False
         return False
 
     def _pick_any_ship(self):
@@ -217,6 +244,35 @@ class RepairModule(object):
                     Globals.EXPAND['repair_list']):
                 return True
         return False
+
+    def _set_shiplist_counts(self):
+        """Method that sets the ship-list related internal counts based on the
+        number of ships in the port.
+        """
+        self.ship_count, self.ship_page_count, self.ship_last_page_count = (
+            Util.get_shiplist_counts(self.regions))
+        Util.log_msg("Detecting {} ships across {} pages.".format(
+            self.ship_count, self.ship_page_count))
+
+    def _navigate_to_shiplist_page(self, target_page):
+        """Wrapper method that navigates the shiplist to the specified target
+        page from the known current page. Uses NavList's navigate_to_page for
+        navigation.
+
+        Args:
+            target_page (int): page to navigate to
+
+        Raises:
+            ValueError: invalid target_page specified
+        """
+        if target_page > self.ship_page_count:
+            raise ValueError(
+                "Invalid shiplist target page ({}) for number of known pages "
+                "({}).".format(target_page, self.ship_page_count))
+
+        self.current_shiplist_page = NavList.navigate_to_page(
+            self.regions, self.ship_page_count, self.current_shiplist_page,
+            target_page, 'repair')
 
     def _timer_to_datetime(self, timer):
         """Method to convert the passed in timer dict to a datetime object
