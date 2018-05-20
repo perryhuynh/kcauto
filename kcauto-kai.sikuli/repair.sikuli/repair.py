@@ -208,8 +208,23 @@ class RepairModule(object):
                             fleet_instance.damage_counts['repair'] += 1
                             return True
             if self.current_shiplist_page < self.ship_page_count:
-                # did not return a value; switch page
-                self._navigate_to_shiplist_page(self.current_shiplist_page + 1)
+                # check if there were even any damaged ships on the page
+                damage_exists = False
+                for damage in valid_damages:
+                    damage_icon = 'repairlist_dmg_{}.png'.format(damage)
+                    if self.regions['right'].exists(damage_icon):
+                        damage_exists = True
+                        break
+                if damage_exists:
+                    # did not select a ship but damaged ships exist; go to next
+                    # page
+                    self._navigate_to_shiplist_page(
+                        self.current_shiplist_page + 1)
+                else:
+                    # no more ships of valid damage state exists in list;
+                    # return to the first page
+                    self._navigate_to_shiplist_page('first')
+                    return False
         return False
 
     def _pick_any_ship(self):
