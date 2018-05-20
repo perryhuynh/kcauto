@@ -20,7 +20,7 @@ Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)
 
 > kcauto-kai is meant for educational purposes only! Actual and prolonged usage of kcauto-kai may result in your account being banned. Remember that botting is against rules! The developer of kcauto-kai makes no guarantee that the end-user will not be caught and penalized for using kcauto-kai, and does not take any responsibility for any repercussions that befall the end-user. Non-stop expeditions and sorties increases the chances of being flagged and banned for botting.
 
-> In addition, although unlikely, you may lose ships if you allow kcauto-kai to conduct combat sorties. While kcauto-kai has been painstakingly designed to reduce the chances of this happening, the developer of kcauto-kai does not take responsibility regarding loss of ships and/or resources.
+> In addition, although unlikely, you may lose ships if you allow kcauto-kai to conduct combat sorties. While kcauto-kai has been painstakingly designed to reduce the chances of this happening, the developer of kcauto-kai does not take responsibility regarding loss of ships and/or resources. Any browser/viewer features that obscure parts of the game screen (such as subtitles) has the ability to hinder proper damage state detection, which may lead to loss of ships.
 
 ---
 
