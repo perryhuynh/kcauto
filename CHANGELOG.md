@@ -2,6 +2,7 @@
 
 * Implements ScheduledStop functionality
 * Support fleet-specific ship repairs past the first page of the repair screen's ship list
+* Optimizations and bugfixes to node detection in live combat engine
 * Bugfix to ShipSwitcher being stuck on the last page
 * Bugfix to Expedition module crash when attempting to sortie a fleet with ships under repair
 
