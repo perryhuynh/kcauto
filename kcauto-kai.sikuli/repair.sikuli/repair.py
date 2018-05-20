@@ -257,7 +257,7 @@ class RepairModule(object):
 
         self.current_shiplist_page = NavList.navigate_to_page(
             self.regions, self.ship_page_count, self.current_shiplist_page,
-            target_page)
+            target_page, 'repair')
 
     def _timer_to_datetime(self, timer):
         """Method to convert the passed in timer dict to a datetime object

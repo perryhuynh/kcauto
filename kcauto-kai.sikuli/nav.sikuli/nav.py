@@ -304,9 +304,17 @@ class NavList(object):
     the fleet comp and repair screens. All methods are class and static
     methods; NavList should not be directly instantiated.
     """
+    # offset of navigation controls, based off of the ship comp UI's ship list,
+    # in x, y pixel format
+    OFFSET = {
+        'shipcomp': (0, 0),
+        'repair': (4, 8)
+    }
 
     @classmethod
-    def navigate_to_page(cls, regions, page_count, current_page, target_page):
+    def navigate_to_page(
+            cls, regions, page_count, current_page, target_page,
+            offset_mode='shipcomp'):
         """Method that navigates the shiplist to the specified target page from
         the specified current page. Uses _change_page for navigation.
 
@@ -315,6 +323,9 @@ class NavList(object):
             page_count (int): total number of pages
             current_page (int): current page
             target_page (int): page to navigate to
+            offset_mode (str): 'shipcomp' or 'repair', depending on what
+                offsets to use for the navigation control's location; should
+                match keys in OFFSET class dictionary
 
         Returns:
             int: new current page post-navigation
@@ -324,34 +335,37 @@ class NavList(object):
         while target_page != current_page:
             page_delta = target_page - current_page
             if target_page <= 5 and (current_page <= 3 or page_count <= 5):
-                cls._change_page(regions, target_page)
+                cls._change_page(regions, target_page, cls.OFFSET[offset_mode])
                 current_page = target_page
             elif (current_page >= page_count - 2
                     and target_page >= page_count - 4):
-                cls._change_page(regions, abs(page_count - target_page - 5))
+                cls._change_page(
+                    regions, abs(page_count - target_page - 5),
+                    cls.OFFSET[offset_mode])
                 current_page = target_page
             elif -3 < page_delta < 3:
-                cls._change_page(regions, 3 + page_delta)
+                cls._change_page(
+                    regions, 3 + page_delta, cls.OFFSET[offset_mode])
                 current_page = current_page + page_delta
             elif page_delta <= - 3:
                 if target_page <= 5:
-                    cls._change_page(regions, 'first')
+                    cls._change_page(regions, 'first', cls.OFFSET[offset_mode])
                     current_page = 1
                 else:
-                    cls._change_page(regions, 'prev')
+                    cls._change_page(regions, 'prev', cls.OFFSET[offset_mode])
                     current_page -= 5
             elif page_delta >= 3:
                 if target_page > page_count - 5:
-                    cls._change_page(regions, 'last')
+                    cls._change_page(regions, 'last', cls.OFFSET[offset_mode])
                     current_page = page_count
                 else:
-                    cls._change_page(regions, 'next')
+                    cls._change_page(regions, 'next', cls.OFFSET[offset_mode])
                     current_page += 5
         Util.kc_sleep()
         return current_page
 
     @staticmethod
-    def _change_page(regions, target):
+    def _change_page(regions, target, offset):
         """Method that clicks on the arrow and page number navigation at the
         bottom of the ship list. 'first', 'prev', 'next', 'last' targets will
         click their respective arrow buttons, while an int target between 1 and
@@ -361,6 +375,8 @@ class NavList(object):
         Args:
             regions (dict): dict of regions
             target (str, int): specifies which navigation button to press
+            offset_mode (tuple): tuple of x, y pixel offsets as defined by
+                offset_mode and the OFFSET class dictionary
         """
         if target == 'first':
             Util.check_and_click(
@@ -380,10 +396,10 @@ class NavList(object):
                 Globals.EXPAND['arrow_navigation'])
         elif 1 <= target <= 5:
             zero_target = target - 1
-            x_start = 506 + (zero_target * 21) + (zero_target * 11)
-            x_stop = x_start + 11
-            y_start = 444
-            y_stop = 452
+            x_start = 506 + (zero_target * 21) + (zero_target * 11) + offset[0]
+            x_stop = x_start + 11 + offset[0]
+            y_start = 444 + offset[1]
+            y_stop = 452 + offset[1]
 
             Util.click_coords(
                 regions['game'],
