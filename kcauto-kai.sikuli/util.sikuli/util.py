@@ -7,9 +7,10 @@ import org.sikuli.script.Match as JMatch
 import org.sikuli.script.Pattern as JPattern
 from time import strftime
 from random import uniform, gauss
+from math import ceil
 from time import sleep
 from datetime import timedelta
-from re import match
+from re import match, sub
 from kca_globals import Globals
 
 
@@ -218,6 +219,45 @@ class Util(object):
             cls.log_warning(
                 "Got invalid number ({})... trying again!".format(number))
             sleep(0.2)
+
+    @classmethod
+    def get_shiplist_counts(cls, regions):
+        """Method that gets the ship-list related counts based on the number of
+        ships in the port.
+        """
+        ship_count = cls._get_ship_count(regions)
+        ship_page_count = int(
+            ceil(ship_count / float(Globals.SHIPS_PER_PAGE)))
+        ship_last_page_count = (
+            ship_count % Globals.SHIPS_PER_PAGE
+            if ship_count % Globals.SHIPS_PER_PAGE is not 0
+            else Globals.SHIPS_PER_PAGE)
+        return (ship_count, ship_page_count, ship_last_page_count)
+
+    @staticmethod
+    def _get_ship_count(regions):
+        """Method that returns the number of ships in the port via the counter
+        at the top of the screen when at home. Directly calls the
+        read_ocr_number_text method then strips all non-number characters
+        because Tesseract OCR has issues detecting short number of characters
+        that are also white font on black backgrounds. Trick this by capturing
+        more of the region than is needed (includes a bit of the bucket icon)
+        then stripping out the superfluous/mis-recognized characters.
+
+        Returns:
+            int: number of ships in port
+        """
+        initial_read = Util.read_ocr_number_text(
+            regions['ship_counter'], 'shipcount_label.png', 'r', 48)
+        number_read = sub(r"\D", "", initial_read)
+        if len(number_read) > 3:
+            # the read number is too long; truncate anything past the 3rd digit
+            number_read = number_read[:3]
+        number_read = int(number_read)
+        if number_read > 370:
+            # to account for edge cases where a digit is appended at the end
+            number_read = number_read / 10
+        return number_read
 
     @staticmethod
     def findAll_wrapper(region, pattern):

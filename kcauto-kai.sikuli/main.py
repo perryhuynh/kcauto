@@ -79,7 +79,7 @@ class KCAutoKai(object):
             self.active_fleets = {}
             self.combat_fleets = {}
             self.expedition_fleets = {}
-            self.scheduler.reset_scheduled_sleep_all()
+            self.scheduler.reset_scheduler()
             self._focus_kancolle()
 
             # initialize pvp module
@@ -114,9 +114,13 @@ class KCAutoKai(object):
                 self.modules['repair'] = RepairModule(
                     self.config, self.stats, self.regions, self.combat_fleets,
                     self.modules['combat'])
+
+                # let scheduler be aware of combat module
+                self.scheduler.combat = self.modules['combat']
             else:
                 self.modules['combat'] = None
                 self.modules['repair'] = None
+                self.scheduler.combat = None
 
             # initialize ship switcher module
             if self.config.ship_switcher['enabled'] and self.modules['combat']:
@@ -147,8 +151,12 @@ class KCAutoKai(object):
                 self.modules['expedition'] = ExpeditionModule(
                     self.config, self.stats, self.regions,
                     self.expedition_fleets)
+
+                # let scheduler be aware of expedition module
+                self.scheduler.expedition = self.modules['expedition']
             else:
                 self.modules['expedition'] = None
+                self.scheduler.expedition = None
 
             # initialize resupply module
             self.modules['resupply'] = ResupplyModule(
@@ -393,7 +401,7 @@ class KCAutoKai(object):
             bool: True if kcauto-kai should be conducting scheduled sleep;
                 False otherwise
         """
-        return self.scheduler.conduct_module_sleep('kca')
+        return self.scheduler.conduct_module_sleep('script')
 
     def conduct_module_sleeps(self):
         """Method that checks the sleep status of the expedition and combat
@@ -425,6 +433,12 @@ class KCAutoKai(object):
                 Util.log_success("Resuming kcauto-kai!")
                 self.paused = False
         return False
+
+    def conduct_scheduled_stops(self):
+        """Method that checks and stops the script and modules; main logic
+        deferred to the Scheduler module.
+        """
+        self.scheduler.conduct_scheduled_stops()
 
     def print_cycle_stats(self):
         """Method to print a summary of the stats stored in the different

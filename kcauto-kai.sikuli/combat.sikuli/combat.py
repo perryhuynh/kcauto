@@ -342,6 +342,8 @@ class CombatModule(object):
 
         # primary combat loop
         sortieing = True
+        self.current_position = [0, 0]
+        self.current_node = None
         self.nodes_run = []
         disable_combat = False
         post_combat_screens = []
@@ -350,7 +352,7 @@ class CombatModule(object):
 
             # stop the background observer if no longer on the map screen
             if self.config.combat['engine'] == 'live':
-                self.observeRegion.stopObserver()
+                self._stop_fleet_observer()
 
             if at_node:
                 # arrived at combat node
@@ -533,6 +535,7 @@ class CombatModule(object):
                         'formation_combinedfleet_1.png')):
                 # check for both single fleet and combined fleet formations
                 # since combined fleets can have single fleet battles
+                self._stop_fleet_observer()
                 self._print_current_node()
                 formations = self._resolve_formation()
                 for formation in formations:
@@ -560,6 +563,7 @@ class CombatModule(object):
                     or self.fast_kc_region.exists('combat_nb_fight.png')):
                 # post-combat or night battle select without selecting a
                 # formation
+                self._stop_fleet_observer()
                 self._print_current_node()
                 Util.rejigger_mouse(self.regions, 'lbas')
                 at_node = True
@@ -567,9 +571,11 @@ class CombatModule(object):
             elif self.regions['lower_right_corner'].exists(
                     'combat_flagship_dmg.png'):
                 # flagship retreat
+                self._stop_fleet_observer()
                 return (False, False)
             elif self.regions['lower_right_corner'].exists('next_alt.png'):
                 # resource node end
+                self._stop_fleet_observer()
                 return (False, False)
 
     def _run_loop_during_battle(self):

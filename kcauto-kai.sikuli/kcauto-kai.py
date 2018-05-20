@@ -75,6 +75,8 @@ while True:
 
             kcauto_kai.conduct_module_sleeps()
 
+            kcauto_kai.conduct_scheduled_stops()
+
             kcauto_kai.print_cycle_stats()
 
         sleep(Globals.LOOP_SLEEP_LENGTH)

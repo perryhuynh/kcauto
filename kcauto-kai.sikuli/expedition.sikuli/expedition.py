@@ -117,9 +117,10 @@ class ExpeditionModule(object):
         if fleet.fleet_id != 2:
             Fleet.switch(self.regions['top_submenu'], fleet.fleet_id)
 
-        if self.kc_region.exists('ship_state_busy.png'):
-            # fleet is already on an expedition
-            Util.log_warning('Fleet not available. Check back later')
+        if (self.regions['right'].exists('ship_state_busy.png') or
+                self.regions['right'].exists('ship_state_dmg_repair.png')):
+            # fleet is already on an expedition or ship is being repaired
+            Util.log_warning('Fleet or ship not available. Check back later')
             fleet.update_return_time(0, 15)
             Util.wait_and_click_and_wait(
                 self.kc_region,

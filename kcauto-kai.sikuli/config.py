@@ -11,39 +11,7 @@ from util import Util
 class Config(object):
     """Config module that reads and validates the config to be passed to
     kcauto-kai
-
-    Attributes:
-        changed (bool): indicates whether or not the config has changed from
-            the previously stored config
-        combat (dict): dict of combat-related config settings
-        config_file (str): name of config file
-        expeditions (dict): dict of expedition-related config settings
-        expeditions_all (list): list of all expeditions to be passed in to the
-            expedition module
-        initialized (bool): indicates whether or not kcauto-kai has been
-            initialized with the current config
-        jst_offset (int): hours offset from JST
-        ok (bool): indicates whether or not the recently passed in config
-            passes validation or not
-        program (str): name of window Kantai Collection is running in
-        pvp (dict): dict of pvp-related config settings
-        quests (dict): dict of quest-related config settings
-        scheduled_sleep (dict): dict of scheduled sleep-related config settings
     """
-
-    ok = False
-    initialized = False
-    changed = False
-    program = ''
-    jst_offset = 0
-    pause = False
-
-    scheduled_sleep = {}
-    expeditions = {'enabled': False}
-    pvp = {'enabled': False}
-    combat = {'enabled': False}
-    ship_switcher = {'enabled': False}
-    quests = {'enabled': False}
 
     def __init__(self, config_file):
         """Initializes the config file by changing the working directory to the
@@ -55,7 +23,22 @@ class Config(object):
         Util.log_msg("Initializing config module")
         os.chdir(getBundlePath())
         os.chdir('..')
+
         self.config_file = config_file
+        self.ok = False
+        self.initialized = False
+        self.changed = False
+        self.program = ''
+        self.jst_offset = 0
+        self.pause = False
+        self.scheduled_sleep = {}
+        self.scheduled_stop = {}
+        self.expeditions = {'enabled': False}
+        self.pvp = {'enabled': False}
+        self.combat = {'enabled': False}
+        self.ship_switcher = {'enabled': False}
+        self.quests = {'enabled': False}
+
         self.read()
 
     def read(self):
@@ -72,6 +55,7 @@ class Config(object):
 
         self._read_general(config)
         self._read_scheduled_sleep(config)
+        self._read_scheduled_stop(config)
 
         if config.getboolean('Expeditions', 'Enabled'):
             self._read_expeditions(config)
@@ -124,6 +108,16 @@ class Config(object):
         if not self.initialized:
             Util.log_msg("Validating config")
         self.ok = True
+
+        if self.scheduled_stop:
+            for module in ('expedition', 'combat'):
+                stop_key = '{}_stop_mode'.format(module)
+                if self.scheduled_stop[stop_key] not in (
+                        '', 'script', 'module'):
+                    Util.log_error(
+                        "Invalid Stop Mode for {}: '{}'".format(
+                            module.title(), self.scheduled_stop[stop_key]))
+                    self.ok = False
 
         if self.expeditions['enabled']:
             valid_expeditions = range(1, 41) + [
@@ -284,17 +278,48 @@ class Config(object):
         Args:
             config (ConfigParser): ConfigParser instance
         """
-        for module in ('kca', 'expedition', 'combat'):
-            module_cfg = '' if module == 'kca' else module.title()
+        for module in ('script', 'expedition', 'combat'):
+            module_title = module.title()
             self.scheduled_sleep['{}_sleep_enabled'.format(module)] = (
                 config.getboolean(
-                    'ScheduledSleep', '{}SleepEnabled'.format(module_cfg)))
+                    'ScheduledSleep', '{}SleepEnabled'.format(module_title)))
             self.scheduled_sleep['{}_sleep_start_time'.format(module)] = (
                 "{:04d}".format(config.getint(
-                    'ScheduledSleep', '{}SleepStartTime'.format(module_cfg))))
+                    'ScheduledSleep', '{}SleepStartTime'.format(
+                        module_title))))
             self.scheduled_sleep['{}_sleep_length'.format(module)] = (
                 config.getfloat(
-                    'ScheduledSleep', '{}SleepLength'.format(module_cfg)))
+                    'ScheduledSleep', '{}SleepLength'.format(module_title)))
+
+    def _read_scheduled_stop(self, config):
+        """Method to parse the Scheduled Stop settings of the passed in
+        config.
+
+        Args:
+            config (ConfigParser): ConfigParser instance
+        """
+        for module in ('script', 'expedition', 'combat'):
+            module_title = module.title()
+            self.scheduled_stop['{}_stop_enabled'.format(module)] = (
+                config.getboolean(
+                    'ScheduledStop', '{}StopEnabled'.format(module_title)))
+            try:
+                self.scheduled_stop['{}_stop_count'.format(module)] = (
+                    config.getint(
+                        'ScheduledStop', '{}StopCount'.format(module_title)))
+            except ValueError:
+                self.scheduled_stop['{}_stop_count'.format(module)] = None
+            try:
+                self.scheduled_stop['{}_stop_time'.format(module)] = (
+                    "{:04d}".format(config.getint(
+                        'ScheduledStop', '{}StopTime'.format(
+                            module_title))))
+            except ValueError:
+                self.scheduled_stop['{}_stop_time'.format(module)] = None
+            if module in ('expedition', 'combat'):
+                self.scheduled_stop['{}_stop_mode'.format(module)] = (
+                    config.get(
+                        'ScheduledStop', '{}StopMode'.format(module_title)))
 
     def _read_expeditions(self, config):
         """Method to parse the Expedition settings of the passed in config.
@@ -324,7 +349,7 @@ class Config(object):
             self.expeditions.pop('fleet4', None)
 
     def _read_pvp(self, config):
-        """Method to parse the Ovo settings of the passed in config.
+        """Method to parse the PvP settings of the passed in config.
 
         Args:
             config (ConfigParser): ConfigParser instance

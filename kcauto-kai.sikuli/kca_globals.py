@@ -22,6 +22,9 @@ class Globals(object):
     # how many combat sorties to conduct when sparkling
     SPARKLING_RUN_COUNT = 3
 
+    # how many ships are in a shiplist page; static unless the game UI changes
+    SHIPS_PER_PAGE = 10
+
     # area expansion presets; format is in [left, right, up, down] relative to
     # the center of the match
     EXPAND = {
