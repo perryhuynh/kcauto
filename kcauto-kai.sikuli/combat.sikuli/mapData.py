@@ -42,6 +42,9 @@ class MapData(object):
         for node in map_data['nodes']:
             self.nodes[node] = Node(node, map_data['nodes'][node])
 
+        # fallback node
+        self.unknown_node = UnknownNode()
+
     def find_node_by_pos(self, x, y):
         """Method to loop through the nodes on the map and find the node
         matching the provided x and y coordinates.
@@ -199,3 +202,19 @@ class Node(object):
 
     def __str__(self):
         return self.name
+
+
+class UnknownNode(Node):
+    def __init__(self):
+        self.name = 'Unknown Node'
+        self.coords = ['?', '?']
+        self.all_coords = [[0, 0]]
+        self.types = []
+        self.formation = ''
+        self.night_battle = False
+
+    def reset_node(self):
+        self.coords = ['?', '?']
+
+    def __str__(self):
+        return '{} ({}, {})'.format(self.name, self.coords[0], self.coords[1])
