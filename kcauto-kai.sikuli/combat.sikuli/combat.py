@@ -632,9 +632,7 @@ class CombatModule(object):
                 self.current_position[0], self.current_position[1],
                 fleet_match))
         """
-        matched_node = self.map.find_node_by_pos(*self.current_position)
-        self.current_node = (
-            matched_node if matched_node is not None else self.current_node)
+        self.current_node = self.map.find_node_by_pos(*self.current_position)
         event.repeat()
 
     def _update_fleet_position_once(self):
@@ -657,9 +655,7 @@ class CombatModule(object):
                 self.current_position[0], self.current_position[1],
                 fleet_match))
         """
-        matched_node = self.map.find_node_by_pos(*self.current_position)
-        self.current_node = (
-            matched_node if matched_node is not None else self.current_node)
+        self.current_node = self.map.find_node_by_pos(*self.current_position)
         Util.log_msg("Fleet at node {}.".format(self.current_node))
 
     def _increment_nodes_run(self):
