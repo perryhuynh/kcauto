@@ -351,10 +351,6 @@ class CombatModule(object):
         while sortieing:
             at_node, dialogue_click = self._run_loop_between_nodes()
 
-            # stop the background observer if no longer on the map screen
-            if self.config.combat['engine'] == 'live':
-                self._stop_fleet_observer()
-
             if at_node:
                 # arrived at combat node
                 self._increment_nodes_run()

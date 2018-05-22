@@ -212,7 +212,7 @@ class UnknownNode(Node):
         """Extends the Node class to make an UnknownNode; a placeholder node
         object that is used when node detection fails.
         """
-        self.name = 'Unknown Node'
+        self.name = 'Unknown'
         self.coords = ['?', '?']
         self.all_coords = [[0, 0]]
         self.types = []
