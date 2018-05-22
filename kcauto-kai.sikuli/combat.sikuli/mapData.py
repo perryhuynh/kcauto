@@ -54,13 +54,16 @@ class MapData(object):
             y (int): y coordinate of where to search
 
         Returns:
-            Node or None: Node object for node that exists at the coordinates,
-                otherwise None if no matching Node object was found
+            Node or UnknownNode: Node object for node that exists at the
+                coordinates, otherwise the UnknownNode instance with the passed
+                in coordinates
         """
         for node in self.nodes:
             if self.nodes[node].coord_match(x, y):
                 return self.nodes[node]
-        return None
+        # couldn't match on node on coords, update and return the unknown node
+        self.unknown_node.coords = [x, y]
+        return self.unknown_node
 
     def resolve_formation(self, node):
         """Method for determining which node to engage the enemy with on the
@@ -206,6 +209,9 @@ class Node(object):
 
 class UnknownNode(Node):
     def __init__(self):
+        """Extends the Node class to make an UnknownNode; a placeholder node
+        object that is used when node detection fails.
+        """
         self.name = 'Unknown Node'
         self.coords = ['?', '?']
         self.all_coords = [[0, 0]]
@@ -213,7 +219,9 @@ class UnknownNode(Node):
         self.formation = ''
         self.night_battle = False
 
-    def reset_node(self):
+    def reset_unknown_node(self):
+        """Method that resets the coordinates of the unknown node to default.
+        """
         self.coords = ['?', '?']
 
     def __str__(self):

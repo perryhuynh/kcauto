@@ -44,7 +44,7 @@ class CombatModule(object):
         self.map = MapData(
             self.config.combat['map'], self.regions, self.config)
         self.current_position = [0, 0]
-        self.current_node = None
+        self.current_node = self.map.unknown_node
         self.nodes_run = []
 
         self.lbas = (
@@ -343,7 +343,8 @@ class CombatModule(object):
         # primary combat loop
         sortieing = True
         self.current_position = [0, 0]
-        self.current_node = None
+        self.current_node = self.map.unknown_node
+        self.current_node.reset_unknown_node()
         self.nodes_run = []
         disable_combat = False
         post_combat_screens = []
