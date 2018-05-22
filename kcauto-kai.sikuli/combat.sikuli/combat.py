@@ -621,14 +621,11 @@ class CombatModule(object):
             fleet_match.y + fleet_match.h - self.kc_region.y
         ]
 
+        self.current_node = self.map.find_node_by_pos(*self.current_position)
         # debug console print for the observer's found position of the fleet
         """
-        print(
-            "{}, {} ({})".format(
-                self.current_position[0], self.current_position[1],
-                fleet_match))
+        print("{} {}".format(self.current_position, self.current_node))
         """
-        self.current_node = self.map.find_node_by_pos(*self.current_position)
         event.repeat()
 
     def _update_fleet_position_once(self):
@@ -644,14 +641,11 @@ class CombatModule(object):
             fleet_match.y + fleet_match.h - self.kc_region.y
         ]
 
+        self.current_node = self.map.find_node_by_pos(*self.current_position)
         # debug console print for the method's found position of the fleet
         """
-        print(
-            "{}, {} ({})".format(
-                self.current_position[0], self.current_position[1],
-                fleet_match))
+        print("{} {}".format(self.current_position, self.current_node))
         """
-        self.current_node = self.map.find_node_by_pos(*self.current_position)
         Util.log_msg("Fleet at node {}.".format(self.current_node))
 
     def _increment_nodes_run(self):
