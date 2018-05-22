@@ -5,11 +5,6 @@ from util import Util
 
 
 class MapData(object):
-    location = None
-    world = None
-    subworld = None
-    nodes = None
-
     def __init__(self, location, regions, config):
         """Initializes a MapData instance. Holds the map and node information
         of the specified map, as well as methods for resolving formation
@@ -148,13 +143,6 @@ class MapData(object):
 
 
 class Node(object):
-    name = ''
-    coords = None
-    all_coords = None
-    types = None
-    formation = ''
-    night_battle = None
-
     def __init__(self, name, node_data):
         """Initializes a Node instance for a map.
 
