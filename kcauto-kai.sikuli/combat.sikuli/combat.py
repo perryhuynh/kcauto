@@ -44,7 +44,7 @@ class CombatModule(object):
         self.map = MapData(
             self.config.combat['map'], self.regions, self.config)
         self.current_position = [0, 0]
-        self.current_node = None
+        self.current_node = self.map.unknown_node
         self.nodes_run = []
 
         self.lbas = (
@@ -343,16 +343,13 @@ class CombatModule(object):
         # primary combat loop
         sortieing = True
         self.current_position = [0, 0]
-        self.current_node = None
+        self.current_node = self.map.unknown_node
+        self.current_node.reset_unknown_node()
         self.nodes_run = []
         disable_combat = False
         post_combat_screens = []
         while sortieing:
             at_node, dialogue_click = self._run_loop_between_nodes()
-
-            # stop the background observer if no longer on the map screen
-            if self.config.combat['engine'] == 'live':
-                self._stop_fleet_observer()
 
             if at_node:
                 # arrived at combat node
@@ -624,16 +621,11 @@ class CombatModule(object):
             fleet_match.y + fleet_match.h - self.kc_region.y
         ]
 
+        self.current_node = self.map.find_node_by_pos(*self.current_position)
         # debug console print for the observer's found position of the fleet
         """
-        print(
-            "{}, {} ({})".format(
-                self.current_position[0], self.current_position[1],
-                fleet_match))
+        print("{} {}".format(self.current_position, self.current_node))
         """
-        matched_node = self.map.find_node_by_pos(*self.current_position)
-        self.current_node = (
-            matched_node if matched_node is not None else self.current_node)
         event.repeat()
 
     def _update_fleet_position_once(self):
@@ -649,16 +641,11 @@ class CombatModule(object):
             fleet_match.y + fleet_match.h - self.kc_region.y
         ]
 
+        self.current_node = self.map.find_node_by_pos(*self.current_position)
         # debug console print for the method's found position of the fleet
         """
-        print(
-            "{}, {} ({})".format(
-                self.current_position[0], self.current_position[1],
-                fleet_match))
+        print("{} {}".format(self.current_position, self.current_node))
         """
-        matched_node = self.map.find_node_by_pos(*self.current_position)
-        self.current_node = (
-            matched_node if matched_node is not None else self.current_node)
         Util.log_msg("Fleet at node {}.".format(self.current_node))
 
     def _increment_nodes_run(self):
