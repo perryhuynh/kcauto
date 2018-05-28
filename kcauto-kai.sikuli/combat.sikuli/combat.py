@@ -106,7 +106,7 @@ class CombatModule(object):
         self.stats.increment_combat_attempted()
 
         if not self._select_combat_map():
-            # LBAS fatigue check failed; cancel sortie
+            # Port check or LBAS fatigue check failed; cancel sortie
             return False
 
         if self._conduct_pre_sortie_checks():
@@ -154,11 +154,12 @@ class CombatModule(object):
 
     def _select_combat_map(self):
         """Method that goes through the menu and chooses the specified map to
-        sortie to. LBAS checks are also resolved at this point.
+        sortie to. Non-event port checks and LBAS checks are also resolved at
+        this point.
 
         Returns:
             bool: True if the combat map is successfully chosen and started,
-                False if an LBAS check failed
+                False if a port or LBAS check failed
         """
         Util.rejigger_mouse(self.regions, 'top')
 
@@ -209,7 +210,10 @@ class CombatModule(object):
                 Util.kc_sleep(2)
             Util.wait_and_click(self.kc_region, 'c_world_{}-{}.png'.format(
                 self.map.world, self.map.subworld))
-        Util.wait_and_click(self.regions['lower_right'], 'sortie_select.png')
+        self.regions['lower_right'].wait('sortie_select.png')
+        if self._delay_from_port_check('select'):
+            return False
+        Util.check_and_click(self.regions['lower_right'], 'sortie_select.png')
         Util.rejigger_mouse(self.regions, 'top')
         return True
 
@@ -280,15 +284,8 @@ class CombatModule(object):
             self.primary_fleet.force_check_repair = True
             cancel_sortie = True
 
-        if ('PortCheck' in self.config.combat['misc_options'] or
-                self.map.world == 'event'):
-            port_full_notice = (
-                'warning_port_full_event.png'
-                if self.map.world == 'event' else 'warning_port_full.png')
-            if self.regions['lower'].exists(port_full_notice):
-                Util.log_warning("Canceling combat sortie: port is full.")
-                self.set_next_combat_time({'minutes': 15})
-                cancel_sortie = True
+        if self._delay_from_port_check('sortie'):
+            cancel_sortie = True
 
         if cancel_sortie:
             return False
@@ -323,6 +320,37 @@ class CombatModule(object):
             fleet.print_fatigue_states()
             return (needs_resupply, fleet_damages, fleet_fatigue)
         return (needs_resupply, fleet_damages, {})
+
+    def _delay_from_port_check(self, context):
+        """Checks to see if the sortie needs to be delayed due to a full port
+        and the config that checks for this, or the map being an event map.
+
+        Args:
+            context (str): 'select' or 'sortie', depending on which screen the
+                warning messages are being checked at
+
+        Returns:
+            bool: True if the sortie needs to be cancelled and delayed, False
+                otherwise
+        """
+        full_port = False
+        if ('PortCheck' in self.config.combat['misc_options'] or
+                self.map.world == 'event'):
+            # this logic may need to be reworked; the event-time messaging
+            # is a bit uncertain at the moment, since this is being revised not
+            # during an event
+            if context == 'select' and self.map.world != 'event':
+                if self.regions['right'].exists('warning_port_full.png'):
+                    full_port = True
+            elif context == 'sortie' and self.map.world == 'event':
+                if self.regions['lower'].exists('warning_port_full_event.png'):
+                    full_port = True
+        if full_port:
+            Util.log_warning("Canceling combat sortie: port is full.")
+            self.set_next_combat_time({'minutes': 15})
+            return True
+        else:
+            return False
 
     def _run_combat_logic(self):
         """Method that contains the logic and fires off necessary child methods
