@@ -1176,8 +1176,10 @@ class CombatFleet(Fleet):
         """
         self.fatigue[mode] = (
             True
-            if (region.exists(Pattern('ship_state_fatigue_{}.png'.format(mode))
-                .similar(Globals.FATIGUE_SIMILARITY)))
+            if (region.exists(
+                Pattern('ship_state_fatigue_{}.png'.format(mode)).similar(
+                    Globals.FATIGUE_SIMILARITY
+                ), 1.5))
             else False)
 
     @staticmethod
