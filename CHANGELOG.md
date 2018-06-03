@@ -1,3 +1,10 @@
+#### 0.5.1
+
+* Fix PortCheck on non-Event maps
+* Better checking of fatigue on ringed ships
+* Stability fix to live combat engine
+* Bugfix to sparkle mode in ShipSwitcher
+
 #### 0.5.0
 
 * Implements ScheduledStop functionality
