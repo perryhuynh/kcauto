@@ -1,5 +1,6 @@
 from sikuli import Region, Pattern
 from math import ceil
+from copy import deepcopy
 from re import sub
 from threading import Thread
 from kca_globals import Globals
@@ -9,7 +10,8 @@ from util import Util
 
 class ShipSwitcher(object):
     def __init__(self, config, stats, regions, fleets, combat):
-        self.config = config
+        # create a safely-mutable copy of the config
+        self.config = deepcopy(config)
         self.stats = stats
         self.regions = regions
         self.kc_region = regions['game']
