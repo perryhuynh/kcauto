@@ -24,6 +24,7 @@ class FleetSwitcher(object):
         """
         Nav.goto(self.regions, 'fleetcomp')
         self.regions['upper'].wait('shiplist_button.png', 10)
+        # TODO: switch for striking fleet??
         Util.wait_and_click_and_wait(
             self.regions['lower_left'],
             Pattern('fleetswitch_submenu.png').exact(),
@@ -46,6 +47,9 @@ class FleetSwitcher(object):
         Util.wait_and_click_and_wait(
             preset_region, 'fleetswitch_button.png',
             self.regions['upper'], 'shiplist_button.png')
+        # TODO: handle failed switches due to ships being in other fleets
+        # TODO: handle preset switch button not existing due to preset_id >
+        #    # of presets
         return True
 
 
@@ -63,6 +67,7 @@ class FleetSwitcher(object):
                     self.regions['lower_left'], 'scroll_next.png',
                     Globals.EXPAND['scroll_next'])
                 Util.kc_sleep(0.4, 0.2)
+                # TODO: handle failed scrolling due to preset > # of presets
 
 
     def _generate_preset_list_region(self, preset_id):

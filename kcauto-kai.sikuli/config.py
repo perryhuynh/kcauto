@@ -355,6 +355,7 @@ class Config(object):
             config (ConfigParser): ConfigParser instance
         """
         self.pvp['enabled'] = True
+        self.pvp['fleet'] = config.getint('PvP', 'Fleet')
 
     def _read_combat(self, config):
         """Method to parse the Combat settings of the passed in config.
@@ -363,6 +364,7 @@ class Config(object):
             config (ConfigParser): ConfigParser instance
         """
         self.combat['enabled'] = True
+        self.combat['fleet'] = config.getint('PvP', 'Fleet')
         self.combat['engine'] = config.get('Combat', 'Engine')
         self.combat['fleet_mode'] = config.get('Combat', 'FleetMode')
         self.combat['combined_fleet'] = (
