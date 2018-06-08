@@ -91,6 +91,8 @@ export const ko = {
     combatLBASGroup1Nodes: '제1기항대 마스',
     combatLBASGroup2Nodes: '제2기항대 마스',
     combatLBASGroup3Nodes: '제3기항대 마스',
+    combatForceRetreatNode1: null,
+    combatForceRetreatNodes: null,
     combatCheckFatigue: '피로도 체크',
     combatReserveDocks: null,
     combatPortCheck: '모항 체크',

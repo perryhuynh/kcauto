@@ -57,6 +57,7 @@ const jsonConfigDefaults = {
   combatLBASGroup2Node2: null,
   combatLBASGroup3Node1: null,
   combatLBASGroup3Node2: null,
+  combatForceRetreatNodes: null,
   combatOptionCheckFatigue: false,
   combatOptionReserveDocks: false,
   combatOptionPortCheck: false,
