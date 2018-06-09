@@ -58,3 +58,12 @@ Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)
 4. Set up kcauto-kai's config file using the [web interface](https://mrmin123.github.io/kcauto-kai/) or by opening the local copy of `docs/index.html` in a browser
 5. Run Kantai Collection in your favorite browser or viewer
 6. Run kcauto-kai using the command `java -jar <path_to_sikuli>/sikulix.jar -r <path_to_kcauto-kai>/kcauto-kai.sikuli` (replacing `<path_to_sikuli>` and `<path_to_kcauto-kai>` with the correct directories for your installs); you can also use the [RunCmd tab](https://mrmin123.github.io/kcauto-kai/#runcmd) of the web interface to help generate the command
+
+### Update (for those who don't git git)
+
+There are a couple of ways to update kc-auto (note: all of these steps requires previous clone of kcauto-kai on your system):
+0. Just download/clone the master branch and overwrite it directly on your current kc-auto folder (backup your config.ini if needed)
+1. (For any platform/OS) Using git shell: `git pull origin master` or `git pull` (you need to install git for your OS, GOOGLE IT)
+2. (For Windows) Use this guide (https://github.com/KC3Kai/KC3Kai/wiki/Setup-development-build) for setting up tortoisegit but change the clone URL to this repo
+
+Note: If you encountered any errors, please make sure to update to the latest version before open an issue.
