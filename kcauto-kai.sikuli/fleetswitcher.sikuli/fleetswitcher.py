@@ -122,4 +122,6 @@ class FleetSwitcherModule(object):
         """
         # preset_id is 1-based, offset is 0-based
         offset = 4 if preset_id > 5 else preset_id - 1
-        return Region(275, 185 + (offset * 52), 45, 29)
+        return Region(
+            self.kc_region.x + 275,
+            self.kc_region.y + 185 + (offset * 52), 45, 29)
