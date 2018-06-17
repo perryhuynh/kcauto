@@ -8,7 +8,7 @@ from nav import Nav, NavList
 from util import Util
 
 
-class ShipSwitcher(object):
+class ShipSwitcherModule(object):
     def __init__(self, config, stats, regions, fleets, combat):
         """Initializes the ShipSwitcher module.
 

@@ -5,7 +5,7 @@ from pvp import PvPModule
 from quest import QuestModule
 from repair import RepairModule
 from resupply import ResupplyModule
-from shipswitcher import ShipSwitcher
+from shipswitcher import ShipSwitcherModule
 from nav import Nav
 from stats import Stats
 from util import Util
@@ -124,7 +124,7 @@ class KCAutoKai(object):
 
             # initialize ship switcher module
             if self.config.ship_switcher['enabled'] and self.modules['combat']:
-                self.modules['ship_switcher'] = ShipSwitcher(
+                self.modules['ship_switcher'] = ShipSwitcherModule(
                     self.config, self.stats, self.regions, self.combat_fleets,
                     self.modules['combat'])
             else:
