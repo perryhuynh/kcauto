@@ -33,6 +33,12 @@ class FleetSwitcherModule(object):
             Pattern('fleetswitch_submenu_active.png').exact())
 
     def switch_pvp_fleet(self):
+        """Method to switch Fleet 1 to the specified PvP preset fleet, if
+        necessary.
+
+        Returns:
+            bool: True if a switch was done or attempted, False otherwise
+        """
         if (self.config.pvp['enabled'] and self.config.pvp['fleet'] and
                 self.config.pvp['fleet'] != self.current_fleet):
             self.goto_fleetcomp_presets()
@@ -41,6 +47,12 @@ class FleetSwitcherModule(object):
         return False
 
     def switch_combat_fleet(self):
+        """Method to switch Fleet 1 to one of the specified combat preset
+        fleet, if necessary.
+
+        Returns:
+            bool: True if a switch was done or attempted, False otherwise
+        """
         if (self.config.combat['enabled'] and
                 len(self.config.combat['fleets']) > 0):
             if not self.last_combat_fleet or len(self.combat['fleets']) == 1:
