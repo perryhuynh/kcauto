@@ -37,6 +37,7 @@ class Config(object):
         self.pvp = {'enabled': False}
         self.combat = {'enabled': False}
         self.ship_switcher = {'enabled': False}
+        self.fleet_switcher = {'enabled': False}
         self.quests = {'enabled': False}
 
         self.read()
@@ -77,6 +78,12 @@ class Config(object):
             self._read_ship_switcher(config)
         else:
             self.ship_switcher = {'enabled': False}
+
+        if ((self.combat['enabled'] and len(self.combat['fleets']) > 0) or
+                self.pvp['enabled'] and self.pvp['fleet']):
+            self.fleet_switcher = {'enabled': True}
+        else:
+            self.fleet_switcher = {'enabled': False}
 
         if config.getboolean('Quests', 'Enabled'):
             self._read_quests(config)
@@ -128,7 +135,22 @@ class Config(object):
                         "Invalid Expedition: '{}'.".format(expedition))
                     self.ok = False
 
+        if self.pvp['enabled']:
+            # validate fleet preset
+            if not 0 < self.pvp['fleet'] < 13:
+                Util.log_error(
+                    "Invalid fleet preset ID for PvP: '{}'".format(
+                        self.pvp['fleet']))
+                self.ok = False
+
         if self.combat['enabled']:
+            # validate fleet presets
+            for preset in self.combat['fleets']:
+                if not 0 < preset < 13:
+                    Util.log_error(
+                        "Invalid fleet preset ID for combat: '{}'".format(
+                            preset))
+                    self.ok = False
             # validate the combat engine
             if self.combat['engine'] not in ('legacy', 'live'):
                 Util.log_error("Invalid Combat Engine: '{}'.".format(
@@ -355,7 +377,10 @@ class Config(object):
             config (ConfigParser): ConfigParser instance
         """
         self.pvp['enabled'] = True
-        self.pvp['fleet'] = config.getint('PvP', 'Fleet')
+        self.pvp['fleet'] = (
+            config.getint('PvP', 'Fleet')
+            if config.get('PvP', 'Fleet')
+            else None)
 
     def _read_combat(self, config):
         """Method to parse the Combat settings of the passed in config.
@@ -364,7 +389,12 @@ class Config(object):
             config (ConfigParser): ConfigParser instance
         """
         self.combat['enabled'] = True
-        self.combat['fleet'] = config.getint('PvP', 'Fleet')
+        if config.get('Combat', 'Fleets'):
+            self.combat['fleets'] = map(
+                int, self._getlist(config, 'Combat', 'Fleets'))
+            self.expeditions_all.extend(self.expeditions['fleet2'])
+        else:
+            self.combat['fleets'] = []
         self.combat['engine'] = config.get('Combat', 'Engine')
         self.combat['fleet_mode'] = config.get('Combat', 'FleetMode')
         self.combat['combined_fleet'] = (

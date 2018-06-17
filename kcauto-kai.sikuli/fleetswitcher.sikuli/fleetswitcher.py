@@ -17,6 +17,7 @@ class FleetSwitcher(object):
         self.stats = stats
         self.regions = regions
         self.kc_region = regions['game']
+        self.current_fleet = None
 
     def goto_fleetcomp_presets(self):
         """Method to navigate to the fleet preset recall submenu of the fleet
@@ -52,7 +53,6 @@ class FleetSwitcher(object):
         #    # of presets
         return True
 
-
     def _scroll_preset_list(self, preset_id):
         """If necessary, scrolls the preset list to display the desired preset.
 
@@ -68,7 +68,6 @@ class FleetSwitcher(object):
                     Globals.EXPAND['scroll_next'])
                 Util.kc_sleep(0.4, 0.2)
                 # TODO: handle failed scrolling due to preset > # of presets
-
 
     def _generate_preset_list_region(self, preset_id):
         """Method that generates the region to search for the fleet preset
