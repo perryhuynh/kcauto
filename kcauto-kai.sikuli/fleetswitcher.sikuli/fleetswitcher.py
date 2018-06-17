@@ -4,7 +4,7 @@ from nav import Nav
 from util import Util
 
 
-class FleetSwitcher(object):
+class FleetSwitcherModule(object):
     def __init__(self, config, stats, regions):
         """Initializes the FleetSwitcher module.
 
@@ -18,6 +18,7 @@ class FleetSwitcher(object):
         self.regions = regions
         self.kc_region = regions['game']
         self.current_fleet = None
+        self.last_combat_fleet = None
 
     def goto_fleetcomp_presets(self):
         """Method to navigate to the fleet preset recall submenu of the fleet
@@ -25,14 +26,39 @@ class FleetSwitcher(object):
         """
         Nav.goto(self.regions, 'fleetcomp')
         self.regions['upper'].wait('shiplist_button.png', 10)
-        # TODO: switch for striking fleet??
         Util.wait_and_click_and_wait(
             self.regions['lower_left'],
             Pattern('fleetswitch_submenu.png').exact(),
             self.regions['lower_left'],
             Pattern('fleetswitch_submenu_active.png').exact())
 
-    def recall_preset(self, preset_id):
+    def switch_pvp_fleet(self):
+        if (self.config.pvp['enabled'] and self.config.pvp['fleet'] and
+                self.config.pvp['fleet'] != self.current_fleet):
+            self.goto_fleetcomp_presets()
+            self._recall_preset(self.config.pvp['fleet'])
+            return True
+        return False
+
+    def switch_combat_fleet(self):
+        if (self.config.combat['enabled'] and
+                len(self.config.combat['fleets']) > 0):
+            if not self.last_combat_fleet or len(self.combat['fleets']) == 1:
+                next_combat_fleet = self.config.combat['fleets'][0]
+            else:
+                temp_index = self.config.combat['fleets'].index(
+                    self.last_combat_fleet) + 1
+                temp_index = (
+                    0 if temp_index == len(self.combat['fleets'])
+                    else temp_index)
+                next_combat_fleet = self.config.combat['fleets'][temp_index]
+            self.goto_fleetcomp_presets()
+            self._recall_preset(next_combat_fleet)
+            self.last_combat_fleet = next_combat_fleet
+            return True
+        return False
+
+    def _recall_preset(self, preset_id):
         """Method that encompasses the logic to switch the requested fleet by
         its preset_id (1-based); 1 would be the first preset visible in the
         preset recall screen (not to be confused with the preset save screen).
