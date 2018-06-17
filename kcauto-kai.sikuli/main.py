@@ -6,6 +6,7 @@ from quest import QuestModule
 from repair import RepairModule
 from resupply import ResupplyModule
 from shipswitcher import ShipSwitcherModule
+from fleetswitcher import FleetSwitcherModule
 from nav import Nav
 from stats import Stats
 from util import Util
@@ -44,6 +45,7 @@ class KCAutoKai(object):
         'combat': None,
         'repair': None,
         'ship_switcher': None,
+        'fleet_switcher': None,
         'expedition': None,
         'quest': None
     }
@@ -129,6 +131,13 @@ class KCAutoKai(object):
                     self.modules['combat'])
             else:
                 self.modules['ship_switcher'] = None
+
+            # initialize fleet switcher module
+            if self.config.fleet_switcher['enabled']:
+                self.modules['fleet_switcher'] = FleetSwitcherModule(
+                    self.config, self.stats, self.regions)
+            else:
+                self.modules['fleet_switcher'] = None
 
             # initialize expedition module
             if self.config.expeditions['enabled']:
@@ -282,12 +291,17 @@ class KCAutoKai(object):
             self._focus_kancolle()
             Nav.goto(self.regions, 'home')
             self._run_fast_expedition_check()
-            # Check quests if active
+            # check quests if active
             if self.modules['quest']:
                 self.modules['quest'].goto_quests()
                 self.modules['quest'].quests_logic_wrapper()
             Nav.goto(self.regions, 'home')
             self._run_fast_expedition_check()
+            # switch fleet if necessary
+            if self.modules['fleet_switcher']:
+                if self.modules['fleet_switcher'].switch_pvp_fleet():
+                    Nav.goto(self.regions, 'home')
+                    self._run_fast_expedition_check()
             self.modules['pvp'].goto_pvp()
 
             while self.modules['pvp'].run_pvp_logic():
@@ -295,7 +309,7 @@ class KCAutoKai(object):
                 self.run_resupply_cycle()
                 Nav.goto(self.regions, 'home')
                 self._run_fast_expedition_check()
-                # Check quests if active
+                # check quests if active
                 if self.modules['quest']:
                     self.modules['quest'].goto_quests()
                     self.modules['quest'].quests_logic_wrapper_fast()
@@ -320,6 +334,11 @@ class KCAutoKai(object):
             self._focus_kancolle()
             Nav.goto(self.regions, 'home')
             self._run_fast_expedition_check()
+            # switch fleet if necessary
+            if self.modules['fleet_switcher']:
+                if self.modules['fleet_switcher'].switch_combat_fleet():
+                    Nav.goto(self.regions, 'home')
+                    self._run_fast_expedition_check()
             self.modules['combat'].goto_combat()
 
             if self.modules['combat'].combat_logic_wrapper():
