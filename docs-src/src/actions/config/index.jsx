@@ -91,7 +91,6 @@ export const setPythonConfig = config => (
     const combatLBASGroup3Nodes = configTemp.combatLBASGroup3Node1 && configTemp.combatLBASGroup3Node2 ?
       `${configTemp.combatLBASGroup3Node1},${configTemp.combatLBASGroup3Node2}` :
       ''
-
     const combatOptions = []
     if (config.combatOptionCheckFatigue) {
       combatOptions.push('CheckFatigue')
@@ -177,7 +176,7 @@ export const setPythonConfig = config => (
       `Fleets: ${configTemp.combatFleets}`,
       `Map: ${configTemp.combatMap}`,
       `FleetMode: ${configTemp.combatFleetMode}`,
-      `CombatNodes: ${configTemp.combatCombatNodes}`,
+      `RetreatNodes: ${configTemp.combatRetreatNodes}`,
       `NodeSelects: ${configTemp.combatNodeSelects}`,
       `Formations: ${configTemp.combatFormations}`,
       `NightBattles: ${configTemp.combatNightBattles}`,
@@ -188,7 +187,6 @@ export const setPythonConfig = config => (
       `LBASGroup1Nodes: ${combatLBASGroup1Nodes}`,
       `LBASGroup2Nodes: ${combatLBASGroup2Nodes}`,
       `LBASGroup3Nodes: ${combatLBASGroup3Nodes}`,
-      `ForceRetreatNodes: ${configTemp.combatForceRetreatNodes}`,
       `MiscOptions: ${combatOptions.join(',')}`,
       '',
       '[ShipSwitcher]',
