@@ -316,6 +316,11 @@ class KCAutoKai(object):
                 Nav.goto(self.regions, 'home')
                 self._run_fast_expedition_check()
                 self.modules['pvp'].goto_pvp()
+
+            # reset quests to combat context after pvp, if active
+            if self.modules['quest'] and self.modules['combat']:
+                self.modules['quest'].goto_quests()
+                self.modules['quest'].quests_logic_wrapper_fast()
             return True
         return False
 
