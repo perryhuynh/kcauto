@@ -1,3 +1,4 @@
+import sys
 from sikuli import Region, Pattern
 from kca_globals import Globals
 from nav import Nav
@@ -77,6 +78,7 @@ class FleetSwitcherModule(object):
         """Method that encompasses the logic to switch the requested fleet by
         its preset_id (1-based); 1 would be the first preset visible in the
         preset recall screen (not to be confused with the preset save screen).
+        Please note that failed switch attempts will stop the script.
 
         Args:
             preset_id (int): which nth preset to switch to (1-based)
@@ -86,12 +88,21 @@ class FleetSwitcherModule(object):
         """
         self._scroll_preset_list(preset_id)
         preset_region = self._generate_preset_list_region(preset_id)
-        Util.wait_and_click_and_wait(
-            preset_region, 'fleetswitch_button.png',
-            self.regions['upper'], 'shiplist_button.png')
-        # TODO: handle failed switches due to ships being in other fleets
-        # TODO: handle preset switch button not existing due to preset_id >
-        #    # of presets
+        if not Util.check_and_click(preset_region, 'fleetswitch_button.png'):
+            Util.log_error(
+                "Could not find fleet preset {}. Please check your config and "
+                "fleet prests.".format(preset_id))
+            sys.exit(1)
+        Util.rejigger_mouse(self.regions, 'top')
+        Util.kc_sleep()
+        if self.regions['lower_left'].exists('fleetswitch_submenu_exit.png'):
+            # still on the fleet preset page, implying that the switch failed
+            # due to ships being in other fleets
+            Util.log_error(
+                "Could not switch in fleet preset {} due to ships being "
+                "assigned in other fleets. Please check your config and fleet "
+                "presets.".format(preset_id))
+            sys.exit(1)
         return True
 
     def _scroll_preset_list(self, preset_id):
@@ -104,11 +115,15 @@ class FleetSwitcherModule(object):
             # only scroll if the desired preset is greater than the 5th preset
             scroll_count = preset_id - 5
             for n in range(scroll_count):
-                Util.check_and_click(
-                    self.regions['lower_left'], 'scroll_next.png',
-                    Globals.EXPAND['scroll_next'])
-                Util.kc_sleep(0.4, 0.2)
-                # TODO: handle failed scrolling due to preset > # of presets
+                if Util.check_and_click(
+                        self.regions['lower_left'], 'scroll_next.png',
+                        Globals.EXPAND['scroll_next']):
+                    Util.kc_sleep(0.4, 0.2)
+                else:
+                    Util.log_error(
+                        "Could not navigate to fleet preset {}. Please check "
+                        "your config and fleet presets.".format(preset_id))
+                    sys.exit(1)
 
     def _generate_preset_list_region(self, preset_id):
         """Method that generates the region to search for the fleet preset

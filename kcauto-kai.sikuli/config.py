@@ -93,20 +93,20 @@ class Config(object):
         self.validate()
 
         if (self.ok and not self.initialized):
-            Util.log_msg('Starting kancolle-auto!')
+            Util.log_msg("Starting kancolle-auto!")
             self.initialized = True
             self.changed = True
         elif (not self.ok and not self.initialized):
-            Util.log_error('Invalid config. Please check your config file.')
+            Util.log_error("Invalid config. Please check your config file.")
             sys.exit(1)
         elif (not self.ok and self.initialized):
             Util.warning(
-                'Config change detected, but with problems. Rolling back '
-                'config.')
+                "Config change detected, but with problems. Rolling back "
+                "config.")
             self._rollback_config(backup_config)
         elif (self.ok and self.initialized):
             if backup_config != self.__dict__:
-                Util.log_warning('Config change detected. Hot-reloading.')
+                Util.log_warning("Config change detected. Hot-reloading.")
                 self.changed = True
 
     def validate(self):
@@ -243,7 +243,7 @@ class Config(object):
                                 group)]) != 2):
                             Util.log_error(
                                 "LBAS Group {} does not have 2 nodes assigned "
-                                " to it".format(group))
+                                "to it".format(group))
                             self.ok = False
             # validate the misc options
             for option in self.combat['misc_options']:
@@ -288,8 +288,8 @@ class Config(object):
             # validate fleet switcher and combat fleet mode conflict
             if self.combat['enabled'] and self.combat['fleet_mode'] != '':
                 Util.log_error(
-                    "Fleet Presets cannot be used when combat is enabled and"
-                    " not in Standard fleet mode")
+                    "Fleet Presets cannot be used when combat is enabled and "
+                    "not in Standard fleet mode")
                 self.ok = False
 
     def _read_general(self, config):

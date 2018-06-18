@@ -30,8 +30,8 @@ class MapData(object):
                 map_data = json.load(raw_json)
         except:
             Util.log_error(
-                "There was an issue opening or loading the specified map file:"
-                " {}.json".format(self.location))
+                "There was an issue opening or loading the specified map"
+                "file: {}.json".format(self.location))
             raise
 
         self.world = map_data['world']
