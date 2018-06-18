@@ -94,6 +94,8 @@ class BodyConfigCombat extends PureComponent {
           combatDisableExpeditionsFleet2: false,
           expeditionsFleet3: [],
           combatDisableExpeditionsFleet3: true,
+          pvpFleet: null,
+          combatDisablePvPFleet: true,
         },
         () => this.props.callback(this.state)
       )
@@ -105,12 +107,19 @@ class BodyConfigCombat extends PureComponent {
           expeditionsFleet2: [],
           combatDisableExpeditionsFleet2: true,
           combatDisableExpeditionsFleet3: false,
+          pvpFleet: null,
+          combatDisablePvPFleet: true,
         },
         () => this.props.callback(this.state)
       )
     } else {
       this.setState(
-        { combatFleetMode: value, combatDisableExpeditionsFleet2: false, combatDisableExpeditionsFleet3: false },
+        {
+          combatFleetMode: value,
+          combatDisableExpeditionsFleet2: false,
+          combatDisableExpeditionsFleet3: false,
+          combatDisablePvPFleet: false,
+        },
         () => this.props.callback(this.state)
       )
     }
@@ -300,8 +309,7 @@ class BodyConfigCombat extends PureComponent {
                 value={combatFleets}
                 options={FLEET_PRESETS}
                 onChange={value => this.setState({ combatFleets: value }, () => this.props.callback(this.state))}
-                disabled={
-                  !combatEnabled || combatFleetMode !== ''}
+                disabled={!combatEnabled || combatFleetMode !== ''}
                 fullWidth />
               <span className={classes.helperText}><Localize field='bodyConfig.combatFleetsDesc' /></span>
             </FormControl>
@@ -339,6 +347,7 @@ class BodyConfigCombat extends PureComponent {
                 options={COMBINED_FLEET_MODES}
                 onChange={this.handleFleetModeChange}
                 disabled={!combatEnabled}
+                clearable={false}
                 fullWidth />
             </FormControl>
           </Grid>

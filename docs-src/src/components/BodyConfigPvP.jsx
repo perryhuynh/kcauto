@@ -32,6 +32,8 @@ class BodyConfigPvP extends PureComponent {
     const {
       pvpEnabled,
       pvpFleet,
+      combatEnabled,
+      combatDisablePvPFleet,
     } = this.state
     return (
       <Fragment>
@@ -47,7 +49,7 @@ class BodyConfigPvP extends PureComponent {
         <Grid container spacing={0}>
           <Grid item xs={12} sm={12} className={classes.formGrid}>
             <FormControl
-              disabled={!pvpEnabled}
+              disabled={!pvpEnabled || (combatEnabled && combatDisablePvPFleet)}
               margin='normal'
               fullWidth
             >
@@ -61,8 +63,7 @@ class BodyConfigPvP extends PureComponent {
                 value={pvpFleet}
                 options={FLEET_PRESETS}
                 onChange={value => this.setState({ pvpFleet: value }, () => this.props.callback(this.state))}
-                disabled={
-                  !pvpEnabled}
+                disabled={!pvpEnabled || (combatEnabled && combatDisablePvPFleet)}
                 fullWidth />
               <span className={classes.helperText}><Localize field='bodyConfig.pvpFleetDesc' /></span>
             </FormControl>
