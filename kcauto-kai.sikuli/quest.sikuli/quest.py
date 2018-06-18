@@ -191,12 +191,13 @@ class QuestModule(object):
                 page of quests
         """
         self.active_quests = []
-        ignored_quest_suffix = None
+        current_active_quest_types = list(self.active_quest_types)
+        # depending on quest check context, remove combat or pvp quests
         if context == 'pvp':
-            ignored_quest_suffix = 'b'
+            current_active_quest_types.remove('b')
         elif context == 'combat':
-            ignored_quest_suffix = 'c'
-        for quest_type in self.active_quest_types:
+            current_active_quest_types.remove('c')
+        for quest_type in current_active_quest_types:
             quests = Util.findAll_wrapper(
                 self.regions['left'], '{}.png'.format(quest_type))
             for quest in quests:
@@ -208,9 +209,9 @@ class QuestModule(object):
                     self._read_reward_number('steel', quest_bar),
                     self._read_reward_number('bauxite', quest_bar))
                 for valid_quest in self.quest_list:
-                    if valid_quest['name'][0] == ignored_quest_suffix:
-                        # skip checking for the quest if it begins with a
-                        # suffix that should be ignored
+                    if valid_quest['name'][0] != quest_type:
+                        # skip checking for the quest if it doesn't match the
+                        # icon that was matched
                         continue
                     if valid_quest['rewards'] == quest_rewards:
                         Util.log_msg("Activating quest {}.".format(
@@ -277,11 +278,10 @@ class QuestModule(object):
                 Util.kc_sleep(1)
             self.stats.increment_quests_finished()
         current_inactive_quest_types = list(self.inactive_quest_types)
+        # depending on quest check context, remove combat or pvp quests
         if context == 'pvp':
-            # if quest check context is pvp, remove all the combat quests
             current_inactive_quest_types.append('b')
         elif context == 'combat':
-            # if quest check context is combat, remove all the pvp quests
             current_inactive_quest_types.append('c')
         for quest_type in current_inactive_quest_types:
             while self.regions['left'].exists('{}.png'.format(quest_type)):
