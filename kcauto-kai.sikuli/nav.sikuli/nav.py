@@ -361,7 +361,7 @@ class NavList(object):
                 else:
                     cls._change_page(regions, 'next', cls.OFFSET[offset_mode])
                     current_page += 5
-        Util.kc_sleep()
+        Util.kc_sleep(0.5)
         return current_page
 
     @staticmethod

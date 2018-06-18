@@ -416,7 +416,8 @@ class ShipSwitcherModule(object):
         if availability is True:
             return True
         Util.check_and_click(
-            self.regions['lower_right'], 'page_first.png')
+            self.regions['lower_right'], 'page_first.png',
+            Globals.EXPAND['shiplist_sort'])
         return availability
 
     def _resolve_replacement_ship(self, slot_config):
