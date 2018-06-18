@@ -59,11 +59,18 @@ Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)
 5. Run Kantai Collection in your favorite browser or viewer
 6. Run kcauto-kai using the command `java -jar <path_to_sikuli>/sikulix.jar -r <path_to_kcauto-kai>/kcauto-kai.sikuli` (replacing `<path_to_sikuli>` and `<path_to_kcauto-kai>` with the correct directories for your installs); you can also use the [RunCmd tab](https://mrmin123.github.io/kcauto-kai/#runcmd) of the web interface to help generate the command
 
-### Update (for those who don't git git)
+### Updating
 
-There are a couple of ways to update kc-auto (note: all of these steps requires previous clone of kcauto-kai on your system):
-0. Just download/clone the master branch and overwrite it directly on your current kc-auto folder (backup your config.ini if needed)
-1. (For any platform/OS) Using git shell: `git pull origin master` or `git pull` (you need to install git for your OS, GOOGLE IT)
-2. (For Windows) Use this guide (https://github.com/KC3Kai/KC3Kai/wiki/Setup-development-build) for setting up tortoisegit but change the clone URL to this repo
+The preferred method of keeping kcauto-kai up to date is via git. This requires you have a working [git](https://git-scm.com/) installation, have cloned the kcauto-kai repository, and are running kcauto-kai off of said clone.
 
-Note: If you encountered any errors, please make sure to update to the latest version before open an issue.
+If you do have git and cloned the kcauto-kai repository, use one of the following command to update to the latest release (`master` version) of kcauto-kai:
+
+* `git pull origin master` or `git pull`
+
+If you do not have git but would still like to keep up with `master`, please use [this guide](https://github.com/KC3Kai/KC3Kai/wiki/Setup-development-build) for setting up tortoisegit, but with the clone URL changed to `https://github.com/mrmin123/kcauto-kai.git`
+
+If you do not have git, tortoisegit, or a clone of the kcauto-kai repository, head to the [Releases page](https://github.com/mrmin123/kcauto-kai/releases) and download the latest tagged version. Overwrite your local kcauto-kai installation with the contents of the new release, taking care to first back up or not overwrite your config file. Note that your config file may need updating to be compatible with new releases.
+
+### Bug Reports
+
+If you encounter any bugs or issues in kcauto-kai, please first make sure that you are on the latest release. If the problem persists, please search the [bug tracker](https://github.com/mrmin123/kcauto-kai/issues) to see if the issue has already been reported. Otherwise, please open an issue on the tracker.
