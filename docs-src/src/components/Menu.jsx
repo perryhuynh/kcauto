@@ -6,7 +6,7 @@ import Toolbar from 'material-ui/Toolbar'
 import MuiMenu, { MenuItem } from 'material-ui/Menu'
 import Typography from 'material-ui/Typography'
 import IconButton from 'material-ui/IconButton'
-import { Ferry, Earth, GithubCircle, Discord } from 'mdi-material-ui'
+import { Ferry, WalletGiftcard, Earth, GithubCircle, Discord } from 'mdi-material-ui'
 
 import * as urls from 'urls'
 import { availableLocalizations } from 'localizations'
@@ -17,6 +17,24 @@ const styles = () => ({
   },
   flex: {
     flex: 1,
+  },
+  icon: {
+    width: 20,
+    height: 20,
+    paddingRight: 3,
+  },
+  support: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingRight: 15,
+    fontFamily: 'Roboto, sans-serif',
+    fontSize: 12,
+  },
+  link: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textDecoration: 'none',
   },
   langaugeButton: {
     width: 'auto',
@@ -54,6 +72,11 @@ class Menu extends PureComponent {
     const {
       languageDropdownAnchor,
     } = this.state
+
+    const renderSupportIcon = () => <WalletGiftcard className={classes.icon} />
+    const renderPatreonLink = () => <a href={urls.PATREON_LINK} className={classes.link}>Patreon</a>
+    const renderMakerSupportLink = () => <a href={urls.MAKERSUPPORT_LINK} className={classes.link}>MakerSupport</a>
+    const renderSupportText = () => <span>support the dev on {renderPatreonLink()} or {renderMakerSupportLink()}</span>
     const dropdownOpen = Boolean(languageDropdownAnchor)
     return (
       <div className={classes.root}>
@@ -63,6 +86,10 @@ class Menu extends PureComponent {
               <Ferry /> kcauto-kai
             </Typography>
 
+            <div className={classes.support}>
+              {renderSupportIcon()}
+              {renderSupportText()}
+            </div>
             <IconButton
               color='inherit'
               className={classes.langaugeButton}
