@@ -292,6 +292,14 @@ class Config(object):
                     "not in Standard fleet mode")
                 self.ok = False
 
+        if self.quests['enabled']:
+            # validate quest groups
+            for qg in self.quests['quest_groups']:
+                if qg not in ('daily', 'weekly', 'monthly'):
+                    Util.log_error(
+                        "Invalid Quest Group specified: '{}'".format(qg))
+                    self.ok = False
+
     def _read_general(self, config):
         """Method to parse the General settings of the passed in config.
 
@@ -530,6 +538,8 @@ class Config(object):
             config (ConfigParser): ConfigParser instance
         """
         self.quests['enabled'] = True
+        self.quests['quest_groups'] = self._getlist(
+            config, 'Quests', 'QuestGroups')
 
     def _rollback_config(self, config):
         """Method to roll back the config to the passed in config's.
