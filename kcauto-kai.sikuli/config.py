@@ -137,7 +137,7 @@ class Config(object):
 
         if self.pvp['enabled']:
             # validate fleet preset
-            if not 0 < self.pvp['fleet'] < 13:
+            if self.pvp['fleet'] and not 0 < self.pvp['fleet'] < 13:
                 Util.log_error(
                     "Invalid fleet preset ID for PvP: '{}'".format(
                         self.pvp['fleet']))
