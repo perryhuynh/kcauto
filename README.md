@@ -58,3 +58,19 @@ Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)
 4. Set up kcauto-kai's config file using the [web interface](https://mrmin123.github.io/kcauto-kai/) or by opening the local copy of `docs/index.html` in a browser
 5. Run Kantai Collection in your favorite browser or viewer
 6. Run kcauto-kai using the command `java -jar <path_to_sikuli>/sikulix.jar -r <path_to_kcauto-kai>/kcauto-kai.sikuli` (replacing `<path_to_sikuli>` and `<path_to_kcauto-kai>` with the correct directories for your installs); you can also use the [RunCmd tab](https://mrmin123.github.io/kcauto-kai/#runcmd) of the web interface to help generate the command
+
+### Updating
+
+The preferred method of keeping kcauto-kai up to date is via git. This requires you have a working [git](https://git-scm.com/) installation, have cloned the kcauto-kai repository, and are running kcauto-kai off of said clone.
+
+If you do have git and cloned the kcauto-kai repository, use one of the following command to update to the latest release (`master` version) of kcauto-kai:
+
+* `git pull origin master` or `git pull`
+
+If you do not have git but would still like to keep up with `master`, please use [this guide](https://github.com/KC3Kai/KC3Kai/wiki/Setup-development-build) for setting up tortoisegit, but with the clone URL changed to `https://github.com/mrmin123/kcauto-kai.git`
+
+If you do not have git, tortoisegit, or a clone of the kcauto-kai repository, head to the [Releases page](https://github.com/mrmin123/kcauto-kai/releases) and download the latest tagged version. Overwrite your local kcauto-kai installation with the contents of the new release, taking care to first back up or not overwrite your config file. Note that your config file may need updating to be compatible with new releases.
+
+### Bug Reports
+
+If you encounter any bugs or issues in kcauto-kai, please first make sure that you are on the latest release. If the problem persists, please search the [bug tracker](https://github.com/mrmin123/kcauto-kai/issues) to see if the issue has already been reported. Otherwise, please open an issue on the tracker.
