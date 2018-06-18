@@ -193,9 +193,9 @@ class QuestModule(object):
         self.active_quests = []
         current_active_quest_types = list(self.active_quest_types)
         # depending on quest check context, remove combat or pvp quests
-        if context == 'pvp':
+        if context == 'pvp' and 'b' in current_active_quest_types:
             current_active_quest_types.remove('b')
-        elif context == 'combat':
+        elif context == 'combat' and 'c' in current_active_quest_types:
             current_active_quest_types.remove('c')
         for quest_type in current_active_quest_types:
             quests = Util.findAll_wrapper(
