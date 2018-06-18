@@ -294,7 +294,7 @@ class KCAutoKai(object):
             # check quests if active
             if self.modules['quest']:
                 self.modules['quest'].goto_quests()
-                self.modules['quest'].quests_logic_wrapper()
+                self.modules['quest'].quests_logic_wrapper('pvp')
             Nav.goto(self.regions, 'home')
             self._run_fast_expedition_check()
             # switch fleet if necessary
@@ -312,7 +312,7 @@ class KCAutoKai(object):
                 # check quests if active
                 if self.modules['quest']:
                     self.modules['quest'].goto_quests()
-                    self.modules['quest'].quests_logic_wrapper_fast()
+                    self.modules['quest'].quests_logic_wrapper_fast('pvp')
                 Nav.goto(self.regions, 'home')
                 self._run_fast_expedition_check()
                 self.modules['pvp'].goto_pvp()
