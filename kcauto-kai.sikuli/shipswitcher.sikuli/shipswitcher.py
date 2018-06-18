@@ -8,8 +8,17 @@ from nav import Nav, NavList
 from util import Util
 
 
-class ShipSwitcher(object):
+class ShipSwitcherModule(object):
     def __init__(self, config, stats, regions, fleets, combat):
+        """Initializes the ShipSwitcher module.
+
+        Args:
+            config (Config): kcauto-kai Config instance
+            stats (Stats): kcauto-kai Stats instance
+            regions (dict): dict of pre-defined kcauto-kai regions
+            fleets (dict): dict of active CombatFleet instances
+            combat (ComabtModule): active Combat Module instance
+        """
         # create a safely-mutable copy of the config
         self.config = deepcopy(config)
         self.stats = stats

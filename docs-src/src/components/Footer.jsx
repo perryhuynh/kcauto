@@ -3,7 +3,6 @@ import { withStyles } from 'material-ui/styles'
 import PropTypes from 'prop-types'
 import Divider from 'material-ui/Divider'
 import blueGrey from 'material-ui/colors/blueGrey'
-import { WalletGiftcard } from 'mdi-material-ui'
 import * as urls from 'urls'
 
 const styles = () => ({
@@ -21,11 +20,6 @@ const styles = () => ({
     textDecoration: 'none',
     fontWeight: 'bold',
   },
-  icon: {
-    width: 22,
-    height: 22,
-    paddingRight: 3,
-  },
   flex: {
     display: 'flex',
     justifyContent: 'center',
@@ -41,10 +35,6 @@ const Footer = (props) => {
   const renderDivider = () => <span className={classes.divider}>|</span>
   const renderVersion = () => (
     <span>version <a href={urls.CHANGELOG_LINK} className={classes.link}>{process.version}</a></span>)
-  const renderSupportIcon = () => <WalletGiftcard className={classes.icon} />
-  const renderPatreonLink = () => <a href={urls.PATREON_LINK} className={classes.link}>Patreon</a>
-  const renderMakerSupportLink = () => <a href={urls.MAKERSUPPORT_LINK} className={classes.link}>MakerSupport</a>
-  const renderSupportText = () => <span>support the dev on {renderPatreonLink()} or {renderMakerSupportLink()}</span>
   const renderCopy = () => <span>&copy; 2017-2018</span>
 
   return (
@@ -52,9 +42,6 @@ const Footer = (props) => {
       <Divider />
       <div className={classes.flex}>
         {renderVersion()}
-        {renderDivider()}
-        {renderSupportIcon()}
-        {renderSupportText()}
         {renderDivider()}
         {renderCopy()}
       </div>
