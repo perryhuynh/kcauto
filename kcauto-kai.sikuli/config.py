@@ -412,8 +412,6 @@ class Config(object):
             else False)
         self.combat['striking_fleet'] = (
             True if self.combat['fleet_mode'] == 'striking' else False)
-        combat_nodes = config.get('Combat', 'CombatNodes')
-        self.combat['combat_nodes'] = int(combat_nodes) if combat_nodes else 99
         # defaults for retreat nodes and combat nodes
         self.combat['retreat_nodes'] = []
         self.combat['combat_nodes'] = 99
