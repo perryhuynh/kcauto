@@ -27,7 +27,7 @@ const styles = () => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingRight: 15,
+    paddingRight: 20,
     fontFamily: 'Roboto, sans-serif',
     fontSize: 12,
   },
