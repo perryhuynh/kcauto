@@ -172,8 +172,8 @@ class QuestModule(object):
             context (str): specifies if there is a specific context for the
                 quests checking
         """
-        for cycle in ('daily', 'weekly', 'monthly'):
-            self._filter_quests(cycle)
+        for group in self.config.quests['quest_groups']:
+            self._filter_quests(group)
             checking = True
             while checking:
                 checking = self._run_check_quests_logic(context)

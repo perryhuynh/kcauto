@@ -293,6 +293,10 @@ class Config(object):
                 self.ok = False
 
         if self.quests['enabled']:
+            # validate that quest groups are specified
+            if len(self.quests['quest_groups']) == 0:
+                Util.log_error("No Quest Groups specified for Quest module")
+                self.ok = False
             # validate quest groups
             for qg in self.quests['quest_groups']:
                 if qg not in ('daily', 'weekly', 'monthly'):
