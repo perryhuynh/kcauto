@@ -60,7 +60,7 @@ export const ko = {
     combatFleetModeSTF: '수상',
     combatFleetModeTransport: '수송',
     combatFleetModeStriking: '유격',
-    combatCombatNodeCount: '전투 횟수',
+    combatRetreatNodes: '전투 횟수',
     combatNodeSelect1: '이 마스가 능동분기면...',
     combatNodeSelect2: '...이 마스 선택',
     combatNodeSelectAdd: null,

@@ -129,7 +129,7 @@ const createStateObjFromPythonConfig = (pyConfig) => {
     combatDisableExpeditionsFleet3: false,
     combatDisableExpeditionsFleet4: false,
     combatDisablePvPFleet: false,
-    combatCombatNodes: pyConfigObj.combatCombatNodes || null,
+    combatRetreatNodes: pyConfigObj.combatRetreatNodes || null,
     combatNodeSelect1: null,
     combatNodeSelect2: null,
     combatNodeSelects: pyConfigObj.combatNodeSelects || null,

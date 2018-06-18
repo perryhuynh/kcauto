@@ -32,7 +32,7 @@ const COMBINED_FLEET_MODES = [
   { value: 'stf', label: <Localize field='bodyConfig.combatFleetModeSTF' /> },
   { value: 'transport', label: <Localize field='bodyConfig.combatFleetModeTransport' /> },
   { value: 'striking', label: <Localize field='bodyConfig.combatFleetModeStriking' /> }]
-const COMBAT_NODE_COUNTS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'].map(value => (
+const COMBAT_NODE_COUNTS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'].map(value => (
   { value, label: value }))
 const NODES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(value => ({ value, label: value }))
 NODES.push(...['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7', 'Z8', 'Z9', 'ZZ1', 'ZZ2', 'ZZ3'].map(value => (
@@ -123,6 +123,26 @@ class BodyConfigCombat extends PureComponent {
         () => this.props.callback(this.state)
       )
     }
+  }
+
+  handleCombatRetreatNodesChange = (value) => {
+    // only allow the most recently selected numeric combat node count value; the actual script only allows uses the
+    // smallest integer value in this field, but this exists as a sanitation step for the user
+    const validCombatRetreatNodes = []
+    let lastCombatNodeCount = null
+    // determine last-specified number
+    value.split(',').forEach((val) => {
+      lastCombatNodeCount = !Number.isNaN(parseInt(val, 10)) ? parseInt(val, 10) : lastCombatNodeCount
+    })
+    // filter out every integer value other than the last specified one
+    value.split(',').forEach((val) => {
+      if (Number.isNaN(parseInt(val, 10)) || parseInt(val, 10) === lastCombatNodeCount) {
+        validCombatRetreatNodes.push(val)
+      }
+    })
+    this.setState({
+      combatRetreatNodes: validCombatRetreatNodes.length > 0 ? validCombatRetreatNodes.join(',') : null,
+    }, () => this.props.callback(this.state))
   }
 
   handleCombatNodeSelectAdd = (node, targetNode) => {
@@ -221,7 +241,7 @@ class BodyConfigCombat extends PureComponent {
       combatEngine,
       combatMap,
       combatFleetMode,
-      combatCombatNodes,
+      combatRetreatNodes,
       combatNodeSelect1,
       combatNodeSelect2,
       combatNodeSelects,
@@ -353,16 +373,17 @@ class BodyConfigCombat extends PureComponent {
           </Grid>
           <Grid item xs={12} sm={4} className={classes.formGrid}>
             <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-              <InputLabel htmlFor='combatCombatNodes' shrink={true} className={classes.reactSelectLabel}>
-                <Localize field='bodyConfig.combatCombatNodeCount' />
+              <InputLabel htmlFor='combatRetreatNodes' shrink={true} className={classes.reactSelectLabel}>
+                <Localize field='bodyConfig.combatRetreatNodes' />
               </InputLabel>
               <Select
+                multi
                 className={classes.reactSelect}
                 simpleValue={true}
-                name='combatCombatNodes'
-                value={combatCombatNodes}
-                options={COMBAT_NODE_COUNTS}
-                onChange={value => this.setState({ combatCombatNodes: value }, () => this.props.callback(this.state))}
+                name='combatRetreatNodes'
+                value={combatRetreatNodes}
+                options={COMBAT_NODE_COUNTS.concat(NODES)}
+                onChange={this.handleCombatRetreatNodesChange}
                 disabled={!combatEnabled}
                 fullWidth />
             </FormControl>

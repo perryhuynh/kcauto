@@ -39,7 +39,7 @@ const jsonConfigDefaults = {
   combatFleets: null,
   combatMap: '1-1',
   combatFleetMode: '',
-  combatCombatNodes: null,
+  combatRetreatNodes: null,
   combatNodeSelect1: null,
   combatNodeSelect2: null,
   combatNodeSelects: null,

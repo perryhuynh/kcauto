@@ -56,7 +56,7 @@ export const en = {
     combatFleetModeSTF: 'STF',
     combatFleetModeTransport: 'Transport',
     combatFleetModeStriking: 'Striking',
-    combatCombatNodeCount: 'Combat Node Count',
+    combatRetreatNodes: 'Combat Node Count and Retreat Nodes',
     combatNodeSelect1: 'If at this Node...',
     combatNodeSelect2: '...select this Node',
     combatNodeSelectAdd: 'Add',

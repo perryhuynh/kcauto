@@ -176,7 +176,7 @@ export const setPythonConfig = config => (
       `Fleets: ${configTemp.combatFleets}`,
       `Map: ${configTemp.combatMap}`,
       `FleetMode: ${configTemp.combatFleetMode}`,
-      `CombatNodes: ${configTemp.combatCombatNodes}`,
+      `RetreatNodes: ${configTemp.combatRetreatNodes}`,
       `NodeSelects: ${configTemp.combatNodeSelects}`,
       `Formations: ${configTemp.combatFormations}`,
       `NightBattles: ${configTemp.combatNightBattles}`,

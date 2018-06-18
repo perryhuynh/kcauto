@@ -63,7 +63,7 @@ export const TMP = {
     combatFleetModeSTF: null,
     combatFleetModeTransport: null,
     combatFleetModeStriking: null,
-    combatCombatNodeCount: null,
+    combatRetreatNodes: null,
     combatNodeSelect1: null,
     combatNodeSelect2: null,
     combatNodeSelectAdd: null,
