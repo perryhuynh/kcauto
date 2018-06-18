@@ -77,6 +77,10 @@ const jsonConfigDefaults = {
   shipSwitcherSlot6Criteria: null,
   shipSwitcherSlot6Ships: null,
   questsEnabled: true,
+  questsQuestGroupsDaily: null,
+  questsQuestGroupsWeekly: null,
+  questsQuestGroupsMonthly: null,
+  questsQuestGroupsQuarterly: null,
 }
 
 export const jsonConfig = (state = jsonConfigDefaults, action) => {
