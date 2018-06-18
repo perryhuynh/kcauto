@@ -414,6 +414,20 @@ class Config(object):
             True if self.combat['fleet_mode'] == 'striking' else False)
         combat_nodes = config.get('Combat', 'CombatNodes')
         self.combat['combat_nodes'] = int(combat_nodes) if combat_nodes else 99
+        # defaults for retreat nodes and combat nodes
+        self.combat['retreat_nodes'] = []
+        self.combat['combat_nodes'] = 99
+        # overwrite above if needed
+        if config.get('Combat', 'RetreatNodes'):
+            temp_retreat_values = set(
+                self._getlist(config, 'Combat', 'RetreatNodes'))
+            for val in temp_retreat_values:
+                if val.isdigit():
+                    self.combat['combat_nodes'] = (
+                        int(val) if int(val) < self.combat['combat_nodes']
+                        else self.combat['combat_nodes'])
+                else:
+                    self.combat['retreat_nodes'].append(val)
         self.combat['node_selects'] = {}
         self.combat['raw_node_selects'] = (
             self._getlist(config, 'Combat', 'NodeSelects'))
@@ -441,11 +455,6 @@ class Config(object):
                 config, 'Combat', 'LBASGroup3Nodes')
         else:
             self.combat['lbas_enabled'] = False
-        if config.get('Combat', 'ForceRetreatNodes'):
-            self.combat['force_retreat_nodes'] = set(self._getlist(
-                config, 'Combat', 'ForceRetreatNodes'))
-        else:
-            self.combat['force_retreat_nodes'] = {}
 
     def _read_ship_switcher(self, config):
         """Method to parse the ShipSwitcher settings of the passed in config.

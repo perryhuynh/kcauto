@@ -143,8 +143,8 @@ class MapData(object):
             bool: True if sortie should be continued, False otherwise
         """
         if node:
-            if node.name in self.config.combat['force_retreat_nodes'] or \
-                            'retreat' in node.types:
+            if (node.name in self.config.combat['retreat_nodes'] or
+                    'retreat' in node.types):
                 return False
         return True
 
