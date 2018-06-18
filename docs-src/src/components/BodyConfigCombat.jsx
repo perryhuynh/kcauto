@@ -17,6 +17,8 @@ import Localize from 'containers/LocalizeContainer'
 import { styles } from 'components/BodyConfigStyles'
 
 
+const FLEET_PRESETS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'].map(value => (
+  { value, label: value }))
 const COMBAT_ENGINES = [
   { value: 'live', label: <Localize field='bodyConfig.combatEngineLive' /> },
   { value: 'legacy', label: <Localize field='bodyConfig.combatEngineLegacy' /> }]
@@ -87,26 +89,37 @@ class BodyConfigCombat extends PureComponent {
     if (value === 'striking') {
       this.setState(
         {
+          combatFleets: [],
           combatFleetMode: value,
           combatDisableExpeditionsFleet2: false,
           expeditionsFleet3: [],
           combatDisableExpeditionsFleet3: true,
+          pvpFleet: null,
+          combatDisablePvPFleet: true,
         },
         () => this.props.callback(this.state)
       )
     } else if (['ctf', 'stf', 'transport'].indexOf(value) > -1) {
       this.setState(
         {
+          combatFleets: [],
           combatFleetMode: value,
           expeditionsFleet2: [],
           combatDisableExpeditionsFleet2: true,
           combatDisableExpeditionsFleet3: false,
+          pvpFleet: null,
+          combatDisablePvPFleet: true,
         },
         () => this.props.callback(this.state)
       )
     } else {
       this.setState(
-        { combatFleetMode: value, combatDisableExpeditionsFleet2: false, combatDisableExpeditionsFleet3: false },
+        {
+          combatFleetMode: value,
+          combatDisableExpeditionsFleet2: false,
+          combatDisableExpeditionsFleet3: false,
+          combatDisablePvPFleet: false,
+        },
         () => this.props.callback(this.state)
       )
     }
@@ -221,6 +234,7 @@ class BodyConfigCombat extends PureComponent {
     } = this.props
     const {
       combatEnabled,
+      combatFleets,
       combatEngine,
       combatMap,
       combatFleetMode,
@@ -300,6 +314,31 @@ class BodyConfigCombat extends PureComponent {
         </Grid>
 
         <Grid container spacing={0}>
+          <Grid item xs={12} sm={12} className={classes.formGrid}>
+            <FormControl
+              disabled={!combatEnabled || combatFleetMode !== ''}
+              margin='normal'
+              fullWidth
+            >
+              <InputLabel htmlFor='combatFleets' shrink={true} className={classes.reactSelectLabel}>
+                <Localize field='bodyConfig.combatFleets' />
+              </InputLabel>
+              <Select
+                multi
+                className={classes.reactSelect}
+                simpleValue={true}
+                name='combatFleets'
+                value={combatFleets}
+                options={FLEET_PRESETS}
+                onChange={value => this.setState({ combatFleets: value }, () => this.props.callback(this.state))}
+                disabled={!combatEnabled || combatFleetMode !== ''}
+                fullWidth />
+              <span className={classes.helperText}><Localize field='bodyConfig.combatFleetsDesc' /></span>
+            </FormControl>
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={0}>
           <Grid item xs={12} sm={4} className={classes.formGrid}>
             <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
               <InputLabel htmlFor='combatMap' shrink={true} className={classes.reactSelectLabel}>
@@ -330,6 +369,7 @@ class BodyConfigCombat extends PureComponent {
                 options={COMBINED_FLEET_MODES}
                 onChange={this.handleFleetModeChange}
                 disabled={!combatEnabled}
+                clearable={false}
                 fullWidth />
             </FormControl>
           </Grid>

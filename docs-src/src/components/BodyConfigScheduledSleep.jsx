@@ -32,7 +32,7 @@ class BodyConfigScheduledSleep extends PureComponent {
         <Typography variant='display1'><Localize field='bodyConfig.scheduledSleepHeader' /></Typography>
 
         <Grid container spacing={0}>
-          {['', 'Expedition', 'Combat'].map(module => (
+          {['Script', 'Expedition', 'Combat'].map(module => (
             <Fragment key={module}>
               <Grid item xs={12} sm={4} className={classes.formGrid}>
                 <FormControlLabel

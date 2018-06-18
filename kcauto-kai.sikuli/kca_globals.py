@@ -22,10 +22,15 @@ class Globals(object):
     # how many combat sorties to conduct when sparkling
     SPARKLING_RUN_COUNT = 3
 
+    # how many ships are in a shiplist page; static unless the game UI changes
+    SHIPS_PER_PAGE = 10
+
     # area expansion presets; format is in [left, right, up, down] relative to
     # the center of the match
     EXPAND = {
         'repair_list': [-325, 35, -10, 6],
-        'arrow_navigation': [-10, 10, -5, 5],
-        'shiplist_sort': [-4, 36, -10, 10]
+        'arrow_navigation': [-6, 6, -3, 3],
+        'shiplist_sort': [-4, 36, -10, 10],
+        'scroll_prev': [-12, 12, 16, 2],
+        'scroll_next': [-12, 12, 2, 16]
     }

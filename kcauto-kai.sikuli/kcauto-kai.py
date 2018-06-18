@@ -38,10 +38,10 @@ if args and args.mode == 'cfg':
     config = Config(args.cfg)
 elif args and args.mode == 'debug':
     Debug.find(args.window, args.target, args.similarity)
-    exit(0)
+    sys.exit(0)
 elif args and args.mode == 'debugc':
     Debug.continuously_find(args.window, args.target, args.similarity)
-    exit(0)  # never actually reached
+    sys.exit(0)  # never actually reached
 else:
     config = Config('config.ini')
 
@@ -74,6 +74,8 @@ while True:
             kcauto_kai.run_quest_cycle()
 
             kcauto_kai.conduct_module_sleeps()
+
+            kcauto_kai.conduct_scheduled_stops()
 
             kcauto_kai.print_cycle_stats()
 

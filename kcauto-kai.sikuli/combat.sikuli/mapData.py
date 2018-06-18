@@ -5,11 +5,6 @@ from util import Util
 
 
 class MapData(object):
-    location = None
-    world = None
-    subworld = None
-    nodes = None
-
     def __init__(self, location, regions, config):
         """Initializes a MapData instance. Holds the map and node information
         of the specified map, as well as methods for resolving formation
@@ -35,8 +30,8 @@ class MapData(object):
                 map_data = json.load(raw_json)
         except:
             Util.log_error(
-                "There was an issue opening or loading the specified map file:"
-                " {}.json".format(self.location))
+                "There was an issue opening or loading the specified map"
+                "file: {}.json".format(self.location))
             raise
 
         self.world = map_data['world']
@@ -47,6 +42,9 @@ class MapData(object):
         for node in map_data['nodes']:
             self.nodes[node] = Node(node, map_data['nodes'][node])
 
+        # fallback node
+        self.unknown_node = UnknownNode()
+
     def find_node_by_pos(self, x, y):
         """Method to loop through the nodes on the map and find the node
         matching the provided x and y coordinates.
@@ -56,13 +54,16 @@ class MapData(object):
             y (int): y coordinate of where to search
 
         Returns:
-            Node or None: Node object for node that exists at the coordinates,
-                otherwise None if no matching Node object was found
+            Node or UnknownNode: Node object for node that exists at the
+                coordinates, otherwise the UnknownNode instance with the passed
+                in coordinates
         """
         for node in self.nodes:
             if self.nodes[node].coord_match(x, y):
                 return self.nodes[node]
-        return None
+        # couldn't match on node on coords, update and return the unknown node
+        self.unknown_node.coords = [x, y]
+        return self.unknown_node
 
     def resolve_formation(self, node):
         """Method for determining which node to engage the enemy with on the
@@ -149,13 +150,6 @@ class MapData(object):
 
 
 class Node(object):
-    name = ''
-    coords = None
-    all_coords = None
-    types = None
-    formation = ''
-    night_battle = None
-
     def __init__(self, name, node_data):
         """Initializes a Node instance for a map.
 
@@ -212,3 +206,24 @@ class Node(object):
 
     def __str__(self):
         return self.name
+
+
+class UnknownNode(Node):
+    def __init__(self):
+        """Extends the Node class to make an UnknownNode; a placeholder node
+        object that is used when node detection fails.
+        """
+        self.name = 'Unknown'
+        self.coords = ['?', '?']
+        self.all_coords = [[0, 0]]
+        self.types = []
+        self.formation = ''
+        self.night_battle = False
+
+    def reset_unknown_node(self):
+        """Method that resets the coordinates of the unknown node to default.
+        """
+        self.coords = ['?', '?']
+
+    def __str__(self):
+        return '{} ({}, {})'.format(self.name, self.coords[0], self.coords[1])

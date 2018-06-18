@@ -16,6 +16,7 @@ import Localize from 'containers/LocalizeContainer'
 import {
   BodyConfigGeneralContainer,
   BodyConfigScheduledSleepContainer,
+  BodyConfigScheduledStopContainer,
   BodyConfigExpeditionsContainer,
   BodyConfigPvPContainer,
   BodyConfigCombatContainer,
@@ -36,6 +37,8 @@ const createStateObjFromPythonConfig = (pyConfig) => {
       currentSection = 'general'
     } else if (line === '[ScheduledSleep]') {
       currentSection = 'scheduledSleep'
+    } else if (line === '[ScheduledStop]') {
+      currentSection = 'scheduledStop'
     } else if (line === '[Expeditions]') {
       currentSection = 'expeditions'
     } else if (line === '[PvP]') {
@@ -63,25 +66,69 @@ const createStateObjFromPythonConfig = (pyConfig) => {
     dropzoneActive: false,
     generalProgram: pyConfigObj.generalProgram,
     generalJSTOffset: parseInt(pyConfigObj.generalJSTOffset, 10) || 0,
-    scheduledSleepEnabled: pyConfigObj.scheduledSleepEnabled === 'True',
-    scheduledSleepSleepStartTime: new Date(new Date()
+    generalPause: pyConfigObj.generalPause === 'True',
+    scheduledSleepScriptSleepEnabled: pyConfigObj.scheduledSleepScriptSleepEnabled === 'True',
+    scheduledSleepScriptSleepStartTime: new Date(new Date()
       .setHours(
-        parseInt(pyConfigObj.scheduledSleepSleepStartTime.substr(0, 2), 10),
-        parseInt(pyConfigObj.scheduledSleepSleepStartTime.substr(2, 2), 10), 0, 0
+        parseInt(pyConfigObj.scheduledSleepScriptSleepStartTime.substr(0, 2), 10),
+        parseInt(pyConfigObj.scheduledSleepScriptSleepStartTime.substr(2, 2), 10), 0, 0
       )),
-    scheduledSleepSleepLength: pyConfigObj.scheduledSleepSleepLength || null,
+    scheduledSleepScriptSleepLength: pyConfigObj.scheduledSleepScriptSleepLength || '',
+    scheduledSleepExpeditionSleepEnabled: pyConfigObj.scheduledSleepCombatSleepEnabled === 'True',
+    scheduledSleepExpeditionSleepStartTime: new Date(new Date()
+      .setHours(
+        parseInt(pyConfigObj.scheduledSleepCombatSleepStartTime.substr(0, 2), 10),
+        parseInt(pyConfigObj.scheduledSleepCombatSleepStartTime.substr(2, 2), 10), 0, 0
+      )),
+    scheduledSleepExpeditionSleepLength: pyConfigObj.scheduledSleepCombatSleepLength || '',
+    scheduledSleepCombatSleepEnabled: pyConfigObj.scheduledSleepExpeditionSleepEnabled === 'True',
+    scheduledSleepCombatSleepStartTime: new Date(new Date()
+      .setHours(
+        parseInt(pyConfigObj.scheduledSleepExpeditionSleepStartTime.substr(0, 2), 10),
+        parseInt(pyConfigObj.scheduledSleepExpeditionSleepStartTime.substr(2, 2), 10), 0, 0
+      )),
+    scheduledSleepCombatSleepLength: pyConfigObj.scheduledSleepExpeditionSleepLength || '',
+    scheduledStopScriptStopEnabled: pyConfigObj.scheduledStopScriptStopEnabled === 'True',
+    scheduledStopScriptStopCount: parseInt(pyConfigObj.scheduledStopScriptStopCount, 10) || '',
+    scheduledStopScriptStopTime: pyConfigObj.scheduledStopScriptStopTime ?
+      new Date(new Date().setHours(
+        parseInt(pyConfigObj.scheduledStopScriptStopTime.substr(0, 2), 10),
+        parseInt(pyConfigObj.scheduledStopScriptStopTime.substr(2, 2), 10), 0, 0
+      )) :
+      null,
+    scheduledStopExpeditionStopEnabled: pyConfigObj.scheduledStopExpeditionStopEnabled === 'True',
+    scheduledStopExpeditionStopMode: pyConfigObj.scheduledStopExpeditionStopMode,
+    scheduledStopExpeditionStopCount: parseInt(pyConfigObj.scheduledStopExpeditionStopCount, 10) || '',
+    scheduledStopExpeditionStopTime: pyConfigObj.scheduledStopExpeditionStopTime ?
+      new Date(new Date().setHours(
+        parseInt(pyConfigObj.scheduledStopExpeditionStopTime.substr(0, 2), 10),
+        parseInt(pyConfigObj.scheduledStopExpeditionStopTime.substr(2, 2), 10), 0, 0
+      )) :
+      null,
+    scheduledStopCombatStopEnabled: pyConfigObj.scheduledStopCombatStopEnabled === 'True',
+    scheduledStopCombatStopMode: pyConfigObj.scheduledStopCombatStopMode,
+    scheduledStopCombatStopCount: parseInt(pyConfigObj.scheduledStopCombatStopCount, 10) || '',
+    scheduledStopCombatStopTime: pyConfigObj.scheduledStopCombatStopTime ?
+      new Date(new Date().setHours(
+        parseInt(pyConfigObj.scheduledStopCombatStopTime.substr(0, 2), 10),
+        parseInt(pyConfigObj.scheduledStopCombatStopTime.substr(2, 2), 10), 0, 0
+      )) :
+      null,
     expeditionsEnabled: pyConfigObj.expeditionsEnabled === 'True',
     expeditionsFleet2: pyConfigObj.expeditionsFleet2 || null,
     expeditionsFleet3: pyConfigObj.expeditionsFleet3 || null,
     expeditionsFleet4: pyConfigObj.expeditionsFleet4 || null,
     pvpEnabled: pyConfigObj.pvpEnabled === 'True',
+    pvpFleet: pyConfigObj.pvpFleet || null,
     combatEnabled: pyConfigObj.combatEnabled === 'True',
     combatEngine: pyConfigObj.combatEngine || 'legacy',
+    combatFleets: pyConfigObj.combatFleets || null,
     combatMap: pyConfigObj.combatMap || '1-1',
     combatFleetMode: pyConfigObj.combatFleetMode || '',
     combatDisableExpeditionsFleet2: false,
     combatDisableExpeditionsFleet3: false,
     combatDisableExpeditionsFleet4: false,
+    combatDisablePvPFleet: false,
     combatCombatNodes: pyConfigObj.combatCombatNodes || null,
     combatNodeSelect1: null,
     combatNodeSelect2: null,
@@ -207,6 +254,10 @@ class BodyConfig extends PureComponent {
               <Divider />
 
               <BodyConfigScheduledSleepContainer callback={this.updateStoreConfig} />
+
+              <Divider />
+
+              <BodyConfigScheduledStopContainer callback={this.updateStoreConfig} />
 
               <Divider />
 

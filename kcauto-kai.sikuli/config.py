@@ -11,39 +11,7 @@ from util import Util
 class Config(object):
     """Config module that reads and validates the config to be passed to
     kcauto-kai
-
-    Attributes:
-        changed (bool): indicates whether or not the config has changed from
-            the previously stored config
-        combat (dict): dict of combat-related config settings
-        config_file (str): name of config file
-        expeditions (dict): dict of expedition-related config settings
-        expeditions_all (list): list of all expeditions to be passed in to the
-            expedition module
-        initialized (bool): indicates whether or not kcauto-kai has been
-            initialized with the current config
-        jst_offset (int): hours offset from JST
-        ok (bool): indicates whether or not the recently passed in config
-            passes validation or not
-        program (str): name of window Kantai Collection is running in
-        pvp (dict): dict of pvp-related config settings
-        quests (dict): dict of quest-related config settings
-        scheduled_sleep (dict): dict of scheduled sleep-related config settings
     """
-
-    ok = False
-    initialized = False
-    changed = False
-    program = ''
-    jst_offset = 0
-    pause = False
-
-    scheduled_sleep = {}
-    expeditions = {'enabled': False}
-    pvp = {'enabled': False}
-    combat = {'enabled': False}
-    ship_switcher = {'enabled': False}
-    quests = {'enabled': False}
 
     def __init__(self, config_file):
         """Initializes the config file by changing the working directory to the
@@ -55,7 +23,23 @@ class Config(object):
         Util.log_msg("Initializing config module")
         os.chdir(getBundlePath())
         os.chdir('..')
+
         self.config_file = config_file
+        self.ok = False
+        self.initialized = False
+        self.changed = False
+        self.program = ''
+        self.jst_offset = 0
+        self.pause = False
+        self.scheduled_sleep = {}
+        self.scheduled_stop = {}
+        self.expeditions = {'enabled': False}
+        self.pvp = {'enabled': False}
+        self.combat = {'enabled': False}
+        self.ship_switcher = {'enabled': False}
+        self.fleet_switcher = {'enabled': False}
+        self.quests = {'enabled': False}
+
         self.read()
 
     def read(self):
@@ -72,6 +56,7 @@ class Config(object):
 
         self._read_general(config)
         self._read_scheduled_sleep(config)
+        self._read_scheduled_stop(config)
 
         if config.getboolean('Expeditions', 'Enabled'):
             self._read_expeditions(config)
@@ -94,6 +79,12 @@ class Config(object):
         else:
             self.ship_switcher = {'enabled': False}
 
+        if ((self.combat['enabled'] and len(self.combat['fleets']) > 0) or
+                self.pvp['enabled'] and self.pvp['fleet']):
+            self.fleet_switcher = {'enabled': True}
+        else:
+            self.fleet_switcher = {'enabled': False}
+
         if config.getboolean('Quests', 'Enabled'):
             self._read_quests(config)
         else:
@@ -102,20 +93,20 @@ class Config(object):
         self.validate()
 
         if (self.ok and not self.initialized):
-            Util.log_msg('Starting kancolle-auto!')
+            Util.log_msg("Starting kancolle-auto!")
             self.initialized = True
             self.changed = True
         elif (not self.ok and not self.initialized):
-            Util.log_error('Invalid config. Please check your config file.')
+            Util.log_error("Invalid config. Please check your config file.")
             sys.exit(1)
         elif (not self.ok and self.initialized):
             Util.warning(
-                'Config change detected, but with problems. Rolling back '
-                'config.')
+                "Config change detected, but with problems. Rolling back "
+                "config.")
             self._rollback_config(backup_config)
         elif (self.ok and self.initialized):
             if backup_config != self.__dict__:
-                Util.log_warning('Config change detected. Hot-reloading.')
+                Util.log_warning("Config change detected. Hot-reloading.")
                 self.changed = True
 
     def validate(self):
@@ -124,6 +115,16 @@ class Config(object):
         if not self.initialized:
             Util.log_msg("Validating config")
         self.ok = True
+
+        if self.scheduled_stop:
+            for module in ('expedition', 'combat'):
+                stop_key = '{}_stop_mode'.format(module)
+                if self.scheduled_stop[stop_key] not in (
+                        '', 'script', 'module'):
+                    Util.log_error(
+                        "Invalid Stop Mode for {}: '{}'".format(
+                            module.title(), self.scheduled_stop[stop_key]))
+                    self.ok = False
 
         if self.expeditions['enabled']:
             valid_expeditions = range(1, 41) + [
@@ -134,12 +135,27 @@ class Config(object):
                         "Invalid Expedition: '{}'.".format(expedition))
                     self.ok = False
 
+        if self.pvp['enabled']:
+            # validate fleet preset
+            if self.pvp['fleet'] and not 0 < self.pvp['fleet'] < 13:
+                Util.log_error(
+                    "Invalid fleet preset ID for PvP: '{}'".format(
+                        self.pvp['fleet']))
+                self.ok = False
+
         if self.combat['enabled']:
             # validate the combat engine
             if self.combat['engine'] not in ('legacy', 'live'):
                 Util.log_error("Invalid Combat Engine: '{}'.".format(
                     self.combat['engine']))
                 self.ok = False
+            # validate fleet presets
+            for preset in self.combat['fleets']:
+                if not 0 < preset < 13:
+                    Util.log_error(
+                        "Invalid fleet preset ID for combat: '{}'".format(
+                            preset))
+                    self.ok = False
             # validate the fleet mode
             if self.combat['fleet_mode'] not in (
                     'ctf', 'stf', 'transport', 'striking', ''):
@@ -227,7 +243,7 @@ class Config(object):
                                 group)]) != 2):
                             Util.log_error(
                                 "LBAS Group {} does not have 2 nodes assigned "
-                                " to it".format(group))
+                                "to it".format(group))
                             self.ok = False
             # validate the misc options
             for option in self.combat['misc_options']:
@@ -237,6 +253,7 @@ class Config(object):
                     Util.log_error(
                         "Invalid Combat MiscOption: '{}'.".format(option))
                     self.ok = False
+
         if self.ship_switcher['enabled']:
             if self.combat['fleet_mode'] != '':
                 Util.log_error(
@@ -267,6 +284,14 @@ class Config(object):
                                 .format(slot))
                             self.ok = False
 
+        if self.fleet_switcher['enabled']:
+            # validate fleet switcher and combat fleet mode conflict
+            if self.combat['enabled'] and self.combat['fleet_mode'] != '':
+                Util.log_error(
+                    "Fleet Presets cannot be used when combat is enabled and "
+                    "not in Standard fleet mode")
+                self.ok = False
+
     def _read_general(self, config):
         """Method to parse the General settings of the passed in config.
 
@@ -284,17 +309,48 @@ class Config(object):
         Args:
             config (ConfigParser): ConfigParser instance
         """
-        for module in ('kca', 'expedition', 'combat'):
-            module_cfg = '' if module == 'kca' else module.title()
+        for module in ('script', 'expedition', 'combat'):
+            module_title = module.title()
             self.scheduled_sleep['{}_sleep_enabled'.format(module)] = (
                 config.getboolean(
-                    'ScheduledSleep', '{}SleepEnabled'.format(module_cfg)))
+                    'ScheduledSleep', '{}SleepEnabled'.format(module_title)))
             self.scheduled_sleep['{}_sleep_start_time'.format(module)] = (
                 "{:04d}".format(config.getint(
-                    'ScheduledSleep', '{}SleepStartTime'.format(module_cfg))))
+                    'ScheduledSleep', '{}SleepStartTime'.format(
+                        module_title))))
             self.scheduled_sleep['{}_sleep_length'.format(module)] = (
                 config.getfloat(
-                    'ScheduledSleep', '{}SleepLength'.format(module_cfg)))
+                    'ScheduledSleep', '{}SleepLength'.format(module_title)))
+
+    def _read_scheduled_stop(self, config):
+        """Method to parse the Scheduled Stop settings of the passed in
+        config.
+
+        Args:
+            config (ConfigParser): ConfigParser instance
+        """
+        for module in ('script', 'expedition', 'combat'):
+            module_title = module.title()
+            self.scheduled_stop['{}_stop_enabled'.format(module)] = (
+                config.getboolean(
+                    'ScheduledStop', '{}StopEnabled'.format(module_title)))
+            try:
+                self.scheduled_stop['{}_stop_count'.format(module)] = (
+                    config.getint(
+                        'ScheduledStop', '{}StopCount'.format(module_title)))
+            except ValueError:
+                self.scheduled_stop['{}_stop_count'.format(module)] = None
+            try:
+                self.scheduled_stop['{}_stop_time'.format(module)] = (
+                    "{:04d}".format(config.getint(
+                        'ScheduledStop', '{}StopTime'.format(
+                            module_title))))
+            except ValueError:
+                self.scheduled_stop['{}_stop_time'.format(module)] = None
+            if module in ('expedition', 'combat'):
+                self.scheduled_stop['{}_stop_mode'.format(module)] = (
+                    config.get(
+                        'ScheduledStop', '{}StopMode'.format(module_title)))
 
     def _read_expeditions(self, config):
         """Method to parse the Expedition settings of the passed in config.
@@ -324,12 +380,16 @@ class Config(object):
             self.expeditions.pop('fleet4', None)
 
     def _read_pvp(self, config):
-        """Method to parse the Ovo settings of the passed in config.
+        """Method to parse the PvP settings of the passed in config.
 
         Args:
             config (ConfigParser): ConfigParser instance
         """
         self.pvp['enabled'] = True
+        self.pvp['fleet'] = (
+            config.getint('PvP', 'Fleet')
+            if config.get('PvP', 'Fleet')
+            else None)
 
     def _read_combat(self, config):
         """Method to parse the Combat settings of the passed in config.
@@ -339,13 +399,19 @@ class Config(object):
         """
         self.combat['enabled'] = True
         self.combat['engine'] = config.get('Combat', 'Engine')
+        if config.get('Combat', 'Fleets'):
+            self.combat['fleets'] = map(
+                int, self._getlist(config, 'Combat', 'Fleets'))
+            self.expeditions_all.extend(self.expeditions['fleet2'])
+        else:
+            self.combat['fleets'] = []
+        self.combat['map'] = config.get('Combat', 'Map')
         self.combat['fleet_mode'] = config.get('Combat', 'FleetMode')
         self.combat['combined_fleet'] = (
             True if self.combat['fleet_mode'] in ['ctf', 'stf', 'transport']
             else False)
         self.combat['striking_fleet'] = (
             True if self.combat['fleet_mode'] == 'striking' else False)
-        self.combat['map'] = config.get('Combat', 'Map')
         combat_nodes = config.get('Combat', 'CombatNodes')
         self.combat['combat_nodes'] = int(combat_nodes) if combat_nodes else 99
         self.combat['node_selects'] = {}
