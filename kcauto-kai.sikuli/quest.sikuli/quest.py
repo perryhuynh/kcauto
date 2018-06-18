@@ -213,6 +213,8 @@ class QuestModule(object):
                         # suffix that should be ignored
                         continue
                     if valid_quest['rewards'] == quest_rewards:
+                        Util.log_msg("Activating quest {}.".format(
+                            valid_quest['name']))
                         if quest_bar.exists('quest_in_progress.png'):
                             # quest is already active
                             self._activate_quest(valid_quest)
