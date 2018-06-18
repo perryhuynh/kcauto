@@ -334,7 +334,15 @@ class NavList(object):
         # navigate to the desired target page from the current page
         while target_page != current_page:
             page_delta = target_page - current_page
-            if target_page <= 5 and (current_page <= 3 or page_count <= 5):
+            if target_page == 1:
+                # shortcut for first page
+                cls._change_page(regions, 'first', cls.OFFSET[offset_mode])
+                current_page = 1
+            elif target_page == page_count:
+                # shortcut for last page
+                cls._change_page(regions, 'last', cls.OFFSET[offset_mode])
+                current_page = page_count
+            elif target_page <= 5 and (current_page <= 3 or page_count <= 5):
                 cls._change_page(regions, target_page, cls.OFFSET[offset_mode])
                 current_page = target_page
             elif (current_page >= page_count - 2
@@ -361,7 +369,7 @@ class NavList(object):
                 else:
                     cls._change_page(regions, 'next', cls.OFFSET[offset_mode])
                     current_page += 5
-        Util.kc_sleep()
+        Util.kc_sleep(0.5)
         return current_page
 
     @staticmethod

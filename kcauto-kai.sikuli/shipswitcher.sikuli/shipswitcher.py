@@ -415,8 +415,8 @@ class ShipSwitcherModule(object):
         availability = self._check_ship_availability(criteria)
         if availability is True:
             return True
-        Util.check_and_click(
-            self.regions['lower_right'], 'page_first.png')
+        # not an actual navigation, but a click to get rid of a side panel
+        Util.check_and_click(self.regions['lower_right'], 'page_first.png')
         return availability
 
     def _resolve_replacement_ship(self, slot_config):
@@ -483,12 +483,17 @@ class ShipSwitcherModule(object):
         self.temp_ship_position_dict = {}
         self._switch_shiplist_sorting('class')
 
-        # start search from cached position, if available
         if slot_config['slot'] in self.position_cache:
+            # start search from cached position, if available
             Util.log_msg("Jumping to cached page {}.".format(
                 self.position_cache[slot_config['slot']]))
             self._navigate_to_shiplist_page(
                 self.position_cache[slot_config['slot']])
+        else:
+            # otherwise, start from first page to establish a good position
+            self.current_shiplist_page = NavList.navigate_to_page(
+                self.regions, self.ship_page_count, self.current_shiplist_page,
+                1)
 
         while (not self.temp_ship_position_dict and
                 self.current_shiplist_page < self.ship_page_count):
