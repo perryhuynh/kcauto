@@ -144,6 +144,11 @@ class Config(object):
                 self.ok = False
 
         if self.combat['enabled']:
+            # validate the combat engine
+            if self.combat['engine'] not in ('legacy', 'live'):
+                Util.log_error("Invalid Combat Engine: '{}'.".format(
+                    self.combat['engine']))
+                self.ok = False
             # validate fleet presets
             for preset in self.combat['fleets']:
                 if not 0 < preset < 13:
@@ -151,11 +156,6 @@ class Config(object):
                         "Invalid fleet preset ID for combat: '{}'".format(
                             preset))
                     self.ok = False
-            # validate the combat engine
-            if self.combat['engine'] not in ('legacy', 'live'):
-                Util.log_error("Invalid Combat Engine: '{}'.".format(
-                    self.combat['engine']))
-                self.ok = False
             # validate the fleet mode
             if self.combat['fleet_mode'] not in (
                     'ctf', 'stf', 'transport', 'striking', ''):
@@ -253,6 +253,7 @@ class Config(object):
                     Util.log_error(
                         "Invalid Combat MiscOption: '{}'.".format(option))
                     self.ok = False
+
         if self.ship_switcher['enabled']:
             if self.combat['fleet_mode'] != '':
                 Util.log_error(
@@ -282,6 +283,14 @@ class Config(object):
                                 "Invalid # of arguments for ship in slot {}"
                                 .format(slot))
                             self.ok = False
+
+        if self.fleet_switcher['enabled']:
+            # validate fleet switcher and combat fleet mode conflict
+            if self.combat['enabled'] and self.combat['fleet_mode'] != '':
+                Util.log_error(
+                    "Fleet Presets cannot be used when combat is enabled and"
+                    " not in Standard fleet mode")
+                self.ok = False
 
     def _read_general(self, config):
         """Method to parse the General settings of the passed in config.
@@ -389,20 +398,20 @@ class Config(object):
             config (ConfigParser): ConfigParser instance
         """
         self.combat['enabled'] = True
+        self.combat['engine'] = config.get('Combat', 'Engine')
         if config.get('Combat', 'Fleets'):
             self.combat['fleets'] = map(
                 int, self._getlist(config, 'Combat', 'Fleets'))
             self.expeditions_all.extend(self.expeditions['fleet2'])
         else:
             self.combat['fleets'] = []
-        self.combat['engine'] = config.get('Combat', 'Engine')
+        self.combat['map'] = config.get('Combat', 'Map')
         self.combat['fleet_mode'] = config.get('Combat', 'FleetMode')
         self.combat['combined_fleet'] = (
             True if self.combat['fleet_mode'] in ['ctf', 'stf', 'transport']
             else False)
         self.combat['striking_fleet'] = (
             True if self.combat['fleet_mode'] == 'striking' else False)
-        self.combat['map'] = config.get('Combat', 'Map')
         combat_nodes = config.get('Combat', 'CombatNodes')
         self.combat['combat_nodes'] = int(combat_nodes) if combat_nodes else 99
         self.combat['node_selects'] = {}
