@@ -1,3 +1,13 @@
+#### 1.0.0
+
+* Implement FleetSwitcher functionality
+  * Can specify 1 fleet preset for PvP, and multiple fleet presets for Combat
+* Improvements to Quest module
+  * Add ability to filter out daily, weekly, and/or monthly quests
+  * Quest module is now context aware: only turns on PvP quests if doing PvP, Combat quests if doing combat
+* Support for setting custom retreat node via config
+* Bugfixes to ShipSwitcher module
+
 #### 0.5.1
 
 * Fix PortCheck on non-Event maps
