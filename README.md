@@ -14,7 +14,7 @@ Please consider supporting the developer on [Patreon](https://www.patreon.com/mr
 
 Please submit bugs and feature requests on the [kcauto-kai issue tracker](https://github.com/mrmin123/kcauto-kai/issues). Please make sure you are on the latest release of kcauto-kai and that the bug/feature has not been reported already before opening an issue on the tracker.
 
-Join the [kcauto-kai Discord server](https://discord.gg/smAhRKw) for kcauto-kai news, updates, and discussion. For more general Kantai Collection discussion, please join the [sister Discord server](https://discord.gg/2tt5Der).
+Join the [**kcauto-kai Discord server**](https://discord.gg/smAhRKw) for kcauto-kai news, updates, and discussion. For more general Kantai Collection discussion, please join the [sister Discord server](https://discord.gg/2tt5Der).
 
 
 ---
