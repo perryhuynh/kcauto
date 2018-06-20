@@ -1,18 +1,21 @@
 # kcauto-kai
 
-**kcauto-kai** is a robust Kantai Collection automation tool. kcauto-kai and it's predecessor, [kancolle-auto](https://github.com/mrmin123/kancolle-auto), are proof-of-concepts in using [Sikuli](http://sikulix.com/) for vision-based automation to play Kantai Collection. They are an exercises in automating large, convoluted, and complex game-playing logic.
+**kcauto-kai** is a robust Kantai Collection automation tool. kcauto-kai and it's predecessor, [kancolle-auto](https://github.com/mrmin123/kancolle-auto), are proof-of-concepts in using [Sikuli](http://sikulix.com/) for vision-based automation to play Kantai Collection. They are exercises in automating large, convoluted, and complex game-playing logic. The primary logic of kcauto-kai is written in Jython 2.7, with a standalone browser interface for config generation written in React JavaScript.
 
 kcauto-kai is not designed to be the fastest automation tool, but is instead robust, highly customizable, and relatively safe to use. Please read the Disclaimer below before use!
 
 ---
 
-Please submit bugs and feature requests on the [kcauto-kai issue tracker](https://github.com/mrmin123/kcauto-kai/issues).
+Please consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123) or [MakerSupport](https://www.makersupport.com/mrmin123).
+
+<a href="https://www.patreon.com/mrmin123"><img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" width="130" /></a>
+
+---
+
+Please submit bugs and feature requests on the [kcauto-kai issue tracker](https://github.com/mrmin123/kcauto-kai/issues). Please make sure you are on the latest release of kcauto-kai and that the bug/feature has not been reported already before opening an issue on the tracker.
 
 Join the [kcauto-kai Discord server](https://discord.gg/smAhRKw) for kcauto-kai news, updates, and discussion. For more general Kantai Collection discussion, please join the [sister Discord server](https://discord.gg/2tt5Der).
 
-Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123) or [MakerSupport](https://www.makersupport.com/mrmin123)!
-
-<a href="https://www.patreon.com/mrmin123"><img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" width="130" /></a>
 
 ---
 
@@ -32,16 +35,15 @@ Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)
 * PvP Module &mdash; automate PvP
   * Automatic diamond or line abreast formations against submarine-heavy opponents
 * Combat Module &mdash; automate combat sorties
-  * Two available modes: Live and Legacy
-    * Live: tracks fleet position and automatically makes formation, night battle, retreat, and node selects based on specified JSON files
-    * Legacy: specify formation, night battle, retreat on a per-#-node basis
+  * Choice between [Live and Legacy combat engines](https://github.com/mrmin123/kcauto-kai/wiki/Config:-Combat-section#engine)
 * LBAS Module &mdash; automatic LBAS management
   * Automatic resupply, fatigue management, and node assignment
 * Ship Switcher Module &mdash; automatic switching of ships based on specified criteria between combat sorties
+* Fleet Switcher Module &mdash; automatic switching of fleet presets for PvP and combat sorties
 * Quests Module &mdash; automatic quest management
 * Repair & Resupply Modules &mdash; automatic resupply and repair of fleet ships
-* Stats Module &mdash; keeps stats on various actions performed
-* Scheduled and manual sleep (pausing) of script
+* Stats &mdash; keeps stats on various actions performed
+* Scheduled and manual sleeping and pausing of individual modules or entire script
 * Automatic catbomb and script recovery
 * Browser/viewer-agnostic
 * Random variations in navigation, timers, and click positions to combat bot detection
@@ -70,7 +72,3 @@ If you do have git and cloned the kcauto-kai repository, use one of the followin
 If you do not have git but would still like to keep up with `master`, please use [this guide](https://github.com/KC3Kai/KC3Kai/wiki/Setup-development-build) for setting up tortoisegit, but with the clone URL changed to `https://github.com/mrmin123/kcauto-kai.git`
 
 If you do not have git, tortoisegit, or a clone of the kcauto-kai repository, head to the [Releases page](https://github.com/mrmin123/kcauto-kai/releases) and download the latest tagged version. Overwrite your local kcauto-kai installation with the contents of the new release, taking care to first back up or not overwrite your config file. Note that your config file may need updating to be compatible with new releases.
-
-### Bug Reports
-
-If you encounter any bugs or issues in kcauto-kai, please first make sure that you are on the latest release. If the problem persists, please search the [bug tracker](https://github.com/mrmin123/kcauto-kai/issues) to see if the issue has already been reported. Otherwise, please open an issue on the tracker.
