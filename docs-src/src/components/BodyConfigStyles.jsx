@@ -51,6 +51,13 @@ export const styles = theme => ({
     width: '50%',
     fontFamily: 'Roboto, sans-serif',
   },
+  helperText: {
+    fontFamily: 'Roboto, sans-serif',
+    fontSize: '0.75rem',
+    marginTop: 8,
+    lineHeight: '1em',
+    color: 'rgba(0, 0, 0, 0.54)',
+  },
   clearFormIcon: {
     position: 'absolute',
     bottom: 5,

@@ -33,11 +33,13 @@ const jsonConfigDefaults = {
   expeditionsFleet3: '5',
   expeditionsFleet4: '38',
   pvpEnabled: true,
+  pvpFleet: null,
   combatEnabled: false,
   combatEngine: 'live',
+  combatFleets: null,
   combatMap: '1-1',
   combatFleetMode: '',
-  combatCombatNodes: null,
+  combatRetreatNodes: null,
   combatNodeSelect1: null,
   combatNodeSelect2: null,
   combatNodeSelects: null,
@@ -75,6 +77,10 @@ const jsonConfigDefaults = {
   shipSwitcherSlot6Criteria: null,
   shipSwitcherSlot6Ships: null,
   questsEnabled: true,
+  questsQuestGroupsDaily: true,
+  questsQuestGroupsWeekly: true,
+  questsQuestGroupsMonthly: true,
+  questsQuestGroupsQuarterly: false,
 }
 
 export const jsonConfig = (state = jsonConfigDefaults, action) => {

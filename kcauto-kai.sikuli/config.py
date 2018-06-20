@@ -37,6 +37,7 @@ class Config(object):
         self.pvp = {'enabled': False}
         self.combat = {'enabled': False}
         self.ship_switcher = {'enabled': False}
+        self.fleet_switcher = {'enabled': False}
         self.quests = {'enabled': False}
 
         self.read()
@@ -78,6 +79,12 @@ class Config(object):
         else:
             self.ship_switcher = {'enabled': False}
 
+        if ((self.combat['enabled'] and len(self.combat['fleets']) > 0) or
+                self.pvp['enabled'] and self.pvp['fleet']):
+            self.fleet_switcher = {'enabled': True}
+        else:
+            self.fleet_switcher = {'enabled': False}
+
         if config.getboolean('Quests', 'Enabled'):
             self._read_quests(config)
         else:
@@ -86,20 +93,20 @@ class Config(object):
         self.validate()
 
         if (self.ok and not self.initialized):
-            Util.log_msg('Starting kancolle-auto!')
+            Util.log_msg("Starting kancolle-auto!")
             self.initialized = True
             self.changed = True
         elif (not self.ok and not self.initialized):
-            Util.log_error('Invalid config. Please check your config file.')
+            Util.log_error("Invalid config. Please check your config file.")
             sys.exit(1)
         elif (not self.ok and self.initialized):
             Util.warning(
-                'Config change detected, but with problems. Rolling back '
-                'config.')
+                "Config change detected, but with problems. Rolling back "
+                "config.")
             self._rollback_config(backup_config)
         elif (self.ok and self.initialized):
             if backup_config != self.__dict__:
-                Util.log_warning('Config change detected. Hot-reloading.')
+                Util.log_warning("Config change detected. Hot-reloading.")
                 self.changed = True
 
     def validate(self):
@@ -128,12 +135,27 @@ class Config(object):
                         "Invalid Expedition: '{}'.".format(expedition))
                     self.ok = False
 
+        if self.pvp['enabled']:
+            # validate fleet preset
+            if self.pvp['fleet'] and not 0 < self.pvp['fleet'] < 13:
+                Util.log_error(
+                    "Invalid fleet preset ID for PvP: '{}'".format(
+                        self.pvp['fleet']))
+                self.ok = False
+
         if self.combat['enabled']:
             # validate the combat engine
             if self.combat['engine'] not in ('legacy', 'live'):
                 Util.log_error("Invalid Combat Engine: '{}'.".format(
                     self.combat['engine']))
                 self.ok = False
+            # validate fleet presets
+            for preset in self.combat['fleets']:
+                if not 0 < preset < 13:
+                    Util.log_error(
+                        "Invalid fleet preset ID for combat: '{}'".format(
+                            preset))
+                    self.ok = False
             # validate the fleet mode
             if self.combat['fleet_mode'] not in (
                     'ctf', 'stf', 'transport', 'striking', ''):
@@ -221,7 +243,7 @@ class Config(object):
                                 group)]) != 2):
                             Util.log_error(
                                 "LBAS Group {} does not have 2 nodes assigned "
-                                " to it".format(group))
+                                "to it".format(group))
                             self.ok = False
             # validate the misc options
             for option in self.combat['misc_options']:
@@ -231,6 +253,7 @@ class Config(object):
                     Util.log_error(
                         "Invalid Combat MiscOption: '{}'.".format(option))
                     self.ok = False
+
         if self.ship_switcher['enabled']:
             if self.combat['fleet_mode'] != '':
                 Util.log_error(
@@ -260,6 +283,26 @@ class Config(object):
                                 "Invalid # of arguments for ship in slot {}"
                                 .format(slot))
                             self.ok = False
+
+        if self.fleet_switcher['enabled']:
+            # validate fleet switcher and combat fleet mode conflict
+            if self.combat['enabled'] and self.combat['fleet_mode'] != '':
+                Util.log_error(
+                    "Fleet Presets cannot be used when combat is enabled and "
+                    "not in Standard fleet mode")
+                self.ok = False
+
+        if self.quests['enabled']:
+            # validate that quest groups are specified
+            if len(self.quests['quest_groups']) == 0:
+                Util.log_error("No Quest Groups specified for Quest module")
+                self.ok = False
+            # validate quest groups
+            for qg in self.quests['quest_groups']:
+                if qg not in ('daily', 'weekly', 'monthly'):
+                    Util.log_error(
+                        "Invalid Quest Group specified: '{}'".format(qg))
+                    self.ok = False
 
     def _read_general(self, config):
         """Method to parse the General settings of the passed in config.
@@ -355,6 +398,10 @@ class Config(object):
             config (ConfigParser): ConfigParser instance
         """
         self.pvp['enabled'] = True
+        self.pvp['fleet'] = (
+            config.getint('PvP', 'Fleet')
+            if config.get('PvP', 'Fleet')
+            else None)
 
     def _read_combat(self, config):
         """Method to parse the Combat settings of the passed in config.
@@ -364,15 +411,33 @@ class Config(object):
         """
         self.combat['enabled'] = True
         self.combat['engine'] = config.get('Combat', 'Engine')
+        if config.get('Combat', 'Fleets'):
+            self.combat['fleets'] = map(
+                int, self._getlist(config, 'Combat', 'Fleets'))
+            self.expeditions_all.extend(self.expeditions['fleet2'])
+        else:
+            self.combat['fleets'] = []
+        self.combat['map'] = config.get('Combat', 'Map')
         self.combat['fleet_mode'] = config.get('Combat', 'FleetMode')
         self.combat['combined_fleet'] = (
             True if self.combat['fleet_mode'] in ['ctf', 'stf', 'transport']
             else False)
         self.combat['striking_fleet'] = (
             True if self.combat['fleet_mode'] == 'striking' else False)
-        self.combat['map'] = config.get('Combat', 'Map')
-        combat_nodes = config.get('Combat', 'CombatNodes')
-        self.combat['combat_nodes'] = int(combat_nodes) if combat_nodes else 99
+        # defaults for retreat nodes and combat nodes
+        self.combat['retreat_nodes'] = []
+        self.combat['combat_nodes'] = 99
+        # overwrite above if needed
+        if config.get('Combat', 'RetreatNodes'):
+            temp_retreat_values = set(
+                self._getlist(config, 'Combat', 'RetreatNodes'))
+            for val in temp_retreat_values:
+                if val.isdigit():
+                    self.combat['combat_nodes'] = (
+                        int(val) if int(val) < self.combat['combat_nodes']
+                        else self.combat['combat_nodes'])
+                else:
+                    self.combat['retreat_nodes'].append(val)
         self.combat['node_selects'] = {}
         self.combat['raw_node_selects'] = (
             self._getlist(config, 'Combat', 'NodeSelects'))
@@ -477,6 +542,8 @@ class Config(object):
             config (ConfigParser): ConfigParser instance
         """
         self.quests['enabled'] = True
+        self.quests['quest_groups'] = self._getlist(
+            config, 'Quests', 'QuestGroups')
 
     def _rollback_config(self, config):
         """Method to roll back the config to the passed in config's.

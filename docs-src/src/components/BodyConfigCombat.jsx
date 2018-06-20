@@ -17,6 +17,8 @@ import Localize from 'containers/LocalizeContainer'
 import { styles } from 'components/BodyConfigStyles'
 
 
+const FLEET_PRESETS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'].map(value => (
+  { value, label: value }))
 const COMBAT_ENGINES = [
   { value: 'live', label: <Localize field='bodyConfig.combatEngineLive' /> },
   { value: 'legacy', label: <Localize field='bodyConfig.combatEngineLegacy' /> }]
@@ -30,7 +32,7 @@ const COMBINED_FLEET_MODES = [
   { value: 'stf', label: <Localize field='bodyConfig.combatFleetModeSTF' /> },
   { value: 'transport', label: <Localize field='bodyConfig.combatFleetModeTransport' /> },
   { value: 'striking', label: <Localize field='bodyConfig.combatFleetModeStriking' /> }]
-const COMBAT_NODE_COUNTS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'].map(value => (
+const COMBAT_NODE_COUNTS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'].map(value => (
   { value, label: value }))
 const NODES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(value => ({ value, label: value }))
 NODES.push(...['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7', 'Z8', 'Z9', 'ZZ1', 'ZZ2', 'ZZ3'].map(value => (
@@ -87,29 +89,60 @@ class BodyConfigCombat extends PureComponent {
     if (value === 'striking') {
       this.setState(
         {
+          combatFleets: [],
           combatFleetMode: value,
           combatDisableExpeditionsFleet2: false,
           expeditionsFleet3: [],
           combatDisableExpeditionsFleet3: true,
+          pvpFleet: null,
+          combatDisablePvPFleet: true,
         },
         () => this.props.callback(this.state)
       )
     } else if (['ctf', 'stf', 'transport'].indexOf(value) > -1) {
       this.setState(
         {
+          combatFleets: [],
           combatFleetMode: value,
           expeditionsFleet2: [],
           combatDisableExpeditionsFleet2: true,
           combatDisableExpeditionsFleet3: false,
+          pvpFleet: null,
+          combatDisablePvPFleet: true,
         },
         () => this.props.callback(this.state)
       )
     } else {
       this.setState(
-        { combatFleetMode: value, combatDisableExpeditionsFleet2: false, combatDisableExpeditionsFleet3: false },
+        {
+          combatFleetMode: value,
+          combatDisableExpeditionsFleet2: false,
+          combatDisableExpeditionsFleet3: false,
+          combatDisablePvPFleet: false,
+        },
         () => this.props.callback(this.state)
       )
     }
+  }
+
+  handleCombatRetreatNodesChange = (value) => {
+    // only allow the most recently selected numeric combat node count value; the actual script only allows uses the
+    // smallest integer value in this field, but this exists as a sanitation step for the user
+    const validCombatRetreatNodes = []
+    let lastCombatNodeCount = null
+    // determine last-specified number
+    value.split(',').forEach((val) => {
+      lastCombatNodeCount = !Number.isNaN(parseInt(val, 10)) ? parseInt(val, 10) : lastCombatNodeCount
+    })
+    // filter out every integer value other than the last specified one
+    value.split(',').forEach((val) => {
+      if (Number.isNaN(parseInt(val, 10)) || parseInt(val, 10) === lastCombatNodeCount) {
+        validCombatRetreatNodes.push(val)
+      }
+    })
+    this.setState({
+      combatRetreatNodes: validCombatRetreatNodes.length > 0 ? validCombatRetreatNodes.join(',') : null,
+    }, () => this.props.callback(this.state))
   }
 
   handleCombatNodeSelectAdd = (node, targetNode) => {
@@ -173,6 +206,11 @@ class BodyConfigCombat extends PureComponent {
     this.setState({ combatLBASGroups: value })
   }
 
+  handleMiscOptionCheck = (event, checked) => {
+    // handling of misc option checkboxes
+    this.setState({ [event.target.value]: checked }, () => this.props.callback(this.state))
+  }
+
   optionsNodeSplitter = (rawOption, divider) => {
     // helper method to convert a list of comma-separated values divided in two via a divider into an object with the
     // value left of the divider as the key, and the value right of the divider as the value
@@ -204,10 +242,11 @@ class BodyConfigCombat extends PureComponent {
     } = this.props
     const {
       combatEnabled,
+      combatFleets,
       combatEngine,
       combatMap,
       combatFleetMode,
-      combatCombatNodes,
+      combatRetreatNodes,
       combatNodeSelect1,
       combatNodeSelect2,
       combatNodeSelects,
@@ -278,6 +317,31 @@ class BodyConfigCombat extends PureComponent {
         </Grid>
 
         <Grid container spacing={0}>
+          <Grid item xs={12} sm={12} className={classes.formGrid}>
+            <FormControl
+              disabled={!combatEnabled || combatFleetMode !== ''}
+              margin='normal'
+              fullWidth
+            >
+              <InputLabel htmlFor='combatFleets' shrink={true} className={classes.reactSelectLabel}>
+                <Localize field='bodyConfig.combatFleets' />
+              </InputLabel>
+              <Select
+                multi
+                className={classes.reactSelect}
+                simpleValue={true}
+                name='combatFleets'
+                value={combatFleets}
+                options={FLEET_PRESETS}
+                onChange={value => this.setState({ combatFleets: value }, () => this.props.callback(this.state))}
+                disabled={!combatEnabled || combatFleetMode !== ''}
+                fullWidth />
+              <span className={classes.helperText}><Localize field='bodyConfig.combatFleetsDesc' /></span>
+            </FormControl>
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={0}>
           <Grid item xs={12} sm={4} className={classes.formGrid}>
             <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
               <InputLabel htmlFor='combatMap' shrink={true} className={classes.reactSelectLabel}>
@@ -308,21 +372,23 @@ class BodyConfigCombat extends PureComponent {
                 options={COMBINED_FLEET_MODES}
                 onChange={this.handleFleetModeChange}
                 disabled={!combatEnabled}
+                clearable={false}
                 fullWidth />
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4} className={classes.formGrid}>
             <FormControl disabled={!combatEnabled} margin='normal' fullWidth>
-              <InputLabel htmlFor='combatCombatNodes' shrink={true} className={classes.reactSelectLabel}>
-                <Localize field='bodyConfig.combatCombatNodeCount' />
+              <InputLabel htmlFor='combatRetreatNodes' shrink={true} className={classes.reactSelectLabel}>
+                <Localize field='bodyConfig.combatRetreatNodes' />
               </InputLabel>
               <Select
+                multi
                 className={classes.reactSelect}
                 simpleValue={true}
-                name='combatCombatNodes'
-                value={combatCombatNodes}
-                options={COMBAT_NODE_COUNTS}
-                onChange={value => this.setState({ combatCombatNodes: value }, () => this.props.callback(this.state))}
+                name='combatRetreatNodes'
+                value={combatRetreatNodes}
+                options={COMBAT_NODE_COUNTS.concat(NODES)}
+                onChange={this.handleCombatRetreatNodesChange}
                 disabled={!combatEnabled}
                 fullWidth />
             </FormControl>
@@ -667,11 +733,7 @@ class BodyConfigCombat extends PureComponent {
               control={
                 <Checkbox
                   checked={combatOptionCheckFatigue}
-                  onChange={
-                    (event, checked) => this.setState(
-                      { combatOptionCheckFatigue: checked },
-                      () => this.props.callback(this.state)
-                    )}
+                  onChange={this.handleMiscOptionCheck}
                   disabled={!combatEnabled}
                   value='combatOptionCheckFatigue' />
               }
@@ -681,11 +743,7 @@ class BodyConfigCombat extends PureComponent {
               control={
                 <Checkbox
                   checked={combatOptionReserveDocks}
-                  onChange={
-                    (event, checked) => this.setState(
-                      { combatOptionReserveDocks: checked },
-                      () => this.props.callback(this.state)
-                    )}
+                  onChange={this.handleMiscOptionCheck}
                   disabled={!combatEnabled}
                   value='combatOptionReserveDocks' />
               }
@@ -695,11 +753,7 @@ class BodyConfigCombat extends PureComponent {
               control={
                 <Checkbox
                   checked={combatOptionPortCheck}
-                  onChange={
-                    (event, checked) => this.setState(
-                      { combatOptionPortCheck: checked },
-                      () => this.props.callback(this.state)
-                    )}
+                  onChange={this.handleMiscOptionCheck}
                   disabled={!combatEnabled}
                   value='combatOptionPortCheck' />
               }
@@ -709,11 +763,7 @@ class BodyConfigCombat extends PureComponent {
               control={
                 <Checkbox
                   checked={combatOptionClearStop}
-                  onChange={
-                    (event, checked) => this.setState(
-                      { combatOptionClearStop: checked },
-                      () => this.props.callback(this.state)
-                    )}
+                  onChange={this.handleMiscOptionCheck}
                   disabled={!combatEnabled}
                   value='combatOptionClearStop' />
               }

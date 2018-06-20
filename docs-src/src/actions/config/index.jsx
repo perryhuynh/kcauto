@@ -128,6 +128,19 @@ export const setPythonConfig = config => (
       configTemp.shipSwitcherSlot6Criteria = ''
       configTemp.shipSwitcherSlot6Ships = ''
     }
+    const questGroups = []
+    if (config.questsQuestGroupsDaily) {
+      questGroups.push('daily')
+    }
+    if (config.questsQuestGroupsWeekly) {
+      questGroups.push('weekly')
+    }
+    if (config.questsQuestGroupsMonthly) {
+      questGroups.push('monthly')
+    }
+    if (config.questsQuestGroupsQuarterly) {
+      questGroups.push('quarterly')
+    }
 
     const pythonConfig = [
       '[General]',
@@ -168,13 +181,15 @@ export const setPythonConfig = config => (
       '',
       '[PvP]',
       `Enabled: ${configTemp.pvpEnabled}`,
+      `Fleet: ${configTemp.pvpFleet}`,
       '',
       '[Combat]',
       `Enabled: ${configTemp.combatEnabled}`,
       `Engine: ${configTemp.combatEngine}`,
+      `Fleets: ${configTemp.combatFleets}`,
       `Map: ${configTemp.combatMap}`,
       `FleetMode: ${configTemp.combatFleetMode}`,
-      `CombatNodes: ${configTemp.combatCombatNodes}`,
+      `RetreatNodes: ${configTemp.combatRetreatNodes}`,
       `NodeSelects: ${configTemp.combatNodeSelects}`,
       `Formations: ${configTemp.combatFormations}`,
       `NightBattles: ${configTemp.combatNightBattles}`,
@@ -204,6 +219,7 @@ export const setPythonConfig = config => (
       '',
       '[Quests]',
       `Enabled: ${configTemp.questsEnabled}`,
+      `QuestGroups: ${questGroups.join(',')}`,
     ]
     return dispatch(setPythonConfigSuccess(pythonConfig))
   }
