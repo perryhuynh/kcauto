@@ -21,6 +21,29 @@ class BodyConfigQuests extends PureComponent {
     }
   }
 
+  handleQuestGroupToggle = (event, checked) => {
+    // method for handling the quest group checkboxes and the disabling of the entire module when all options are
+    // unchecked
+    const tempState = { [event.target.value]: checked }
+    const questGroups = ['questsQuestGroupsDaily', 'questsQuestGroupsWeekly', 'questsQuestGroupsMonthly']
+    let enableQuests = false
+    // ascertained if all groups are now disabled
+    questGroups.forEach((group) => {
+      if (group === event.target.value) {
+        if (checked === true) {
+          enableQuests = true
+        }
+      } else {
+        enableQuests = enableQuests || this.state[group]
+      }
+    })
+    // if all groups are disabled, also disable the quests section
+    if (!enableQuests) {
+      tempState.questsEnabled = false
+    }
+    this.setState(tempState, () => this.props.callback(this.state))
+  }
+
   render = () => {
     const {
       classes,
@@ -31,6 +54,7 @@ class BodyConfigQuests extends PureComponent {
       questsQuestGroupsWeekly,
       questsQuestGroupsMonthly,
     } = this.state
+    const allGroupsDisabled = !questsQuestGroupsDaily && !questsQuestGroupsWeekly && !questsQuestGroupsMonthly
     return (
       <Fragment>
         <Typography variant='display1'>
@@ -41,7 +65,7 @@ class BodyConfigQuests extends PureComponent {
             onChange={
               (event, checked) => {
                 const newState = { questsEnabled: checked }
-                if (checked && !questsQuestGroupsDaily && !questsQuestGroupsWeekly && !questsQuestGroupsMonthly) {
+                if (checked && allGroupsDisabled) {
                   newState.questsQuestGroupsDaily = true
                   newState.questsQuestGroupsWeekly = true
                   newState.questsQuestGroupsMonthly = true
@@ -56,11 +80,7 @@ class BodyConfigQuests extends PureComponent {
             control={
               <Checkbox
                 checked={questsQuestGroupsDaily}
-                onChange={
-                  (event, checked) => this.setState(
-                    { questsQuestGroupsDaily: checked },
-                    () => this.props.callback(this.state)
-                  )}
+                onChange={this.handleQuestGroupToggle}
                 disabled={!questsEnabled}
                 value='questsQuestGroupsDaily' />
             }
@@ -70,11 +90,7 @@ class BodyConfigQuests extends PureComponent {
             control={
               <Checkbox
                 checked={questsQuestGroupsWeekly}
-                onChange={
-                  (event, checked) => this.setState(
-                    { questsQuestGroupsWeekly: checked },
-                    () => this.props.callback(this.state)
-                  )}
+                onChange={this.handleQuestGroupToggle}
                 disabled={!questsEnabled}
                 value='questsQuestGroupsWeekly' />
             }
@@ -84,11 +100,7 @@ class BodyConfigQuests extends PureComponent {
             control={
               <Checkbox
                 checked={questsQuestGroupsMonthly}
-                onChange={
-                  (event, checked) => this.setState(
-                    { questsQuestGroupsMonthly: checked },
-                    () => this.props.callback(this.state)
-                  )}
+                onChange={this.handleQuestGroupToggle}
                 disabled={!questsEnabled}
                 value='questsQuestGroupsMonthly' />
             }
