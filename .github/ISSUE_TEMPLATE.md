@@ -4,7 +4,7 @@
 
 * kcauto-kai version (version on first line of CHANGELOG.md):
 * Viewer/browser:
-* Operating system:
+* Operating system and/or VM:
 
 #### Issue variability
 Is the issue consistent (can be reproduced consistently) or is it intermittent (only happens sometimes)?:
@@ -15,10 +15,10 @@ Please provide a thorough description of the issue. Screenshots, videos, or at l
 
 #### Log
 ```
-[insert ~50 lines of console log (or more) here]
+[insert ~50 lines of console log (or more) here; remove section if irrelevant]
 ```
 
 #### Config
 ```
-[insert relevant config sections here]
+[insert relevant config sections here; remove section if irrelevant]
 ```
