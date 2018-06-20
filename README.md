@@ -58,6 +58,7 @@ Join the [kcauto-kai Discord server](https://discord.gg/smAhRKw) for kcauto-kai 
 2. Install the latest [SikuliX Nightly](https://raiman.github.io/SikuliX1/nightly.html) with option 1 (Pack 1) selected
 3. Download kcauto-kai either by downloading the repo or cloning it
 4. Set up kcauto-kai's config file using the [web interface](https://mrmin123.github.io/kcauto-kai/) or by opening the local copy of `docs/index.html` in a browser
+  * Please refer to the [Wiki](https://github.com/mrmin123/kcauto-kai/wiki/Configuration#config-file) for a detailed explanation of each of the config fields
 5. Run Kantai Collection in your favorite browser or viewer
 6. Run kcauto-kai using the command `java -jar <path_to_sikuli>/sikulix.jar -r <path_to_kcauto-kai>/kcauto-kai.sikuli` (replacing `<path_to_sikuli>` and `<path_to_kcauto-kai>` with the correct directories for your installs); you can also use the [RunCmd tab](https://mrmin123.github.io/kcauto-kai/#runcmd) of the web interface to help generate the command
 
@@ -72,3 +73,7 @@ If you do have git and cloned the kcauto-kai repository, use one of the followin
 If you do not have git but would still like to keep up with `master`, please use [this guide](https://github.com/KC3Kai/KC3Kai/wiki/Setup-development-build) for setting up tortoisegit, but with the clone URL changed to `https://github.com/mrmin123/kcauto-kai.git`
 
 If you do not have git, tortoisegit, or a clone of the kcauto-kai repository, head to the [Releases page](https://github.com/mrmin123/kcauto-kai/releases) and download the latest tagged version. Overwrite your local kcauto-kai installation with the contents of the new release, taking care to first back up or not overwrite your config file. Note that your config file may need updating to be compatible with new releases.
+
+### Contributing
+
+If you would like to contribute to the development of kcauto-kai, whether in the form of new features, bugfixes, documentation, or translations, please read the [contribution guide](https://github.com/mrmin123/kcauto-kai/blob/master/CONTRIBUTING.md) first.
