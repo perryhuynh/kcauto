@@ -292,6 +292,18 @@ class Config(object):
                     "not in Standard fleet mode")
                 self.ok = False
 
+        if self.quests['enabled']:
+            # validate that quest groups are specified
+            if len(self.quests['quest_groups']) == 0:
+                Util.log_error("No Quest Groups specified for Quest module")
+                self.ok = False
+            # validate quest groups
+            for qg in self.quests['quest_groups']:
+                if qg not in ('daily', 'weekly', 'monthly'):
+                    Util.log_error(
+                        "Invalid Quest Group specified: '{}'".format(qg))
+                    self.ok = False
+
     def _read_general(self, config):
         """Method to parse the General settings of the passed in config.
 
@@ -412,8 +424,6 @@ class Config(object):
             else False)
         self.combat['striking_fleet'] = (
             True if self.combat['fleet_mode'] == 'striking' else False)
-        combat_nodes = config.get('Combat', 'CombatNodes')
-        self.combat['combat_nodes'] = int(combat_nodes) if combat_nodes else 99
         # defaults for retreat nodes and combat nodes
         self.combat['retreat_nodes'] = []
         self.combat['combat_nodes'] = 99
@@ -532,6 +542,8 @@ class Config(object):
             config (ConfigParser): ConfigParser instance
         """
         self.quests['enabled'] = True
+        self.quests['quest_groups'] = self._getlist(
+            config, 'Quests', 'QuestGroups')
 
     def _rollback_config(self, config):
         """Method to roll back the config to the passed in config's.

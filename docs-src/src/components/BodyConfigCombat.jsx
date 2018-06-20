@@ -206,6 +206,11 @@ class BodyConfigCombat extends PureComponent {
     this.setState({ combatLBASGroups: value })
   }
 
+  handleMiscOptionCheck = (event, checked) => {
+    // handling of misc option checkboxes
+    this.setState({ [event.target.value]: checked }, () => this.props.callback(this.state))
+  }
+
   optionsNodeSplitter = (rawOption, divider) => {
     // helper method to convert a list of comma-separated values divided in two via a divider into an object with the
     // value left of the divider as the key, and the value right of the divider as the value
@@ -728,11 +733,7 @@ class BodyConfigCombat extends PureComponent {
               control={
                 <Checkbox
                   checked={combatOptionCheckFatigue}
-                  onChange={
-                    (event, checked) => this.setState(
-                      { combatOptionCheckFatigue: checked },
-                      () => this.props.callback(this.state)
-                    )}
+                  onChange={this.handleMiscOptionCheck}
                   disabled={!combatEnabled}
                   value='combatOptionCheckFatigue' />
               }
@@ -742,11 +743,7 @@ class BodyConfigCombat extends PureComponent {
               control={
                 <Checkbox
                   checked={combatOptionReserveDocks}
-                  onChange={
-                    (event, checked) => this.setState(
-                      { combatOptionReserveDocks: checked },
-                      () => this.props.callback(this.state)
-                    )}
+                  onChange={this.handleMiscOptionCheck}
                   disabled={!combatEnabled}
                   value='combatOptionReserveDocks' />
               }
@@ -756,11 +753,7 @@ class BodyConfigCombat extends PureComponent {
               control={
                 <Checkbox
                   checked={combatOptionPortCheck}
-                  onChange={
-                    (event, checked) => this.setState(
-                      { combatOptionPortCheck: checked },
-                      () => this.props.callback(this.state)
-                    )}
+                  onChange={this.handleMiscOptionCheck}
                   disabled={!combatEnabled}
                   value='combatOptionPortCheck' />
               }
@@ -770,11 +763,7 @@ class BodyConfigCombat extends PureComponent {
               control={
                 <Checkbox
                   checked={combatOptionClearStop}
-                  onChange={
-                    (event, checked) => this.setState(
-                      { combatOptionClearStop: checked },
-                      () => this.props.callback(this.state)
-                    )}
+                  onChange={this.handleMiscOptionCheck}
                   disabled={!combatEnabled}
                   value='combatOptionClearStop' />
               }

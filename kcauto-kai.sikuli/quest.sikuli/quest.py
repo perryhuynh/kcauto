@@ -85,31 +85,39 @@ class QuestModule(object):
 
         return check_quests
 
-    def quests_logic_wrapper(self):
+    def quests_logic_wrapper(self, context='combat'):
         """Method that fires off the necessary child methods that encapsulates
         the entire action of checking and resolving quests.
+
+        Args:
+            context (str, optional): specifies if there is a specific context
+                for the quests checking
         """
         self._ooyodo_dismiss()
         self.stats.increment_quests_checked()
         checking = True
         while checking:
-            checking = self._finish_quests()
-        self._run_check_quests_wrapper()
+            checking = self._finish_quests(context)
+        self._run_check_quests_wrapper(context)
 
-    def quests_logic_wrapper_fast(self):
+    def quests_logic_wrapper_fast(self, context='combat'):
         """Method that fires off the necessary child methods that encapsulates
         the action of checking quests. Additional quests to start are only
         checked if quests were finished.
+
+        Args:
+            context (str, optional): specifies if there is a specific context
+                for the quests checking
         """
         self._ooyodo_dismiss()
         self.stats.increment_quests_checked()
         pre_check_finished_quests = self.stats.quests_finished + 0
         checking = True
         while checking:
-            checking = self._finish_quests()
+            checking = self._finish_quests(context)
         post_check_finished_quests = self.stats.quests_finished
         if post_check_finished_quests > pre_check_finished_quests:
-            self._run_check_quests_wrapper()
+            self._run_check_quests_wrapper(context)
 
     def print_status(self):
         """Method to print the next checkpoints for checking quests.
@@ -156,26 +164,40 @@ class QuestModule(object):
         Util.click_preset_region(self.regions, 'center')
         Util.kc_sleep(2)
 
-    def _run_check_quests_wrapper(self):
+    def _run_check_quests_wrapper(self, context):
         """Method that cycles through the daily, weekly, and monthly quest
         filters and run the quest logic on each.
+
+        Args:
+            context (str): specifies if there is a specific context for the
+                quests checking
         """
-        for cycle in ('daily', 'weekly', 'monthly'):
-            self._filter_quests(cycle)
+        for group in self.config.quests['quest_groups']:
+            self._filter_quests(group)
             checking = True
             while checking:
-                checking = self._run_check_quests_logic()
+                checking = self._run_check_quests_logic(context)
 
-    def _run_check_quests_logic(self):
+    def _run_check_quests_logic(self, context):
         """Method that finds the quests on screen, reads their rewards,
         identifies the quest based on the rewards, then resolves it as needed.
+
+        Args:
+            context (str): specifies if there is a specific context for the
+                quests checking
 
         Returns:
             bool: True if there was a successful and valid move to the next
                 page of quests
         """
         self.active_quests = []
-        for quest_type in self.active_quest_types:
+        current_active_quest_types = list(self.active_quest_types)
+        # depending on quest check context, remove combat or pvp quests
+        if context == 'pvp' and 'b' in current_active_quest_types:
+            current_active_quest_types.remove('b')
+        elif context == 'combat' and 'c' in current_active_quest_types:
+            current_active_quest_types.remove('c')
+        for quest_type in current_active_quest_types:
             quests = Util.findAll_wrapper(
                 self.regions['left'], '{}.png'.format(quest_type))
             for quest in quests:
@@ -187,7 +209,13 @@ class QuestModule(object):
                     self._read_reward_number('steel', quest_bar),
                     self._read_reward_number('bauxite', quest_bar))
                 for valid_quest in self.quest_list:
+                    if valid_quest['name'][0] != quest_type:
+                        # skip checking for the quest if it doesn't match the
+                        # icon that was matched
+                        continue
                     if valid_quest['rewards'] == quest_rewards:
+                        Util.log_msg("Activating quest {}.".format(
+                            valid_quest['name']))
                         if quest_bar.exists('quest_in_progress.png'):
                             # quest is already active
                             self._activate_quest(valid_quest)
@@ -228,10 +256,14 @@ class QuestModule(object):
                 self.stats.expeditions_received + quest['wait'][2])
             self.expedition_checkpoints.sort()
 
-    def _finish_quests(self):
+    def _finish_quests(self, context):
         """Method to finish any completed quests on the current filter and
         click through the rewards. Will switch to the next page if it is
         available.
+
+        Args:
+            context (str): specifies if there is a specific context for the
+                quests checking
 
         Returns:
             bool: True if there was a successful and valid move to the next
@@ -245,7 +277,13 @@ class QuestModule(object):
                     self.kc_region, 'quest_reward_accept.png'):
                 Util.kc_sleep(1)
             self.stats.increment_quests_finished()
-        for quest_type in self.inactive_quest_types:
+        current_inactive_quest_types = list(self.inactive_quest_types)
+        # depending on quest check context, remove combat or pvp quests
+        if context == 'pvp':
+            current_inactive_quest_types.append('b')
+        elif context == 'combat':
+            current_inactive_quest_types.append('c')
+        for quest_type in current_inactive_quest_types:
             while self.regions['left'].exists('{}.png'.format(quest_type)):
                 quest = self.regions['left'].getLastMatch()
                 Util.click_preset_region(self.regions, quest.right(580))

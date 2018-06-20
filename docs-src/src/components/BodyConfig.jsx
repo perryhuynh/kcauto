@@ -171,6 +171,10 @@ const createStateObjFromPythonConfig = (pyConfig) => {
     shipSwitcherSlot6Criteria: pyConfigObj.shipSwitcherSlot6Criteria || null,
     shipSwitcherSlot6Ships: pyConfigObj.shipSwitcherSlot6Ships || null,
     questsEnabled: pyConfigObj.questsEnabled === 'True',
+    questsQuestGroupsDaily: pyConfigObj.questsQuestGroups.includes('daily') || false,
+    questsQuestGroupsWeekly: pyConfigObj.questsQuestGroups.includes('weekly') || false,
+    questsQuestGroupsMonthly: pyConfigObj.questsQuestGroups.includes('monthly') || false,
+    questsQuestGroupsQuarterly: pyConfigObj.questsQuestGroups.includes('quarterly') || false,
   }
 
   return jsonConfig
