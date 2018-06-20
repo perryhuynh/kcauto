@@ -58,7 +58,7 @@ Join the [kcauto-kai Discord server](https://discord.gg/smAhRKw) for kcauto-kai 
 2. Install the latest [SikuliX Nightly](https://raiman.github.io/SikuliX1/nightly.html) with option 1 (Pack 1) selected
 3. Download kcauto-kai either by downloading the repo or cloning it
 4. Set up kcauto-kai's config file using the [web interface](https://mrmin123.github.io/kcauto-kai/) or by opening the local copy of `docs/index.html` in a browser
-  * Please refer to the [Wiki](https://github.com/mrmin123/kcauto-kai/wiki/Configuration#config-file) for a detailed explanation of each of the config fields
+    * Please refer to the [Wiki](https://github.com/mrmin123/kcauto-kai/wiki/Configuration#config-file) for a detailed explanation of each of the config fields
 5. Run Kantai Collection in your favorite browser or viewer
 6. Run kcauto-kai using the command `java -jar <path_to_sikuli>/sikulix.jar -r <path_to_kcauto-kai>/kcauto-kai.sikuli` (replacing `<path_to_sikuli>` and `<path_to_kcauto-kai>` with the correct directories for your installs); you can also use the [RunCmd tab](https://mrmin123.github.io/kcauto-kai/#runcmd) of the web interface to help generate the command
 
