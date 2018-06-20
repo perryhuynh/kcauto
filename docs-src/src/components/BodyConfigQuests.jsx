@@ -21,9 +21,8 @@ class BodyConfigQuests extends PureComponent {
     }
   }
 
-  handleQuestGroupToggle = (event, checked) => {
-    // method for handling the quest group checkboxes and the disabling of the entire module when all options are
-    // unchecked
+  handleQuestGroupCheck = (event, checked) => {
+    // handle the quest group checkboxes and disable the entire module when all options are unchecked
     const tempState = { [event.target.value]: checked }
     const questGroups = ['questsQuestGroupsDaily', 'questsQuestGroupsWeekly', 'questsQuestGroupsMonthly']
     let enableQuests = false
@@ -80,7 +79,7 @@ class BodyConfigQuests extends PureComponent {
             control={
               <Checkbox
                 checked={questsQuestGroupsDaily}
-                onChange={this.handleQuestGroupToggle}
+                onChange={this.handleQuestGroupCheck}
                 disabled={!questsEnabled}
                 value='questsQuestGroupsDaily' />
             }
@@ -90,7 +89,7 @@ class BodyConfigQuests extends PureComponent {
             control={
               <Checkbox
                 checked={questsQuestGroupsWeekly}
-                onChange={this.handleQuestGroupToggle}
+                onChange={this.handleQuestGroupCheck}
                 disabled={!questsEnabled}
                 value='questsQuestGroupsWeekly' />
             }
@@ -100,7 +99,7 @@ class BodyConfigQuests extends PureComponent {
             control={
               <Checkbox
                 checked={questsQuestGroupsMonthly}
-                onChange={this.handleQuestGroupToggle}
+                onChange={this.handleQuestGroupCheck}
                 disabled={!questsEnabled}
                 value='questsQuestGroupsMonthly' />
             }
