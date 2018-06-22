@@ -70,7 +70,7 @@ If you do not have git but would still like to keep up with `master`, please use
 
 If you do not have git, tortoisegit, or a clone of the kcauto-kai repository, head to the [Releases page](https://github.com/mrmin123/kcauto/releases) and download the latest tagged version. Overwrite your local kcauto installation with the contents of the new release, taking care to first back up or not overwrite your config file. Note that your config file may need updating to be compatible with new releases.
 
-### Getting help
+### Getting help and contacting the dev
 
 Please submit bugs and feature requests on the [kcauto issue tracker](https://github.com/mrmin123/kcauto/issues). Please make sure you are on the latest release of kcauto and that the bug/feature has not been reported already before opening an issue on the tracker.
 
@@ -78,7 +78,7 @@ In addition, there are two kcauto-related Discord servers available:
 * The [official kcauto server](https://discord.gg/KEHSmUs) &mdash; join for kcauto-specific news, updates, help, and discussion
 * The [Kancolle Auto server](https://discord.gg/2tt5Der) &mdash; maintained by the developer of KAGA; join for KAGA updates, unofficial kcauto news and help, and general Kantai Collection discussion
 
-If you need to get in touch with the developer of kcauto, please join the official kcauto server or DM **mrmin123#4639** on Discord. Please allow up to 24h for a response due to my busy schedule.
+If you need to get in touch with the developer of kcauto, please join the official kcauto server or DM **mrmin123#4639** on Discord. Please allow up to 24h for a response due to my busy schedule. Feature requests are best done via the Github issue tracker.
 
 ### Contributing
 
