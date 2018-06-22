@@ -14,7 +14,7 @@ Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)
 
 > ### Disclaimer
 
-> kcauto is meant for educational purposes only. Botting is against the rules and prolonged usage of kcauto-kai may result in your account being banned. The developer of kcauto takes no responsibility for repercussions related to the usage of kcauto. You have been warned!
+> kcauto is meant for educational purposes only. Botting is against the rules and prolonged usage of kcauto may result in your account being banned. The developer of kcauto takes no responsibility for repercussions related to the usage of kcauto. You have been warned!
 
 > Although unlikely, users may lose ships and equipment when using kcauto to conduct combat sorties. While kcauto has been painstakingly designed to reduce the chances of this happening, the developer of kcauto does not take responsibility for any loss of ships and/or resources.
 
@@ -28,7 +28,7 @@ Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)
 * PvP Module &mdash; automate PvP
   * Automatic diamond or line abreast formations against submarine-heavy opponents
 * Combat Module &mdash; automate combat sorties
-  * Choice between [Live and Legacy combat engines](https://github.com/mrmin123/kcauto-kai/wiki/Config:-Combat-section#engine)
+  * Choice between [Live and Legacy combat engines](https://github.com/mrmin123/kcauto/wiki/Config:-Combat-section#engine)
 * LBAS Module &mdash; automatic LBAS management
   * Automatic resupply, fatigue management, and node assignment
 * Ship Switcher Module &mdash; automatic switching of ships based on specified criteria between combat sorties
@@ -68,7 +68,7 @@ If you do have git and cloned the kcauto repository, use one of the following co
 
 If you do not have git but would still like to keep up with `master`, please use [this guide](https://github.com/KC3Kai/KC3Kai/wiki/Setup-development-build) for setting up tortoisegit, but with the clone URL changed to `https://github.com/mrmin123/kcauto.git`
 
-If you do not have git, tortoisegit, or a clone of the kcauto-kai repository, head to the [Releases page](https://github.com/mrmin123/kcauto/releases) and download the latest tagged version. Overwrite your local kcauto installation with the contents of the new release, taking care to first back up or not overwrite your config file. Note that your config file may need updating to be compatible with new releases.
+If you do not have git, tortoisegit, or a clone of the kcauto repository, head to the [Releases page](https://github.com/mrmin123/kcauto/releases) and download the latest tagged version. Overwrite your local kcauto installation with the contents of the new release, taking care to first back up or not overwrite your config file. Note that your config file may need updating to be compatible with new releases.
 
 ### Getting help and contacting the dev
 

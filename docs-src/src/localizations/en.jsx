@@ -165,7 +165,7 @@ export const en = {
   </span>,
     disclaimerHeader: 'Disclaimer',
     disclaimer1: `kcauto is meant for educational purposes only. Botting is against the rules and prolonged usage of
-      kcauto-kai may result in your account being banned. The developer of kcauto takes no responsibility for
+      kcauto may result in your account being banned. The developer of kcauto takes no responsibility for
       repercussions related to the usage of kcauto. You have been warned!`,
     disclaimer2: `Although unlikely, users may lose ships and equipment when using kcauto to conduct combat sorties.
       While kcauto has been painstakingly designed to reduce the chances of this happening, the developer of kcauto
