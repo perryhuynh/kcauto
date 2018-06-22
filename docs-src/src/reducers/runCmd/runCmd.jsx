@@ -9,10 +9,10 @@ export const sikuliPath = (state = '', action) => {
   }
 }
 
-export const kcautoKaiPath = (state = '', action) => {
+export const kcautoPath = (state = '', action) => {
   switch (action.type) {
-    case types.SET_KCAUTO_KAI_PATH:
-      return action.kcautoKaiPath
+    case types.SET_KCAUTO_PATH:
+      return action.kcautoPath
     default:
       return state
   }

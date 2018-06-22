@@ -4,13 +4,13 @@ about: Basic bug report template
 
 ---
 
-*Please make sure you are on the latest version of kcauto-kai, and that there is not already a ticket open for your issue before opening a new ticket.*
+*Please make sure you are on the latest version of kcauto, and that there is not already a ticket open for your issue.*
 
 *Please remove sections of this template you do not find relevant when creating your ticket.*
 
 #### Environment details
 
-* kcauto-kai version (version on first line of `CHANGELOG.md`):
+* kcauto version (version on first line of `CHANGELOG.md`):
 * Viewer/browser:
 * Operating system and/or VM:
 
