@@ -1,3 +1,8 @@
+#### 2.0.0
+
+* Rename kcauto-kai to kcauto. Please update your repos and/or bookmarks!
+* It may be overkill, but adopt [Semantic Versioning](https://semver.org/)
+
 #### 1.0.0
 
 * Implement FleetSwitcher functionality

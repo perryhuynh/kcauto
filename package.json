@@ -1,8 +1,8 @@
 {
-  "name": "kcauto-kai",
-  "version": "1.0.0",
+  "name": "kcauto",
+  "version": "2.0.0",
   "main": "index.js",
-  "repository": "git@gitlab.com:mrmin123/kcauto-kai.git",
+  "repository": "git@gitlab.com:mrmin123/kcauto.git",
   "author": "mrmin123 <minyoung.choi@gmail.com>",
   "license": "GPL-3.0",
   "scripts": {

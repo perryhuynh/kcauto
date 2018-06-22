@@ -89,7 +89,7 @@ class BodyRunCmd extends PureComponent {
                 <TextField
                   id='kcautoKaiPath'
                   label={<Localize field='bodyRunCmd.kcautoKaiPath' />}
-                  placeholder='C:\kcauto-kai'
+                  placeholder='C:\kcauto'
                   value={kcautoKaiPath}
                   onChange={this.handleChangeKCAutoKaiPath}
                   helperText={<Localize field='bodyRunCmd.kcautoKaiPathDesc' />}
@@ -106,7 +106,7 @@ class BodyRunCmd extends PureComponent {
               <Paper elevation={2}>
                 <pre className={classes.pre}>
                   java -jar {sikuliPath || '<placeholder>'}{sikuliPathSlash}sikulix.jar -r&nbsp;
-                  {kcautoKaiPath || '<placeholder>'}{kcautoKaiPathSlash}kcauto-kai.sikuli
+                  {kcautoKaiPath || '<placeholder>'}{kcautoKaiPathSlash}kcauto.sikuli
                 </pre>
               </Paper> :
               <Typography variant='body1' className={classes.paragraph}>
