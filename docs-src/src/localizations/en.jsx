@@ -164,13 +164,11 @@ export const en = {
     and help.
   </span>,
     disclaimerHeader: 'Disclaimer',
-    disclaimer1: `kcauto is meant for educational purposes only! Actual and prolonged usage of kcauto may result
-      in your account being banned. Remember that botting is against rules! The author of kcauto makes no guarantee
-      that the end user will not be caught and penalized for using kcauto, and will not take any responsibility for
-      any repercussions that befall the end user. Spamming expeditions and sorties nonstop raises your chances of being
-      flagged and banned.`,
-    disclaimer2: `In addition, although unlikely, you may lose ships if you allow kcauto to conduct combat sorties.
-      While kcauto has been painstakingly designed to reduce the chances of this happening, the author of kcauto
-      takes no responsibility regarding the preservation of your ships.`,
+    disclaimer1: `kcauto is meant for educational purposes only. Botting is against the rules and prolonged usage of
+      kcauto-kai may result in your account being banned. The developer of kcauto takes no responsibility for
+      repercussions related to the usage of kcauto. You have been warned!`,
+    disclaimer2: `Although unlikely, users may lose ships and equipment when using kcauto to conduct combat sorties.
+      While kcauto has been painstakingly designed to reduce the chances of this happening, the developer of kcauto
+      does not take responsibility for any loss of ships and/or resources.`,
   },
 }
