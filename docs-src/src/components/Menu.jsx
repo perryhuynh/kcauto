@@ -83,7 +83,7 @@ class Menu extends PureComponent {
         <AppBar position='static'>
           <Toolbar>
             <Typography variant='title' color='inherit' className={classes.flex}>
-              <Ferry /> kcauto-kai
+              <Ferry /> kcauto
             </Typography>
 
             <div className={classes.support}>
@@ -123,13 +123,13 @@ class Menu extends PureComponent {
             </MuiMenu>
 
             <a href={urls.DISCORD_LINK} className={classes.menuLink}>
-              <IconButton color='inherit' title='kcauto-kai Discord'>
+              <IconButton color='inherit' title='kcauto Discord'>
                 <Discord className={classes.largeIcon} />
               </IconButton>
             </a>
 
             <a href={urls.GITHUB_LINK} className={classes.menuLink}>
-              <IconButton color='inherit' title='kcauto-kai Github'>
+              <IconButton color='inherit' title='kcauto Github'>
                 <GithubCircle className={classes.largeIcon} />
               </IconButton>
             </a>

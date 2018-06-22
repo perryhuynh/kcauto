@@ -9,13 +9,13 @@ export const en = {
     generalProgramDesc: 'Program that Kantai Collection is running in (ex: Chrome)',
     generalJSTOffset: 'JST Offset',
     generalJSTOffsetDesc: 'Hours offset from JST',
-    generalPause: 'Pause kcauto-kai',
+    generalPause: 'Pause kcauto',
     generalPauseTrue: 'Paused',
     generalPauseFalse: 'Not Paused',
     scheduledSleepHeader: 'Scheduled Sleep',
-    scheduledSleepScriptSleepEnabled: 'Enable kcauto-kai Sleep',
-    scheduledSleepScriptSleepStartTime: 'kcauto-kai Sleep Start Time',
-    scheduledSleepScriptSleepLength: 'kcauto-kai Sleep Length',
+    scheduledSleepScriptSleepEnabled: 'Enable kcauto Sleep',
+    scheduledSleepScriptSleepStartTime: 'kcauto Sleep Start Time',
+    scheduledSleepScriptSleepLength: 'kcauto Sleep Length',
     scheduledSleepExpeditionSleepEnabled: 'Enable Expedition Sleep',
     scheduledSleepExpeditionSleepStartTime: 'Expedition Sleep Start Time',
     scheduledSleepExpeditionSleepLength: 'Expedition Sleep Length',
@@ -23,9 +23,9 @@ export const en = {
     scheduledSleepCombatSleepStartTime: 'Combat Sleep Start Time',
     scheduledSleepCombatSleepLength: 'Combat Sleep Length',
     scheduledStopHeader: 'Scheduled Stop',
-    scheduledStopScriptStopEnabled: 'Enable kcauto-kai Stop',
-    scheduledStopScriptStopCount: 'kcauto-kai Stop Hours',
-    scheduledStopScriptStopTime: 'kcauto-kai Stop Time',
+    scheduledStopScriptStopEnabled: 'Enable kcauto Stop',
+    scheduledStopScriptStopCount: 'kcauto Stop Hours',
+    scheduledStopScriptStopTime: 'kcauto Stop Time',
     scheduledStopExpeditionStopEnabled: 'Enable Expedition Stop',
     scheduledStopExpeditionStopMode: 'Expedition Stop Mode',
     scheduledStopExpeditionStopCount: 'Expedition Stop Count',
@@ -35,7 +35,7 @@ export const en = {
     scheduledStopCombatStopCount: 'Combat Stop Count',
     scheduledStopCombatStopTime: 'Combat Stop Time',
     scheduledStopStopModeModule: 'Stop Module',
-    scheduledStopStopModeScript: 'Stop kcauto-kai',
+    scheduledStopStopModeScript: 'Stop kcauto',
     expeditionsHeader: 'Expeditions',
     expeditionsFleet2: 'Fleet 2',
     expeditionsFleet3: 'Fleet 3',
@@ -138,20 +138,20 @@ export const en = {
     configSave: 'Save',
   },
   bodyRunCmd: {
-    intro: `Assuming that you've properly installed Java, Sikuli, and kcauto-kai, fill out the two fields below to
-      generate the command you need to run in your command prompt/cmd/terminal to start kcauto-kai.`,
+    intro: `Assuming that you've properly installed Java, Sikuli, and kcauto, fill out the two fields below to
+      generate the command you need to run in your command prompt/cmd/terminal to start kcauto.`,
     sikuliPath: 'Sikuli Path',
     sikuliPathDesc: 'Full path to the folder/directory where Sikuli is installed (where sikulix.jar exists)',
-    kcautoKaiPath: 'kcauto-kai Path',
-    kcautoKaiPathDesc: 'Full path to the folder/directory where kcauto-kai is installed (where config.ini exists)',
+    kcautoKaiPath: 'kcauto Path',
+    kcautoKaiPathDesc: 'Full path to the folder/directory where kcauto is installed (where config.ini exists)',
     commandHeader: 'Command',
     noCommandNotice: 'Fill out the above two fields to generate the command.',
   },
   bodyAbout: {
     intro1:
   <span>
-    <strong>kcauto-kai</strong> is a robust Kantai Collection automation tool. The successor
-    to <a href={urls.KANCOLLE_AUTO_GITHUB_LINK}>kancolle-auto</a>, both it and kcauto-kai are proof-of-concepts in
+    <strong>kcauto</strong> is a robust Kantai Collection automation tool. The successor
+    to <a href={urls.KANCOLLE_AUTO_GITHUB_LINK}>kancolle-auto</a>, both it and kcauto are proof-of-concepts in
     using Sikuli for vision-based scripting to automate the playing of Kantai Collection and are exercises in
     automating large, convoluted, and complex game logic. It is not designed to be the fastest automation tool,
     but instead designed to be robust and highly
@@ -159,18 +159,18 @@ export const en = {
   </span>,
     intro2:
   <span>
-    Visit the <a href={urls.GITHUB_LINK}>kcauto-kai GitHub repository</a> for the latest releases and to
-    report any bugs. Join the <a href={urls.DISCORD_LINK}>kcauto-kai Discord</a> for up to date information
+    Visit the <a href={urls.GITHUB_LINK}>kcauto GitHub repository</a> for the latest releases and to
+    report any bugs. Join the <a href={urls.DISCORD_LINK}>kcauto Discord</a> for up to date information
     and help.
   </span>,
     disclaimerHeader: 'Disclaimer',
-    disclaimer1: `kcauto-kai is meant for educational purposes only! Actual and prolonged usage of kcauto-kai may result
-      in your account being banned. Remember that botting is against rules! The author of kcauto-kai makes no guarantee
-      that the end user will not be caught and penalized for using kcauto-kai, and will not take any responsibility for
+    disclaimer1: `kcauto is meant for educational purposes only! Actual and prolonged usage of kcauto may result
+      in your account being banned. Remember that botting is against rules! The author of kcauto makes no guarantee
+      that the end user will not be caught and penalized for using kcauto, and will not take any responsibility for
       any repercussions that befall the end user. Spamming expeditions and sorties nonstop raises your chances of being
       flagged and banned.`,
-    disclaimer2: `In addition, although unlikely, you may lose ships if you allow kcauto-kai to conduct combat sorties.
-      While kcauto-kai has been painstakingly designed to reduce the chances of this happening, the author of kcauto-kai
+    disclaimer2: `In addition, although unlikely, you may lose ships if you allow kcauto to conduct combat sorties.
+      While kcauto has been painstakingly designed to reduce the chances of this happening, the author of kcauto
       takes no responsibility regarding the preservation of your ships.`,
   },
 }

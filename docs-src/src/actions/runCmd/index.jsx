@@ -13,15 +13,15 @@ export const setSikuliPath = sikuliPath => (
   )
 )
 
-export const setKCAutoKaiPathSuccess = kcautoKaiPath => (
+export const setKCAutoPathSuccess = kcautoPath => (
   {
     type: types.SET_KCAUTO_KAI_PATH,
-    kcautoKaiPath,
+    kcautoPath,
   }
 )
 
-export const setKCAutoKaiPath = kcautoKaiPath => (
+export const setKCAutoPath = kcautoPath => (
   dispatch => (
-    dispatch(setKCAutoKaiPathSuccess(kcautoKaiPath))
+    dispatch(setKCAutoPathSuccess(kcautoPath))
   )
 )

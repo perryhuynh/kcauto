@@ -217,7 +217,7 @@ class BodyConfig extends PureComponent {
       let configTemp = config
       configTemp += `${line}\n`
       return configTemp
-    }, `# config automatically generated from kcauto-kai frontend (v${process.version})\n\n`)
+    }, `# config automatically generated from kcauto frontend (v${process.version})\n\n`)
     const configBlob = new Blob([configOutput], { type: 'text/plain;charset=utf-8' })
     saveAs(configBlob, 'config.ini', true)
   }
