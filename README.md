@@ -1,4 +1,4 @@
-# kcauto-kai
+# kcauto
 
 **kcauto** (previously called kcauto-kai) is a robust Kantai Collection automation tool. kcauto and it's predecessor, [kancolle-auto](https://github.com/mrmin123/kancolle-auto), are proof-of-concepts in using [Sikuli](http://sikulix.com/) for vision-based automation to play Kantai Collection. They are exercises in automating large, convoluted, and complex game-playing logic. The primary logic of kcauto is written in Jython 2.7, with a standalone browser interface for config generation written in React JavaScript.
 
