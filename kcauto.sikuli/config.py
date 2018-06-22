@@ -93,7 +93,7 @@ class Config(object):
         self.validate()
 
         if (self.ok and not self.initialized):
-            Util.log_msg("Starting kancolle-auto!")
+            Util.log_msg("Starting kcauto!")
             self.initialized = True
             self.changed = True
         elif (not self.ok and not self.initialized):
