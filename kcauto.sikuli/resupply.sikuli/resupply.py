@@ -71,6 +71,7 @@ class ResupplyModule(object):
             Util.rejigger_mouse(self.regions, 'top')
             self.regions['lower_right'].waitVanish(
                 'expedition_resupply_fairy.png', 10)
+            Util.kc_sleep(0.5)
             return True
         # did not click expedition fairy; assume that the player has not
         # unlocked it
