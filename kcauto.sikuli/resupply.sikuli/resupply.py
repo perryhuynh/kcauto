@@ -63,6 +63,7 @@ class ResupplyModule(object):
             return False
         if Util.check_and_click(
                 self.regions['lower_right'], 'expedition_resupply_fairy.png'):
+            Util.rejigger_mouse(self.regions, 'top')
             self.regions['lower_right'].waitVanish(
                 'expedition_resupply_fairy.png', 10)
             return True
