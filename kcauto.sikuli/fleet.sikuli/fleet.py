@@ -16,6 +16,7 @@ class Fleet(object):
     """
 
     fleet_id = None
+    fleet_type = None
     at_base = True
     needs_resupply = False
 

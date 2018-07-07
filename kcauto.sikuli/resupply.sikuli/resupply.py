@@ -17,6 +17,8 @@ class ResupplyModule(object):
         self.stats = stats
         self.regions = regions
         self.fleets = fleets
+        # default to assuming that expedition resupply fairy is available
+        self.expedition_fairy = True
 
     def goto_resupply(self):
         """Method to navigate to the resupply menu
@@ -53,3 +55,16 @@ class ResupplyModule(object):
                 fleet.needs_resupply = False
                 Util.kc_sleep()
         Util.log_msg("Done resupplying fleets.")
+
+    def expedition_fairy_resupply(self):
+        if not self.expedition_fairy:
+            return False
+        if Util.check_and_click(
+                self.regions['lower_right'], 'expedition_resupply_fairy.png'):
+            self.regions['lower_right'].waitVanish(
+                'expedition_resupply_fairy.png')
+            return True
+        # did not click expedition fairy; assume that the player has not
+        # unlocked it
+        self.expedition_fairy = False
+        return False

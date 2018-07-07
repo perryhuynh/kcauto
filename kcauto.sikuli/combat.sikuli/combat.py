@@ -985,6 +985,7 @@ class CombatFleet(Fleet):
             fleet_id (int): id of the fleet
         """
         self.fleet_id = fleet_id
+        self.fleet_type = 'combat'
         self.flagship_damaged = False
         self.damage_counts = {
             'repair': 0
