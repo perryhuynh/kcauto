@@ -64,7 +64,7 @@ class ResupplyModule(object):
         if Util.check_and_click(
                 self.regions['lower_right'], 'expedition_resupply_fairy.png'):
             self.regions['lower_right'].waitVanish(
-                'expedition_resupply_fairy.png')
+                'expedition_resupply_fairy.png', 10)
             return True
         # did not click expedition fairy; assume that the player has not
         # unlocked it
