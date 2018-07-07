@@ -133,7 +133,7 @@ class ExpeditionModule(object):
             if not fleet.check_supplies(self.regions['check_supply']):
                 # fleet needs resupply; attempt resupply w/ fairy, otherwise
                 # defer to normal resupply
-                if not self.resupply.expedition_fairy_resupply():
+                if not self.resupply.expedition_fairy_resupply(fleet):
                     Util.wait_and_click_and_wait(
                         self.kc_region,
                         'e_world_1.png',

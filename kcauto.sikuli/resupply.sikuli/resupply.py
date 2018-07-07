@@ -58,11 +58,14 @@ class ResupplyModule(object):
                 Util.kc_sleep()
         Util.log_msg("Done resupplying fleets.")
 
-    def expedition_fairy_resupply(self):
+    def expedition_fairy_resupply(self, fleet):
         if not self.expedition_fairy:
             return False
         if Util.check_and_click(
                 self.regions['lower_right'], 'expedition_resupply_fairy.png'):
+            Util.log_msg("Resupplying with supply fairy.")
+            fleet.needs_resupply = False
+            self.stats.increment_fairy_resupplies_done()
             Util.rejigger_mouse(self.regions, 'top')
             self.regions['lower_right'].waitVanish(
                 'expedition_resupply_fairy.png', 10)
