@@ -249,7 +249,7 @@ def get_expedition_info(expedition):
     expedition.
 
     Args:
-        expedition (int): expedition to get information for
+        expedition (int, str): expedition to get information for
 
     Returns:
         dict: dict with the expedition's world/area and completion duration
@@ -286,6 +286,18 @@ def get_expedition_info(expedition):
         return {
             'area': 1,
             'duration': timedelta(hours=2, minutes=59, seconds=30)}
+    elif expedition == 'A1':
+        return {
+            'area': 1,
+            'duration': timedelta(minutes=24, seconds=30)}
+    elif expedition == 'A2':
+        return {
+            'area': 1,
+            'duration': timedelta(minutes=54, seconds=30)}
+    elif expedition == 'A3':
+        return {
+            'area': 1,
+            'duration': timedelta(hours=2, minutes=14, seconds=30)}
     elif expedition == 9:
         return {
             'area': 2,
@@ -318,6 +330,14 @@ def get_expedition_info(expedition):
         return {
             'area': 2,
             'duration': timedelta(hours=14, minutes=59, seconds=30)}
+    elif expedition == 'B1':
+        return {
+            'area': 2,
+            'duration': timedelta(minutes=34, seconds=30)}
+    elif expedition == 'B2':
+        return {
+            'area': 2,
+            'duration': timedelta(hours=8, minutes=39, seconds=30)}
     elif expedition == 17:
         return {
             'area': 3,
