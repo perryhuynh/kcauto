@@ -33,10 +33,12 @@ class ResupplyModule(object):
             boolean: True if an active fleet needs resupply, False otherwise
         """
         for fleet_id, fleet in self.fleets.items():
-            if (fleet.needs_resupply and
-                    (fleet.fleet_type == 'expedition' and
-                        not self.expedition_fairy)):
-                return True
+            if fleet.needs_resupply:
+                if fleet.fleet_type == 'expedition':
+                    if not self.expedition_fairy:
+                        return True
+                else:
+                    return True
         return False
 
     def resupply_fleets(self):
