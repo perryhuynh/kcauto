@@ -168,6 +168,8 @@ class ExpeditionModule(object):
                             self.regions['lower_left'], 'scroll_next.png',
                             Globals.EXPAND['scroll_next'])
                         Util.kc_sleep()
+        Util.check_and_click(self.kc_region, expedition_img)
+        Util.kc_sleep(0.5)
 
     def reset_support_fleets(self):
         """Method to reset boss and node support expedition fleets since they
