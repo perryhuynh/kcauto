@@ -23,6 +23,7 @@ class ExpeditionModule(object):
         self.regions = regions
         self.kc_region = regions['game']
         self.fleets = fleets
+        self.resupply = None  # defined later, after initialization
 
     def goto_expedition(self):
         """Method to navigate to the expedition menu.
@@ -130,13 +131,15 @@ class ExpeditionModule(object):
             return False
         else:
             if not fleet.check_supplies(self.regions['check_supply']):
-                # fleet needs resupply
-                Util.wait_and_click_and_wait(
-                    self.kc_region,
-                    'e_world_1.png',
-                    self.regions['top_submenu'],
-                    'sortie_top_menu_expedition_active.png')
-                return False
+                # fleet needs resupply; attempt resupply w/ fairy, otherwise
+                # defer to normal resupply
+                if not self.resupply.expedition_fairy_resupply(fleet):
+                    Util.wait_and_click_and_wait(
+                        self.kc_region,
+                        'e_world_1.png',
+                        self.regions['top_submenu'],
+                        'sortie_top_menu_expedition_active.png')
+                    return False
             # successful expedition sortie
             Util.wait_and_click(
                 self.kc_region, 'expedition_dispatch.png')
@@ -199,6 +202,7 @@ class ExpeditionFleet(Fleet):
                 can be sent to
         """
         self.fleet_id = fleet_id
+        self.fleet_type = 'expedition'
         self.expeditions = expeditions
         self.expedition = None
         self.expedition_area = None
