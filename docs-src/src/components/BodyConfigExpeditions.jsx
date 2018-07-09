@@ -13,9 +13,19 @@ import Localize from 'containers/LocalizeContainer'
 import { styles } from 'components/BodyConfigStyles'
 
 
-const EXPEDITIONS = Array.from({ length: 40 }, (value, key) => ({ value: String(key + 1), label: String(key + 1) }))
-EXPEDITIONS.push({ value: '9998', label: 'Node Support' })
-EXPEDITIONS.push({ value: '9999', label: 'Boss Support' })
+const EXPEDITIONS = Array.from({ length: 8 }, (value, key) => ({ value: String(key + 1), label: String(key + 1) }))
+EXPEDITIONS.push({ value: 'A1', label: 'A1' })
+EXPEDITIONS.push({ value: 'A2', label: 'A2' })
+EXPEDITIONS.push({ value: 'A3', label: 'A3' })
+EXPEDITIONS.push(...Array.from({ length: 8 }, (value, key) => ({ value: String(key + 9), label: String(key + 9) })))
+EXPEDITIONS.push({ value: 'B1', label: 'B1' })
+EXPEDITIONS.push({ value: 'B2', label: 'B2' })
+EXPEDITIONS.push(...Array.from({ length: 16 }, (value, key) => ({ value: String(key + 17), label: String(key + 17) })))
+EXPEDITIONS.push({ value: '33', label: '33 - Node Support' })
+EXPEDITIONS.push({ value: '34', label: '34 - Boss Support' })
+EXPEDITIONS.push(...Array.from({ length: 6 }, (value, key) => ({ value: String(key + 35), label: String(key + 35) })))
+EXPEDITIONS.push({ value: '9998', label: 'Event Node Support' })
+EXPEDITIONS.push({ value: '9999', label: 'Event Boss Support' })
 
 class BodyConfigExpeditions extends PureComponent {
   state = this.props.config
