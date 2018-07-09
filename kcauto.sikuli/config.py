@@ -370,23 +370,28 @@ class Config(object):
         Args:
             config (ConfigParser): ConfigParser instance
         """
+        def try_cast_to_int(val):
+            try:
+                return int(val)
+            except ValueError:
+                return val
         self.expeditions['enabled'] = True
         self.expeditions_all = []
         if config.get('Expeditions', 'Fleet2'):
             self.expeditions['fleet2'] = map(
-                int, self._getlist(config, 'Expeditions', 'Fleet2'))
+                try_cast_to_int, self._getlist(config, 'Expeditions', 'Fleet2'))
             self.expeditions_all.extend(self.expeditions['fleet2'])
         else:
             self.expeditions.pop('fleet2', None)
         if config.get('Expeditions', 'Fleet3'):
             self.expeditions['fleet3'] = map(
-                int, self._getlist(config, 'Expeditions', 'Fleet3'))
+                try_cast_to_int, self._getlist(config, 'Expeditions', 'Fleet3'))
             self.expeditions_all.extend(self.expeditions['fleet3'])
         else:
             self.expeditions.pop('fleet3', None)
         if config.get('Expeditions', 'Fleet4'):
             self.expeditions['fleet4'] = map(
-                int, self._getlist(config, 'Expeditions', 'Fleet4'))
+                try_cast_to_int, self._getlist(config, 'Expeditions', 'Fleet4'))
             self.expeditions_all.extend(self.expeditions['fleet4'])
         else:
             self.expeditions.pop('fleet4', None)
