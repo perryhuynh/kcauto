@@ -1,6 +1,7 @@
 from sikuli import Pattern
 from datetime import datetime, timedelta
 from random import choice
+from kca_globals import Globals
 from fleet import Fleet
 from nav import Nav
 from util import Util
@@ -88,17 +89,9 @@ class ExpeditionModule(object):
         """
         self.stats.increment_expeditions_attempted()
         fleet.choose_expedition()
-        Util.log_msg("Sortieing fleet {:d} to expedition {:d}".format(
+        Util.log_msg("Sortieing fleet {:d} to expedition {}".format(
             fleet.fleet_id, fleet.expedition))
-        # change expedition world if necessary
-        while not Util.check_and_click(
-                self.kc_region,
-                'expedition_{}.png'.format(fleet.expedition)):
-            Util.kc_sleep()
-            Util.wait_and_click(
-                self.kc_region,
-                'e_world_{}.png'.format(fleet.expedition_area))
-        Util.kc_sleep(1)
+        self.navigate_to_expedition(fleet)
         if not Util.check_and_click(self.kc_region, 'sortie_select.png'):
             if self.kc_region.exists(
                     Pattern('expedition_timer_complete.png').exact()):
@@ -153,6 +146,41 @@ class ExpeditionModule(object):
         Util.rejigger_mouse(self.regions, 'top')
         Util.kc_sleep()
         return True
+
+    def navigate_to_expedition(self, fleet):
+        """Clicks the world icon and navigates the prev and next list scrolling
+        to navigate and choose the desired expedition for the specified fleet.
+
+        Args:
+            fleet (ExpeditionFleet): expedition fleet instance
+        """
+        expedition_img = 'expedition_{}.png'.format(fleet.expedition)
+        while not self.kc_region.exists(expedition_img):
+            # if the expedition does not already exist on-screen, try selecting
+            # the world first
+            Util.kc_sleep()
+            Util.check_and_click(
+                self.regions['lower'],
+                'e_world_{}.png'.format(fleet.expedition_area))
+            Util.kc_sleep(1)
+            if not self.kc_region.exists(expedition_img):
+                # if the expedition still does not show on-screen, check the
+                # specified expedition and scroll up or down the list
+                if type(fleet.expedition) == int:
+                    while self.regions['upper_left'].exists('scroll_prev.png'):
+                        Util.check_and_click(
+                            self.regions['upper_left'], 'scroll_prev.png',
+                            Globals.EXPAND['scroll_prev'])
+                        Util.kc_sleep()
+                elif type(fleet.expedition) == str:
+                    while self.regions['lower_left'].exists('scroll_next.png'):
+                        Util.check_and_click(
+                            self.regions['lower_left'], 'scroll_next.png',
+                            Globals.EXPAND['scroll_next'])
+                        Util.kc_sleep()
+        # select the expedition
+        Util.check_and_click(self.kc_region, expedition_img)
+        Util.kc_sleep(0.5)
 
     def reset_support_fleets(self):
         """Method to reset boss and node support expedition fleets since they
@@ -249,7 +277,7 @@ def get_expedition_info(expedition):
     expedition.
 
     Args:
-        expedition (int): expedition to get information for
+        expedition (int, str): expedition to get information for
 
     Returns:
         dict: dict with the expedition's world/area and completion duration
@@ -286,6 +314,18 @@ def get_expedition_info(expedition):
         return {
             'area': 1,
             'duration': timedelta(hours=2, minutes=59, seconds=30)}
+    elif expedition == 'A1':
+        return {
+            'area': 1,
+            'duration': timedelta(minutes=24, seconds=30)}
+    elif expedition == 'A2':
+        return {
+            'area': 1,
+            'duration': timedelta(minutes=54, seconds=30)}
+    elif expedition == 'A3':
+        return {
+            'area': 1,
+            'duration': timedelta(hours=2, minutes=14, seconds=30)}
     elif expedition == 9:
         return {
             'area': 2,
@@ -318,6 +358,14 @@ def get_expedition_info(expedition):
         return {
             'area': 2,
             'duration': timedelta(hours=14, minutes=59, seconds=30)}
+    elif expedition == 'B1':
+        return {
+            'area': 2,
+            'duration': timedelta(minutes=34, seconds=30)}
+    elif expedition == 'B2':
+        return {
+            'area': 2,
+            'duration': timedelta(hours=8, minutes=39, seconds=30)}
     elif expedition == 17:
         return {
             'area': 3,

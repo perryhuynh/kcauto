@@ -61,7 +61,20 @@ class ResupplyModule(object):
         Util.log_msg("Done resupplying fleets.")
 
     def expedition_fairy_resupply(self, fleet):
+        """Attempts to resupply the fleet directly from the expedition screen.
+        If the expedition fairy is not found, sets the expedition_fairy flag to
+        False so that the script knows to not attempt resupply via fairy in the
+        future.
+
+        Args:
+            fleet (ExpeditionFleet): expedition fleet instance
+
+        Returns:
+            bool: True if the fleet was resupplied using the resupply fairy;
+                False otherwise
+        """
         if not self.expedition_fairy:
+            # skip checking for expedition fairy
             return False
         if Util.check_and_click(
                 self.regions['lower_right'], 'expedition_resupply_fairy.png'):
