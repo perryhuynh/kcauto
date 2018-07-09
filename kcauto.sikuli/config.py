@@ -371,10 +371,21 @@ class Config(object):
             config (ConfigParser): ConfigParser instance
         """
         def try_cast_to_int(val):
+            """Helper function that attempts to coerce the val to an int,
+            returning the val as-is the cast fails
+
+            Args:
+                val (str): string to attempt to cast to int
+
+            Returns:
+                int, str: int if the cast was successful; the original str
+                    representation otherwise
+            """
             try:
                 return int(val)
             except ValueError:
                 return val
+
         self.expeditions['enabled'] = True
         self.expeditions_all = []
         if config.get('Expeditions', 'Fleet2'):

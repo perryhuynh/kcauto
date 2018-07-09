@@ -148,14 +148,24 @@ class ExpeditionModule(object):
         return True
 
     def navigate_to_expedition(self, fleet):
+        """Clicks the world icon and navigates the prev and next list scrolling
+        to navigate and choose the desired expedition for the specified fleet.
+
+        Args:
+            fleet (ExpeditionFleet): expedition fleet instance
+        """
         expedition_img = 'expedition_{}.png'.format(fleet.expedition)
         while not self.kc_region.exists(expedition_img):
+            # if the expedition does not already exist on-screen, try selecting
+            # the world first
             Util.kc_sleep()
             Util.check_and_click(
                 self.regions['lower'],
                 'e_world_{}.png'.format(fleet.expedition_area))
             Util.kc_sleep(1)
             if not self.kc_region.exists(expedition_img):
+                # if the expedition still does not show on-screen, check the
+                # specified expedition and scroll up or down the list
                 if type(fleet.expedition) == int:
                     while self.regions['upper_left'].exists('scroll_prev.png'):
                         Util.check_and_click(
@@ -168,6 +178,7 @@ class ExpeditionModule(object):
                             self.regions['lower_left'], 'scroll_next.png',
                             Globals.EXPAND['scroll_next'])
                         Util.kc_sleep()
+        # select the expedition
         Util.check_and_click(self.kc_region, expedition_img)
         Util.kc_sleep(0.5)
 
