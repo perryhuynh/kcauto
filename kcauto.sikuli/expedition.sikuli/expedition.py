@@ -89,7 +89,7 @@ class ExpeditionModule(object):
         """
         self.stats.increment_expeditions_attempted()
         fleet.choose_expedition()
-        Util.log_msg("Sortieing fleet {:d} to expedition {:d}".format(
+        Util.log_msg("Sortieing fleet {:d} to expedition {}".format(
             fleet.fleet_id, fleet.expedition))
         self.navigate_to_expedition(fleet)
         if not Util.check_and_click(self.kc_region, 'sortie_select.png'):
