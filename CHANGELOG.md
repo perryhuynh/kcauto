@@ -1,3 +1,12 @@
+#### 3.0.0
+
+* Add support for expedition fleet resupply fairy
+  * Resupply fairy availability is automatically determined
+* Add support for extra expeditions (A1-A3, B1-B2)
+* Better labeling of expeditions in webUI
+* Bugfix to FleetSwitcher
+* ***Note**: 2.0.0 configs are compatible with 3.0.0, but 3.0.0 configs may not be backwards-compatible with 2.0.0*
+
 #### 2.0.0
 
 * Rename kcauto-kai to kcauto. Please update your repos and/or bookmarks!

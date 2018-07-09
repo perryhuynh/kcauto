@@ -25,6 +25,7 @@ class Stats(object):
         self.combat_attempted = 0
         self.combat_done = 0
         self.resupplies_done = 0
+        self.fairy_resupplies_done = 0
         self.repairs_done = 0
         self.ships_switched = 0
         self.buckets_used = 0
@@ -103,10 +104,14 @@ class Stats(object):
                     self._pretty_perhour(self.quests_started, hours),
                     self._pretty_perhour(self.quests_finished, hours)))
 
-        Util.log_success("Resupplies: {} || Repairs: {} || Buckets: {}".format(
+        Util.log_success("Resupplies: {} || Fairy resupplies: {}".format(
             self._pretty_perhour(self.resupplies_done, hours),
-            self._pretty_perhour(self.repairs_done, hours),
-            self._pretty_perhour(self.buckets_used, hours)))
+            self._pretty_perhour(self.fairy_resupplies_done, hours)))
+
+        if self.config.combat['enabled']:
+            Util.log_success("Repairs: {} || Buckets: {}".format(
+                self._pretty_perhour(self.repairs_done, hours),
+                self._pretty_perhour(self.buckets_used, hours)))
 
         Util.log_success("Recoveries done: {}".format(self.recoveries))
 
@@ -141,6 +146,9 @@ class Stats(object):
 
     def increment_resupplies_done(self):
         self.resupplies_done += 1
+
+    def increment_fairy_resupplies_done(self):
+        self.fairy_resupplies_done += 1
 
     def increment_repairs_done(self):
         self.repairs_done += 1

@@ -170,6 +170,8 @@ class KCAuto(object):
             # initialize resupply module
             self.modules['resupply'] = ResupplyModule(
                 self.config, self.stats, self.regions, self.active_fleets)
+            if self.modules['expedition']:
+                self.modules['expedition'].resupply = self.modules['resupply']
 
             # initialize quest module
             if self.config.quests['enabled']:
