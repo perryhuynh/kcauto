@@ -56,7 +56,8 @@ class FleetSwitcherModule(object):
         """
         if (self.config.combat['enabled'] and
                 len(self.config.combat['fleets']) > 0):
-            if not self.last_combat_fleet or len(self.combat['fleets']) == 1:
+            if (not self.last_combat_fleet or
+                    len(self.config.combat['fleets']) == 1):
                 # first combat fleet switch or only one combat fleet specified
                 next_combat_fleet = self.config.combat['fleets'][0]
             else:
@@ -64,7 +65,7 @@ class FleetSwitcherModule(object):
                 temp_index = self.config.combat['fleets'].index(
                     self.last_combat_fleet) + 1
                 temp_index = (
-                    0 if temp_index == len(self.combat['fleets'])
+                    0 if temp_index == len(self.config.combat['fleets'])
                     else temp_index)
                 next_combat_fleet = self.config.combat['fleets'][temp_index]
             if next_combat_fleet != self.current_fleet:
