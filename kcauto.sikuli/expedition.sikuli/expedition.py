@@ -1,6 +1,7 @@
 from sikuli import Pattern
 from datetime import datetime, timedelta
 from random import choice
+from kca_globals import Globals
 from fleet import Fleet
 from nav import Nav
 from util import Util
@@ -90,15 +91,7 @@ class ExpeditionModule(object):
         fleet.choose_expedition()
         Util.log_msg("Sortieing fleet {:d} to expedition {:d}".format(
             fleet.fleet_id, fleet.expedition))
-        # change expedition world if necessary
-        while not Util.check_and_click(
-                self.kc_region,
-                'expedition_{}.png'.format(fleet.expedition)):
-            Util.kc_sleep()
-            Util.wait_and_click(
-                self.kc_region,
-                'e_world_{}.png'.format(fleet.expedition_area))
-        Util.kc_sleep(1)
+        self.navigate_to_expedition(fleet)
         if not Util.check_and_click(self.kc_region, 'sortie_select.png'):
             if self.kc_region.exists(
                     Pattern('expedition_timer_complete.png').exact()):
@@ -153,6 +146,28 @@ class ExpeditionModule(object):
         Util.rejigger_mouse(self.regions, 'top')
         Util.kc_sleep()
         return True
+
+    def navigate_to_expedition(self, fleet):
+        expedition_img = 'expedition_{}.png'.format(fleet.expedition)
+        while not self.kc_region.exists(expedition_img):
+            Util.kc_sleep()
+            Util.check_and_click(
+                self.regions['lower'],
+                'e_world_{}.png'.format(fleet.expedition_area))
+            Util.kc_sleep(1)
+            if not self.kc_region.exists(expedition_img):
+                if type(fleet.expedition) == int:
+                    while self.regions['upper_left'].exists('scroll_prev.png'):
+                        Util.check_and_click(
+                            self.regions['upper_left'], 'scroll_prev.png',
+                            Globals.EXPAND['scroll_prev'])
+                        Util.kc_sleep()
+                elif type(fleet.expedition) == str:
+                    while self.regions['lower_left'].exists('scroll_next.png'):
+                        Util.check_and_click(
+                            self.regions['lower_left'], 'scroll_next.png',
+                            Globals.EXPAND['scroll_next'])
+                        Util.kc_sleep()
 
     def reset_support_fleets(self):
         """Method to reset boss and node support expedition fleets since they
