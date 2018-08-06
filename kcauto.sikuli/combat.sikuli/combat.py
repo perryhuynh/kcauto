@@ -45,6 +45,7 @@ class CombatModule(object):
             self.config.combat['map'], self.regions, self.config)
         self.current_position = [0, 0]
         self.current_node = self.map.unknown_node
+        self.current_node_backup = None
         self.nodes_run = []
 
         self.lbas = (

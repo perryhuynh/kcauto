@@ -1,7 +1,12 @@
+#### 3.1.1
+
+* Critical bugfix to Combat module
+* Critical bugfix to FleetSwitcher module
+
 #### 3.1.0
 
 * Improvements to Live Combat Engine's node detection logic
-* Improvements and bugfixes to Fleet Switcher module
+* Improvements and bugfixes to FleetSwitcher module
   * Fleet Switcher stats are now tracked and reported
   * Fleet Switcher only switches when previously set fleet preset is different from the new fleet preset
 

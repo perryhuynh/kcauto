@@ -69,7 +69,7 @@ class FleetSwitcherModule(object):
                     else temp_index)
                 next_combat_fleet = self.config.combat['fleets'][temp_index]
             if next_combat_fleet != self.current_fleet:
-                self.log_msg("Fleet switch required.")
+                Util.log_msg("Fleet switch required.")
                 self.goto_fleetcomp_presets()
                 self._recall_preset(next_combat_fleet)
                 self.last_combat_fleet = next_combat_fleet
