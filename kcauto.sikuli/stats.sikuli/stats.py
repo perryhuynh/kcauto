@@ -28,6 +28,7 @@ class Stats(object):
         self.fairy_resupplies_done = 0
         self.repairs_done = 0
         self.ships_switched = 0
+        self.fleets_switched = 0
         self.buckets_used = 0
         self.quests_checked = 0
         self.quests_started = 0
@@ -98,6 +99,10 @@ class Stats(object):
             Util.log_success("Ships switched: {}".format(
                 self._pretty_perhour(self.ships_switched, hours)))
 
+        if self.config.fleet_switcher['enabled']:
+            Util.log_success("Fleets switched: {}".format(
+                self._pretty_perhour(self.fleets_switched, hours)))
+
         if self.config.quests['enabled']:
             Util.log_success(
                 "Quests started: {} / finished: {}".format(
@@ -158,6 +163,9 @@ class Stats(object):
 
     def increment_ships_switched(self):
         self.ships_switched += 1
+
+    def increment_fleets_switched(self):
+        self.fleets_switched += 1
 
     def increment_quests_checked(self):
         self.quests_checked += 1
