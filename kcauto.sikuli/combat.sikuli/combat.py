@@ -4,7 +4,7 @@ from threading import Thread
 from kca_globals import Globals
 from fleet import Fleet
 from lbas import LBAS
-from mapData import MapData
+from mapData import MapData, Node, UnknownNode
 from nav import Nav
 from util import Util
 
@@ -545,6 +545,9 @@ class CombatModule(object):
         # if in live engine mode, begin the background observer to track and
         # update the fleet position
         if self.config.combat['engine'] == 'live':
+            # reset the current node backup variable every time the observer is
+            # started
+            self.current_node_backup = None
             self._start_fleet_observer()
 
         while not at_node:
@@ -632,6 +635,13 @@ class CombatModule(object):
     def _stop_fleet_observer(self):
         """Stops the observer started by the _start_fleet_observer() method.
         """
+        if (type(self.current_node) is UnknownNode and
+                type(self.current_node_backup) is Node):
+            # on observer stop, if the current node is an UnknowNode but the
+            # backup is a valid Node, fallback to the backup since the current
+            # node variable was overridden in the last stages before formation
+            # select
+            self.current_node = self.current_node_backup
         self.observeRegion.stopObserver()
 
     def _update_fleet_position(self, event):
@@ -650,9 +660,15 @@ class CombatModule(object):
         ]
 
         self.current_node = self.map.find_node_by_pos(*self.current_position)
+        self.current_node_backup = (
+            self.current_node
+            if type(self.current_node) is not UnknownNode and
+                self.current_node != self.current_node_backup
+            else self.current_node_backup)
         # debug console print for the observer's found position of the fleet
         """
-        print("{} {}".format(self.current_position, self.current_node))
+        print("{} {} ({})".format(
+            self.current_position, self.current_node, self.current_node_backup))
         """
         event.repeat()
 
