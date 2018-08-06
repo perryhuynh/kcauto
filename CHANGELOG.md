@@ -1,3 +1,10 @@
+#### 3.1.0
+
+* Improvements to Live Combat Engine's node detection logic
+* Improvements and bugfixes to Fleet Switcher module
+  * Fleet Switcher stats are now tracked and reported
+  * Fleet Switcher only switches when previously set fleet preset is different from the new fleet preset
+
 #### 3.0.0
 
 * Add support for expedition fleet resupply fairy
