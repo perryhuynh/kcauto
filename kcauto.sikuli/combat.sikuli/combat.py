@@ -111,10 +111,10 @@ class CombatModule(object):
 
         if self._conduct_pre_sortie_checks():
             start_button = 'combat_start.png'
-            if (self.lbas and
-                    (self.config.combat['lbas_group_1_nodes'] or
-                        self.config.combat['lbas_group_2_nodes'] or
-                        self.config.combat['lbas_group_3_nodes'])):
+            if (self.lbas and (
+                    self.config.combat['lbas_group_1_nodes']
+                    or self.config.combat['lbas_group_2_nodes']
+                    or self.config.combat['lbas_group_3_nodes'])):
                 start_button = 'combat_start_lbas.png'
             # attempt to click sortie start button
             if Util.check_and_click(self.regions['lower_right'], start_button):
@@ -164,9 +164,7 @@ class CombatModule(object):
         Util.rejigger_mouse(self.regions, 'top')
 
         if self.map.world == 'event':
-            Util.wait_and_click(
-                self.regions['lower'],
-                '_event_world.png')
+            Util.wait_and_click(self.regions['lower'], '_event_world.png')
         else:
             Util.wait_and_click_and_wait(
                 self.regions['lower'],
@@ -334,8 +332,8 @@ class CombatModule(object):
                 otherwise
         """
         full_port = False
-        if ('PortCheck' in self.config.combat['misc_options'] or
-                self.map.world == 'event'):
+        if ('PortCheck' in self.config.combat['misc_options']
+                or self.map.world == 'event'):
             # this logic may need to be reworked; the event-time messaging
             # is a bit uncertain at the moment, since this is being revised not
             # during an event
@@ -429,15 +427,16 @@ class CombatModule(object):
                         self.dmg, fleet_two_damages)
                     # ascertain whether or not the escort fleet's flagship is
                     # damaged if necessary
-                    if (fleet_two_damages['heavy'] == 1 and
-                            not self.fleets[2].flagship_damaged):
+                    if (fleet_two_damages['heavy'] == 1
+                            and not self.fleets[2].flagship_damaged):
                         self.fleets[2].check_damage_flagship(
                             self.module_regions)
                 Util.rejigger_mouse(self.regions, 'lbas')
                 # click through while not next battle or home
                 while not (
-                        self.fast_kc_region.exists('home_menu_sortie.png') or
-                        self.fast_kc_region.exists('combat_flagship_dmg.png')
+                        self.fast_kc_region.exists('home_menu_sortie.png')
+                        or self.fast_kc_region.exists(
+                            'combat_flagship_dmg.png')
                         or self.fast_kc_region.exists('combat_retreat.png')):
                     if self.regions['lower_right_corner'].exists('next.png'):
                         Util.click_preset_region(self.regions, 'center')
@@ -506,8 +505,8 @@ class CombatModule(object):
                     break
         # after sortie is complete, check the dismissed post-combat screens to
         # see if combat should be disabled
-        if ('ClearStop' in self.config.combat['misc_options'] and
-                not disable_combat):
+        if ('ClearStop' in self.config.combat['misc_options']
+                and not disable_combat):
             # TODO: additional logic needed to resolve end of 1-6
             if self.map.world == 'event' and len(post_combat_screens) > 2:
                 # event map and more than 2 post-combat screens dismissed;
@@ -557,9 +556,10 @@ class CombatModule(object):
                     Util.click_preset_region(self.regions, 'center')
                     Util.rejigger_mouse(self.regions, 'lbas')
                     Util.kc_sleep(3)
-            elif (self.regions['formation_line_ahead'].exists(
-                    'formation_line_ahead.png') or
-                    self.regions['formation_combinedfleet_1'].exists(
+            elif (
+                    self.regions['formation_line_ahead'].exists(
+                        'formation_line_ahead.png')
+                    or self.regions['formation_combinedfleet_1'].exists(
                         'formation_combinedfleet_1.png')):
                 # check for both single fleet and combined fleet formations
                 # since combined fleets can have single fleet battles
@@ -579,8 +579,8 @@ class CombatModule(object):
                     # only need to manually update self.current_node if in
                     # legacy engine mode
                     self._update_fleet_position_once()
-                if (self.current_node.name in
-                        self.config.combat['node_selects']):
+                if (self.current_node.name
+                        in self.config.combat['node_selects']):
                     next_node = self.config.combat['node_selects'][
                         self.current_node.name]
                     Util.log_msg("Selecting Node {} from Node {}.".format(
@@ -635,8 +635,8 @@ class CombatModule(object):
     def _stop_fleet_observer(self):
         """Stops the observer started by the _start_fleet_observer() method.
         """
-        if (type(self.current_node) is UnknownNode and
-                type(self.current_node_backup) is Node):
+        if (type(self.current_node) is UnknownNode
+                and type(self.current_node_backup) is Node):
             # on observer stop, if the current node is an UnknowNode but the
             # backup is a valid Node, fallback to the backup since the current
             # node variable was overridden in the last stages before formation
@@ -662,14 +662,13 @@ class CombatModule(object):
         self.current_node = self.map.find_node_by_pos(*self.current_position)
         self.current_node_backup = (
             self.current_node
-            if type(self.current_node) is not UnknownNode and
-                self.current_node != self.current_node_backup
+            if type(self.current_node) is not UnknownNode
+            and self.current_node != self.current_node_backup
             else self.current_node_backup)
         # debug console print for the observer's found position of the fleet
-        """
-        print("{} {} ({})".format(
-            self.current_position, self.current_node, self.current_node_backup))
-        """
+        # print("{} {} ({})".format(
+        #     self.current_position, self.current_node,
+        #     self.current_node_backup))
         event.repeat()
 
     def _update_fleet_position_once(self):
@@ -687,9 +686,7 @@ class CombatModule(object):
 
         self.current_node = self.map.find_node_by_pos(*self.current_position)
         # debug console print for the method's found position of the fleet
-        """
-        print("{} {}".format(self.current_position, self.current_node))
-        """
+        # print("{} {}".format(self.current_position, self.current_node))
         Util.log_msg("Fleet at node {}.".format(self.current_node))
 
     def _increment_nodes_run(self):
@@ -850,8 +847,8 @@ class CombatModule(object):
             if self.combined_fleet and threshold_dmg_count == 1:
                 # if there is only one heavily damaged ship and it is
                 # the flagship of the escort fleet, do not retreat
-                if (self.fleets[2].damage_counts['heavy'] == 1 and
-                        self.fleets[2].flagship_damaged):
+                if (self.fleets[2].damage_counts['heavy'] == 1
+                        and self.fleets[2].flagship_damaged):
                     continue_override = True
                     Util.log_msg(
                         "The 1 ship damaged beyond threshold is the escort "
