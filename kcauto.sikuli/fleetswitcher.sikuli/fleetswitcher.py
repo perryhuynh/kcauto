@@ -40,8 +40,8 @@ class FleetSwitcherModule(object):
         Returns:
             bool: True if a switch was done or attempted, False otherwise
         """
-        if (self.config.pvp['enabled'] and self.config.pvp['fleet'] and
-                self.config.pvp['fleet'] != self.current_fleet):
+        if (self.config.pvp['enabled'] and self.config.pvp['fleet']
+                and self.config.pvp['fleet'] != self.current_fleet):
             self.goto_fleetcomp_presets()
             self._recall_preset(self.config.pvp['fleet'])
             return True
@@ -54,10 +54,10 @@ class FleetSwitcherModule(object):
         Returns:
             bool: True if a switch was done or attempted, False otherwise
         """
-        if (self.config.combat['enabled'] and
-                len(self.config.combat['fleets']) > 0):
-            if (not self.last_combat_fleet or
-                    len(self.config.combat['fleets']) == 1):
+        if (self.config.combat['enabled']
+                and len(self.config.combat['fleets']) > 0):
+            if (not self.last_combat_fleet
+                    or len(self.config.combat['fleets']) == 1):
                 # first combat fleet switch or only one combat fleet specified
                 next_combat_fleet = self.config.combat['fleets'][0]
             else:
@@ -87,6 +87,7 @@ class FleetSwitcherModule(object):
         Returns:
             bool: True after successful preset recall
         """
+        Util.log_msg("Switching to fleet preset {}.".format(preset_id))
         self._scroll_preset_list(preset_id)
         preset_region = self._generate_preset_list_region(preset_id)
         if not Util.check_and_click(preset_region, 'fleetswitch_button.png'):
@@ -104,6 +105,8 @@ class FleetSwitcherModule(object):
                 "assigned in other fleets. Please check your config and fleet "
                 "presets.".format(preset_id))
             sys.exit(1)
+        # successful switch
+        self.current_fleet = preset_id
         return True
 
     def _scroll_preset_list(self, preset_id):
