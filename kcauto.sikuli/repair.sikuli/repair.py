@@ -78,7 +78,7 @@ class RepairModule(object):
 
         for match in dock_busy_matches:
             dock_busy_count += 1
-            repair_timer = Util.read_timer(self.kc_region, match, 'l', 100)
+            repair_timer = Util.read_timer(self.kc_region, match, 'l', 130)
             self.repair_timers.append(self._timer_to_datetime(repair_timer))
 
         # find empty docks
@@ -132,7 +132,7 @@ class RepairModule(object):
                 use_bucket = True
             else:
                 repair_timer = Util.read_timer(
-                    self.regions['right'], 'repair_timer.png', 'r', 80, 5)
+                    self.regions['right'], 'repair_timer.png', 'r', 115, 5)
                 if ((repair_timer['hours'] * 100 + repair_timer['minutes']) >
                         self.config.combat['repair_time_limit']):
                     use_bucket = True
