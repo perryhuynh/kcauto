@@ -1,3 +1,18 @@
+#### 4.0.0
+
+* Kantai Collection Phase 2 Block 1 compatibility - 1st pass
+  * Expedition
+  * PvP
+  * Quests
+  * Navigation
+  * Basic combat up to map 1-3
+* Please **do not** use the following features:
+  * Combat beyond map 1-3
+  * LBAS
+  * Ship Switcher
+  * CheckFatigue
+  * ClearStop
+
 #### 3.1.1
 
 * Critical bugfix to Combat module
