@@ -182,7 +182,7 @@ class Node(object):
         Returns:
             bool: True if the x,y coordinates match the Node's, False otherwise
         """
-        node_buffer = 35 if 'boss' in self.types else 20
+        node_buffer = 50 if 'boss' in self.types else 25
         for coord in self.all_coords:
             min_x = coord[0] - node_buffer
             max_x = coord[0] + node_buffer
