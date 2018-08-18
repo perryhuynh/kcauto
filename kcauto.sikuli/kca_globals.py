@@ -1,4 +1,8 @@
 class Globals(object):
+    # game window dimensions
+    GAME_WIDTH = 1200
+    GAME_HEIGHT = 720
+
     # for the sikuli scan and observe rates (times per second)
     SIKULI_SCANRATE = 20
     # time to wait before executing another kcauto loop

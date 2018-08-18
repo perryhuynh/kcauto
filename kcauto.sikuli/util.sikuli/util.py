@@ -329,24 +329,31 @@ class Util(object):
         regions = {}
         # pre-defined regions are defined as (X_start, Y_start, width, height)
         # generic regions
-        regions['game'] = Region(x, y, 800, 480)
-        regions['left'] = Region(x, y, 400, 480)
-        regions['right'] = Region(x + 400, y, 400, 480)
-        regions['upper'] = Region(x, y, 800, 240)
-        regions['lower'] = Region(x, y + 240, 800, 240)
-        regions['upper_left'] = Region(x, y, 400, 240)
-        regions['upper_right'] = Region(x + 400, y, 400, 240)
-        regions['lower_left'] = Region(x, y + 240, 400, 240)
-        regions['lower_right'] = Region(x + 400, y + 240, 400, 240)
-        regions['lower_right_corner'] = Region(x + 710, y + 390, 90, 90)
+        width = Globals.GAME_WIDTH
+        height = Globals.GAME_HEIGHT
+        half_width = width / 2
+        half_height = height / 2
+        regions['game'] = Region(x, y, width, height)
+        regions['left'] = Region(x, y, half_width, height)
+        regions['right'] = Region(x + half_width, y, half_width, height)
+        regions['upper'] = Region(x, y, width, half_height)
+        regions['lower'] = Region(x, y + half_height, height, half_height)
+        regions['upper_left'] = Region(x, y, half_width, half_height)
+        regions['upper_right'] = Region(
+            x + half_width, y, half_width, half_height)
+        regions['lower_left'] = Region(
+            x, y + half_height, half_width, half_height)
+        regions['lower_right'] = Region(
+            x + half_width, y + half_height, half_width, half_height)
+        regions['lower_right_corner'] = Region(x + 1100, y + 620, 100, 100)
         # function-specific regions
-        regions['expedition_flag'] = Region(x + 490, y, 60, 60)
-        regions['top_menu'] = Region(x + 115, y + 25, 550, 50)
-        regions['home_menu'] = Region(x + 30, y + 85, 335, 325)
-        regions['side_menu'] = Region(x, y + 120, 100, 280)
-        regions['top_submenu'] = Region(x + 100, y + 100, 700, 45)
-        regions['quest_status'] = Region(x + 710, y + 110, 65, 340)
-        regions['check_supply'] = Region(x + 465, y + 155, 65, 285)
+        regions['expedition_flag'] = Region(x + 750, y + 20, 70, 50)
+        regions['top_menu'] = Region(x + 185, y + 50, 800, 50)
+        regions['home_menu'] = Region(x + 45, y + 130, 500, 490)
+        regions['side_menu'] = Region(x, y + 190, 145, 400)
+        regions['top_submenu'] = Region(x + 145, y + 145, 1055, 55)
+        regions['quest_status'] = Region(x + 1065, y + 165, 95, 500)
+        regions['check_supply'] = Region(x + 695, y + 195, 40, 440)
         regions['ship_counter'] = Region(x + 570, y, 105, 30)
         # repair-related regions
         regions['repair_panel'] = Region(x + 600, y + 110, 100, 340)
