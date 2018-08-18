@@ -201,8 +201,8 @@ class QuestModule(object):
             quests = Util.findAll_wrapper(
                 self.regions['left'], '{}.png'.format(quest_type))
             for quest in quests:
-                quest_bar = quest.nearby(7).right(580)
-                quest_bar_click = quest.right(580)
+                quest_bar = quest.nearby(7).right(860)
+                quest_bar_click = quest.right(860)
                 quest_rewards = (
                     self._read_reward_number('fuel', quest_bar),
                     self._read_reward_number('ammo', quest_bar),
@@ -286,7 +286,7 @@ class QuestModule(object):
         for quest_type in current_inactive_quest_types:
             while self.regions['left'].exists('{}.png'.format(quest_type)):
                 quest = self.regions['left'].getLastMatch()
-                Util.click_preset_region(self.regions, quest.right(580))
+                Util.click_preset_region(self.regions, quest.right(860))
                 Util.kc_sleep(2, 0.5)
         return self._goto_next_page()
 
@@ -330,7 +330,7 @@ class QuestModule(object):
             int: resource reward count read via OCR
         """
         icon_img = 'icon_{}.png'.format(type)
-        return Util.read_number(region, icon_img, 'r', 33, 1)
+        return Util.read_number(region, icon_img, 'r', 54, 1)
 
     def _define_quest_list(self):
         """Defines the valid quests based on the supplied kcauto Config.
