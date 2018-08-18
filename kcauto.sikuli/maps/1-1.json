@@ -3,13 +3,13 @@
 	"subworld": 1,
 	"nodes": {
 		"A": {
-			"coords": [265, 195]
+			"coords": [598, 329]
 		},
 		"B": {
-			"coords": [390, 112]
+			"coords": [841, 204]
 		},
 		"C": {
-			"coords": [370, 268],
+			"coords": [860, 487],
 			"types": ["boss"]
 		}
 	}
