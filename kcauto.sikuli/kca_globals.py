@@ -35,6 +35,6 @@ class Globals(object):
         'repair_list': [-325, 35, -10, 6],  # NU
         'arrow_navigation': [-10, 10, -8, 8],
         'shiplist_sort': [-4, 36, -10, 10],  # NU
-        'scroll_prev': [-12, 12, -16, 2],  # NU
-        'scroll_next': [-12, 12, -2, 16]  # NU
+        'scroll_prev': [-14, 20, -20, 5],
+        'scroll_next': [-20, 2, -14, 14]  # NU
     }
