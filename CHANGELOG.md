@@ -6,7 +6,7 @@
   * Quests
   * Navigation
   * Basic combat up to map 1-3
-* Please **do not** use the following features:
+* The following are currently not compatible with the game. Please **do not** use the following features:
   * Combat beyond map 1-3
   * LBAS
   * Ship Switcher
