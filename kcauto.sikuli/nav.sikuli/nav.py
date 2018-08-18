@@ -57,8 +57,11 @@ class NavNode(object):
         if target in self.connections:
             c = self.connections[target]
             Util.rejigger_mouse(regions, 'top')
-            Util.wait_and_click(
-                regions[c['click_target_region']], c['click_target'])
+            if c['click_target'] == 'QUEST_MENU':
+                Util.click_preset_region(regions, 'quest_menu')
+            else:
+                Util.wait_and_click(
+                    regions[c['click_target_region']], c['click_target'])
             Util.rejigger_mouse(regions, 'top')
             regions[c['wait_target_region']].wait(
                 Pattern(c['wait_target']).exact(), 60)
@@ -97,7 +100,7 @@ class Nav(object):
     # then define all the connections for the nodes
     home.define_connection(
         quests,
-        'top_menu', 'top_menu_quests.png',
+        'top_menu', 'QUEST_MENU',
         'left', 'filter_tab_all_active.png')
     home.define_connection(
         sortie,
@@ -201,7 +204,7 @@ class Nav(object):
             'upper_left', 'screen_development_ready.png')
         node.define_connection(
             quests,
-            'top_menu', 'top_menu_quests.png',
+            'top_menu', 'QUEST_MENU',
             'left', 'filter_tab_all_active.png')
 
     @classmethod
