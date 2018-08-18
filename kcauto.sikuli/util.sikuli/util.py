@@ -339,9 +339,9 @@ class Util(object):
                 pass
             find_attempt += 1
             sleep(1)
-            if find_attempt > 30:
+            if find_attempt > 3:
                 Util.log_error("Could not find a reference point.")
-                raise
+                raise FindFailed
         x = ref_region.x - 144
         y = ref_region.y
 
@@ -373,27 +373,27 @@ class Util(object):
         regions['top_submenu'] = Region(x + 145, y + 145, 1055, 55)
         regions['quest_status'] = Region(x + 1065, y + 165, 95, 500)
         regions['check_supply'] = Region(x + 695, y + 195, 40, 440)
-        regions['ship_counter'] = Region(x + 570, y, 105, 30)
+        regions['ship_counter'] = Region(x + 570, y, 105, 30)  # NU
         # repair-related regions
-        regions['repair_panel'] = Region(x + 600, y + 110, 100, 340)
+        regions['repair_panel'] = Region(x + 600, y + 110, 100, 340)  # NU
         regions['repair_shiplist_fleet_markers'] = Region(
-            x + 375, y + 125, 28, 310)
+            x + 375, y + 125, 28, 310)  # NU
         # combat-related regions
-        regions['enemy_pvp_fleet'] = Region(x + 400, y, 400, 480)
-        regions['formation_line_ahead'] = Region(x + 390, y + 160, 175, 50)
-        regions['formation_double_line'] = Region(x + 520, y + 160, 175, 50)
-        regions['formation_diamond'] = Region(x + 650, y + 160, 120, 50)
-        regions['formation_echelon'] = Region(x + 390, y + 320, 190, 50)
-        regions['formation_line_abreast'] = Region(x + 520, y + 320, 190, 50)
-        regions['formation_vanguard'] = Region(x + 650, y + 320, 120, 50)
+        regions['enemy_pvp_fleet'] = Region(x + 400, y, 400, 480)  # NU
+        regions['formation_line_ahead'] = Region(x + 390, y + 160, 175, 50)  # NU
+        regions['formation_double_line'] = Region(x + 520, y + 160, 175, 50)  # NU
+        regions['formation_diamond'] = Region(x + 650, y + 160, 120, 50)  # NU
+        regions['formation_echelon'] = Region(x + 390, y + 320, 190, 50)  # NU
+        regions['formation_line_abreast'] = Region(x + 520, y + 320, 190, 50)  # NU
+        regions['formation_vanguard'] = Region(x + 650, y + 320, 120, 50)  # NU
         regions['formation_combinedfleet_1'] = Region(
-            x + 420, y + 150, 160, 50)
+            x + 420, y + 150, 160, 50)  # NU
         regions['formation_combinedfleet_2'] = Region(
-            x + 580, y + 150, 160, 50)
+            x + 580, y + 150, 160, 50)  # NU
         regions['formation_combinedfleet_3'] = Region(
-            x + 420, y + 280, 160, 50)
+            x + 420, y + 280, 160, 50)  # NU
         regions['formation_combinedfleet_4'] = Region(
-            x + 580, y + 280, 160, 50)
+            x + 580, y + 280, 160, 50)  # NU
 
         return (kc, regions)
 
@@ -408,13 +408,13 @@ class Util(object):
         """
         # preset areas are designated as (X_start, X_end, Y_start, Y_end)
         presets = {
-            'game': (0, 800, 0, 480),
-            'center': (150, 650, 130, 350),
-            'top': (120, 780, 5, 25),
-            'shipgirl': (370, 780, 100, 420),
-            'lbas': (350, 450, 5, 50),
-            'lbas_mode_switch_button': (763, 788, 137, 179),
-            '7th_next': (386, 413, 400, 427)
+            'game': (0, Globals.GAME_WIDTH, 0, Globals.GAME_HEIGHT),
+            'center': (225, 975, 180, 540),
+            'top': (400, 1200, 12, 42),
+            'shipgirl': (700, 1100, 130, 550),
+            'lbas': (350, 450, 5, 50),  # NU
+            'lbas_mode_switch_button': (763, 788, 137, 179),  # NU
+            '7th_next': (386, 413, 400, 427)  # NU
         }
 
         if isinstance(preset, str):
