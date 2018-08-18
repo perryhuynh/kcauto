@@ -320,11 +320,30 @@ class Util(object):
             list: list of pre-defined Regions
         """
         kc = cls.focus_app(config)
-        # match the reference point to find the exact location of the game
-        # within the game container window
-        reference_region = kc.wait(Pattern('kc_reference_point.png').exact())
-        x = reference_region.x - 99
-        y = reference_region.y
+        # match one of the many reference points to find the exact location of
+        # the game within the game container window
+        ref_region = None
+        find_attempt = 0
+        while not ref_region:
+            try:
+                ref_region = kc.find(Pattern('kc_ref_point_1.png').exact())
+            except FindFailed:
+                pass
+            try:
+                ref_region = kc.find(Pattern('kc_ref_point_2.png').exact())
+            except FindFailed:
+                pass
+            try:
+                ref_region = kc.find(Pattern('kc_ref_point_3.png').exact())
+            except FindFailed:
+                pass
+            find_attempt += 1
+            sleep(1)
+            if find_attempt > 30:
+                Util.log_error("Could not find a reference point.")
+                raise
+        x = ref_region.x - 144
+        y = ref_region.y
 
         regions = {}
         # pre-defined regions are defined as (X_start, Y_start, width, height)
