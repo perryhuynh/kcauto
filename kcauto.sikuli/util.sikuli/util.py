@@ -356,7 +356,7 @@ class Util(object):
         regions['left'] = Region(x, y, half_width, height)
         regions['right'] = Region(x + half_width, y, half_width, height)
         regions['upper'] = Region(x, y, width, half_height)
-        regions['lower'] = Region(x, y + half_height, height, half_height)
+        regions['lower'] = Region(x, y + half_height, width, half_height)
         regions['upper_left'] = Region(x, y, half_width, half_height)
         regions['upper_right'] = Region(
             x + half_width, y, half_width, half_height)
