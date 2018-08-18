@@ -370,7 +370,7 @@ class Util(object):
         regions['top_menu'] = Region(x + 185, y + 50, 800, 50)
         regions['home_menu'] = Region(x + 45, y + 130, 500, 490)
         regions['side_menu'] = Region(x, y + 190, 145, 400)
-        regions['top_submenu'] = Region(x + 145, y + 145, 1055, 55)
+        regions['top_submenu'] = Region(x + 145, y + 145, 1055, 70)
         regions['quest_status'] = Region(x + 1065, y + 165, 95, 500)
         regions['check_supply'] = Region(x + 695, y + 195, 40, 440)
         regions['ship_counter'] = Region(x + 570, y, 105, 30)  # NU
