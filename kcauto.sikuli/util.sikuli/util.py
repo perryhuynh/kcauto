@@ -379,13 +379,13 @@ class Util(object):
         regions['repair_shiplist_fleet_markers'] = Region(
             x + 375, y + 125, 28, 310)  # NU
         # combat-related regions
-        regions['enemy_pvp_fleet'] = Region(x + 400, y, 400, 480)  # NU
-        regions['formation_line_ahead'] = Region(x + 390, y + 160, 175, 50)  # NU
-        regions['formation_double_line'] = Region(x + 520, y + 160, 175, 50)  # NU
-        regions['formation_diamond'] = Region(x + 650, y + 160, 120, 50)  # NU
-        regions['formation_echelon'] = Region(x + 390, y + 320, 190, 50)  # NU
-        regions['formation_line_abreast'] = Region(x + 520, y + 320, 190, 50)  # NU
-        regions['formation_vanguard'] = Region(x + 650, y + 320, 120, 50)  # NU
+        regions['enemy_pvp_fleet'] = Region(x + 710, y, 365, height)
+        regions['formation_line_ahead'] = Region(x + 596, y + 256, 150, 44)
+        regions['formation_double_line'] = Region(x + 791, y + 256, 150, 44)
+        regions['formation_diamond'] = Region(x + 989, y + 256, 150, 44)
+        regions['formation_echelon'] = Region(x + 596, y + 495, 252, 44)
+        regions['formation_line_abreast'] = Region(x + 791, y + 495, 253, 44)
+        regions['formation_vanguard'] = Region(x + 989, y + 495, 150, 44)
         regions['formation_combinedfleet_1'] = Region(
             x + 420, y + 150, 160, 50)  # NU
         regions['formation_combinedfleet_2'] = Region(
