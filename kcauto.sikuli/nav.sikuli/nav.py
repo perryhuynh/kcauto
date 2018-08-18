@@ -106,23 +106,23 @@ class Nav(object):
     home.define_connection(
         fleetcomp,
         'home_menu', 'home_menu_fleetcomp.png',
-        'side_menu', 'side_menu_fleetcomp_active.png')
+        'upper', 'shiplist_button.png')
     home.define_connection(
         resupply,
         'home_menu', 'home_menu_resupply.png',
-        'side_menu', 'side_menu_resupply_active.png')
+        'lower_right', 'resupply_all_done.png')
     home.define_connection(
         equipment,
         'home_menu', 'home_menu_equipment.png',
-        'side_menu', 'side_menu_equipment_active.png')
+        'lower_right', 'screen_equipment_ready.png')
     home.define_connection(
         repair,
         'home_menu', 'home_menu_repair.png',
-        'side_menu', 'side_menu_repair_active.png')
+        'upper_left', 'screen_repair_ready.png')
     home.define_connection(
         development,
         'home_menu', 'home_menu_development.png',
-        'side_menu', 'side_menu_development_active.png')
+        'upper_left', 'screen_development_ready.png')
 
     top_menu.define_connection(
         home,
@@ -182,23 +182,23 @@ class Nav(object):
         node.define_connection(
             fleetcomp,
             'side_menu', 'side_menu_fleetcomp.png',
-            'side_menu', 'side_menu_fleetcomp_active.png')
+            'upper', 'shiplist_button.png')
         node.define_connection(
             resupply,
             'side_menu', 'side_menu_resupply.png',
-            'side_menu', 'side_menu_resupply_active.png')
+            'lower_right', 'resupply_all_done.png')
         node.define_connection(
             equipment,
             'side_menu', 'side_menu_equipment.png',
-            'side_menu', 'side_menu_equipment_active.png')
+            'lower_right', 'screen_equipment_ready.png')
         node.define_connection(
             repair,
             'side_menu', 'side_menu_repair.png',
-            'side_menu', 'side_menu_repair_active.png')
+            'upper_left', 'screen_repair_ready.png')
         node.define_connection(
             development,
             'side_menu', 'side_menu_development.png',
-            'side_menu', 'side_menu_development_active.png')
+            'upper_left', 'screen_development_ready.png')
         node.define_connection(
             quests,
             'top_menu', 'top_menu_quests.png',
