@@ -61,7 +61,7 @@ class CombatModule(object):
             'check_damage': Region(x + 710, y + 195, 20, 440),
             'check_damage_7th': Region(x + 710, y + 570, 20, 64),
             'check_damage_flagship': Region(x + 470, y + 280, 42, 70),
-            'check_damage_combat': Region(x + 470, y + 215, 42, 475),
+            'check_damage_combat': Region(x + 470, y + 215, 50, 475),
             'event_next': Region(x + 720, y + 340, 80, 70)  # NU
         }
 
