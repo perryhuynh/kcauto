@@ -37,7 +37,9 @@ class Recovery(object):
         Region.type(kc_region, Key.ESC)
         sleep(1)
         Region.type(kc_region, Key.SPACE)
-        if kc_region.exists(Pattern('kc_reference_point.png').exact()):
+        if (kc_region.exists(Pattern('kc_ref_point_1.png').exact())
+                or kc_region.exists(Pattern('kc_ref_point_2.png').exact())
+                or kc_region.exists(Pattern('kc_ref_point_3.png').exact())):
             # reference point exists, so we are in-game
             Util.log_success("Recovery successful.")
             kcauto.stats.increment_recoveries()
@@ -47,10 +49,10 @@ class Recovery(object):
             # the main game screen
             while (kc_region.exists('next.png') and
                     not kc_region.exists(
-                        Pattern('kc_reference_point.png').exact())):
+                        Pattern('home_menu_sortie.png').exact())):
                 Util.click_preset_region(regions, 'center')
                 sleep(2)
-            if kc_region.exists(Pattern('kc_reference_point.png').exact()):
+            if kc_region.exists(Pattern('home_menu_sortie.png').exact()):
                 # reference point exists, so we are back in-game
                 Util.log_success("Recovery successful.")
                 kcauto.stats.increment_recoveries()

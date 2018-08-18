@@ -1,4 +1,8 @@
 class Globals(object):
+    # game window dimensions
+    GAME_WIDTH = 1200
+    GAME_HEIGHT = 720
+
     # for the sikuli scan and observe rates (times per second)
     SIKULI_SCANRATE = 20
     # time to wait before executing another kcauto loop
@@ -28,9 +32,9 @@ class Globals(object):
     # area expansion presets; format is in [left, right, up, down] relative to
     # the center of the match
     EXPAND = {
-        'repair_list': [-325, 35, -10, 6],
-        'arrow_navigation': [-6, 6, -3, 3],
-        'shiplist_sort': [-4, 36, -10, 10],
-        'scroll_prev': [-12, 12, -16, 2],
-        'scroll_next': [-12, 12, -2, 16]
+        'repair_list': [-325, 35, -10, 6],  # NU
+        'arrow_navigation': [-10, 10, -8, 8],
+        'shiplist_sort': [-4, 36, -10, 10],  # NU
+        'scroll_prev': [-14, 20, -20, 5],
+        'scroll_next': [-20, 2, -14, 14]  # NU
     }

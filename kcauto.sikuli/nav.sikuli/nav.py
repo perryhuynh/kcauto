@@ -57,8 +57,11 @@ class NavNode(object):
         if target in self.connections:
             c = self.connections[target]
             Util.rejigger_mouse(regions, 'top')
-            Util.wait_and_click(
-                regions[c['click_target_region']], c['click_target'])
+            if c['click_target'] == 'QUEST_MENU':
+                Util.click_preset_region(regions, 'quest_menu')
+            else:
+                Util.wait_and_click(
+                    regions[c['click_target_region']], c['click_target'])
             Util.rejigger_mouse(regions, 'top')
             regions[c['wait_target_region']].wait(
                 Pattern(c['wait_target']).exact(), 60)
@@ -97,7 +100,7 @@ class Nav(object):
     # then define all the connections for the nodes
     home.define_connection(
         quests,
-        'top_menu', 'top_menu_quests.png',
+        'top_menu', 'QUEST_MENU',
         'left', 'filter_tab_all_active.png')
     home.define_connection(
         sortie,
@@ -106,23 +109,23 @@ class Nav(object):
     home.define_connection(
         fleetcomp,
         'home_menu', 'home_menu_fleetcomp.png',
-        'side_menu', 'side_menu_fleetcomp_active.png')
+        'upper', 'shiplist_button.png')
     home.define_connection(
         resupply,
         'home_menu', 'home_menu_resupply.png',
-        'side_menu', 'side_menu_resupply_active.png')
+        'lower_right', 'resupply_all_done.png')
     home.define_connection(
         equipment,
         'home_menu', 'home_menu_equipment.png',
-        'side_menu', 'side_menu_equipment_active.png')
+        'lower_right', 'screen_equipment_ready.png')
     home.define_connection(
         repair,
         'home_menu', 'home_menu_repair.png',
-        'side_menu', 'side_menu_repair_active.png')
+        'upper_left', 'screen_repair_ready.png')
     home.define_connection(
         development,
         'home_menu', 'home_menu_development.png',
-        'side_menu', 'side_menu_development_active.png')
+        'upper_left', 'screen_development_ready.png')
 
     top_menu.define_connection(
         home,
@@ -182,26 +185,26 @@ class Nav(object):
         node.define_connection(
             fleetcomp,
             'side_menu', 'side_menu_fleetcomp.png',
-            'side_menu', 'side_menu_fleetcomp_active.png')
+            'upper', 'shiplist_button.png')
         node.define_connection(
             resupply,
             'side_menu', 'side_menu_resupply.png',
-            'side_menu', 'side_menu_resupply_active.png')
+            'lower_right', 'resupply_all_done.png')
         node.define_connection(
             equipment,
             'side_menu', 'side_menu_equipment.png',
-            'side_menu', 'side_menu_equipment_active.png')
+            'lower_right', 'screen_equipment_ready.png')
         node.define_connection(
             repair,
             'side_menu', 'side_menu_repair.png',
-            'side_menu', 'side_menu_repair_active.png')
+            'upper_left', 'screen_repair_ready.png')
         node.define_connection(
             development,
             'side_menu', 'side_menu_development.png',
-            'side_menu', 'side_menu_development_active.png')
+            'upper_left', 'screen_development_ready.png')
         node.define_connection(
             quests,
-            'top_menu', 'top_menu_quests.png',
+            'top_menu', 'QUEST_MENU',
             'left', 'filter_tab_all_active.png')
 
     @classmethod
