@@ -320,54 +320,80 @@ class Util(object):
             list: list of pre-defined Regions
         """
         kc = cls.focus_app(config)
-        # match the reference point to find the exact location of the game
-        # within the game container window
-        reference_region = kc.wait(Pattern('kc_reference_point.png').exact())
-        x = reference_region.x - 99
-        y = reference_region.y
+        # match one of the many reference points to find the exact location of
+        # the game within the game container window
+        ref_region = None
+        find_attempt = 0
+        while not ref_region:
+            try:
+                ref_region = kc.find(Pattern('kc_ref_point_1.png').exact())
+            except FindFailed:
+                pass
+            try:
+                ref_region = kc.find(Pattern('kc_ref_point_2.png').exact())
+            except FindFailed:
+                pass
+            try:
+                ref_region = kc.find(Pattern('kc_ref_point_3.png').exact())
+            except FindFailed:
+                pass
+            find_attempt += 1
+            sleep(1)
+            if find_attempt > 3:
+                Util.log_error("Could not find a reference point.")
+                raise FindFailed
+        x = ref_region.x - 144
+        y = ref_region.y
 
         regions = {}
         # pre-defined regions are defined as (X_start, Y_start, width, height)
         # generic regions
-        regions['game'] = Region(x, y, 800, 480)
-        regions['left'] = Region(x, y, 400, 480)
-        regions['right'] = Region(x + 400, y, 400, 480)
-        regions['upper'] = Region(x, y, 800, 240)
-        regions['lower'] = Region(x, y + 240, 800, 240)
-        regions['upper_left'] = Region(x, y, 400, 240)
-        regions['upper_right'] = Region(x + 400, y, 400, 240)
-        regions['lower_left'] = Region(x, y + 240, 400, 240)
-        regions['lower_right'] = Region(x + 400, y + 240, 400, 240)
-        regions['lower_right_corner'] = Region(x + 710, y + 390, 90, 90)
+        width = Globals.GAME_WIDTH
+        height = Globals.GAME_HEIGHT
+        half_width = width / 2
+        half_height = height / 2
+        regions['game'] = Region(x, y, width, height)
+        regions['left'] = Region(x, y, half_width, height)
+        regions['right'] = Region(x + half_width, y, half_width, height)
+        regions['upper'] = Region(x, y, width, half_height)
+        regions['lower'] = Region(x, y + half_height, width, half_height)
+        regions['upper_left'] = Region(x, y, half_width, half_height)
+        regions['upper_right'] = Region(
+            x + half_width, y, half_width, half_height)
+        regions['lower_left'] = Region(
+            x, y + half_height, half_width, half_height)
+        regions['lower_right'] = Region(
+            x + half_width, y + half_height, half_width, half_height)
+        regions['lower_right_corner'] = Region(x + 1100, y + 620, 100, 100)
         # function-specific regions
-        regions['expedition_flag'] = Region(x + 490, y, 60, 60)
-        regions['top_menu'] = Region(x + 115, y + 25, 550, 50)
-        regions['home_menu'] = Region(x + 30, y + 85, 335, 325)
-        regions['side_menu'] = Region(x, y + 120, 100, 280)
-        regions['top_submenu'] = Region(x + 100, y + 100, 700, 45)
-        regions['quest_status'] = Region(x + 710, y + 110, 65, 340)
-        regions['check_supply'] = Region(x + 465, y + 155, 65, 285)
-        regions['ship_counter'] = Region(x + 570, y, 105, 30)
+        regions['expedition_flag'] = Region(x + 750, y + 20, 70, 50)
+        regions['top_menu'] = Region(x + 185, y + 50, 800, 50)
+        regions['home_menu'] = Region(x + 45, y + 130, 500, 490)
+        regions['side_menu'] = Region(x, y + 190, 145, 400)
+        regions['top_submenu'] = Region(x + 145, y + 145, 1055, 70)
+        regions['quest_status'] = Region(x + 1065, y + 165, 95, 500)
+        regions['check_supply'] = Region(x + 695, y + 195, 40, 440)
+        regions['ship_counter'] = Region(x + 570, y, 105, 30)  # NU
         # repair-related regions
-        regions['repair_panel'] = Region(x + 600, y + 110, 100, 340)
+        regions['repair_panel'] = Region(x + 600, y + 110, 100, 340)  # NU
         regions['repair_shiplist_fleet_markers'] = Region(
-            x + 375, y + 125, 28, 310)
+            x + 375, y + 125, 28, 310)  # NU
         # combat-related regions
-        regions['enemy_pvp_fleet'] = Region(x + 400, y, 400, 480)
-        regions['formation_line_ahead'] = Region(x + 390, y + 160, 175, 50)
-        regions['formation_double_line'] = Region(x + 520, y + 160, 175, 50)
-        regions['formation_diamond'] = Region(x + 650, y + 160, 120, 50)
-        regions['formation_echelon'] = Region(x + 390, y + 320, 190, 50)
-        regions['formation_line_abreast'] = Region(x + 520, y + 320, 190, 50)
-        regions['formation_vanguard'] = Region(x + 650, y + 320, 120, 50)
+        regions['enemy_pvp_fleet'] = Region(x + 710, y, 365, height)
+        regions['formation_line_ahead'] = Region(x + 596, y + 256, 150, 44)
+        regions['formation_double_line'] = Region(x + 791, y + 256, 150, 44)
+        regions['formation_diamond'] = Region(x + 989, y + 256, 150, 44)
+        regions['formation_echelon'] = Region(x + 596, y + 495, 252, 44)
+        regions['formation_line_abreast'] = Region(x + 791, y + 495, 253, 44)
+        regions['formation_vanguard'] = Region(x + 989, y + 495, 150, 44)
         regions['formation_combinedfleet_1'] = Region(
-            x + 420, y + 150, 160, 50)
+            x + 420, y + 150, 160, 50)  # NU
         regions['formation_combinedfleet_2'] = Region(
-            x + 580, y + 150, 160, 50)
+            x + 580, y + 150, 160, 50)  # NU
         regions['formation_combinedfleet_3'] = Region(
-            x + 420, y + 280, 160, 50)
+            x + 420, y + 280, 160, 50)  # NU
         regions['formation_combinedfleet_4'] = Region(
-            x + 580, y + 280, 160, 50)
+            x + 580, y + 280, 160, 50)  # NU
 
         return (kc, regions)
 
@@ -382,13 +408,14 @@ class Util(object):
         """
         # preset areas are designated as (X_start, X_end, Y_start, Y_end)
         presets = {
-            'game': (0, 800, 0, 480),
-            'center': (150, 650, 130, 350),
-            'top': (120, 780, 5, 25),
-            'shipgirl': (370, 780, 100, 420),
-            'lbas': (350, 450, 5, 50),
-            'lbas_mode_switch_button': (763, 788, 137, 179),
-            '7th_next': (386, 413, 400, 427)
+            'game': (0, Globals.GAME_WIDTH, 0, Globals.GAME_HEIGHT),
+            'center': (225, 975, 180, 540),
+            'top': (400, 1200, 12, 42),
+            'quest_menu': (790, 895, 50, 95),
+            'shipgirl': (700, 1100, 130, 550),
+            'lbas': (350, 450, 5, 50),  # NU
+            'lbas_mode_switch_button': (763, 788, 137, 179),  # NU
+            '7th_next': (386, 413, 400, 427)  # NU
         }
 
         if isinstance(preset, str):

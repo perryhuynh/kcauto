@@ -57,12 +57,12 @@ class CombatModule(object):
         y = self.kc_region.y
         self.module_regions = {
             'game': self.kc_region,
-            'check_fatigue': Region(x + 500, y + 135, 22, 290),
-            'check_damage': Region(x + 461, y + 130, 48, 300),
-            'check_damage_7th': Region(x + 461, y + 376, 48, 50),
-            'check_damage_flagship': Region(x + 290, y + 185, 70, 50),
-            'check_damage_combat': Region(x + 290, y + 140, 70, 320),
-            'event_next': Region(x + 720, y + 340, 80, 70),
+            'check_fatigue': Region(x + 742, y + 196, 30, 440),
+            'check_damage': Region(x + 710, y + 195, 20, 440),
+            'check_damage_7th': Region(x + 710, y + 570, 20, 64),
+            'check_damage_flagship': Region(x + 470, y + 280, 42, 70),
+            'check_damage_combat': Region(x + 470, y + 215, 50, 475),
+            'event_next': Region(x + 720, y + 340, 80, 70)  # NU
         }
 
     def goto_combat(self):

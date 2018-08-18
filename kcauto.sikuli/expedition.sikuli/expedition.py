@@ -98,7 +98,7 @@ class ExpeditionModule(object):
                 fleet.update_return_time(0, -1)
             else:
                 expedition_timer = Util.read_timer(
-                    self.kc_region, 'expedition_timer.png', 'r', 80)
+                    self.kc_region, 'expedition_timer.png', 'r', 110)
                 fleet.update_return_time(
                     expedition_timer['hours'], expedition_timer['minutes'] - 1)
                 Util.log_warning(
