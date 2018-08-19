@@ -19,7 +19,8 @@
 			"types": ["sub"]
 		},
 		"F": {
-			"coords": [911, 246]
+			"coords": [911, 246],
+			"types": ["sub"]
 		},
 		"J": {
 			"coords": [800, 500],
