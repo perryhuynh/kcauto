@@ -153,7 +153,7 @@ class RepairModule(object):
             self.stats.increment_repairs_done()
             if use_bucket:
                 self.stats.increment_buckets_used()
-                self.kc_region.wait('dock_empty.png')
+                self.kc_region.wait('dock_empty.png', 5)
             else:
                 self._add_to_repair_timers(repair_timer)
                 self.regions['lower_right'].waitVanish('page_prev.png')
