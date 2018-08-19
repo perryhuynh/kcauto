@@ -4,7 +4,7 @@ class Globals(object):
     GAME_HEIGHT = 720
 
     # for the sikuli scan and observe rates (times per second)
-    SIKULI_SCANRATE = 20
+    SIKULI_SCANRATE = 30
     # time to wait before executing another kcauto loop
     LOOP_SLEEP_LENGTH = 15
     # how often to check the quests outside of other checkpoints
