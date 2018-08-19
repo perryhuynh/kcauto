@@ -2,26 +2,26 @@
 	"world": 3,
 	"subworld": 5,
 	"nodes": {
-		"A": {
-			"coords": [236, 172]
-		},
 		"B": {
-			"coords": [448, 331]
+			"coords": [355, 261]
 		},
-		"C": {
-			"coords": [387, 114]
+		"D": {
+			"coords": [579, 171]
 		},
 		"E": {
-			"coords": [419, 225]
+			"coords": [628, 340]
 		},
 		"F": {
-			"coords": [558, 139]
+			"coords": [672, 497]
 		},
 		"G": {
-			"coords": [542, 257]
+			"coords": [809, 386]
+		},
+		"H": {
+			"coords": [835, 209]
 		},
 		"K": {
-			"coords": [663, 173],
+			"coords": [989, 258],
 			"types": ["boss"]
 		}
 	}
