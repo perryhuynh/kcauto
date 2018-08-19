@@ -1,4 +1,4 @@
-from sikuli import Pattern, Location
+from sikuli import Region, Pattern, Location
 from datetime import datetime, timedelta
 from kca_globals import Globals
 from combat import CombatFleet
@@ -30,6 +30,12 @@ class RepairModule(object):
         self.current_shiplist_page = 1
         self.repair_slots = 0
         self.repair_timers = []
+
+        x = self.kc_region.x
+        y = self.kc_region.y
+        self.module_regions = {
+            'repair_shiplist_fleet_markers': Region(x + 555, y + 188, 45, 462)
+        }
 
     def goto_repair(self):
         """Method to navigate to the repair menu.
@@ -189,11 +195,11 @@ class RepairModule(object):
                     continue
 
                 ship_matches = Util.findAll_wrapper(
-                    self.regions['repair_shiplist_fleet_markers'],
+                    self.module_regions['repair_shiplist_fleet_markers'],
                     Pattern(fleet_marker).similar(0.9))
                 for ship_match in ship_matches:
                     target_region = ship_match.offset(
-                        Location(342, 0)).nearby(5)
+                        Location(525, 0)).nearby(10)
                     for damage in valid_damages:
                         if fleet_instance.damage_counts[damage] == 0:
                             # if no ships in this fleet are at this damage
@@ -265,7 +271,7 @@ class RepairModule(object):
         Raises:
             ValueError: invalid target_page specified
         """
-        if target_page > self.ship_page_count:
+        if type(target_page) is int and target_page > self.ship_page_count:
             raise ValueError(
                 "Invalid shiplist target page ({}) for number of known pages "
                 "({}).".format(target_page, self.ship_page_count))

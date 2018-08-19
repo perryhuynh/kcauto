@@ -373,12 +373,7 @@ class Util(object):
         regions['quest_status'] = Region(x + 1065, y + 165, 95, 500)
         regions['check_supply'] = Region(x + 695, y + 195, 40, 440)
         regions['ship_counter'] = Region(x + 735, y + 15, 55, 20)
-        # repair-related regions
-        regions['repair_panel'] = Region(x + 600, y + 110, 100, 340)  # NU
-        regions['repair_shiplist_fleet_markers'] = Region(
-            x + 375, y + 125, 28, 310)  # NU
         # combat-related regions
-        regions['enemy_pvp_fleet'] = Region(x + 710, y, 365, height)
         regions['formation_line_ahead'] = Region(x + 596, y + 256, 150, 44)
         regions['formation_double_line'] = Region(x + 791, y + 256, 150, 44)
         regions['formation_diamond'] = Region(x + 989, y + 256, 150, 44)

@@ -200,7 +200,7 @@ class ShipSwitcherModule(object):
         Raises:
             ValueError: invalid target_page specified
         """
-        if target_page > self.ship_page_count:
+        if type(target_page) is int and target_page > self.ship_page_count:
             raise ValueError(
                 "Invalid shiplist target page ({}) for number of known pages "
                 "({}).".format(target_page, self.ship_page_count))
