@@ -247,8 +247,7 @@ class Util(object):
         Returns:
             int: number of ships in port
         """
-        initial_read = Util.read_ocr_number_text(
-            regions['ship_counter'], 'shipcount_label.png', 'r', 48)
+        initial_read = Util.read_ocr_number_text(regions['ship_counter'])
         number_read = sub(r"\D", "", initial_read)
         if len(number_read) > 3:
             # the read number is too long; truncate anything past the 3rd digit
@@ -373,7 +372,7 @@ class Util(object):
         regions['top_submenu'] = Region(x + 145, y + 145, 1055, 70)
         regions['quest_status'] = Region(x + 1065, y + 165, 95, 500)
         regions['check_supply'] = Region(x + 695, y + 195, 40, 440)
-        regions['ship_counter'] = Region(x + 570, y, 105, 30)  # NU
+        regions['ship_counter'] = Region(x + 735, y + 15, 55, 20)
         # repair-related regions
         regions['repair_panel'] = Region(x + 600, y + 110, 100, 340)  # NU
         regions['repair_shiplist_fleet_markers'] = Region(
