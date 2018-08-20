@@ -1,3 +1,21 @@
+#### 4.1.0
+
+* Kantai Collection Phase 2 Block 1 compatibility - 2nd pass
+  * For the time being, please use UI 2 (Updated Classic) or UI 4/5 (White)
+  * Combat up to map 5-1, and map 7-1 (thanks to Kal, @perryhuynh, ksks222, @zerolength, @millionsbar, @twisting2017)
+  * Live Combat Engine ship tracking and optimization
+  * Flagship retreat
+  * CheckFatigue, ClearStop
+  * FleetSwitcher
+  * Repair
+  * Panel page navigation
+  * Updates to Expedition and Expedition assets for better cross-OS/browser compatibility (thanks to @waicool20)
+  * Bugfix to Quests not properly being toggled
+* The following are currently not compatible with the game. Please **do not** use the following features:
+  * Combat to maps not listed above
+  * LBAS
+  * Ship Switcher
+
 #### 4.0.0
 
 * Kantai Collection Phase 2 Block 1 compatibility - 1st pass
