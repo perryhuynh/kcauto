@@ -154,8 +154,9 @@ class ExpeditionModule(object):
         Args:
             fleet (ExpeditionFleet): expedition fleet instance
         """
-        expedition_img = 'expedition_{}.png'.format(fleet.expedition)
-        while not self.kc_region.exists(Pattern(expedition_img).similar(0.7)):
+        expedition_line = Pattern(
+            'expedition_{}.png'.format(fleet.expedition)).similar(0.7)
+        while not self.kc_region.exists(expedition_line):
             # if the expedition does not already exist on-screen, try selecting
             # the world first
             Util.kc_sleep()
@@ -163,7 +164,7 @@ class ExpeditionModule(object):
                 self.regions['lower'],
                 'e_world_{}.png'.format(fleet.expedition_area))
             Util.kc_sleep(1)
-            if not self.kc_region.exists(expedition_img):
+            if not self.kc_region.exists(expedition_line):
                 # if the expedition still does not show on-screen, check the
                 # specified expedition and scroll up or down the list
                 if type(fleet.expedition) == int:
@@ -179,7 +180,7 @@ class ExpeditionModule(object):
                             Globals.EXPAND['scroll_next'])
                         Util.kc_sleep()
         # select the expedition
-        Util.check_and_click(self.kc_region, expedition_img)
+        Util.check_and_click(self.kc_region, expedition_line)
         Util.kc_sleep(0.5)
 
     def reset_support_fleets(self):
