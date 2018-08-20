@@ -27,7 +27,6 @@ class CombatModule(object):
         self.kc_region = regions['game']
         self.fast_kc_region = Region(self.kc_region)
         self.fast_kc_region.setAutoWaitTimeout(0)
-        self.observeRegion = Region(self.kc_region)
         self.fleets = fleets
         self.next_combat_time = datetime.now()
 
@@ -62,6 +61,7 @@ class CombatModule(object):
             'check_damage_7th': Region(x + 710, y + 570, 20, 64),
             'check_damage_flagship': Region(x + 470, y + 280, 42, 70),
             'check_damage_combat': Region(x + 470, y + 215, 50, 475),
+            'observe_region': Region(x + 110, y + 95, 986, 478),
             'event_next': Region(x + 720, y + 340, 80, 70)  # NU
         }
 
@@ -628,10 +628,10 @@ class CombatModule(object):
         that tracks the fleet position icon in real-time in the live engine
         mode.
         """
-        self.observeRegion.onAppear(
+        self.module_regions['observe_region'].onAppear(
             Pattern(self.fleet_icon).similar(Globals.FLEET_ICON_SIMILARITY),
             self._update_fleet_position)
-        self.observeRegion.observeInBackground(FOREVER)
+        self.module_regions['observe_region'].observeInBackground(FOREVER)
 
     def _stop_fleet_observer(self):
         """Stops the observer started by the _start_fleet_observer() method.
@@ -643,7 +643,7 @@ class CombatModule(object):
             # node variable was overridden in the last stages before formation
             # select
             self.current_node = self.current_node_backup
-        self.observeRegion.stopObserver()
+        self.module_regions['observe_region'].stopObserver()
 
     def _update_fleet_position(self, event):
         """Method that is run by the fleet observer to continuously update the
