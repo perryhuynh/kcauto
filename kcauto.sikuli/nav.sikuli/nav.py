@@ -310,8 +310,8 @@ class NavList(object):
     # offset of navigation controls, based off of the ship comp UI's ship list,
     # in x, y pixel format
     OFFSET = {
-        'shipcomp': (0, 0),
-        'repair': (4, 8)
+        'repair': (0, 0),
+        'shipcomp': (17, -4)
     }
 
     @classmethod
@@ -407,10 +407,10 @@ class NavList(object):
                 Globals.EXPAND['arrow_navigation'])
         elif 1 <= target <= 5:
             zero_target = target - 1
-            x_start = 506 + (zero_target * 21) + (zero_target * 11) + offset[0]
-            x_stop = x_start + 11 + offset[0]
-            y_start = 444 + offset[1]
-            y_stop = 452 + offset[1]
+            x_start = 733 + (zero_target * 33) + (zero_target * 20) + offset[0]
+            x_stop = x_start + 20 + offset[0]
+            y_start = 675 + offset[1]
+            y_stop = 690 + offset[1]
 
             Util.click_coords(
                 regions['game'],

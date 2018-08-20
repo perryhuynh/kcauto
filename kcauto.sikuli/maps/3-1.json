@@ -2,22 +2,22 @@
 	"world": 3,
 	"subworld": 1,
 	"nodes": {
-		"A": {
-			"coords": [174, 186],
+		"B": {
+			"coords": [444, 323],
 			"types": ["retreat"]
 		},
 		"C": {
-			"coords": [268, 164]
+			"coords": [583, 377]
 		},
 		"D": {
-			"coords": [192, 332]
-		},
-		"E": {
-			"coords": [283, 228],
-			"types": ["boss"]
+			"coords": [790, 270]
 		},
 		"F": {
-			"coords": [312, 331]
+			"coords": [1023, 498]
+		},
+		"G": {
+			"coords": [1049, 241],
+			"types": ["boss"]
 		}
 	}
 }
