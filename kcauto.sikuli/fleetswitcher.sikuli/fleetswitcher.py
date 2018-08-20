@@ -1,5 +1,5 @@
 import sys
-from sikuli import Region, Pattern
+from sikuli import Region
 from kca_globals import Globals
 from nav import Nav
 from util import Util
