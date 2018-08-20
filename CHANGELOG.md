@@ -1,3 +1,7 @@
+#### 4.1.1
+
+* Bugfix to Expeditions not working properly across OS and browsers
+
 #### 4.1.0
 
 * Kantai Collection Phase 2 Block 1 compatibility - 2nd pass
