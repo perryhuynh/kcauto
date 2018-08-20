@@ -3,29 +3,29 @@
 	"subworld": 2,
 	"nodes": {
 		"A": {
-			"coords": [388, 230]
+			"coords": [812, 231]
 		},
 		"B": {
-			"coords": [434, 477]
+			"coords": [768, 476]
 		},
 		"C": {
-			"coords": [598, 335]
+			"coords": [603, 333]
 		},
 		"D": {
-			"coords": [645, 514]
+			"coords": [556, 512]
 		},
 		"E": {
-			"coords": [645, 158]
+			"coords": [555, 157]
 		},
 		"G": {
-			"coords": [853, 279]
+			"coords": [349, 277]
 		},
 		"H": {
-			"coords": [885, 450],
+			"coords": [314, 450],
 			"types": ["sub"]
 		},
 		"L": {
-			"coords": [784, 365],
+			"coords": [419, 363],
 			"types": ["boss"]
 		}
 	}
