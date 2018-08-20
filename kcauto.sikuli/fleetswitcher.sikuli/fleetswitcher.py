@@ -26,12 +26,8 @@ class FleetSwitcherModule(object):
         composition menu.
         """
         Nav.goto(self.regions, 'fleetcomp')
-        self.regions['upper'].wait('shiplist_button.png', 10)
-        Util.wait_and_click_and_wait(
-            self.regions['lower_left'],
-            Pattern('fleetswitch_submenu.png').exact(),
-            self.regions['lower_left'],
-            Pattern('fleetswitch_submenu_active.png').exact())
+        Util.check_and_click(
+            self.regions['lower_left'], 'fleetswitch_submenu.png')
 
     def switch_pvp_fleet(self):
         """Method to switch Fleet 1 to the specified PvP preset fleet, if
@@ -144,5 +140,5 @@ class FleetSwitcherModule(object):
         # preset_id is 1-based, offset is 0-based
         offset = 4 if preset_id > 5 else preset_id - 1
         return Region(
-            self.kc_region.x + 275,
-            self.kc_region.y + 185 + (offset * 52), 45, 29)
+            self.kc_region.x + 415,
+            self.kc_region.y + 280 + (offset * 76), 60, 40)
