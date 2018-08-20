@@ -1,9 +1,10 @@
-from sikuli import Pattern
+from sikuli import Region, Pattern
 from datetime import datetime, timedelta
 from random import randint
 from threading import Thread
 from nav import Nav
 from util import Util
+from kca_globals import Globals
 
 
 class PvPModule(object):
@@ -24,6 +25,12 @@ class PvPModule(object):
         self.next_pvp_time = None
         self._set_next_pvp_time()
         self.opponent = {}
+
+        x = self.kc_region.x
+        y = self.kc_region.y
+        self.module_regions = {
+            'enemy_pvp_fleet': Region(x + 710, y, 365, Globals.GAME_HEIGHT)
+        }
 
     def goto_pvp(self):
         """Method to navigate to the PvP menu
@@ -193,7 +200,7 @@ class PvPModule(object):
 
         self.opponent[mode] = 0
         count = Util.findAll_wrapper(
-            self.regions['enemy_pvp_fleet'], img_target)
+            self.module_regions['enemy_pvp_fleet'], img_target)
 
         for i in count:
             self.opponent[mode] += 1

@@ -3,17 +3,20 @@
 	"subworld": 1,
 	"nodes": {
 		"A": {
-			"coords": [229, 341]
+			"coords": [147, 362]
 		},
 		"C": {
-			"coords": [140, 201]
+			"coords": [383, 339]
 		},
-		"E": {
-			"coords": [172, 121],
-			"types": ["boss"]
+		"D": {
+			"coords": [677, 404]
 		},
 		"F": {
-			"coords": [359, 104]
+			"coords": [949, 306]
+		},
+		"H": {
+			"coords": [957, 459],
+			"types": ["boss"]
 		}
 	}
 }

@@ -1,0 +1,31 @@
+{
+	"world": 7,
+	"subworld": 1,
+	"nodes": {
+		"B": {
+			"coords": [303, 442]
+		},
+		"C": {
+			"coords": [353, 182]
+		},
+		"D": {
+			"coords": [477, 338],
+			"types": ["sub"]
+		},
+		"F": {
+			"coords": [657, 359],
+			"types": ["sub"]
+		},
+		"G": {
+			"coords": [730, 237]
+		},
+		"H": {
+			"coords": [907, 316],
+			"types": ["sub"]
+		},
+		"K": {
+			"coords": [1043, 230],
+			"types": ["boss"]
+		}
+	}
+}

@@ -3,41 +3,56 @@
 	"subworld": 5,
 	"nodes": {
 		"A": {
-			"coords": [565, 142],
+			"coords": [1014, 368],
 			"types": ["select"]
 		},
 		"B": {
-			"coords": [544, 302],
-			"types": ["select"]
+			"coords": [983, 503],
+			"types": ["sub"]
 		},
 		"C": {
-			"coords": [475, 213]
+			"coords": [936, 182],
+			"types": ["select"]
 		},
 		"D": {
-			"coords": [469, 99]
+			"coords": [884, 340],
+			"types": ["sub"]
 		},
 		"E": {
-			"coords": [453, 341]
+			"coords": [849, 529]
 		},
 		"F": {
-			"coords": [393, 234],
+			"coords": [827, 134],
 			"types": ["sub"]
 		},
 		"G": {
-			"coords": [364, 119],
-			"types": ["select"]
+			"coords": [793, 277]
 		},
 		"H": {
-			"coords": [353, 329]
+			"coords": [787, 399]
 		},
 		"I": {
-			"coords": [287, 176]
+			"coords": [695, 171],
+			"types": ["select"]
 		},
 		"J": {
-			"coords": [280, 297]
+			"coords": [697, 287]
 		},
-		"M": {
-			"coords": [171, 333],
+		"K": {
+			"coords": [668, 467]
+		},
+		"N": {
+			"coords": [436, 387]
+		},
+		"O": {
+			"coords": [419, 247],
+			"types": ["sub"]
+		},
+		"S": {
+			"coords": [210, 282]
+		},
+		"T": {
+			"coords": [616, 357],
 			"types": ["boss"]
 		}
 	}
