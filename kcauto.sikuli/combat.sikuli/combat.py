@@ -468,7 +468,7 @@ class CombatModule(object):
                 sortieing = False
                 break
 
-            if self.regions['lower_right_corner'].exists(
+            if self.regions['lower_right'].exists(
                     'combat_flagship_dmg.png'):
                 # flagship retreat; sortie complete
                 Util.log_msg("Flagship damaged. Automatic retreat.")
@@ -597,7 +597,7 @@ class CombatModule(object):
                 Util.rejigger_mouse(self.regions, 'lbas')
                 at_node = True
                 return (True, False)
-            elif self.regions['lower_right_corner'].exists(
+            elif self.regions['lower_right'].exists(
                     'combat_flagship_dmg.png'):
                 # flagship retreat
                 self._stop_fleet_observer()
