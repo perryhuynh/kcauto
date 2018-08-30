@@ -2,32 +2,33 @@
 	"world": 5,
 	"subworld": 2,
 	"nodes": {
-		"A": {
-			"coords": [249, 261]
-		},
-		"B": {
-			"coords": [298, 135],
-			"types": ["sub"]
-		},
 		"C": {
-			"coords": [479, 93]
+			"coords": [850, 465],
+			"types": ["air"]
 		},
 		"D": {
-			"coords": [623, 89],
-			"types": ["boss"]
+			"coords": [608, 397]
+		},
+		"E": {
+			"coords": [555, 484]
 		},
 		"F": {
-			"coords": [342, 356],
-			"types": ["sub"]
-		},
-		"G": {
-			"coords": [436, 274]
+			"coords": [444, 348]
 		},
 		"I": {
-			"coords": [506, 368]
+			"coords": [327, 376],
+			"types": ["air"]
 		},
-		"J": {
-			"coords": [658, 360]
+		"K": {
+			"coords": [256, 440]
+		},
+		"L": {
+			"coords": [200, 254],
+			"types": ["air"]
+		},
+		"O": {
+			"coords": [377, 516],
+			"types": ["boss"]
 		}
 	}
 }
