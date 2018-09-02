@@ -48,7 +48,7 @@ Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)
 ### Installation and Usage
 
 1. Install [Java JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
-2. Install the latest [SikuliX Nightly](https://raiman.github.io/SikuliX1/nightly.html) with option 1 (Pack 1) selected
+2. Install [SikuliX 1.1.3](https://launchpad.net/sikuli/sikulix/1.1.3) with option 1 (Pack 1) selected
 3. Download kcauto either by downloading the repo or cloning it
 4. Set up kcauto's config file using the [web interface](https://mrmin123.github.io/kcauto/) or by opening the local copy of `docs/index.html` in a browser
     * Please refer to the [Wiki](https://github.com/mrmin123/kcauto/wiki/Configuration#config-file) for a detailed explanation of each of the config fields
