@@ -1,3 +1,15 @@
+#### 4.1.2
+
+* Kantai Collection Phase 2 Block 1 compatibility - 3rd pass
+  * Combat sorties to all maps should be supported now (thanks to @stackhanovets and @perryhuynh)
+  * Support for node select nodes
+  * LBAS support for non-Event maps (and excluding Squad 3)
+  * Bugfix to damaged flagship detection mid-sortie
+  * Bugfix to navigation to equipment page
+  * Fix link to Sikuli in readme
+  * Some performance improvements to live engine mode
+* Ship Switcher is **not** compatible as of this release
+
 #### 4.1.1
 
 * Bugfix to Expeditions not working properly across OS and browsers
