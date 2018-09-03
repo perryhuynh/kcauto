@@ -92,16 +92,17 @@ class FleetSwitcherModule(object):
                 "Could not find fleet preset {}. Please check your config and "
                 "fleet prests.".format(preset_id))
             sys.exit(1)
-        Util.rejigger_mouse(self.regions, 'top')
-        Util.kc_sleep()
-        if self.regions['lower_left'].exists('fleetswitch_submenu_exit.png'):
-            # still on the fleet preset page, implying that the switch failed
-            # due to ships being in other fleets
+        Util.kc_sleep(1)
+        if self.regions['left'].exists('fleetswitch_fail_check.png'):
+            # dialogue indicating that a ship in preset is in another fleet is
+            # present
             Util.log_error(
                 "Could not switch in fleet preset {} due to ships being "
                 "assigned in other fleets. Please check your config and fleet "
                 "presets.".format(preset_id))
             sys.exit(1)
+        Util.rejigger_mouse(self.regions, 'top')
+        Util.kc_sleep()
         # successful switch
         self.stats.increment_fleets_switched()
         self.current_fleet = preset_id

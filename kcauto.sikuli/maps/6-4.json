@@ -3,51 +3,51 @@
 	"subworld": 4,
 	"nodes": {
 		"A": {
-			"coords": [167, 144]
+			"coords": [249, 215]
 		},
 		"B": {
-			"coords": [177, 268]
+			"coords": [263, 403]
 		},
 		"C": {
-			"coords": [260, 325]
+			"coords": [387, 486]
 		},
 		"D": {
-			"coords": [292, 204],
+			"coords": [434, 306],
 			"types": ["air"]
 		},
 		"E": {
-			"coords": [319, 115]
+			"coords": [475, 173]
 		},
 		"F": {
-			"coords": [360, 335],
+			"coords": [538, 498],
 			"types": ["air"]
 		},
 		"G": {
-			"coords": [402, 182],
+			"coords": [605, 264],
 			"types": ["air"]
 		},
 		"H": {
-			"coords": [471, 353]
+			"coords": [705, 529]
 		},
 		"I": {
-			"coords": [514, 152],
+			"coords": [773, 229],
 			"types": ["air"]
 		},
 		"J": {
-			"coords": [529, 260]
+			"coords": [790, 389]
 		},
 		"K": {
-			"coords": [595, 339]
+			"coords": [891, 509]
 		},
 		"L": {
-			"coords": [601, 187]
+			"coords": [900, 281]
 		},
 		"M": {
-			"coords": [654, 265],
+			"coords": [978, 396],
 			"types": ["sub"]
 		},
 		"N": {
-			"coords": [416, 260],
+			"coords": [622, 392],
 			"types": ["boss"]
 		}
 	}
