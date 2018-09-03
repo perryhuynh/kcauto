@@ -1,4 +1,4 @@
-#### 4.1.2
+#### 4.2.0
 
 * Kantai Collection Phase 2 Block 1 compatibility - 3rd pass
   * Combat sorties to all maps should be supported now (thanks to @stackhanovets and @perryhuynh)
