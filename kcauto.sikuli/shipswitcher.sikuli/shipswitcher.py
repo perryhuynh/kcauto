@@ -39,9 +39,9 @@ class ShipSwitcherModule(object):
         self.ship_page_count = 1
         self.ship_last_page_count = 1
         self.current_shiplist_page = 1
-        self.current_shiplist_tab = 'all'
+        self.current_shiplist_tabs = ['all']
         self.temp_ship_config_dict = {}
-        self.temp_ship_position_dict = {}
+        self.temp_asset_position_dict = {}
         self.position_cache = {}
         self.sparkling_cache = {}
 
@@ -185,29 +185,31 @@ class ShipSwitcherModule(object):
                 return True
         return False
 
-    def _switch_shiplist_tab(self, target):
+    def _switch_shiplist_tab(self, targets):
         """Method that checks and changes the shiplist tab if necessary.
 
         Args:
-            target (str): target tab to switch to; should be a value in
+            targets (list): target tabs to switch to; should be values in
                 VALID_TABS
 
         Raises:
             ValueError: invalid tab specified
 
         Returns:
-            bool: always returns True after switching to the specified tab
+            bool: always returns True after switching to the specified tabs
         """
 
-        if target not in self.VALID_TABS:
-            raise ValueError(
-                "Invalid shiplist tab ({}) specified.".format(target))
+        for target in targets:
+            if target not in self.VALID_TABS:
+                raise ValueError(
+                    "Invalid shiplist tab ({}) specified.".format(target))
 
-        if self.current_shiplist_tab == target:
-            # already at target tab
+        targets.sort()
+        if self.current_shiplist_tabs == targets:
+            # already at target tabs
             return True
 
-        if target == 'all':
+        if target == ['all']:
             # if target is all tabs, click the quick tab arrow once if not
             # already at all tabs; if arrow is clicked, reset page to 1
             if not self.regions['top_submenu'].exists(
@@ -215,19 +217,20 @@ class ShipSwitcherModule(object):
                 Util.check_and_click(
                     self.regions['top_submenu'], 'shiplist_quick_tab_none.png')
                 self.current_shiplist_page = 1
-            self.current_shiplist_tab = target
+            self.current_shiplist_tabs = targets
             return True
 
-        # if target is a specific tab, click the quick tab arrow until the
-        # shiplist is empty, then click the tab; afterwards, reset page to 1
+        # if target is specific tabs, click the quick tab arrow until the
+        # shiplist is empty, then click the tabs; afterwards, reset page to 1
         while not self.regions['right'].exists('shiplist_empty_indicator.png'):
             Util.check_and_click(
                 self.regions['top_submenu'], 'shiplist_quick_tab_none.png')
-        Util.check_and_click(
-            self.regions['top_submenu'],
-            'shiplist_tab_{}.png'.format(target))
+        for target in targets:
+            Util.check_and_click(
+                self.regions['top_submenu'],
+                'shiplist_tab_{}.png'.format(target))
         self.current_shiplist_page = 1
-        self.current_shiplist_tab = target
+        self.current_shiplist_tabs = targets
         return True
 
     def _switch_shiplist_sorting(self, target):
@@ -421,8 +424,8 @@ class ShipSwitcherModule(object):
         for position in ship_positions:
             # get ship config based on position
             ship_config = {}
-            for ship_name in self.temp_ship_position_dict:
-                if position in self.temp_ship_position_dict[ship_name]:
+            for ship_name in self.temp_asset_position_dict:
+                if position in self.temp_asset_position_dict[ship_name]:
                     ship_config = self.temp_ship_config_dict[ship_name]
                     break
 
@@ -484,12 +487,8 @@ class ShipSwitcherModule(object):
         """
         if slot_config['mode'] == 'position':
             return self._resolve_replacement_ship_by_position(slot_config)
-        elif slot_config['mode'] == 'ship':
-            return self._resolve_replacement_ship_by_asset(
-                'ship', slot_config)
-        elif slot_config['mode'] == 'class':
-            return self._resolve_replacement_ship_by_asset(
-                'class', slot_config)
+        elif slot_config['mode'] == 'asset':
+            return self._resolve_replacement_ship_by_asset(slot_config)
 
     def _resolve_replacement_ship_by_position(self, slot_config):
         """Method that finds a resolves a replacement ship by position.
@@ -500,6 +499,8 @@ class ShipSwitcherModule(object):
         Returns:
             bool: True if a successful switch was made; False otherwise
         """
+        # when resolving ship by position, switch to the all-ship view
+        self._switch_shiplist_tab(['all'])
         for ship in list(slot_config['ships']):
             self._switch_shiplist_sorting(ship['sort_order'])
             if 'offset_ref' in ship and 'offset' in ship:
@@ -520,13 +521,11 @@ class ShipSwitcherModule(object):
             self.combat.disable_module()
         return False
 
-    def _resolve_replacement_ship_by_asset(self, mode, slot_config):
+    def _resolve_replacement_ship_by_asset(self, slot_config):
         """Method that finds a resolves a replacement ship by class or ship
         asset.
 
         Args:
-            mode (str): specifies whether the resolution is by 'ship' or
-                'class'
             slot_config (dict): dictionary containing the slot's config
 
         Returns:
@@ -534,8 +533,13 @@ class ShipSwitcherModule(object):
         """
         cache_override = True
         self.temp_ship_config_dict = {}
-        self.temp_ship_position_dict = {}
+        self.temp_asset_position_dict = {}
         self._switch_shiplist_sorting('class')
+        # switch tabs to all relevant classes specified for the slot
+        specified_tabs = []
+        for ship in slot_config['ships']:
+            specified_tabs.append(self.CLASS_TAB_MAPPING[ship['class']])
+        self._switch_shiplist_tab(specified_tabs)
 
         if slot_config['slot'] in self.position_cache:
             # start search from cached position, if available
@@ -549,16 +553,16 @@ class ShipSwitcherModule(object):
                 self.regions, self.ship_page_count, self.current_shiplist_page,
                 1)
 
-        while (not self.temp_ship_position_dict and
+        while (not self.temp_asset_position_dict and
                 self.current_shiplist_page < self.ship_page_count):
             ship_search_threads = []
             for ship in slot_config['ships']:
                 ship_search_threads.append(Thread(
                     target=self._match_shiplist_ships_func,
-                    args=(mode, ship[mode], ship)))
+                    args=(ship['asset'], ship)))
             Util.multithreader(ship_search_threads)
 
-            if not self.temp_ship_position_dict:
+            if not self.temp_asset_position_dict:
                 # no matches on this page; continue loop
                 self._navigate_to_shiplist_page(self.current_shiplist_page + 1)
                 continue
@@ -570,8 +574,8 @@ class ShipSwitcherModule(object):
 
             ship_position_list = [
                 i for j in [
-                    self.temp_ship_position_dict[x]
-                    for x in self.temp_ship_position_dict]
+                    self.temp_asset_position_dict[x]
+                    for x in self.temp_asset_position_dict]
                 for i in j]
             ship_position_list.sort()
             ship_position_list = self._filter_ships_on_level(
@@ -583,9 +587,10 @@ class ShipSwitcherModule(object):
                     self.current_shiplist_page,
                     ", ".join([str(i) for i in ship_position_list])))
 
-            if mode == 'ship':
-                for ship in self.temp_ship_position_dict:
-                    for position in self.temp_ship_position_dict[ship]:
+            for asset in self.temp_asset_position_dict:
+                if '_' in asset:
+                    # ship-specific asset mode
+                    for position in self.temp_asset_position_dict[asset]:
                         if position not in ship_position_list:
                             # ship in position did not pass filtering on level
                             continue
@@ -594,17 +599,19 @@ class ShipSwitcherModule(object):
                                 position, slot_config['criteria']))
                         if availability is True:
                             return True
-                        elif availability == 'dupe':
+                        elif availability == 'conflict':
+                            # ship already exists elsewhere in fleet; skip
                             break
-            elif mode == 'class':
-                for position in ship_position_list:
-                    if self._choose_and_check_availability_of_ship(
-                            position, slot_config['criteria']) is True:
-                        return True
+                else:
+                    # class-wide asset mode
+                    for position in ship_position_list:
+                        if self._choose_and_check_availability_of_ship(
+                                position, slot_config['criteria']) is True:
+                            return True
 
             # no available ships on this page; reset matches and continue loop
             self.temp_ship_config_dict = {}
-            self.temp_ship_position_dict = {}
+            self.temp_asset_position_dict = {}
             if 'sparkle' in slot_config['criteria']:
                 # if in sparkle mode and we didn't see any valid ships here,
                 # don't jump to this page on the next pass
@@ -616,26 +623,22 @@ class ShipSwitcherModule(object):
             self.combat.disable_module()
         return False
 
-    def _match_shiplist_ships_func(self, mode, name, ship_config):
+    def _match_shiplist_ships_func(self, asset, ship_config):
         """Child multithreaded method for finding matching classes and ships.
 
         Args:
-            mode (str): specifies whether or not the search is for 'ship's or
-                'class'es
-            name (str): name of class or ship
+            asset (str): asset to match on
             ship_config (dict): dictionary of ship criteria
         """
-        img = (
-            'shiplist_ship_{}.png'.format(name) if mode == 'ship'
-            else 'shiplist_class_{}.png'.format(name))
         matched_ships = Util.findAll_wrapper(
             self.module_regions['shiplist_class_col'],
-            Pattern(img).similar(Globals.SHIP_LIST_SIMILARITY))
+            Pattern('shiplist_list_{}.png'.format(asset))
+            .similar(Globals.SHIP_LIST_SIMILARITY))
 
         ship_positions = self._filter_ships(matched_ships, ship_config)
         if ship_positions:
-            self.temp_ship_position_dict[name] = ship_positions
-            self.temp_ship_config_dict[name] = ship_config
+            self.temp_asset_position_dict[asset] = ship_positions
+            self.temp_ship_config_dict[asset] = ship_config
 
     def _set_position_cache(self, name):
         self.position_cache[name] = (
