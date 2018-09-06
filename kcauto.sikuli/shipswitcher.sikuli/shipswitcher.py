@@ -9,6 +9,14 @@ from util import Util
 
 
 class ShipSwitcherModule(object):
+    VALID_TABS = ('bb', 'cv', 'ca', 'cl', 'dd', 'de', 'ss', 'aux')
+    CLASS_TAB_MAPPING = {
+        'ao': 'aux', 'ar': 'aux', 'as': 'aux', 'av': 'aux', 'bb': 'bb',
+        'bbv': 'bb', 'ca': 'ca', 'cav': 'ca', 'cl': 'cl', 'clt': 'cl',
+        'ct': 'cl', 'cv': 'cv', 'cvb': 'cv', 'cvl': 'cv', 'dd': 'dd',
+        'de': 'de', 'lha': 'aux', 'ss': 'ss', 'ssv': 'ss'
+    }
+
     def __init__(self, config, stats, regions, fleets, combat):
         """Initializes the ShipSwitcher module.
 
@@ -31,6 +39,7 @@ class ShipSwitcherModule(object):
         self.ship_page_count = 1
         self.ship_last_page_count = 1
         self.current_shiplist_page = 1
+        self.current_shiplist_tab = 'all'
         self.temp_ship_config_dict = {}
         self.temp_ship_position_dict = {}
         self.position_cache = {}
@@ -175,6 +184,51 @@ class ShipSwitcherModule(object):
                 Util.log_msg("Ship is sparkled: attempting switch.")
                 return True
         return False
+
+    def _switch_shiplist_tab(self, target):
+        """Method that checks and changes the shiplist tab if necessary.
+
+        Args:
+            target (str): target tab to switch to; should be a value in
+                VALID_TABS
+
+        Raises:
+            ValueError: invalid tab specified
+
+        Returns:
+            bool: always returns True after switching to the specified tab
+        """
+
+        if target not in self.VALID_TABS:
+            raise ValueError(
+                "Invalid shiplist tab ({}) specified.".format(target))
+
+        if self.current_shiplist_tab == target:
+            # already at target tab
+            return True
+
+        if target == 'all':
+            # if target is all tabs, click the quick tab arrow once if not
+            # already at all tabs; if arrow is clicked, reset page to 1
+            if not self.regions['top_submenu'].exists(
+                    Pattern('shiplist_quick_tab_all.png').exact()):
+                Util.check_and_click(
+                    self.regions['top_submenu'], 'shiplist_quick_tab_none.png')
+                self.current_shiplist_page = 1
+            self.current_shiplist_tab = target
+            return True
+
+        # if target is a specific tab, click the quick tab arrow until the
+        # shiplist is empty, then click the tab; afterwards, reset page to 1
+        while not self.regions['right'].exists('shiplist_empty_indicator.png'):
+            Util.check_and_click(
+                self.regions['top_submenu'], 'shiplist_quick_tab_none.png')
+        Util.check_and_click(
+            self.regions['top_submenu'],
+            'shiplist_tab_{}.png'.format(target))
+        self.current_shiplist_page = 1
+        self.current_shiplist_tab = target
+        return True
 
     def _switch_shiplist_sorting(self, target):
         """Switches the shiplist sorting to the specified target mode.
