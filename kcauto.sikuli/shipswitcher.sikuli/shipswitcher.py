@@ -49,14 +49,14 @@ class ShipSwitcherModule(object):
         y = self.kc_region.y
         self.module_regions = {
             'panels': [],
-            'shiplist_class_col': Region(x + 350, y + 150, 200, 285),
+            'shiplist_class_col': Region(x + 550, y + 215, 280, 450),
         }
         for slot in range(0, 6):
             # create panel regions per slot
             panel_region = Region(
-                x + 121 + (352 * (slot % 2)),
-                y + 135 + (113 * (slot / 2)),
-                330, 110)
+                x + 420 + (513 * (slot % 2)),
+                y + 200 + (168 * (slot / 2)),
+                255, 155)
             panel_region.setAutoWaitTimeout(0)
             self.module_regions['panels'].append(panel_region)
 
@@ -283,13 +283,13 @@ class ShipSwitcherModule(object):
                 .format(position))
         zero_position = position - 1
         # x start/stop do not change
-        x_start = 389
-        x_stop = 700
+        x_start = 590
+        x_stop = 1050
         # y start/stop change depending on specified position; region has width
-        # of 326 pixels, height of 23 pixels, with a 5-pixel padding between
+        # of 460 pixels, height of 35 pixels, with a 8-pixel padding between
         # each nth position on the list
-        y_start = 156 + (zero_position * 5) + (zero_position * 23)
-        y_stop = y_start + 23
+        y_start = 225 + (zero_position * 8) + (zero_position * 35)
+        y_stop = y_start + 35
 
         Util.click_coords(
             self.kc_region,
@@ -386,10 +386,10 @@ class ShipSwitcherModule(object):
         for ship in matched_ships:
             criteria_matched = True
             # create new region based on the match
-            ship_row = ship.left(1).right(430)
+            ship_row = ship.left(1).right(640)
             ship_row.setAutoWaitTimeout(0)  # speed
-            # find numeric position based on the new region's y-position
-            position = (ship_row.y - self.kc_region.y - 129) / 28
+            # find 1-based numeric position based on the new region's y-pos
+            position = ((ship_row.y - self.kc_region.y - 232) / 43) + 1
 
             # check against ship-specific criterias, if any
             if 'locked' in ship_config and criteria_matched:
@@ -432,9 +432,9 @@ class ShipSwitcherModule(object):
             if 'level' in ship_config:
                 # create new region based on the position
                 level_area = Region(
-                    self.kc_region.x + 540,
-                    self.kc_region.y + 128 + (28 * position),
-                    50, 22)
+                    self.kc_region.x + 820,
+                    self.kc_region.y + 225 + (43 * (position - 1)),
+                    55, 35)
                 ship_level = Util.read_ocr_number_text(level_area)
                 ship_level = sub(r"\D", "", ship_level)
                 ship_level = 1 if not ship_level else int(ship_level)
@@ -461,8 +461,8 @@ class ShipSwitcherModule(object):
             bool or str: result of _check_ship_availability() call
         """
         fleet_indicator_area = Region(
-            self.kc_region.x + 360, self.kc_region.y + 128 + (28 * position),
-            25, 25)
+            self.kc_region.x + 550, self.kc_region.y + 225 + (43 * position),
+            35, 35)
         if fleet_indicator_area.exists(
                 Pattern('fleet_indicator_shiplist.png').similar(
                     Globals.SHIP_LIST_FLEET_ICON_SIMILARITY)):
@@ -539,7 +539,7 @@ class ShipSwitcherModule(object):
         specified_tabs = []
         for ship in slot_config['ships']:
             specified_tabs.append(self.CLASS_TAB_MAPPING[ship['class']])
-        self._switch_shiplist_tab(specified_tabs)
+        self._switch_shiplist_tab(list(set(specified_tabs)))
 
         if slot_config['slot'] in self.position_cache:
             # start search from cached position, if available
@@ -554,7 +554,7 @@ class ShipSwitcherModule(object):
                 1)
 
         while (not self.temp_asset_position_dict and
-                self.current_shiplist_page < self.ship_page_count):
+                self.current_shiplist_page <= self.ship_page_count):
             ship_search_threads = []
             for ship in slot_config['ships']:
                 ship_search_threads.append(Thread(
@@ -616,7 +616,12 @@ class ShipSwitcherModule(object):
                 # if in sparkle mode and we didn't see any valid ships here,
                 # don't jump to this page on the next pass
                 cache_override = True
-            self._navigate_to_shiplist_page(self.current_shiplist_page + 1)
+            if self.current_shiplist_page < self.ship_page_count:
+                self._navigate_to_shiplist_page(self.current_shiplist_page + 1)
+            else:
+                # at last page but no switches made, so the switch was a
+                # failure
+                return False
         if 'sparkle' in slot_config['criteria']:
             # if in sparkle mode and we reach this point, we've exhausted the
             # list of possible ships; disable the combat module
