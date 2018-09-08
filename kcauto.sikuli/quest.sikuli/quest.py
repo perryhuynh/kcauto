@@ -7,17 +7,19 @@ from util import Util
 
 
 class QuestModule(object):
-    def __init__(self, config, stats, regions):
+    def __init__(self, config, stats, regions, combat):
         """Initializes the Quest module.
 
         Args:
             config (Config): kcauto Config instance
             stats (Stats): kcauto Stats instance
             regions (dict): dict of pre-defined kcauto regions
+            combat (CombatModule): active Combat Module instance, or None
         """
         self.config = config
         self.stats = stats
         self.regions = regions
+        self.combat = combat
         self.kc_region = self.regions['game']
         self.next_reset_time = datetime.now()
         self.quest_list = []
@@ -338,36 +340,34 @@ class QuestModule(object):
         self.active_quest_types.append('e')
         self.inactive_quest_types.remove('e')
         self.quest_list.append(get_quest_info('e4'))
-        if self.config.combat['enabled']:
-            # define combat quests if combat is enabled
+        if self.config.combat['enabled'] and self.combat:
+            generic_quests = (
+                'bd1', 'bd2', 'bd3', 'bd4', 'bd5', 'bd6', 'bd8', 'bw1', 'bw2',
+                'bw3', 'bw4', 'bw4.backup', 'bw5', 'e3')
             self.active_quest_types.append('b')
             self.inactive_quest_types.remove('b')
-            self.quest_list.extend([
-                get_quest_info('bd1'),
-                get_quest_info('bd2'),
-                get_quest_info('bd3'),
-                get_quest_info('bd4'),
-                get_quest_info('bd5'),
-                get_quest_info('bd6'),
-                get_quest_info('bd8'),
-                get_quest_info('bw1'),
-                get_quest_info('bw2'),
-                get_quest_info('bw3'),
-                get_quest_info('bw4'),
-                get_quest_info('bw4.backup'),  # bw4 has some iffy OCR readings
-                get_quest_info('bw10'),
-                get_quest_info('e3')])
+            # define generic quests if combat is enabled
+            for quest in generic_quests:
+                quest_info = get_quest_info(quest)
+                if 'context' not in quest_info:
+                    self.quest_list.append(quest_info)
+                else:
+                    if quest_info['context'] in self.combat.map.quest_context:
+                        self.quest_list.append(quest_info)
+
             # define map-specific combat quests
-            if self.config.combat['map'][0] == '4':
-                self.quest_list.append(get_quest_info('bd6'))
             if self.config.combat['map'][0] == '2':
                 self.quest_list.append(get_quest_info('bd7'))
-            if self.config.combat['map'] in ('3-3', '3-4', '3-5'):
+            if self.config.combat['map'][0] == '4':
                 self.quest_list.append(get_quest_info('bw6'))
-            if self.config.combat['map'] == '4-4':
+            if self.config.combat['map'] in ('3-3', '3-4', '3-5'):
                 self.quest_list.append(get_quest_info('bw7'))
-            if self.config.combat['map'] == '5-2':
+            if self.config.combat['map'] == '4-4':
                 self.quest_list.append(get_quest_info('bw8'))
+            if self.config.combat['map'] == '5-2':
+                self.quest_list.append(get_quest_info('bw9'))
+            if self.config.combat['map'] == '1-5':
+                self.quest_list.append(get_quest_info('bw10'))
             if self.config.combat['map'] == '2-5':
                 self.quest_list.append(get_quest_info('bm1'))
                 self.quest_list.append(get_quest_info('bm7'))
@@ -381,6 +381,12 @@ class QuestModule(object):
                 self.quest_list.append(get_quest_info('bm5'))
             if self.config.combat['map'] == '4-2':
                 self.quest_list.append(get_quest_info('bm6'))
+            if self.config.combat['map'] == '2-4':
+                self.quest_list.append(get_quest_info('bq1'))
+            if self.config.combat['map'] == '1-6':
+                self.quest_list.append(get_quest_info('bq3'))
+            if self.config.combat['map'] == '6-3':
+                self.quest_list.append(get_quest_info('bq4'))
         if self.config.pvp['enabled']:
             # define pvp quests if pvp is enabled
             self.active_quest_types.append('c')
@@ -389,7 +395,8 @@ class QuestModule(object):
                 get_quest_info('c2'),
                 get_quest_info('c3'),
                 get_quest_info('c4'),
-                get_quest_info('c8')])
+                get_quest_info('c8'),
+                get_quest_info('c15')])
         if self.config.expeditions['enabled']:
             # define expedition quests if expedition is enabled
             self.active_quest_types.append('d')
@@ -401,10 +408,19 @@ class QuestModule(object):
             # define expedition-specific quests
             if 5 in self.config.expeditions_all:
                 self.quest_list.append(get_quest_info('d22'))
-            if (37 in self.config.expeditions_all or
-                    38 in self.config.expeditions_all):
+            if (len(set([37, 38]) & set(self.config.expeditions_all)) > 1):
                 self.quest_list.append(get_quest_info('d9'))
                 self.quest_list.append(get_quest_info('d11'))
+            if (
+                    len(
+                        set([3, 4, 5, 10]) & set(self.config.expeditions_all)
+                    ) > 1):
+                self.quest_list.append(get_quest_info('d24'))
+            if (
+                    len(
+                        set([4, 'A2', 'A3']) & set(self.config.expeditions_all)
+                    ) > 1):
+                self.quest_list.append(get_quest_info('d26'))
 
 
 def get_quest_info(quest):
@@ -503,6 +519,15 @@ def get_quest_info(quest):
     elif quest == 'bm7':
         return {
             'name': 'bm7', 'wait': (1, 0, 0), 'rewards': (0, 600, 0, 200)}
+    elif quest == 'bq1':
+        return {
+            'name': 'bq1', 'wait': (2, 0, 0), 'rewards': (800, 800, 800)}
+    elif quest == 'bq3':
+        return {
+            'name': 'bq3', 'wait': (2, 0, 0), 'rewards': (1000, 400, 400, 0)}
+    elif quest == 'bq4':
+        return {
+            'name': 'bq4', 'wait': (2, 0, 0), 'rewards': (0, 800, 0, 1000)}
     elif quest == 'c2':
         return {
             'name': 'c2', 'wait': (0, 3, 0), 'rewards': (50, 0, 50, 0)}
@@ -515,6 +540,9 @@ def get_quest_info(quest):
     elif quest == 'c8':
         return {
             'name': 'c8', 'wait': (0, 7, 0), 'rewards': (0, 400, 0, 200)}
+    elif quest == 'c15':
+        return {
+            'name': 'c15', 'wait': (0, 0, 3), 'rewards': (100, 0, 0, 0)}
     elif quest == 'd2':
         return {
             'name': 'd2', 'wait': (0, 0, 1), 'rewards': (100, 100, 100, 100)}
@@ -536,6 +564,9 @@ def get_quest_info(quest):
     elif quest == 'd24':
         return {
             'name': 'd24', 'wait': (0, 0, 4), 'rewards': (800, 0, 0, 0)}
+    elif quest == 'd26':
+        return {
+            'name': 'd26', 'wait': (0, 0, 6), 'rewards': (0, 1000, 0, 300)}
     elif quest == 'e3':
         return {
             'name': 'e3', 'wait': (0, 2, 0), 'rewards': (30, 30, 30, 30)}
