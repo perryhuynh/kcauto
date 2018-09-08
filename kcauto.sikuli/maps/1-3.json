@@ -1,6 +1,7 @@
 {
 	"world": 1,
 	"subworld": 3,
+	"quest_context": [],
 	"nodes": {
 		"C": {
 			"coords": [821, 514]
