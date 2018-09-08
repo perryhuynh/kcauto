@@ -4,7 +4,8 @@ from threading import Thread
 from kca_globals import Globals
 from fleet import Fleet
 from lbas import LBAS
-from mapData import MapData, Node, UnknownNode
+from map_data import MapData, Node, UnknownNode
+from event_reset import EventReset
 from nav import Nav
 from util import Util
 
