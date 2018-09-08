@@ -427,37 +427,46 @@ def get_quest_info(quest):
             'name': 'bd3', 'wait': (3, 0, 0), 'rewards': (150, 150, 200, 100)}
     elif quest == 'bd4':
         return {
-            'name': 'bd4', 'wait': (3, 0, 0), 'rewards': (150, 150, 150, 300)}
+            'name': 'bd4', 'wait': (3, 0, 0), 'rewards': (150, 150, 150, 300),
+            'context': 'carriers'}
     elif quest == 'bd5':
         return {
-            'name': 'bd5', 'wait': (3, 0, 0), 'rewards': (100, 50, 200, 50)}
+            'name': 'bd5', 'wait': (3, 0, 0), 'rewards': (100, 50, 200, 50),
+            'context': 'transports'}
     elif quest == 'bd6':
         return {
-            'name': 'bd6', 'wait': (2, 0, 0), 'rewards': (0, 200, 0, 0)}
+            'name': 'bd6', 'wait': (2, 0, 0), 'rewards': (0, 200, 0, 0),
+            'context': 'transports'}
     elif quest == 'bd7':
         return {
             'name': 'bd7', 'wait': (5, 0, 0), 'rewards': (300, 0, 0, 200)}
     elif quest == 'bd8':
         return {
-            'name': 'bd8', 'wait': (2, 0, 0), 'rewards': (300, 30, 300, 30)}
+            'name': 'bd8', 'wait': (2, 0, 0), 'rewards': (300, 30, 300, 30),
+            'context': 'subs'}
     elif quest == 'bw1':
         return {
             'name': 'bw1', 'wait': (12, 0, 0), 'rewards': (300, 300, 300, 100)}
     elif quest == 'bw2':
         return {
-            'name': 'bw2', 'wait': (5, 0, 0), 'rewards': (0, 500, 0, 500)}
+            'name': 'bw2', 'wait': (5, 0, 0), 'rewards': (0, 500, 0, 500),
+            'context': 'carriers'}
     elif quest == 'bw3':
         return {
-            'name': 'bw3', 'wait': (5, 0, 0), 'rewards': (500, 0, 400, 0)}
+            'name': 'bw3', 'wait': (5, 0, 0), 'rewards': (500, 0, 400, 0),
+            'context': 'transports'}
     elif quest == 'bw4':
         return {
-            'name': 'bw4', 'wait': (12, 0, 0), 'rewards': (400, 0, 800, 0)}
+            'name': 'bw4', 'wait': (12, 0, 0), 'rewards': (400, 0, 800, 0),
+            'context': 'transports'}
     elif quest == 'bw4.backup':
         return {
-            'name': 'bw4', 'wait': (12, 0, 0), 'rewards': (400, 0, 500, 0)}
+            'name': 'bw4', 'wait': (12, 0, 0), 'rewards': (400, 0, 500, 0),
+            'context': 'transports'}
     elif quest == 'bw5':
         return {
-            'name': 'bw5', 'wait': (5, 0, 0), 'rewards': (600, 0, 0, 0)}
+            'name': 'bw5', 'wait': (5, 0, 0), 'rewards': (600, 0, 0, 0),
+            'context': 'subs'}
     elif quest == 'bw6':
         return {
             'name': 'bw6', 'wait': (12, 0, 0), 'rewards': (400, 0, 0, 700)}
