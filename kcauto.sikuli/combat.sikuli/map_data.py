@@ -5,21 +5,21 @@ from util import Util
 
 
 class MapData(object):
-    def __init__(self, location, regions, config):
+    def __init__(self, config, regions, location):
         """Initializes a MapData instance. Holds the map and node information
         of the specified map, as well as methods for resolving formation
         and night battle selections based on node data.
 
         Args:
+            config (Config): kcauto Config instance
+            regions (dict): dict of pre-defined kcauto regions
             location (str): localized map name; should be equivalent to the
                 json file name sans extension
-            regions (dict): dict of pre-defined kcauto regions
-            config (Config): kcauto Config instance
         """
-        self.location = location
-        self.regions = regions
-        self.kc_region = self.regions['game']
         self.config = config
+        self.regions = regions
+        self.location = location
+        self.kc_region = self.regions['game']
 
         # load json data for map
         json_path = os.path.join(

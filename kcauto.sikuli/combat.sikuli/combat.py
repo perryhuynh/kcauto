@@ -42,15 +42,19 @@ class CombatModule(object):
         self.dmg = {}
 
         self.map = MapData(
-            self.config.combat['map'], self.regions, self.config)
+            self.config, self.regions, self.config.combat['map'])
         self.current_position = [0, 0]
         self.current_node = self.map.unknown_node
         self.current_node_backup = None
         self.nodes_run = []
 
         self.lbas = (
-            LBAS(config, regions, self.map)
+            LBAS(self.config, self.regions, self.map)
             if self.config.combat['lbas_enabled'] else None)
+
+        self.event_reset = (
+            EventReset(self.config, self.stats, self.regions)
+            if self.config.event_reset['enabled'] else None)
 
         # combat-related regions
         x = self.kc_region.x
