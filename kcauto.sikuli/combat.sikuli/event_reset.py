@@ -67,6 +67,12 @@ class EventReset(object):
         Util.wait_and_click(
             self.kc_region,
             'event_difficulty_{}.png'.format(difficulty))
-        Util.wait_and_click(
-            self.regions['lower_right'], 'event_difficulty_accept.png')
+        Util.kc_sleep(1)
+        if not self.regions['lower_right'].exists(
+                'event_difficulty_accept.png'):
+            Util.check_and_click(
+                self.regions['lower_right'], 'event_difficulty_cancel.png')
+        else:
+            Util.check_and_click(
+                self.regions['lower_right'], 'event_difficulty_accept.png')
         self.regions['lower_right'].wait('sortie_select.png', 10)
