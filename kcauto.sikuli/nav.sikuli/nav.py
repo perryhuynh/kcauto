@@ -407,8 +407,8 @@ class NavList(object):
                 Globals.EXPAND['arrow_navigation'])
         elif 1 <= target <= 5:
             zero_target = target - 1
-            x_start = 733 + (zero_target * 33) + (zero_target * 20) + offset[0]
-            x_stop = x_start + 20 + offset[0]
+            x_start = 735 + (zero_target * 37) + (zero_target * 16) + offset[0]
+            x_stop = x_start + 16
             y_start = 675 + offset[1]
             y_stop = 690 + offset[1]
 
