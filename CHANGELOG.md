@@ -1,3 +1,16 @@
+#### 5.0.0
+
+* Kantai Collection Phase 2 Block 1 compatibility - 4th (final) pass
+  * ShipSwitcher
+    * Updated config format for ShipSwitcher; please refer to the updated webUI for changes
+    * Individual SS and SSV assets are no longer provided
+    * Traversing pages in the ship list is a bit funky at the moment
+* Updated page navigation code
+* Updated resupply asset
+* Revised debug function
+* Fixed panel assets to account for boss bars
+* Fixed random gaussian coordinate generator
+
 #### 4.2.0
 
 * Kantai Collection Phase 2 Block 1 compatibility - 3rd pass
