@@ -34,7 +34,7 @@ class Globals(object):
     EXPAND = {
         'repair_list': [-500, 20, -12, 12],
         'arrow_navigation': [-10, 10, -8, 8],
-        'shiplist_sort': [-4, 36, -10, 10],  # NU
+        'shiplist_sort': [-4, 36, -10, 10],
         'scroll_prev': [-14, 20, -20, 5],
         'scroll_next': [-20, 2, -14, 14]
     }

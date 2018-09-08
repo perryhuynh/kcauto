@@ -8,7 +8,7 @@ class Debug(object):
     """
 
     @staticmethod
-    def find(window, target, similarity=0.8):
+    def find(window, target, similarity):
         """Method for finding all matches of an image in the specified window
         with at least the specified similarity once.
 
@@ -20,8 +20,7 @@ class Debug(object):
         """
         target_window = App(window)
         target_region = target_window.focus().focusedWindow()
-        print("")
-        print("")
+        print("\n")
         print(
             "+  Sikuli match object for '{}' in window '{}'".format(
                 target, window))
@@ -31,15 +30,15 @@ class Debug(object):
             target_region, Pattern(target).similar(similarity))
 
         for img_match in debug_matches:
+            img_match.highlight()
             print(img_match)
             target_region.mouseMove(img_match)
         if isinstance(debug_matches, list) and len(debug_matches) == 0:
             print("No matches!")
-        print("")
-        print("")
+        print("\n")
 
     @staticmethod
-    def continuously_find(window, target, similarity=0.8):
+    def continuously_find(window, target, similarity):
         """Method for finding all mathes of an image in the specified window
         with at least the specified similarity continuously. The user must
         manually exit out the script to halt the matching.
