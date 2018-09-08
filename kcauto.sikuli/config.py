@@ -507,7 +507,7 @@ class Config(object):
                 if ship_split[0] == 'A':
                     # asset mode
                     ship_dict['sort_order'] = 'class'
-                    ship_dict['mode'] = 'asset'
+                    slot_dict['mode'] = 'asset'
                     ship_dict['asset'] = ship_split[1].lower()
                     # if asset can be split once by '_', it is in the format
                     # [class]_[shipname], so infer the class from it; otherwise
