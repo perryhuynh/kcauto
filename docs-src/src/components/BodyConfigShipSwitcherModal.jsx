@@ -20,8 +20,7 @@ import { styles } from 'components/BodyConfigStyles'
 
 const BASE_SPECIFICATION = [
   { value: 'P', label: <Localize field='bodyConfig.shipSwitcherModalSpecificationPosition' /> },
-  { value: 'S', label: <Localize field='bodyConfig.shipSwitcherModalSpecificationShip' /> },
-  { value: 'C', label: <Localize field='bodyConfig.shipSwitcherModalSpecificationClass' /> }]
+  { value: 'A', label: <Localize field='bodyConfig.shipSwitcherModalSpecificationAsset' /> }]
 const SORT_BY = [
   { value: 'N', label: <Localize field='bodyConfig.shipSwitcherModalSortByDateAcquired' /> },
   { value: 'C', label: <Localize field='bodyConfig.shipSwitcherModalSortByClass' /> },
@@ -32,8 +31,7 @@ const OFFSET_START = [
 const CLASSES = ['AO', 'AR', 'AS', 'AV', 'BB', 'BBV', 'CA', 'CAV', 'CL', 'CLT', 'CT', 'CV', 'CVB', 'CVL', 'DD', 'DE',
   'LHA', 'SS', 'SSV']
   .map(value => ({ value, label: value }))
-const SHIPS = ['I-8', 'I-8-Kai', 'I-13', 'I-14', 'I-19', 'I-19-Kai', 'I-26-Kai', 'I-58', 'I-58-Kai', 'I-168', 'I-400',
-  'I-401', 'I-504', 'Luigi', 'Maruyu', 'Ro-500', 'U-511', 'UIT-25']
+const SHIPS = ['SS_U-511']
   .map(value => ({ value, label: value }))
 const LEVEL_EQUALITY = ['<', '>'].map(value => ({ value, label: value }))
 const LOCKED = [
@@ -73,7 +71,7 @@ class BodyConfigShipSwitcherModal extends PureComponent {
       this.setState({
         configLine: null, shipClass: '', levelEnabled: false, levelEquality: '', level: '', locked: '_', ringed: '_',
       })
-    } else if (value === 'C' || value === 'S') {
+    } else if (value === 'A') {
       this.setState({
         configLine: null, shipClass: '', sortOrder: false, offsetStart: '', offset: 1,
       })
@@ -102,7 +100,7 @@ class BodyConfigShipSwitcherModal extends PureComponent {
         return configLine
       }
       configLine = `${specificationType}:${sortOrder}:${offsetStart}:${offset}`
-    } else if (this.state.specificationType === 'C' || this.state.specificationType === 'S') {
+    } else if (this.state.specificationType === 'A') {
       if (levelEnabled) {
         if (!levelEquality || !level) {
           this.setState({ configLine })
@@ -230,47 +228,48 @@ class BodyConfigShipSwitcherModal extends PureComponent {
               null
             }
 
-            {specificationType === 'C' || specificationType === 'S' ?
+            {specificationType === 'A' ?
               <Fragment>
-                <Grid item xs={12} sm={12} className={classes.formGrid}>
+                <Grid item xs={4} sm={4} className={classes.formGrid}>
                   <FormControl
                     margin='normal'
                     fullWidth
                   >
-                    {specificationType === 'C' ?
-                      <Fragment>
-                        <InputLabel htmlFor='shipClass' shrink={true} className={classes.reactSelectLabel}>
-                          <Localize field='bodyConfig.shipSwitcherModalClasses' />
-                        </InputLabel>
-                        <Select
-                          className={classes.reactSelect}
-                          simpleValue={true}
-                          clearable={false}
-                          name='shipClass'
-                          value={shipClass}
-                          options={CLASSES}
-                          onChange={value => this.setState({ shipClass: value })}
-                          fullWidth />
-                      </Fragment> :
-                      null
-                    }
-                    {specificationType === 'S' ?
-                      <Fragment>
-                        <InputLabel htmlFor='shipClass' shrink={true} className={classes.reactSelectLabel}>
-                          <Localize field='bodyConfig.shipSwitcherModalShips' />
-                        </InputLabel>
-                        <Creatable
-                          className={classes.reactSelect}
-                          simpleValue={true}
-                          clearable={false}
-                          name='shipClass'
-                          value={shipClass}
-                          options={SHIPS}
-                          onChange={value => this.setState({ shipClass: value })}
-                          fullWidth />
-                      </Fragment> :
-                      null
-                    }
+                    <InputLabel htmlFor='shipClass' shrink={true} className={classes.reactSelectLabel}>
+                      <Localize field='bodyConfig.shipSwitcherModalClasses' />
+                    </InputLabel>
+                    <Select
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      clearable={false}
+                      name='shipClass'
+                      value={shipClass}
+                      options={CLASSES}
+                      onChange={value => this.setState({ shipClass: value })}
+                      fullWidth />
+                  </FormControl>
+                </Grid>
+                <Grid container xs={2} sm={2} justify='center' alignItems='center' className={classes.formGrid}>
+                  <Typography variant='body1'>- or -</Typography>
+                </Grid>
+                <Grid item xs={6} sm={6} className={classes.formGrid}>
+                  <FormControl
+                    margin='normal'
+                    fullWidth
+                  >
+                    <InputLabel htmlFor='shipClass' shrink={true} className={classes.reactSelectLabel}>
+                      <Localize field='bodyConfig.shipSwitcherModalShips' />
+                    </InputLabel>
+                    <Creatable
+                      className={classes.reactSelect}
+                      simpleValue={true}
+                      clearable={false}
+                      name='shipClass'
+                      value={shipClass}
+                      options={SHIPS}
+                      onChange={value => this.setState({ shipClass: value })}
+                      fullWidth />
+                    <span className={classes.helperText}><Localize field='bodyConfig.shipSwitcherModalShipsDesc' /></span>
                   </FormControl>
                 </Grid>
 
@@ -283,7 +282,7 @@ class BodyConfigShipSwitcherModal extends PureComponent {
                       onChange={(event, checked) => this.setState({ levelEnabled: checked })} />
                   </Typography>
                 </Grid>
-                <Grid item xs={1} sm={1} className={classes.formGrid}>
+                <Grid item xs={2} sm={2} className={classes.formGrid}>
                   <Select
                     className={classes.reactSelect}
                     simpleValue={true}
@@ -295,7 +294,7 @@ class BodyConfigShipSwitcherModal extends PureComponent {
                     disabled={!levelEnabled}
                     fullWidth />
                 </Grid>
-                <Grid item xs={7} sm={7} className={classes.formGrid}>
+                <Grid item xs={6} sm={6} className={classes.formGrid}>
                   <TextField
                     id='level'
                     value={level}

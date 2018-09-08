@@ -504,19 +504,19 @@ class Config(object):
             for ship in ships:
                 ship_dict = {}
                 ship_split = ship.split(':')
-                if ship_split[0] in ('C', 'S'):
-                    # class or shipname mode
+                if ship_split[0] == 'A':
+                    # asset mode
                     ship_dict['sort_order'] = 'class'
-                    if ship_split[0] == 'C':
-                        slot_dict['mode'] = (
-                            'class' if slot_dict['mode'] is None else
-                            slot_dict['mode'])
-                        ship_dict['class'] = ship_split[1].lower()
-                    elif ship_split[0] == 'S':
-                        slot_dict['mode'] = (
-                            'ship' if slot_dict['mode'] is None else
-                            slot_dict['mode'])
-                        ship_dict['ship'] = ship_split[1].lower()
+                    slot_dict['mode'] = 'asset'
+                    ship_dict['asset'] = ship_split[1].lower()
+                    # if asset can be split once by '_', it is in the format
+                    # [class]_[shipname], so infer the class from it; otherwise
+                    # the asset is for the entire class
+                    asset_ship_check = ship_dict['asset'].split('_')
+                    ship_dict['class'] = (
+                        asset_ship_check[0]
+                        if len(asset_ship_check) == 2
+                        else ship_dict['asset'])
                     if ship_split[2] != '_':
                         ship_dict['level'] = ship_split[2]
                     if ship_split[3] != '_':
@@ -525,8 +525,8 @@ class Config(object):
                     if ship_split[4] != '_':
                         ship_dict['ringed'] = (
                             True if ship_split[4] == 'R' else False)
-                elif ship_split[0] in ('P'):
-                    # class in position mode
+                elif ship_split[0] == 'P':
+                    # position mode
                     slot_dict['mode'] = (
                         'position' if slot_dict['mode'] is None else
                         slot_dict['mode'])
