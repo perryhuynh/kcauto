@@ -69,4 +69,4 @@ class EventReset(object):
             'event_difficulty_{}.png'.format(difficulty))
         Util.wait_and_click(
             self.regions['lower_right'], 'event_difficulty_accept.png')
-        self.regions['lower_right'].wait('sortie_select.png')
+        self.regions['lower_right'].wait('sortie_select.png', 10)
