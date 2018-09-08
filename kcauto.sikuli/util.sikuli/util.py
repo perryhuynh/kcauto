@@ -598,15 +598,12 @@ class Util(object):
             int: the generated random number
         """
         summed_val = float(min_val) + float(max_val)
-        range = float(abs(min_val) + abs(max_val))
+        diff = float(abs(min_val) - abs(max_val))
 
-        if summed_val == 0:
-            mu = 0
-        else:
-            mu = summed_val / 2
-        sigma = range / 6
+        mu = summed_val / 2
+        sigma = diff / 6
 
-        return max(min_val, min(gauss(mu, sigma), max_val))
+        return int(max(min_val, min(gauss(mu, sigma), max_val)))
 
     @staticmethod
     def log_format(msg):
