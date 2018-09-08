@@ -24,6 +24,7 @@ class Stats(object):
         self.pvp_done = 0
         self.combat_attempted = 0
         self.combat_done = 0
+        self.event_resets_done = 0
         self.resupplies_done = 0
         self.fairy_resupplies_done = 0
         self.repairs_done = 0
@@ -95,6 +96,10 @@ class Stats(object):
                 self._pretty_perhour(self.combat_done, hours),
                 self._pretty_perhour(self.combat_attempted, hours)))
 
+        if self.config.event_reset['enabled']:
+            Util.log_success("Event Map Resets done: {}".format(
+                self._pretty_perhour(self.event_resets_done, hours)))
+
         if self.config.ship_switcher['enabled']:
             Util.log_success("Ships switched: {}".format(
                 self._pretty_perhour(self.ships_switched, hours)))
@@ -148,6 +153,9 @@ class Stats(object):
 
     def increment_combat_done(self):
         self.combat_done += 1
+
+    def increment_event_resets_done(self):
+        self.event_resets_done += 1
 
     def increment_resupplies_done(self):
         self.resupplies_done += 1
