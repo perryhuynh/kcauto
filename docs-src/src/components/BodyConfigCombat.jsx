@@ -83,6 +83,16 @@ class BodyConfigCombat extends PureComponent {
     }
   }
 
+  handleMapChange = (value) => {
+    // when changing the map, if the map is not an event map, disable the event reset module; these states are not
+    // actually used in here, but used to inform the event reset section of available fields
+    if (value[0] !== 'E') {
+      this.setState({ combatMap: value, eventResetEnabled: false }, () => this.props.callback(this.state))
+    } else {
+      this.setState({ combatMap: value }, () => this.props.callback(this.state))
+    }
+  }
+
   handleFleetModeChange = (value) => {
     // when changing the fleet mode, make sure to disable and clear any conflicting expeditions as needed; these states
     // are not actually used in here, but used to inform the expedition section of available fields
@@ -353,7 +363,7 @@ class BodyConfigCombat extends PureComponent {
                 name='combatMap'
                 value={combatMap}
                 options={MAPS}
-                onChange={value => this.setState({ combatMap: value }, () => this.props.callback(this.state))}
+                onChange={this.handleMapChange}
                 disabled={!combatEnabled}
                 clearable={false}
                 fullWidth />

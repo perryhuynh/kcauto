@@ -36,6 +36,7 @@ class Config(object):
         self.expeditions = {'enabled': False}
         self.pvp = {'enabled': False}
         self.combat = {'enabled': False}
+        self.event_reset = {'enabled': False}
         self.ship_switcher = {'enabled': False}
         self.fleet_switcher = {'enabled': False}
         self.quests = {'enabled': False}
@@ -72,6 +73,11 @@ class Config(object):
             self._read_combat(config)
         else:
             self.combat = {'enabled': False}
+
+        if config.getboolean('EventReset', 'Enabled'):
+            self._read_event_reset(config)
+        else:
+            self.event_reset = {'enabled': False}
 
         if (config.getboolean('ShipSwitcher', 'Enabled') and
                 self.combat['enabled']):
@@ -254,7 +260,43 @@ class Config(object):
                         "Invalid Combat MiscOption: '{}'.".format(option))
                     self.ok = False
 
+        if self.event_reset['enabled']:
+            valid_difficulties = ('casual', 'easy', 'medium', 'hard')
+            if not self.combat['enabled']:
+                Util.log_error(
+                    "Event Reset can only be used if Combat is enabled")
+                self.ok = False
+            if self.combat['map'][0] != 'E':
+                Util.log_error(
+                    "Invalid map ({}) to use with Event Reset. Event Reset "
+                    "can only be used when sortieing to Event maps".format(
+                        self.combat['map']))
+                self.ok = False
+            if self.event_reset['farm_difficulty'] not in valid_difficulties:
+                Util.log_error(
+                    "Invalid difficulty specified for Event Reset Farm "
+                    "Difficulty: '{}'.".format(
+                        self.event_reset['farm_difficulty']))
+                self.ok = False
+            if self.event_reset['reset_difficulty'] not in valid_difficulties:
+                Util.log_error(
+                    "Invalid difficulty specified for Event Reset Reset "
+                    "Difficulty: '{}'.".format(
+                        self.event_reset['reset_difficulty']))
+                self.ok = False
+            if (
+                    self.event_reset['farm_difficulty'] ==
+                    self.event_reset['reset_difficulty']):
+                Util.log_error(
+                    "Event Reset Farm and Reset difficulty cannot be "
+                    "identical.")
+                self.ok = False
+
         if self.ship_switcher['enabled']:
+            if not self.combat['enabled']:
+                Util.log_error(
+                    "Ship Switcher can only be used if Combat is enabled")
+                self.ok = False
             if self.combat['fleet_mode'] != '':
                 Util.log_error(
                     "Ship Switcher can only be used with standard fleets")
@@ -484,6 +526,21 @@ class Config(object):
                 config, 'Combat', 'LBASGroup3Nodes')
         else:
             self.combat['lbas_enabled'] = False
+
+    def _read_event_reset(self, config):
+        """Method to parse the EventReset settings of the passed in config.
+        Only run if Combat is also enabled.
+
+        Args:
+            config (ConfigParser): ConfigParser instance
+        """
+        self.event_reset['enabled'] = True
+        self.event_reset['frequency'] = config.getint(
+            'EventReset', 'Frequency')
+        self.event_reset['farm_difficulty'] = config.get(
+            'EventReset', 'FarmDifficulty')
+        self.event_reset['reset_difficulty'] = config.get(
+            'EventReset', 'ResetDifficulty')
 
     def _read_ship_switcher(self, config):
         """Method to parse the ShipSwitcher settings of the passed in config.

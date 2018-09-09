@@ -4,7 +4,8 @@ from threading import Thread
 from kca_globals import Globals
 from fleet import Fleet
 from lbas import LBAS
-from mapData import MapData, Node, UnknownNode
+from map_data import MapData, Node, UnknownNode
+from event_reset import EventReset
 from nav import Nav
 from util import Util
 
@@ -41,15 +42,19 @@ class CombatModule(object):
         self.dmg = {}
 
         self.map = MapData(
-            self.config.combat['map'], self.regions, self.config)
+            self.config, self.regions, self.config.combat['map'])
         self.current_position = [0, 0]
         self.current_node = self.map.unknown_node
         self.current_node_backup = None
         self.nodes_run = []
 
         self.lbas = (
-            LBAS(config, regions, self.map)
+            LBAS(self.config, self.regions, self.map)
             if self.config.combat['lbas_enabled'] else None)
+
+        self.event_reset = (
+            EventReset(self.config, self.stats, self.regions, self.map)
+            if self.config.event_reset['enabled'] else None)
 
         # combat-related regions
         x = self.kc_region.x
@@ -194,13 +199,16 @@ class CombatModule(object):
                 self.kc_region,
                 '_event_world_{}.png'.format(self.map.subworld))
             # dismiss Ooyodo chalkboards
-            self.kc_region.wait('event_chalkboard.png', 10)
-            while self.kc_region.exists('event_chalkboard'):
-                Util.kc_sleep(1)
-                Util.click_preset_region(self.regions, 'center')
-                Util.kc_sleep(1)
-                if self.regions['lower_right'].exists('sortie_select.png'):
-                    break
+            self.regions['lower'].wait('event_chalkboard.png', 10)
+            if self.event_reset and self.event_reset.check_need_to_reset():
+                self.event_reset.reset_event_map_progress()
+            else:
+                while self.regions['lower'].exists('event_chalkboard'):
+                    Util.kc_sleep(1)
+                    Util.click_preset_region(self.regions, 'center')
+                    Util.kc_sleep(1)
+                    if self.regions['lower_right'].exists('sortie_select.png'):
+                        break
         else:
             if int(self.map.subworld) > 4:
                 Util.wait_and_click(
