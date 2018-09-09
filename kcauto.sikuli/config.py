@@ -261,6 +261,7 @@ class Config(object):
                     self.ok = False
 
         if self.event_reset['enabled']:
+            valid_difficulties = ('casual', 'easy', 'medium', 'hard')
             if not self.combat['enabled']:
                 Util.log_error(
                     "Event Reset can only be used if Combat is enabled")
@@ -270,6 +271,25 @@ class Config(object):
                     "Invalid map ({}) to use with Event Reset. Event Reset "
                     "can only be used when sortieing to Event maps".format(
                         self.combat['map']))
+                self.ok = False
+            if self.event_reset['farm_difficulty'] not in valid_difficulties:
+                Util.log_error(
+                    "Invalid difficulty specified for Event Reset Farm "
+                    "Difficulty: '{}'.".format(
+                        self.event_reset['farm_difficulty']))
+                self.ok = False
+            if self.event_reset['reset_difficulty'] not in valid_difficulties:
+                Util.log_error(
+                    "Invalid difficulty specified for Event Reset Reset "
+                    "Difficulty: '{}'.".format(
+                        self.event_reset['reset_difficulty']))
+                self.ok = False
+            if (
+                    self.event_reset['farm_difficulty'] ==
+                    self.event_reset['reset_difficulty']):
+                Util.log_error(
+                    "Event Reset Farm and Reset difficulty cannot be "
+                    "identical.")
                 self.ok = False
 
         if self.ship_switcher['enabled']:
