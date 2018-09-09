@@ -644,6 +644,10 @@ class CombatModule(object):
     def _stop_fleet_observer(self):
         """Stops the observer started by the _start_fleet_observer() method.
         """
+        self.module_regions['observe_region'].stopObserver()
+        # add sleep to account for async nature of observer overwriting backup
+        # node logic
+        Util.kc_sleep(1)
         if (type(self.current_node) is UnknownNode
                 and type(self.current_node_backup) is Node):
             # on observer stop, if the current node is an UnknowNode but the
@@ -651,7 +655,6 @@ class CombatModule(object):
             # node variable was overridden in the last stages before formation
             # select
             self.current_node = self.current_node_backup
-        self.module_regions['observe_region'].stopObserver()
 
     def _update_fleet_position(self, event):
         """Method that is run by the fleet observer to continuously update the
