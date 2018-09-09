@@ -1,6 +1,7 @@
 {
 	"world": 3,
 	"subworld": 3,
+	"quest_context": ["carriers"],
 	"nodes": {
 		"A": {
 			"coords": [307, 443]

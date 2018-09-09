@@ -36,6 +36,7 @@ class MapData(object):
 
         self.world = map_data['world']
         self.subworld = map_data['subworld']
+        self.quest_context = map_data['quest_context']
 
         # instantiate Node objects for every node
         self.nodes = {}

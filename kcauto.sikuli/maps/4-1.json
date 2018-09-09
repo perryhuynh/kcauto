@@ -1,6 +1,7 @@
 {
 	"world": 4,
 	"subworld": 1,
+	"quest_context": ["subs", "transports"],
 	"nodes": {
 		"A": {
 			"coords": [285, 304]
