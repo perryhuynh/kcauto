@@ -1,8 +1,14 @@
+#### 6.1.0
+
+* Add recovery for Chrome tab crashes
+* Update Vanguard formation asset (thanks to @perryhuynh)
+
 #### 6.0.0
 
 * Add 2018 Early Fall Event assets
-  * Note: LBAS squad 3 still not supported
   * Note: Map data is currently incomplete
+* Event LBAS support (thanks to @ksks222)
+  * LBAS squad 3 still not supported
 * Event (Map Progress) Reset feature
   * Resets Event map progress by switching between specified difficulties at specified combat sortie frequency to facilitate Event map farming
   * Updated webUI to support Event Reset feature
