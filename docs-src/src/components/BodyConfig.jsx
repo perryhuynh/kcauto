@@ -20,6 +20,7 @@ import {
   BodyConfigExpeditionsContainer,
   BodyConfigPvPContainer,
   BodyConfigCombatContainer,
+  BodyConfigEventResetContainer,
   BodyConfigShipSwitcherContainer,
   BodyConfigQuestsContainer,
 } from 'containers/BodyConfigSectionContainer'
@@ -45,6 +46,8 @@ const createStateObjFromPythonConfig = (pyConfig) => {
       currentSection = 'pvp'
     } else if (line === '[Combat]') {
       currentSection = 'combat'
+    } else if (line === '[EventReset]') {
+      currentSection = 'eventReset'
     } else if (line === '[ShipSwitcher]') {
       currentSection = 'shipSwitcher'
     } else if (line === '[Quests]') {
@@ -157,6 +160,10 @@ const createStateObjFromPythonConfig = (pyConfig) => {
     combatOptionReserveDocks: pyConfigObj.combatMiscOptions.includes('ReserveDocks') || false,
     combatOptionPortCheck: pyConfigObj.combatMiscOptions.includes('PortCheck') || false,
     combatOptionClearStop: pyConfigObj.combatMiscOptions.includes('ClearStop') || false,
+    eventResetEnabled: pyConfigObj.eventResetEnabled === 'True',
+    eventResetFrequency: pyConfigObj.eventResetFrequency || '3',
+    eventResetFarmDifficulty: pyConfigObj.eventResetFarmDifficulty || 'easy',
+    eventResetResetDifficulty: pyConfigObj.eventResetResetDifficulty || 'medium',
     shipSwitcherEnabled: pyConfigObj.shipSwitcherEnabled === 'True',
     shipSwitcherSlot1Criteria: pyConfigObj.shipSwitcherSlot1Criteria || null,
     shipSwitcherSlot1Ships: pyConfigObj.shipSwitcherSlot1Ships || null,
@@ -273,6 +280,10 @@ class BodyConfig extends PureComponent {
               <Divider />
 
               <BodyConfigCombatContainer callback={this.updateStoreConfig} />
+
+              <Divider />
+
+              <BodyConfigEventResetContainer callback={this.updateStoreConfig} />
 
               <Divider />
 

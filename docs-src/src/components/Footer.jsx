@@ -32,9 +32,9 @@ const styles = () => ({
 
 const Footer = (props) => {
   const { classes } = props
+  const changelogUrl = `${urls.CHANGELOG_LINK}#${process.version.replace(/\./g, '')}`
   const renderDivider = () => <span className={classes.divider}>|</span>
-  const renderVersion = () => (
-    <span>version <a href={urls.CHANGELOG_LINK} className={classes.link}>{process.version}</a></span>)
+  const renderVersion = () => <span>version <a href={changelogUrl} className={classes.link}>{process.version}</a></span>
   const renderCopy = () => <span>&copy; 2017-2018</span>
 
   return (
