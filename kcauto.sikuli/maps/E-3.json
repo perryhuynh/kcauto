@@ -3,63 +3,58 @@
 	"subworld": "1-3",
 	"quest_context": ["subs"],
 	"nodes": {
-		"A": {
-			"coords": [915, 245]
-		},
 		"B": {
 			"coords": [902, 410],
-            "types": ["sub"]
+			"types": ["sub"]
 		},
 		"C": {
-            "coords": [758, 289]
+			"coords": [758, 289]
 		},
 		"D": {
-            "coords": [751, 535]
+			"coords": [751, 535]
 		},
 		"E": {
 			"coords": [668, 209]
 		},
 		"F": {
-			"coords": [604, 402]
+			"coords": [604, 402],
+			"types": ["select"]
 		},
 		"G": {
 			"coords": [558, 300]
 		},
 		"H": {
-			"coords": [532, 192],
-            "types": ["sub"]
+			"coords": [532, 192]
 		},
 		"I": {
-			"coords": [483, 489]
+			"coords": [483, 489],
+			"types": ["sub"]
 		},
 		"J": {
 			"coords": [376, 297]
 		},
 		"K": {
-			"coords": [319, 164]
-		},
-		"L": {
-			"coords": [230, 228],
-            "types": ["sub"]
+			"coords": [319, 164],
+			"types": ["sub"]
 		},
 		"M": {
 			"coords": [456, 176],
-            "types": ["boss"]
-        },
+			"types": ["boss"]
+		},
 		"N": {
-            "coords": [410, 542],
-            "types": ["air"]
+			"coords": [410, 542],
+			"types": ["air"]
 		},
 		"O": {
 			"coords": [351, 355]
 		},
 		"P": {
 			"coords": [259, 464],
-            "types": ["air"]
+			"types": ["air"]
 		},
 		"Q": {
 			"coords": [176, 360],
-            "types": ["boss"]
-        }
+			"types": ["boss"]
+		}
 	}
 }

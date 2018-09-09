@@ -10,12 +10,12 @@
 			"coords": [600, 459]
 		},
 		"E": {
-            "coords": [447, 316],
-            "types": ["air"]
+			"coords": [447, 316],
+			"types": ["air"]
 		},
 		"F": {
-            "coords": [444, 390],
-            "types": ["select"]
+			"coords": [444, 390],
+			"types": ["select"]
 		},
 		"I": {
 			"coords": [247, 425],
@@ -26,14 +26,14 @@
 		},
 		"J": {
 			"coords": [557, 326],
-            "types": ["sub"]
+			"types": ["sub"]
 		},
 		"M": {
 			"coords": [225, 230]
 		},
 		"N": {
 			"coords": [184, 344],
-            "types": ["sub"]
+			"types": ["sub"]
 		},
 		"O": {
 			"coords": [392, 235],
