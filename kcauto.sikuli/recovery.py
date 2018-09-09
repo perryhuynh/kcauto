@@ -58,6 +58,20 @@ class Recovery(object):
                 kcauto.stats.increment_recoveries()
                 return True
 
+        # Chrome crash recovery
+        Region.type(kc_region, Key.F10)  # clear overlay?
+        if kc_region.exists('chrome_crash.png'):
+            Util.log_warning("** Chrome crash detected. **")
+            Region.type(kc_region, Key.F5)
+            sleep(5)
+            Util.wait_and_click(
+                kc_region, Pattern('game_start.png').similar(0.999), 60)
+            Util.log_success("Re-starting game.")
+            kc_region.wait('home_menu_resupply.png', 15)
+            Util.log_success("Chrome crash recovery successful.")
+            kcauto.stats.increment_recoveries()
+            return True
+
         # catbomb recovery
         if kc_region.exists('catbomb.png', 10):
             Util.log_warning("** Catbomb detected. **")
@@ -85,10 +99,11 @@ class Recovery(object):
                     catbomb_n += 1
                 else:
                     catbombed = False
-            sleep(3)
+            sleep(5)
             Util.wait_and_click(
                 kc_region, Pattern('game_start.png').similar(0.999), 60)
-            sleep(5)
+            Util.log_success("Re-starting game.")
+            kc_region.wait('home_menu_resupply.png', 15)
             Util.log_success("Catbomb recovery successful.")
             kcauto.stats.increment_recoveries()
             return True
