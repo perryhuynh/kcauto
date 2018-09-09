@@ -1,0 +1,23 @@
+{
+	"world": "event",
+	"subworld": "1-1",
+	"quest_context": ["subs"],
+	"nodes": {
+		"A": {
+			"coords": [329, 195]
+		},
+		"E": {
+			"coords": [588, 322]
+		},
+		"F": {
+			"coords": [609, 480]
+		},
+		"G": {
+			"coords": [737, 409]
+		},
+		"I": {
+			"coords": [849, 505],
+			"types": ["boss", "sub"]
+		}
+	}
+}

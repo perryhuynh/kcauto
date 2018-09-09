@@ -1,6 +1,7 @@
 {
 	"world": 2,
 	"subworld": 2,
+	"quest_context": ["transports"],
 	"nodes": {
 		"B": {
 			"coords": [333, 471]

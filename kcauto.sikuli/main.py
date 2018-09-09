@@ -176,7 +176,8 @@ class KCAuto(object):
             # initialize quest module
             if self.config.quests['enabled']:
                 self.modules['quest'] = QuestModule(
-                    self.config, self.stats, self.regions)
+                    self.config, self.stats, self.regions,
+                    self.modules['combat'])
             else:
                 self.modules['quest'] = None
 

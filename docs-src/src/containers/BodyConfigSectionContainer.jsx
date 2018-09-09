@@ -6,6 +6,7 @@ import BodyConfigScheduledStop from 'components/BodyConfigScheduledStop'
 import BodyConfigExpeditions from 'components/BodyConfigExpeditions'
 import BodyConfigPvP from 'components/BodyConfigPvP'
 import BodyConfigCombat from 'components/BodyConfigCombat'
+import BodyConfigEventReset from 'components/BodyConfigEventReset'
 import BodyConfigShipSwitcher from 'components/BodyConfigShipSwitcher'
 import BodyConfigQuests from 'components/BodyConfigQuests'
 
@@ -22,5 +23,6 @@ export const BodyConfigScheduledStopContainer = connect(mapStateToProps)(BodyCon
 export const BodyConfigExpeditionsContainer = connect(mapStateToProps)(BodyConfigExpeditions)
 export const BodyConfigPvPContainer = connect(mapStateToProps)(BodyConfigPvP)
 export const BodyConfigCombatContainer = connect(mapStateToProps)(BodyConfigCombat)
+export const BodyConfigEventResetContainer = connect(mapStateToProps)(BodyConfigEventReset)
 export const BodyConfigShipSwitcherContainer = connect(mapStateToProps)(BodyConfigShipSwitcher)
 export const BodyConfigQuestsContainer = connect(mapStateToProps)(BodyConfigQuests)

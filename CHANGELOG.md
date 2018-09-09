@@ -1,3 +1,13 @@
+#### 6.0.0
+
+* Add 2018 Early Fall Event assets
+  * Note: LBAS squad 3 still not supported
+  * Note: Map data is currently incomplete
+* Event (Map Progress) Reset feature
+  * Resets Event map progress by switching between specified difficulties at specified combat sortie frequency to facilitate Event map farming
+  * Updated webUI to support Event Reset feature
+* Smarter Quest module that only enables combat quests relevant to map being sortied (carrier/sub/transport quests)
+
 #### 5.0.0
 
 * Kantai Collection Phase 2 Block 1 compatibility - 4th (final) pass
