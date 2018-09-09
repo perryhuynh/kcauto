@@ -181,7 +181,7 @@ const createStateObjFromPythonConfig = (pyConfig) => {
     questsQuestGroupsDaily: pyConfigObj.questsQuestGroups.includes('daily') || false,
     questsQuestGroupsWeekly: pyConfigObj.questsQuestGroups.includes('weekly') || false,
     questsQuestGroupsMonthly: pyConfigObj.questsQuestGroups.includes('monthly') || false,
-    questsQuestGroupsQuarterly: pyConfigObj.questsQuestGroups.includes('quarterly') || false,
+    questsQuestGroupsOthers: pyConfigObj.questsQuestGroups.includes('others') || false,
   }
 
   return jsonConfig

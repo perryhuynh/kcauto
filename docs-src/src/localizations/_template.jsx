@@ -147,7 +147,7 @@ export const TMP = {
     questsQuestGroupsDaily: null,
     questsQuestGroupsWeekly: null,
     questsQuestGroupsMonthly: null,
-    questsQuestGroupsQuarterly: null,
+    questsQuestGroupsOthers: null,
     configHeader: null,
     configLoad: null,
     configSave: null,
