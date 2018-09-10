@@ -6,7 +6,7 @@ import org.sikuli.script.Region as JRegion
 import org.sikuli.script.Match as JMatch
 import org.sikuli.script.Pattern as JPattern
 from time import strftime
-from random import uniform, gauss
+from random import uniform, gauss, randint
 from math import ceil
 from time import sleep
 from datetime import timedelta
@@ -419,15 +419,15 @@ class Util(object):
             max_x = temp_screen.width
             max_y = temp_screen.height
 
-            rand_x = regions['game'].x + cls.randint_gauss(x1, x2)
-            rand_y = regions['game'].y + cls.randint_gauss(y1, y2)
+            rand_x = regions['game'].x + cls.random_coord(x1, x2)
+            rand_y = regions['game'].y + cls.random_coord(y1, y2)
 
             rand_x = max_x - 1 if rand_x > max_x else rand_x
             rand_y = max_y - 1 if rand_y > max_y else rand_y
         elif (isinstance(preset, Region) or isinstance(preset, JRegion)
                 or isinstance(preset, Match) or isinstance(preset, JMatch)):
-            rand_x = cls.randint_gauss(preset.x, preset.x + preset.w)
-            rand_y = cls.randint_gauss(preset.y, preset.y + preset.h)
+            rand_x = cls.random_coord(preset.x, preset.x + preset.w)
+            rand_y = cls.random_coord(preset.y, preset.y + preset.h)
 
         regions['game'].mouseMove(Location(rand_x, rand_y))
 
@@ -576,17 +576,47 @@ class Util(object):
 
         if isinstance(target, str):
             created_pattern = Pattern(target).targetOffset(
-                int(round(cls.randint_gauss(expand[0], expand[1]))),
-                int(round(cls.randint_gauss(expand[2], expand[3]))))
+                int(round(cls.random_coord(expand[0], expand[1]))),
+                int(round(cls.random_coord(expand[2], expand[3]))))
         elif isinstance(target, Pattern) or isinstance(target, JPattern):
             created_pattern = target.targetOffset(
-                int(round(cls.randint_gauss(expand[0], expand[1]))),
-                int(round(cls.randint_gauss(expand[2], expand[3]))))
+                int(round(cls.random_coord(expand[0], expand[1]))),
+                int(round(cls.random_coord(expand[2], expand[3]))))
 
         return created_pattern
 
+    @classmethod
+    def random_coord(cls, min_val, max_val):
+        """Wrapper method that calls cls._randint() or cls._random_coord() to
+        generate the random coordinate between min_val and max_val, depending
+        on which return line is enabled.
+
+        Args:
+            min_val (int): minimum value of the random number
+            max_val (int): maximum value of the random number
+
+        Returns:
+            int: the generated random number
+        """
+        return cls._randint(min_val, max_val)
+        # return cls._randint_gauss(min_val, max_val)
+
     @staticmethod
-    def randint_gauss(min_val, max_val):
+    def _randint(min_val, max_val):
+        """Method to generate a random value based on the min_val and max_val
+        with a uniform distribution.
+
+        Args:
+            min_val (int): minimum value of the random number
+            max_val (int): maximum value of the random number
+
+        Returns:
+            int: the generated random number
+        """
+        return randint(min_val, max_val)
+
+    @staticmethod
+    def _randint_gauss(min_val, max_val):
         """Method to generate a random value based on the min_val and max_val
         with a gaussian (normal) distribution.
 
