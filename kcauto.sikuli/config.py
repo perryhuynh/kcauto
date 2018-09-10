@@ -341,7 +341,7 @@ class Config(object):
                 self.ok = False
             # validate quest groups
             for qg in self.quests['quest_groups']:
-                if qg not in ('daily', 'weekly', 'monthly'):
+                if qg not in ('daily', 'weekly', 'monthly', 'others'):
                     Util.log_error(
                         "Invalid Quest Group specified: '{}'".format(qg))
                     self.ok = False

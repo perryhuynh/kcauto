@@ -24,7 +24,8 @@ class BodyConfigQuests extends PureComponent {
   handleQuestGroupCheck = (event, checked) => {
     // handle the quest group checkboxes and disable the entire module when all options are unchecked
     const tempState = { [event.target.value]: checked }
-    const questGroups = ['questsQuestGroupsDaily', 'questsQuestGroupsWeekly', 'questsQuestGroupsMonthly']
+    const questGroups = [
+      'questsQuestGroupsDaily', 'questsQuestGroupsWeekly', 'questsQuestGroupsMonthly', 'questsQuestGroupOther']
     let enableQuests = false
     // ascertained if all groups are now disabled
     questGroups.forEach((group) => {
@@ -52,8 +53,10 @@ class BodyConfigQuests extends PureComponent {
       questsQuestGroupsDaily,
       questsQuestGroupsWeekly,
       questsQuestGroupsMonthly,
+      questsQuestGroupsOthers,
     } = this.state
-    const allGroupsDisabled = !questsQuestGroupsDaily && !questsQuestGroupsWeekly && !questsQuestGroupsMonthly
+    const allGroupsDisabled = (
+      !questsQuestGroupsDaily && !questsQuestGroupsWeekly && !questsQuestGroupsMonthly && !questsQuestGroupsOthers)
     return (
       <Fragment>
         <Typography variant='display1'>
@@ -68,6 +71,7 @@ class BodyConfigQuests extends PureComponent {
                   newState.questsQuestGroupsDaily = true
                   newState.questsQuestGroupsWeekly = true
                   newState.questsQuestGroupsMonthly = true
+                  newState.questsQuestGroupsOthers = true
                 }
                 this.setState(newState, () => this.props.callback(this.state))
               }
@@ -104,6 +108,16 @@ class BodyConfigQuests extends PureComponent {
                 value='questsQuestGroupsMonthly' />
             }
             label={<Localize field='bodyConfig.questsQuestGroupsMonthly' />}
+            disabled={!questsEnabled} />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={questsQuestGroupsOthers}
+                onChange={this.handleQuestGroupCheck}
+                disabled={!questsEnabled}
+                value='questsQuestGroupsOthers' />
+            }
+            label={<Localize field='bodyConfig.questsQuestGroupsOthers' />}
             disabled={!questsEnabled} />
         </Grid>
       </Fragment>

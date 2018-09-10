@@ -1,3 +1,10 @@
+#### 6.2.0
+
+* Updated Combined Fleet assets (Combined Fleet sorties still not actually compatible)
+* Better fleet tracking in Live combat engine
+* Add support for Others tab and some Quarterly quests
+* Switch out normal distribution for uniform distribution in random coordinate generator
+
 #### 6.1.0
 
 * Add recovery for Chrome tab crashes
