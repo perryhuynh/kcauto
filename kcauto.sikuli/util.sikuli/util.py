@@ -381,13 +381,13 @@ class Util(object):
         regions['formation_line_abreast'] = Region(x + 791, y + 495, 253, 44)
         regions['formation_vanguard'] = Region(x + 989, y + 495, 150, 44)
         regions['formation_combinedfleet_1'] = Region(
-            x + 420, y + 150, 160, 50)  # NU
+            x + 640, y + 240, 215, 45)
         regions['formation_combinedfleet_2'] = Region(
-            x + 580, y + 150, 160, 50)  # NU
+            x + 890, y + 240, 215, 45)
         regions['formation_combinedfleet_3'] = Region(
-            x + 420, y + 280, 160, 50)  # NU
+            x + 640, y + 445, 215, 45)
         regions['formation_combinedfleet_4'] = Region(
-            x + 580, y + 280, 160, 50)  # NU
+            x + 890, y + 445, 215, 45)
 
         return (kc, regions)
 
