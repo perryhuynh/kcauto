@@ -167,8 +167,8 @@ class QuestModule(object):
         Util.kc_sleep(2)
 
     def _run_check_quests_wrapper(self, context):
-        """Method that cycles through the daily, weekly, and monthly quest
-        filters and run the quest logic on each.
+        """Method that cycles through the daily, weekly, monthly, and
+        other/quarterly quest filters and run the quest logic on each.
 
         Args:
             context (str): specifies if there is a specific context for the
@@ -308,7 +308,7 @@ class QuestModule(object):
 
     def _filter_quests(self, filter):
         """Method to filter the quests based on the specified filter (active,
-        daily, weekly, or monthly)
+        daily, weekly, monthly, or other/quarterly)
 
         Args:
             filter (str): the filter to filter on

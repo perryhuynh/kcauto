@@ -144,7 +144,7 @@ export const ko = {
     questsQuestGroupsDaily: null,
     questsQuestGroupsWeekly: null,
     questsQuestGroupsMonthly: null,
-    questsQuestGroupsQuarterly: null,
+    questsQuestGroupsOthers: null,
     configHeader: '설정',
     configLoad: null,
     configSave: null,

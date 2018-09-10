@@ -141,7 +141,7 @@ export const en = {
     questsQuestGroupsDaily: 'Daily',
     questsQuestGroupsWeekly: 'Weekly',
     questsQuestGroupsMonthly: 'Monthly',
-    questsQuestGroupsQuarterly: 'Quarterly',
+    questsQuestGroupsOthers: 'Quarterly/Others',
     configHeader: 'Config',
     configLoad: 'Load',
     configSave: 'Save',

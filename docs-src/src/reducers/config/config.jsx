@@ -84,7 +84,7 @@ const jsonConfigDefaults = {
   questsQuestGroupsDaily: true,
   questsQuestGroupsWeekly: true,
   questsQuestGroupsMonthly: true,
-  questsQuestGroupsQuarterly: false,
+  questsQuestGroupsOthers: true,
 }
 
 export const jsonConfig = (state = jsonConfigDefaults, action) => {

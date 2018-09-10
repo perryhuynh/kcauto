@@ -138,8 +138,8 @@ export const setPythonConfig = config => (
     if (config.questsQuestGroupsMonthly) {
       questGroups.push('monthly')
     }
-    if (config.questsQuestGroupsQuarterly) {
-      questGroups.push('quarterly')
+    if (config.questsQuestGroupsOthers) {
+      questGroups.push('others')
     }
 
     const pythonConfig = [
