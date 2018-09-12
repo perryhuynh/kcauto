@@ -225,6 +225,12 @@ class Nav(object):
             bool: True if navigation was successful, False if no actions were
                 taken
         """
+        if (regions['home_menu'].exists('home_menu_sortie.png')
+                and destination == 'home'):
+            # if visibly at home menu and destination is home, not refresh
+            # home, short circuit
+            return False
+
         sidestep = bool(randint(0, max_sidestep))
         Util.rejigger_mouse(regions, 'top')
         Util.kc_sleep()
