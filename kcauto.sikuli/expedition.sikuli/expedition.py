@@ -170,14 +170,12 @@ class ExpeditionModule(object):
                 if type(fleet.expedition) == int:
                     while self.regions['upper_left'].exists('scroll_prev.png'):
                         Util.check_and_click(
-                            self.regions['upper_left'], 'scroll_prev.png',
-                            Globals.EXPAND['scroll_prev'])
+                            self.regions['upper_left'], 'scroll_prev.png')
                         Util.kc_sleep()
                 elif type(fleet.expedition) == str:
                     while self.regions['lower_left'].exists('scroll_next.png'):
                         Util.check_and_click(
-                            self.regions['lower_left'], 'scroll_next.png',
-                            Globals.EXPAND['scroll_next'])
+                            self.regions['lower_left'], 'scroll_next.png')
                         Util.kc_sleep()
         # select the expedition
         Util.check_and_click(self.kc_region, expedition_line)

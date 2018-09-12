@@ -61,7 +61,7 @@ class CombatModule(object):
         y = self.kc_region.y
         self.module_regions = {
             'game': self.kc_region,
-            'check_fatigue': Region(x + 742, y + 196, 30, 440),
+            'check_fatigue': Region(x + 742, y + 196, 35, 440),
             'check_damage': Region(x + 710, y + 195, 20, 440),
             'check_damage_7th': Region(x + 710, y + 570, 20, 64),
             'check_damage_flagship': Region(x + 470, y + 280, 42, 70),
