@@ -20,6 +20,12 @@ class Globals(object):
     FLEET_ICON_SIMILARITY = 0.8
     SHIP_LIST_FLEET_ICON_SIMILARITY = 0.75
 
+    # types of recoveries enabled for the recovery module. Valid options are
+    # 'catbomb' and 'chrome'. Enabled recoveries mean that the script will
+    # attempt to restart the game when encountering a relevant crash; otherwise
+    # the script will halt.
+    ENABLED_RECOVERIES = ('chrome')
+
     # how many minutes to wait between sorties to allow for natural fatigue
     # recovery
     COMBAT_BUFFER_MINUTES = 0
@@ -34,7 +40,5 @@ class Globals(object):
     EXPAND = {
         'repair_list': [-500, 20, -12, 12],
         'arrow_navigation': [-10, 10, -8, 8],
-        'shiplist_sort': [-4, 36, -10, 10],
-        'scroll_prev': [-14, 20, -20, 5],
-        'scroll_next': [-20, 2, -14, 14]
+        'shiplist_sort': [-4, 36, -10, 10]
     }
