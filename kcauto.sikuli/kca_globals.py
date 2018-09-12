@@ -20,6 +20,12 @@ class Globals(object):
     FLEET_ICON_SIMILARITY = 0.8
     SHIP_LIST_FLEET_ICON_SIMILARITY = 0.75
 
+    # types of recoveries enabled for the recovery module. Valid options are
+    # 'catbomb' and 'chrome'. Enabled recoveries mean that the script will
+    # attempt to restart the game when encountering a relevant crash; otherwise
+    # the script will halt.
+    ENABLED_RECOVERIES = ('chrome')
+
     # how many minutes to wait between sorties to allow for natural fatigue
     # recovery
     COMBAT_BUFFER_MINUTES = 0
