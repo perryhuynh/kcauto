@@ -293,8 +293,8 @@ class ShipSwitcherModule(object):
 
         Util.click_coords(
             self.kc_region,
-            Util.random_coords(x_start, x_stop),
-            Util.random_coords(y_start, y_stop))
+            Util.random_coord(x_start, x_stop),
+            Util.random_coord(y_start, y_stop))
         Util.kc_sleep(1)
 
     def _check_ship_availability(self, criteria):

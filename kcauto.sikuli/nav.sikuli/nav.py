@@ -420,5 +420,5 @@ class NavList(object):
 
             Util.click_coords(
                 regions['game'],
-                Util.random_coords(x_start, x_stop),
-                Util.random_coords(y_start, y_stop))
+                Util.random_coord(x_start, x_stop),
+                Util.random_coord(y_start, y_stop))
