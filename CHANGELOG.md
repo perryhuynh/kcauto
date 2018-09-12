@@ -1,6 +1,17 @@
+#### 6.3.0
+
+* Add ability to specify recover modes via kca_globals
+  * Choose whether or not to enable catbomb and/or Chrome recovery
+  * Catbomb recovery is turned off by default to deter from recovering through macro detection catbombs
+* Update Combined Fleet Formation assets (Combined Fleet sorties should now be compatible)
+* Update Combined Fleet icons for hopefully better tracking via Live combat engine
+* Update fatigue assets to improve identification on ringed ships
+* Streamline navigations to home
+* Bugfix to click areas of Next and Prev scroll buttons
+
 #### 6.2.0
 
-* Updated Combined Fleet assets (Combined Fleet sorties still not actually compatible)
+* Update Combined Fleet assets (Combined Fleet sorties still not actually compatible)
 * Better fleet tracking in Live combat engine
 * Add support for Others tab and some Quarterly quests
 * Switch out normal distribution for uniform distribution in random coordinate generator
@@ -18,21 +29,21 @@
   * LBAS squad 3 still not supported
 * Event (Map Progress) Reset feature
   * Resets Event map progress by switching between specified difficulties at specified combat sortie frequency to facilitate Event map farming
-  * Updated webUI to support Event Reset feature
+  * Update webUI to support Event Reset feature
 * Smarter Quest module that only enables combat quests relevant to map being sortied (carrier/sub/transport quests)
 
 #### 5.0.0
 
 * Kantai Collection Phase 2 Block 1 compatibility - 4th (final) pass
   * ShipSwitcher
-    * Updated config format for ShipSwitcher; please refer to the updated webUI for changes
+    * Update config format for ShipSwitcher; please refer to the updated webUI for changes
     * Individual SS and SSV assets are no longer provided
     * Traversing pages in the ship list is a bit funky at the moment
-* Updated page navigation code
-* Updated resupply asset
-* Revised debug function
-* Fixed panel assets to account for boss bars
-* Fixed random gaussian coordinate generator
+* Update page navigation code
+* Update resupply asset
+* Revise debug function
+* Fix panel assets to account for boss bars
+* Fix random gaussian coordinate generator
 
 #### 4.2.0
 
