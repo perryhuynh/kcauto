@@ -24,7 +24,8 @@
 			"coords": [614, 295]
 		},
 		"H": {
-			"coords": [573, 491]
+			"coords": [573, 491],
+			"types": ["select"]
 		},
 		"I": {
 			"coords": [492, 530]
