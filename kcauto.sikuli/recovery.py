@@ -96,8 +96,8 @@ class Recovery(object):
                     if kc_region.exists('catbomb.png'):
                         sleep_len = pow(2, catbomb_n + 4)
                         Util.log_warning(
-                            "Catbomb recovery attempt {} failed; trying again in "
-                            "{} seconds!".format(catbomb_n + 1, sleep_len))
+                            "Catbomb recovery attempt {} failed; trying again "
+                            "in {} seconds!".format(catbomb_n + 1, sleep_len))
                         sleep(sleep_len)
                         catbomb_n += 1
                     else:
