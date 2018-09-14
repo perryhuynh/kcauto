@@ -374,8 +374,8 @@ class Util(object):
         regions['check_supply'] = Region(x + 695, y + 195, 40, 440)
         regions['ship_counter'] = Region(x + 735, y + 15, 55, 20)
         # combat-related regions
-        regions['formation_line_ahead'] = Region(x + 596, y + 256, 150, 44)
-        regions['formation_double_line'] = Region(x + 791, y + 256, 150, 44)
+        regions['formation_line_ahead'] = Region(x + 596, y + 256, 250, 44)
+        regions['formation_double_line'] = Region(x + 791, y + 256, 250, 44)
         regions['formation_diamond'] = Region(x + 989, y + 256, 150, 44)
         regions['formation_echelon'] = Region(x + 596, y + 495, 252, 44)
         regions['formation_line_abreast'] = Region(x + 791, y + 495, 253, 44)
