@@ -1,3 +1,11 @@
+#### 6.4.0
+
+* Add 2018 Early Fall Event assets
+  * Support for E-4 and E-5 (thanks to @ksks222)
+* Expanded ship counter region for hopefully more accurate readings (thanks to @waicool20)
+* Bugfix to random click coord method calling
+* Bugfix to support Line Ahead and Double Line formations when Diamond is not available
+
 #### 6.3.0
 
 * Add ability to specify recover modes via kca_globals
