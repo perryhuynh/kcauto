@@ -97,7 +97,7 @@ class LBAS(object):
             resupply_menu_button,
             resupply_menu_button_region,
             Pattern(resupply_menu_button_faded).exact())
-        Util.kc_sleep(1)
+        Util.kc_sleep(3)
         for group in self.config.combat['lbas_groups']:
             Util.log_msg("Checking LBAS group {} state.".format(group))
             if group != 1:
