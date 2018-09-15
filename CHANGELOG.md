@@ -1,3 +1,7 @@
+#### 6.5.1
+
+* Fix LBAS-related regions
+
 #### 6.5.0
 
 * Add support for 3rd LBAS squadron

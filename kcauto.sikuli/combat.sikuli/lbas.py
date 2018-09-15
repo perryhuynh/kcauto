@@ -23,8 +23,8 @@ class LBAS(object):
         x = self.kc_region.x
         y = self.kc_region.y
         self.module_regions = {
-            'check_lbas_fatigue': Region(x + 575, y + 230, 22, 225),
-            'lbas_mode_switcher': Region(x + 761, y + 135, 28, 46)
+            'check_lbas_fatigue': Region(x + 850, y + 350, 55, 330),
+            'lbas_mode_switcher': Region(x + 1135, y + 200, 55, 80)
         }
 
     def assign_groups(self):
