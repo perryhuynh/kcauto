@@ -67,7 +67,7 @@ class CombatModule(object):
             'check_damage_flagship': Region(x + 470, y + 280, 42, 70),
             'check_damage_combat': Region(x + 470, y + 215, 50, 475),
             'observe_region': Region(x + 110, y + 95, 986, 478),
-            'event_next': Region(x + 820, y + 470, 380, 250)
+            'event_next': Region(x + 1090, y + 525, 110, 75)
         }
 
     def goto_combat(self):
@@ -460,7 +460,8 @@ class CombatModule(object):
                             post_combat_screens.append('next_alt')
                     if self.map.world == 'event':
                         # if the 'next' asset exists in this region during an
-                        # event map sortie, the map is cleared
+                        # event map sortie, the map is cleared. This 'next' is
+                        # for the screen indicating the opening of EOs.
                         if self.module_regions['event_next'].exists(
                                 'next.png'):
                             Util.click_preset_region(self.regions, 'shipgirl')
