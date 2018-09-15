@@ -466,7 +466,9 @@ class CombatModule(object):
                                 'next.png'):
                             Util.click_preset_region(self.regions, 'shipgirl')
                             Util.rejigger_mouse(self.regions, 'top')
-                            disable_combat = True
+                            if ('ClearStop' in self.config.combat[
+                                    'misc_options']):
+                                disable_combat = True
                     if self.combined_fleet or self.striking_fleet:
                         self._resolve_fcf()
                         Util.rejigger_mouse(self.regions, 'top')
