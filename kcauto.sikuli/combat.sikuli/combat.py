@@ -1013,6 +1013,9 @@ class CombatFleet(Fleet):
         self.fleet_type = 'combat'
         self.flagship_damaged = False
         self.damage_counts = {
+            'heavy': 0,
+            'moderate': 0,
+            'minor': 0,
             'repair': 0
         }
         self.force_check_repair = False
