@@ -67,7 +67,7 @@ class CombatModule(object):
             'check_damage_flagship': Region(x + 470, y + 280, 42, 70),
             'check_damage_combat': Region(x + 470, y + 215, 50, 475),
             'observe_region': Region(x + 110, y + 95, 986, 478),
-            'event_next': Region(x + 720, y + 340, 80, 70)  # NU
+            'event_next': Region(x + 820, y + 470, 380, 250)
         }
 
     def goto_combat(self):
