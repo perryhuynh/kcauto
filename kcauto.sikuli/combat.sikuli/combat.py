@@ -1177,7 +1177,7 @@ class CombatFleet(Fleet):
         """
         if (regions['check_damage_flagship'].exists(Pattern(
                 'ship_state_dmg_heavy.png').similar(
-                    Globals.FATIGUE_SIMILARITY))):
+                    Globals.DAMAGE_SIMILARITY))):
             self.flagship_damaged = True
         else:
             self.flagship_damaged = False
