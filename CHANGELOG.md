@@ -2,7 +2,7 @@
 
 * Additional altCoords specified for boss nodes of event maps
 * Additional bugfixes to LBAS
-*
+* Bugfix to Event Map sorties shutting down Combat module
 
 #### 6.5.1
 
