@@ -104,7 +104,7 @@ class PvPModule(object):
 
         while not self.regions['home_menu'].exists('home_menu_sortie.png'):
             # click through post-combat screens until main menu
-            Util.click_preset_region(self.regions, 'center')
+            Util.click_preset_region(self.regions, 'shipgirl')
             Util.kc_sleep(2)
 
         self.stats.increment_pvp_done()

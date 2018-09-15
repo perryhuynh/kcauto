@@ -448,13 +448,13 @@ class CombatModule(object):
                             'combat_flagship_dmg.png')
                         or self.fast_kc_region.exists('combat_retreat.png')):
                     if self.regions['lower_right_corner'].exists('next.png'):
-                        Util.click_preset_region(self.regions, 'center')
+                        Util.click_preset_region(self.regions, 'shipgirl')
                         Util.rejigger_mouse(self.regions, 'top')
                         if 'ClearStop' in self.config.combat['misc_options']:
                             post_combat_screens.append('next')
                     elif self.regions['lower_right_corner'].exists(
                             'next_alt.png'):
-                        Util.click_preset_region(self.regions, 'center')
+                        Util.click_preset_region(self.regions, 'shipgirl')
                         Util.rejigger_mouse(self.regions, 'top')
                         if 'ClearStop' in self.config.combat['misc_options']:
                             post_combat_screens.append('next_alt')
@@ -463,7 +463,7 @@ class CombatModule(object):
                         # event map sortie, the map is cleared
                         if self.module_regions['event_next'].exists(
                                 'next.png'):
-                            Util.click_preset_region(self.regions, 'center')
+                            Util.click_preset_region(self.regions, 'shipgirl')
                             Util.rejigger_mouse(self.regions, 'top')
                             disable_combat = True
                     if self.combined_fleet or self.striking_fleet:
@@ -480,7 +480,7 @@ class CombatModule(object):
                     'combat_flagship_dmg.png'):
                 # flagship retreat; sortie complete
                 Util.log_msg("Flagship damaged. Automatic retreat.")
-                Util.click_preset_region(self.regions, 'game')
+                Util.click_preset_region(self.regions, 'shipgirl')
                 self.regions['left'].wait('home_menu_sortie.png', 30)
                 self._print_sortie_complete_msg(self.nodes_run)
                 sortieing = False
@@ -490,11 +490,11 @@ class CombatModule(object):
                 # resource node end; sortie complete
                 while not self.regions['left'].exists('home_menu_sortie.png'):
                     if self.regions['lower_right_corner'].exists('next.png'):
-                        Util.click_preset_region(self.regions, 'center')
+                        Util.click_preset_region(self.regions, 'shipgirl')
                         Util.rejigger_mouse(self.regions, 'top')
                     elif self.regions['lower_right_corner'].exists(
                             'next_alt.png'):
-                        Util.click_preset_region(self.regions, 'center')
+                        Util.click_preset_region(self.regions, 'shipgirl')
                         Util.rejigger_mouse(self.regions, 'top')
                 self._print_sortie_complete_msg(self.nodes_run)
                 sortieing = False
