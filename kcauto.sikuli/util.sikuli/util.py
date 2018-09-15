@@ -150,7 +150,8 @@ class Util(object):
         attempt = 0
         while ocr_matching:
             attempt += 1
-            timer = cls.read_ocr_number_text(kc_region, timer_ref, dir, width)
+            timer = cls.read_ocr_number_text(
+                kc_region, timer_ref, dir, width).strip()
             if len(timer) == 8:
                 # valid length for timer ('##:##:##')
                 timer = list(timer)
@@ -205,7 +206,7 @@ class Util(object):
         while ocr_matching:
             attempt += 1
             number = cls.read_ocr_number_text(
-                kc_region, number_ref, dir, width)
+                kc_region, number_ref, dir, width).strip()
             m = match(r'^\d+$', number)
             if m:
                 # OCR match is a number; return it
