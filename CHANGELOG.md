@@ -1,3 +1,9 @@
+#### 6.6.0
+
+* Additional altCoords specified for boss nodes of event maps
+* Additional bugfixes to LBAS
+*
+
 #### 6.5.1
 
 * Fix LBAS-related regions
