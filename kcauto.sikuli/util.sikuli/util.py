@@ -407,8 +407,8 @@ class Util(object):
             'top': (400, 1200, 12, 42),
             'quest_menu': (790, 895, 50, 95),
             'shipgirl': (700, 1100, 130, 550),
-            'lbas': (350, 450, 5, 50),  # NU
-            'lbas_mode_switch_button': (763, 788, 137, 179),  # NU
+            'lbas': (500, 700, 5, 50),
+            'lbas_mode_switch_button': (1150, 1175, 210, 265),
             '7th_next': (386, 413, 400, 427)  # NU
         }
 

@@ -17,6 +17,9 @@
 			"coords": [444, 390],
 			"types": ["select"]
 		},
+		"G": {
+			"coords": [433, 538]
+		},
 		"I": {
 			"coords": [247, 425],
 			"altCoords": [
