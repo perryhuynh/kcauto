@@ -49,11 +49,11 @@ class LBAS(object):
                 node_obj = self.map.nodes[node]
                 lbas_sidebar_pos = 'left'
                 lbas_sidebar = self.kc_region.find('lbas_panel_side.png')
-                if lbas_sidebar.x > 400:
+                if lbas_sidebar.x > 600:
                     lbas_sidebar_pos = 'right'
-                if ((lbas_sidebar_pos == 'left' and node_obj.coords[0] < 350)
+                if ((lbas_sidebar_pos == 'left' and node_obj.coords[0] < 420)
                         or (lbas_sidebar_pos == 'right'
-                            and node_obj.coords[0] > 450)):
+                            and node_obj.coords[0] > 780)):
                     self.kc_region.hover('lbas_panel_side.png')
                 node_obj.click_node(self.kc_region)
                 Util.rejigger_mouse(self.regions, 'lbas')
