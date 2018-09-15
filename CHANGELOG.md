@@ -1,3 +1,12 @@
+#### 6.5.0
+
+* Add support for 3rd LBAS squadron
+* Add back support for sparkle check in ShipSwitcher
+* Add additional node for E-2 (thanks to @stackhanovets)
+* Update 6-5 panel asset
+* Bugfix to infinite loop while being stuck in LBAS resupply/state change
+* Other minor fixes and improvements
+
 #### 6.4.0
 
 * Add 2018 Early Fall Event assets
