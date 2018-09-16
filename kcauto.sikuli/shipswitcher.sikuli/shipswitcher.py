@@ -215,14 +215,11 @@ class ShipSwitcherModule(object):
         if 'all' in targets:
             # if target is all tabs, click the quick tab arrow once if not
             # already at all tabs; if arrow is clicked, reset page to 1
-            print('target is all')
             if not self.regions['top_submenu'].exists(
                     Pattern('shiplist_quick_tab_all.png').exact()):
-                print('found')
                 Util.check_and_click(
                     self.regions['top_submenu'], 'shiplist_quick_tab_none.png')
                 self.current_shiplist_page = 1
-            print('done')
             self.current_shiplist_tabs = targets
             return True
 
