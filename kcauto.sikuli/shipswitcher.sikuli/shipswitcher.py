@@ -9,7 +9,7 @@ from util import Util
 
 
 class ShipSwitcherModule(object):
-    VALID_TABS = ('bb', 'cv', 'ca', 'cl', 'dd', 'de', 'ss', 'aux')
+    VALID_TABS = ('bb', 'cv', 'ca', 'cl', 'dd', 'de', 'ss', 'aux', 'all')
     CLASS_TAB_MAPPING = {
         'ao': 'aux', 'ar': 'aux', 'as': 'aux', 'av': 'aux', 'bb': 'bb',
         'bbv': 'bb', 'ca': 'ca', 'cav': 'ca', 'cl': 'cl', 'clt': 'cl',
