@@ -1,3 +1,11 @@
+#### 6.6.1
+
+* Bugfixes to ShipSwitcher not working in various ways
+* Bugfix to ClearStop and Event maps so it will only stop after Event map clears only if ClearStop is specified
+* Bugfix to page navigation in Repair module
+* Bugfix to Next scrolling in Expedition module
+* Bugfix/harden OCR matching on numbers and timers
+
 #### 6.6.0
 
 * Additional altCoords specified for boss nodes of event maps

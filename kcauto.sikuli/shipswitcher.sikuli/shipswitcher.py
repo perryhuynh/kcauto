@@ -9,7 +9,7 @@ from util import Util
 
 
 class ShipSwitcherModule(object):
-    VALID_TABS = ('bb', 'cv', 'ca', 'cl', 'dd', 'de', 'ss', 'aux')
+    VALID_TABS = ('bb', 'cv', 'ca', 'cl', 'dd', 'de', 'ss', 'aux', 'all')
     CLASS_TAB_MAPPING = {
         'ao': 'aux', 'ar': 'aux', 'as': 'aux', 'av': 'aux', 'bb': 'bb',
         'bbv': 'bb', 'ca': 'ca', 'cav': 'ca', 'cl': 'cl', 'clt': 'cl',
@@ -39,7 +39,7 @@ class ShipSwitcherModule(object):
         self.ship_page_count = 1
         self.ship_last_page_count = 1
         self.current_shiplist_page = 1
-        self.current_shiplist_tabs = ['all']
+        self.current_shiplist_tabs = []
         self.temp_ship_config_dict = {}
         self.temp_asset_position_dict = {}
         self.position_cache = {}
@@ -72,7 +72,9 @@ class ShipSwitcherModule(object):
         """
         Nav.goto(self.regions, 'fleetcomp')
         self.module_regions['panels'][0].wait('shiplist_button.png', 10)
+        # reset current shiplist and known active tabs
         self.current_shiplist_page = 1
+        self.current_shiplist_tabs = []
 
     def check_need_to_switch(self):
         fleet = self.fleets[1]
@@ -108,8 +110,9 @@ class ShipSwitcherModule(object):
                 Util.wait_and_click_and_wait(
                     self.module_regions['panels'][slot],
                     'shiplist_button.png',
-                    self.regions['lower_right'],
-                    'page_first.png')
+                    self.regions['top_submenu'],
+                    Pattern('shiplist_tab_aux.png').similar(
+                        Globals.SHIP_LIST_TAB_SIMILARITY))
                 Util.rejigger_mouse(self.regions, 'top')
                 if self._resolve_replacement_ship(slot_config):
                     self.stats.increment_ships_switched()
@@ -209,7 +212,7 @@ class ShipSwitcherModule(object):
             # already at target tabs
             return True
 
-        if target == ['all']:
+        if 'all' in targets:
             # if target is all tabs, click the quick tab arrow once if not
             # already at all tabs; if arrow is clicked, reset page to 1
             if not self.regions['top_submenu'].exists(
@@ -228,7 +231,8 @@ class ShipSwitcherModule(object):
         for target in targets:
             Util.check_and_click(
                 self.regions['top_submenu'],
-                'shiplist_tab_{}.png'.format(target))
+                Pattern('shiplist_tab_{}.png'.format(target)).similar(
+                    Globals.SHIP_LIST_TAB_SIMILARITY))
         self.current_shiplist_page = 1
         self.current_shiplist_tabs = targets
         return True
