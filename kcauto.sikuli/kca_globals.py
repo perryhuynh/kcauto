@@ -18,6 +18,7 @@ class Globals(object):
     FATIGUE_SIMILARITY = 0.85
     SHIP_LIST_SIMILARITY = 0.96
     FLEET_ICON_SIMILARITY = 0.8
+    SHIP_LIST_TAB_SIMILARITY = 0.85
     SHIP_LIST_FLEET_ICON_SIMILARITY = 0.75
 
     # types of recoveries enabled for the recovery module. Valid options are
