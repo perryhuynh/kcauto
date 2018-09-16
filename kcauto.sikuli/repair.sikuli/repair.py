@@ -229,7 +229,7 @@ class RepairModule(object):
                 else:
                     # no more ships of valid damage state exists in list;
                     # return to the first page
-                    self._navigate_to_shiplist_page('first')
+                    self._navigate_to_shiplist_page(1)
                     return False
         return False
 
