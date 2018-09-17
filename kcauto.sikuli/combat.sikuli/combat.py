@@ -403,7 +403,8 @@ class CombatModule(object):
                     Util.rejigger_mouse(self.regions, 'lbas')
 
                 while not self.regions['lower_right'].exists('next.png', 1 + Globals.SLEEP_MODIFIER):
-                    # TODO: implement into Util class the recovery call if any of recovery assets exists within kc_region
+                    # TODO: implement into Util class the recovery call
+                    # if any of recovery assets exists within kc_region
                     if self.kc_region.exists('combat_nb_fight.png', 1 + Globals.SLEEP_MODIFIER):
                         self._select_night_battle(self._resolve_night_battle())
 

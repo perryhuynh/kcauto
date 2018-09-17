@@ -7,7 +7,7 @@ from util import Util
 class LBAS(object):
     _lbas_group_modes_tuple = ("defense", "retreat", "rest", "sortie", "standby")
 
-    def __init__(self, config, regions, map):
+    def __init__(self, config, regions, _map):
         """Initializes the LBAS module for use in the Combat module.
 
         Args:
@@ -18,7 +18,7 @@ class LBAS(object):
         self.config = config
         self.regions = regions
         self.kc_region = regions['game']
-        self.map = map
+        self.map = _map
         self.fatigue = {}
 
         # lbas-related regions
@@ -167,11 +167,14 @@ class LBAS(object):
         # Must be relevant to http://kancolle.wikia.com/wiki/Land_Base_Aerial_Support#Options
         if sum([lbas_group_mode_name_target == i for i in self._lbas_group_modes_tuple]) != 1:
             raise ValueError("No such LBAS mode: \"{}\".".format(lbas_group_mode_name_target))
-        while not self.module_regions['lbas_mode_switcher'].exists('lbas_group_mode_{}.png'.format(lbas_group_mode_name_target), 1 + Globals.SLEEP_MODIFIER):
+        while not self.module_regions['lbas_mode_switcher'].exists(
+                'lbas_group_mode_{}.png'.format(lbas_group_mode_name_target), 1 + Globals.SLEEP_MODIFIER):
             for lbas_group_mode_name_current in self._lbas_group_modes_tuple:
-                lbas_group_mode_pattern = Pattern('lbas_group_mode_{}.png'.format(lbas_group_mode_name_current)).similar(Globals.DEFAULT_SIMILARITY)
+                lbas_group_mode_pattern = Pattern('lbas_group_mode_{}.png'.format(
+                    lbas_group_mode_name_current)).similar(Globals.DEFAULT_SIMILARITY)
                 Util.rejigger_mouse(self.regions, 'top')
-                if self.module_regions['lbas_mode_switcher'].exists(lbas_group_mode_pattern, 1 + Globals.SLEEP_MODIFIER):
+                if self.module_regions['lbas_mode_switcher'].exists(
+                        lbas_group_mode_pattern, 1 + Globals.SLEEP_MODIFIER):
                     print("Current LBAS group mode is \"{}\".".format(lbas_group_mode_name_current))
                     if lbas_group_mode_name_current == lbas_group_mode_name_target:
                         break
