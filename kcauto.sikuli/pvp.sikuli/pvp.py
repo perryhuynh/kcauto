@@ -73,7 +73,6 @@ class PvPModule(object):
             opponent_counts['ss'] + opponent_counts['ssv']))
         Util.log_msg("Selecting {} and {!s} on night battle.".format(
             formation.replace('_', ' '), night_battle))
-
         # start pvp
         Util.wait_and_click(self.regions['lower_left'], 'pvp_start_1.png', 30)
         Util.wait_and_click(self.regions['lower'], 'pvp_start_2.png', 30)
@@ -81,32 +80,18 @@ class PvPModule(object):
         Util.rejigger_mouse(self.regions, 'top')
         Util.wait_and_click(self.regions[formation], formation)
 
-        while not (
-                self.regions['lower_right_corner'].exists('next.png') or
-                self.kc_region.exists('combat_nb_fight.png')):
-            # wait through combat
-            pass
+        while not self.regions['lower_right_corner'].exists('next.png', 1 + Globals.SLEEP_MODIFIER):
+            if self.kc_region.exists('combat_nb_fight.png', 1 + Globals.SLEEP_MODIFIER):
+                if night_battle:
+                    Util.check_and_click(self.kc_region, 'combat_nb_fight.png')
+                else:
+                    Util.check_and_click(self.kc_region, 'combat_nb_retreat.png')
+                Util.rejigger_mouse(self.regions, 'top')
 
-        # resolve night battle
-        if self.kc_region.exists('combat_nb_fight.png'):
-            if (night_battle):
-                Util.check_and_click(
-                    self.kc_region, 'combat_nb_fight.png')
-            else:
-                Util.check_and_click(
-                    self.kc_region, 'combat_nb_retreat.png')
-
-        while not self.regions['lower_right_corner'].exists('next.png'):
-            # wait through night battle combat, if applicable
-            pass
-
-        Util.click_preset_region(self.regions, 'center')
-
-        while not self.regions['home_menu'].exists('home_menu_sortie.png'):
-            # click through post-combat screens until main menu
-            Util.click_preset_region(self.regions, 'shipgirl')
-            Util.kc_sleep(2)
-
+        while not self.regions['home_menu'].exists('home_menu_sortie.png', 1 + Globals.SLEEP_MODIFIER):
+            if self.regions['lower_right_corner'].exists('next.png', 1 + Globals.SLEEP_MODIFIER):
+                Util.check_and_click(self.regions['lower_right_corner'], 'next.png')
+                Util.rejigger_mouse(self.regions, 'top')
         self.stats.increment_pvp_done()
         Util.log_msg("Finished PvP sortie.")
         self.fleet.needs_resupply = True
