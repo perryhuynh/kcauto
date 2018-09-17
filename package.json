@@ -1,6 +1,6 @@
 {
   "name": "kcauto",
-  "version": "6.6.1",
+  "version": "6.6.2",
   "main": "index.js",
   "repository": "git@gitlab.com:mrmin123/kcauto.git",
   "author": "mrmin123 <minyoung.choi@gmail.com>",
