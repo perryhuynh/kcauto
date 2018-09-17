@@ -181,10 +181,8 @@ class CombatModule(object):
 
         if self.lbas:
             # resupply and delay sortie time if LBAS fails fatigue check
-            lbas_check_fatigue = (
-                'CheckFatigue' in self.config.combat['misc_options'])
-            pass_lbas_check, delay_time = (
-                self.lbas.resupply_groups(lbas_check_fatigue))
+            lbas_check_fatigue = 'CheckFatigue' in self.config.combat['misc_options']
+            pass_lbas_check, delay_time = self.lbas.resupply_groups(lbas_check_fatigue)
             if not pass_lbas_check:
                 self.set_next_combat_time({'minutes': delay_time})
                 return False
@@ -404,14 +402,10 @@ class CombatModule(object):
                     Util.click_preset_region(self.regions, 'center')
                     Util.rejigger_mouse(self.regions, 'lbas')
 
-                combat_result = self._run_loop_during_battle()
-
-                # resolve night battle
-                if combat_result == 'night_battle':
-                    if self._select_night_battle(self._resolve_night_battle()):
-                        self._run_loop_during_battle()
-
-                self.regions['lower_right_corner'].wait('next.png', 30)
+                while not self.regions['lower_right'].exists('next.png', 1 + Globals.SLEEP_MODIFIER):
+                    # TODO: implement into Util class the recovery call if any of recovery assets exists within kc_region
+                    if self.kc_region.exists('combat_nb_fight.png', 1 + Globals.SLEEP_MODIFIER):
+                        self._select_night_battle(self._resolve_night_battle())
 
                 # battle complete; resolve combat results
                 Util.click_preset_region(self.regions, 'center')
@@ -563,8 +557,8 @@ class CombatModule(object):
 
         while not at_node:
             if self.fast_kc_region.exists('compass.png'):
-                # spin compass
-                while (self.kc_region.exists('compass.png')):
+                while self.kc_region.exists('compass.png'):
+                    Util.log_msg("Spinning compass.")
                     Util.click_preset_region(self.regions, 'center')
                     Util.rejigger_mouse(self.regions, 'lbas')
                     Util.kc_sleep(3)
@@ -617,22 +611,6 @@ class CombatModule(object):
                 # resource node end
                 self._stop_fleet_observer()
                 return (False, False)
-
-    def _run_loop_during_battle(self):
-        """Method that continuously runs during combat for the night battle
-        prompt or battle end screen.
-
-        Returns:
-            str: 'night_battle' if combat ends on the night battle prompt,
-                'results' if otherwise
-        """
-        while True:
-            if self.kc_region.exists('combat_nb_fight.png'):
-                return 'night_battle'
-            elif self.regions['lower_right_corner'].exists('next.png'):
-                return 'results'
-            else:
-                pass
 
     def _start_fleet_observer(self):
         """Method that starts the observeRegion/observeInBackground methods
