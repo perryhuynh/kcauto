@@ -1,3 +1,8 @@
+#### 6.6.2
+
+* Better fleet icon tracking in Live combat engine
+* Hopefully better damage tracking
+
 #### 6.6.1
 
 * Bugfixes to ShipSwitcher not working in various ways
