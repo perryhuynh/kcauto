@@ -14,7 +14,7 @@ class Globals(object):
 
     # similarity thresholds for various asset types
     DEFAULT_SIMILARITY = 0.8
-    DAMAGE_SIMILARITY = 0.85
+    DAMAGE_SIMILARITY = 0.88
     FATIGUE_SIMILARITY = 0.85
     SHIP_LIST_SIMILARITY = 0.96
     FLEET_ICON_SIMILARITY = 0.86
