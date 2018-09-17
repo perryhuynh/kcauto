@@ -474,6 +474,7 @@ class Util(object):
         region.mouseDown(Button.LEFT)
         cls.kc_sleep()
         region.mouseUp(Button.LEFT)
+        cls.log_msg("Click")
 
     @classmethod
     def check_and_click(cls, region, target, expand=[]):
