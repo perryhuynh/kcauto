@@ -181,8 +181,8 @@ class CombatModule(object):
 
         if self.lbas:
             # resupply and delay sortie time if LBAS fails fatigue check
-            lbas_check_fatigue = 'CheckFatigue' in self.config.combat['misc_options']
-            pass_lbas_check, delay_time = self.lbas.resupply_groups(lbas_check_fatigue)
+            pass_lbas_check, delay_time = self.lbas.resupply_groups(
+                'CheckFatigue' in self.config.combat['misc_options'])
             if not pass_lbas_check:
                 self.set_next_combat_time({'minutes': delay_time})
                 return False
@@ -402,11 +402,14 @@ class CombatModule(object):
                     Util.click_preset_region(self.regions, 'center')
                     Util.rejigger_mouse(self.regions, 'lbas')
 
-                while not self.regions['lower_right'].exists('next.png', 1 + Globals.SLEEP_MODIFIER):
-                    # TODO: implement into Util class the recovery call
-                    # if any of recovery assets exists within kc_region
-                    if self.kc_region.exists('combat_nb_fight.png', 1 + Globals.SLEEP_MODIFIER):
+                # TODO: recovery_controller.start()
+                while not Util.region_contains(self.regions["lower_right"],
+                                               "next.png"):
+                    # TODO: recovery_controller.check()
+                    if Util.region_contains(self.kc_region,
+                                            "combat_nb_fight.png"):
                         self._select_night_battle(self._resolve_night_battle())
+                # TODO: recovery_controller.finish()
 
                 # battle complete; resolve combat results
                 Util.click_preset_region(self.regions, 'center')

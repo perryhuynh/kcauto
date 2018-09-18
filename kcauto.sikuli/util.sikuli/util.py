@@ -1,4 +1,4 @@
-from sikuli import Screen, App, Region, Location, Pattern, Match, Button
+from sikuli import Screen, App, Region, Location, Pattern, Match, Button, Env
 import org.sikuli.script.FindFailed as FindFailed
 # alternate Region class to check instasnce type against
 # https://answers.launchpad.net/sikuli/+question/269004
@@ -6,6 +6,7 @@ import org.sikuli.script.Region as JRegion
 import org.sikuli.script.Match as JMatch
 import org.sikuli.script.Pattern as JPattern
 from time import strftime
+import time as timer  # TODO: refactor "time" vars
 from random import uniform, gauss, randint
 from math import ceil
 from time import sleep
@@ -30,6 +31,21 @@ class Util(object):
     CLR_END = '\033[0m'
 
     @staticmethod
+    def _randomize_timeout(base=None, flex=None):
+        """Method to count a random amount of time.
+
+        Args:
+            base (int, optional): minimum amount of time to go to sleep for
+            flex (int, optional): the delta for the max amount of time to go
+                to sleep for
+        """
+        if base is None:
+            return uniform(0.3, 0.7) + Globals.SLEEP_MODIFIER
+        else:
+            flex = base if flex is None else flex
+            return uniform(base, base + flex) + Globals.SLEEP_MODIFIER
+
+    @staticmethod
     def kc_sleep(base=None, flex=None):
         """Method for putting the program to sleep for a random amount of time.
         If base is not provided, defaults to somewhere along with 0.3 and 0.7
@@ -43,11 +59,7 @@ class Util(object):
             flex (int, optional): the delta for the max amount of time to go
                 to sleep for
         """
-        if base is None:
-            sleep(uniform(0.3, 0.7) + Globals.SLEEP_MODIFIER)
-        else:
-            flex = base if flex is None else flex
-            sleep(uniform(base, base + flex) + Globals.SLEEP_MODIFIER)
+        sleep(Util._randomize_timeout(base, flex))
 
     @staticmethod
     def convert_to_jst(time, config={}):
@@ -433,6 +445,54 @@ class Util(object):
         regions['game'].mouseMove(Location(rand_x, rand_y))
 
     @classmethod
+    def region_contains(cls, region, target, time_base=None, time_flex=None):
+        """A simple wrapper for Region.exists(Pattern) method.
+
+        Args:
+            region (Region): Region to conduct the search in
+            target (str, Pattern): the filename of the asset or Pattern
+                with pre-defined similarity to match within given region
+        Args:
+            time_base (int, optional):
+                minimum amount of time to go to sleep for
+            time_flex (int, optional):
+                the delta for the max amount of time to go to sleep for
+        Returns:
+            Match: as Region.exists(Pattern) does
+        """
+
+        last_match = region.exists(
+            target, cls._randomize_timeout(time_base, time_flex))
+        if last_match:
+            cls.kc_sleep()
+        return last_match
+
+    @classmethod
+    def wait_until_appears(cls, region, target):
+        """A wrapper for Region.exists(Pattern) method to replace the
+        Region.wait(Pattern) method which throws FindFailed exception.
+        It scans the given region until timeout exceeds.
+
+        Args:
+            region (Region): Region to conduct the search in
+            target (str, Pattern): the filename of the asset or Pattern
+                with pre-defined similarity to match within given region
+        Returns:
+            Match: as Region.exists(Pattern) does
+        """
+        last_match = None
+        start_time = timer.time()
+        end_time = 30.0  # TODO: Include PATTERN_WAIT_TIMEOUT to Globals
+        while not last_match:
+            last_match = cls.region_contains(region, target)
+            if last_match:
+                return last_match
+            if (timer.time() - start_time) > end_time:  # seconds
+                raise ValueError("Pattern wait timeout exceeded")
+                # TODO: Implement RecoveryCallingException
+            # TODO: Implement recovery signature assets scan
+
+    @classmethod
     def click_preset_region(cls, regions, preset):
         """Method to move the mouse to one of the preset regions defined in
         rejigger_mouse() and simulate clicking the mouse in the location.
@@ -474,7 +534,8 @@ class Util(object):
         region.mouseDown(Button.LEFT)
         cls.kc_sleep()
         region.mouseUp(Button.LEFT)
-        cls.log_msg("Click")
+        loc = Env.getMouseLocation()
+        cls.log_msg("Click on L({},{}).".format(loc.getX(), loc.getY()))
 
     @classmethod
     def check_and_click(cls, region, target, expand=[]):
