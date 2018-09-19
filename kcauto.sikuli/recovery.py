@@ -45,13 +45,14 @@ class Recovery(object):
             Util.log_success("Recovery successful.")
             kcauto.stats.increment_recoveries()
             return True
-        elif kc_region.exists('next.png'):
+        elif kc_region.exists('next.png') or kc_region.exists('next_alt.png'):
             # crashed at some results screen; try to click it away until we see
             # the main game screen
-            while (kc_region.exists('next.png') and
-                    not kc_region.exists(
+            while ((kc_region.exists('next.png')
+                    or kc_region.exists('next_alt.png'))
+                    and not kc_region.exists(
                         Pattern('home_menu_sortie.png').exact())):
-                Util.click_preset_region(regions, 'center')
+                Util.click_preset_region(regions, 'shipgirl')
                 sleep(2)
             if kc_region.exists(Pattern('home_menu_sortie.png').exact()):
                 # reference point exists, so we are back in-game
