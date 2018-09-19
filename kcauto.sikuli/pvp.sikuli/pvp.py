@@ -80,17 +80,19 @@ class PvPModule(object):
         Util.rejigger_mouse(self.regions, 'top')
         Util.wait_and_click(self.regions[formation], formation)
 
-        while not self.regions['lower_right_corner'].exists('next.png', 1 + Globals.SLEEP_MODIFIER):
-            if self.kc_region.exists('combat_nb_fight.png', 1 + Globals.SLEEP_MODIFIER):
+        while not self.regions['lower_right_corner'].exists('next.png', 1):
+            if self.kc_region.exists('combat_nb_fight.png', 1):
                 if night_battle:
                     Util.check_and_click(self.kc_region, 'combat_nb_fight.png')
                 else:
-                    Util.check_and_click(self.kc_region, 'combat_nb_retreat.png')
+                    Util.check_and_click(
+                        self.kc_region, 'combat_nb_retreat.png')
                 Util.rejigger_mouse(self.regions, 'top')
 
-        while not self.regions['home_menu'].exists('home_menu_sortie.png', 1 + Globals.SLEEP_MODIFIER):
-            if self.regions['lower_right_corner'].exists('next.png', 1 + Globals.SLEEP_MODIFIER):
-                Util.check_and_click(self.regions['lower_right_corner'], 'next.png')
+        while not self.regions['home_menu'].exists('home_menu_sortie.png', 1):
+            if self.regions['lower_right_corner'].exists('next.png', 1):
+                Util.check_and_click(
+                    self.regions['lower_right_corner'], 'next.png')
                 Util.rejigger_mouse(self.regions, 'top')
         self.stats.increment_pvp_done()
         Util.log_msg("Finished PvP sortie.")
