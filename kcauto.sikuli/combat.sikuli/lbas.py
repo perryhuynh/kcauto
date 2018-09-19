@@ -26,10 +26,8 @@ class LBAS(object):
         y = self.kc_region.y
         self.module_regions = {
             'check_lbas_fatigue': Region(x + 850, y + 350, 55, 330),
-            'lbas_mode_switcher': Region(x + 1135, y + 200, 55, 80),
-            'fast_lbas_mode_switcher': Region(x + 1135, y + 200, 55, 80)
+            'lbas_mode_switcher': Region(x + 1135, y + 200, 55, 80)
         }
-        self.module_regions['fast_lbas_mode_switcher'].setAutoWaitTimeout(0)
 
     def assign_groups(self):
         """Method for assigning sortied LBAS groups to their respective nodes
@@ -174,7 +172,7 @@ class LBAS(object):
 
         for idx, current_mode in enumerate(self._LBAS_MODES):
             if self.module_regions['lbas_mode_switcher'].exists(
-                    'lbas_group_mode_{}.png'.format(current_mode), 1):
+                    'lbas_group_mode_{}.png'.format(current_mode), 0):
                 break
 
         expected_modes = self._LBAS_MODES[idx:] + self._LBAS_MODES[:idx]
