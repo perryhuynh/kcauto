@@ -90,9 +90,9 @@ class PvPModule(object):
                 Util.rejigger_mouse(self.regions, 'top')
 
         while not self.regions['home_menu'].exists('home_menu_sortie.png', 1):
-            if self.regions['lower_right_corner'].exists('next.png', 1):
-                Util.check_and_click(
-                    self.regions['lower_right_corner'], 'next.png')
+            if Util.check_and_click(
+                    self.regions['lower_right_corner'], 'next.png',
+                    Globals.EXPAND['shipgirl_off_next']):
                 Util.rejigger_mouse(self.regions, 'top')
         self.stats.increment_pvp_done()
         Util.log_msg("Finished PvP sortie.")
