@@ -1,3 +1,7 @@
+#### 6.7.0
+
+* Update FCF assets for FCF compatibility (thanks to @perryhuynh)
+
 #### 6.6.2
 
 * Better fleet icon tracking in Live combat engine
