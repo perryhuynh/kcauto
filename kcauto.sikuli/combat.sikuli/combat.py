@@ -459,7 +459,7 @@ class CombatModule(object):
                         # event map sortie, the map is cleared. This 'next' is
                         # for the screen indicating the opening of EOs.
                         if Util.check_and_click(
-                                self.regions['event_next'], 'next.png',
+                                self.module_regions['event_next'], 'next.png',
                                 Globals.EXPAND['shipgirl_off_next']):
                             Util.rejigger_mouse(self.regions, 'top')
                             if ('ClearStop' in self.config.combat[

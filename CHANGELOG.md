@@ -1,3 +1,7 @@
+#### 6.8.2
+
+* Bugfix to Event-map specific combat region definition
+
 #### 6.8.1
 
 * Push staged 6.8.0 files to master
