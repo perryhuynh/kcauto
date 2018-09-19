@@ -5,9 +5,6 @@ from util import Util
 
 
 class LBAS(object):
-    # Must be relevant to:
-    # http://kancolle.wikia.com/wiki/Land_Base_Aerial_Support#Options
-    _LBAS_GROUP_MODES = ("standby", "sortie", "defense", "retreat", "rest")
 
     def __init__(self, config, regions, sortie_map_data):
         """Initializes the LBAS module for use in the Combat module.
@@ -30,36 +27,42 @@ class LBAS(object):
             'check_lbas_fatigue': Region(x + 850, y + 350, 55, 330),
             'lbas_mode_switcher': Region(x + 1135, y + 200, 55, 80)
         }
+        # Must be relevant to:
+        # http://kancolle.wikia.com/wiki/Land_Base_Aerial_Support#Options
+        self._LBAS_GROUP_MODES = ("standby", "sortie", "defense",
+                                  "retreat", "rest")
 
     def assign_groups(self):
         """Method for assigning sortied LBAS groups to their respective nodes
         on the sortie map.
         """
-        Util.wait_until_appears(self.regions["upper"], "lbas_panel_ready.png")
+        while not self.kc_region.exists("lbas_panel_ready"):
+            pass
         Util.log_msg("Assign LBAS groups to nodes.")
         for key in (1, 2, 3):
             lbas_group_nodes = "lbas_group_{}_nodes".format(key)
             if not self.config.combat[lbas_group_nodes]:
                 # if no lbas nodes are specified for this group, skip it
                 continue
-            Util.log_msg("Assigning nodes for LBAS Group #{}.".format(
-                lbas_group_nodes[11]))
+            Util.log_msg(
+                "Assigning nodes for LBAS Group #{}.".format(
+                    lbas_group_nodes[11]))
             nodes = self.config.combat[lbas_group_nodes]
             for node in nodes:
                 node_obj = self.map.nodes[node]
-                lbas_sidebar_pos = "left"
-                lbas_panel_side = Util.wait_until_appears(
-                    self.kc_region, "lbas_panel_side.png")
-                if lbas_panel_side.x > 600:
-                    lbas_sidebar_pos = "right"
-                if ((lbas_sidebar_pos == 'left' and
-                     node_obj.coords[0] < 420) or
-                        (lbas_sidebar_pos == 'right' and
-                         node_obj.coords[0] > 780)):
+                lbas_sidebar_pos = 'left'
+                lbas_sidebar = None
+                while not lbas_sidebar:
+                    lbas_sidebar = self.kc_region.exists('lbas_panel_side.png')
+                if lbas_sidebar.x > 600:
+                    lbas_sidebar_pos = 'right'
+                if ((lbas_sidebar_pos == 'left' and node_obj.coords[0] < 420)
+                        or (lbas_sidebar_pos == 'right'
+                            and node_obj.coords[0] > 780)):
                     self.kc_region.hover('lbas_panel_side.png')
                 node_obj.click_node(self.kc_region)
                 Util.rejigger_mouse(self.regions, 'lbas')
-                Util.kc_sleep()
+                Util.kc_sleep(1)
             self.regions['upper'].click('lbas_assign_confirm.png')
             Util.rejigger_mouse(self.regions, 'lbas')
             Util.kc_sleep(1)
@@ -140,7 +143,8 @@ class LBAS(object):
         self.print_fatigue_states(group)
         if group_fatigue['high'] or group_fatigue['medium']:
             Util.log_warning(
-                "LBAS Group #{} is fatigued, sortie cancelled.".format(group))
+                "Canceling combat sortie: LBAS Group #{} is fatigued.".format(
+                    group))
             self._switch_lbas_mode('rest')
             fatigue['high'] = (
                 group_fatigue['high']
@@ -173,8 +177,7 @@ class LBAS(object):
         Util.rejigger_mouse(self.regions, "top")
         idx = 0
         for idx, available_mode in enumerate(self._LBAS_GROUP_MODES):
-            if Util.region_contains(
-                    self.module_regions["lbas_mode_switcher"],
+            if self.module_regions["lbas_mode_switcher"].exists(
                     "lbas_group_mode_{}.png".format(available_mode)):
                 break
         expected_modes = self._LBAS_GROUP_MODES[
@@ -191,8 +194,9 @@ class LBAS(object):
                 next_mode = expected_modes[idx + 1]
             except IndexError:
                 next_mode = expected_modes[0]
-            Util.wait_until_appears(self.module_regions["lbas_mode_switcher"],
-                                    "lbas_group_mode_{}.png".format(next_mode))
+            while not self.module_regions["lbas_mode_switcher"].exists(
+                    "lbas_group_mode_{}.png".format(next_mode)):
+                pass
         Util.log_msg("LBAS Group switched to {} mode.".format(target_mode))
 
     def _check_fatigue(self):
@@ -216,11 +220,12 @@ class LBAS(object):
         Args:
             mode (str): which fatigue state to check for
         """
-        self.fatigue[mode] = False
-        p = Pattern('ship_state_fatigue_{}.png'.format(mode)).similar(
-            Globals.FATIGUE_SIMILARITY)
-        if Util.region_contains(self.module_regions['check_lbas_fatigue'], p):
-            self.fatigue[mode] = True
+        self.fatigue[mode] = (
+            True
+            if (self.module_regions['check_lbas_fatigue'].exists(
+                Pattern('ship_state_fatigue_{}.png'.format(mode))
+                .similar(Globals.FATIGUE_SIMILARITY)))
+            else False)
 
     def print_fatigue_states(self, group):
         """Method to report the LBAS Group's fatigue state in a more

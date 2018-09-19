@@ -403,17 +403,15 @@ class CombatModule(object):
                     Util.rejigger_mouse(self.regions, 'lbas')
 
                 # TODO: recovery_controller.start()
-                while not Util.region_contains(self.regions["lower_right"],
-                                               "next.png"):
+                while not self.regions["lower_right"].exists("next.png"):
                     # TODO: recovery_controller.check()
-                    if Util.region_contains(self.kc_region,
-                                            "combat_nb_fight.png"):
+                    if self.kc_region.exists("combat_nb_fight.png"):
                         self._select_night_battle(self._resolve_night_battle())
                 # TODO: recovery_controller.finish()
 
                 # battle complete; resolve combat results
                 Util.click_preset_region(self.regions, 'center')
-                self.regions['game'].wait('mvp_marker.png', 30)
+                self.kc_region.wait('mvp_marker.png', 30)
                 self.dmg = self.primary_fleet.check_damages(
                     self.module_regions['check_damage_combat'])
                 self.primary_fleet.print_damage_counts()

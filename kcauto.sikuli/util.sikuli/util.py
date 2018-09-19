@@ -6,7 +6,6 @@ import org.sikuli.script.Region as JRegion
 import org.sikuli.script.Match as JMatch
 import org.sikuli.script.Pattern as JPattern
 from time import strftime
-import time as timer  # TODO: refactor "time" vars
 from random import uniform, gauss, randint
 from math import ceil
 from time import sleep
@@ -432,69 +431,6 @@ class Util(object):
             rand_y = cls.random_coord(preset.y, preset.y + preset.h)
 
         regions['game'].mouseMove(Location(rand_x, rand_y))
-
-    @staticmethod
-    def _randomize_timeout(base=None, flex=None):
-        """Method to count a random amount of time.
-
-        Args:
-            base (int, optional): minimum amount of time to go to sleep for
-            flex (int, optional): the delta for the max amount of time to go
-                to sleep for
-        """
-        if base is None:
-            return uniform(0.3, 0.7) + Globals.SLEEP_MODIFIER
-        else:
-            flex = base if flex is None else flex
-            return uniform(base, base + flex) + Globals.SLEEP_MODIFIER
-
-    @classmethod
-    def region_contains(cls, region, target, time_base=None, time_flex=None):
-        """A simple wrapper for Region.exists(Pattern) method.
-
-        Args:
-            region (Region): Region to conduct the search in
-            target (str, Pattern): the filename of the asset or Pattern
-                with pre-defined similarity to match within given region
-        Args:
-            time_base (int, optional):
-                minimum amount of time to go to sleep for
-            time_flex (int, optional):
-                the delta for the max amount of time to go to sleep for
-        Returns:
-            Match: as Region.exists(Pattern) does
-        """
-
-        last_match = region.exists(
-            target, cls._randomize_timeout(time_base, time_flex))
-        if last_match:
-            cls.kc_sleep()
-        return last_match
-
-    @classmethod
-    def wait_until_appears(cls, region, target):
-        """A wrapper for Region.exists(Pattern) method to replace the
-        Region.wait(Pattern) method which throws FindFailed exception.
-        It scans the given region until timeout exceeds.
-
-        Args:
-            region (Region): Region to conduct the search in
-            target (str, Pattern): the filename of the asset or Pattern
-                with pre-defined similarity to match within given region
-        Returns:
-            Match: as Region.exists(Pattern) does
-        """
-        last_match = None
-        start_time = timer.time()
-        end_time = 30.0  # TODO: Include PATTERN_WAIT_TIMEOUT to Globals
-        while not last_match:
-            last_match = cls.region_contains(region, target)
-            if last_match:
-                return last_match
-            if (timer.time() - start_time) > end_time:  # seconds
-                raise ValueError("Pattern wait timeout exceeded")
-                # TODO: Implement RecoveryCallingException
-            # TODO: Implement recovery signature assets scan
 
     @classmethod
     def click_preset_region(cls, regions, preset):
