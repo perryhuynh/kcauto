@@ -1,4 +1,4 @@
-from sikuli import Screen, App, Region, Location, Pattern, Match, Button
+from sikuli import Screen, App, Region, Location, Pattern, Match, Button, Env
 import org.sikuli.script.FindFailed as FindFailed
 # alternate Region class to check instasnce type against
 # https://answers.launchpad.net/sikuli/+question/269004
@@ -474,6 +474,8 @@ class Util(object):
         region.mouseDown(Button.LEFT)
         cls.kc_sleep()
         region.mouseUp(Button.LEFT)
+        loc = Env.getMouseLocation()
+        cls.log_msg("Click on L({},{}).".format(loc.getX(), loc.getY()))
 
     @classmethod
     def check_and_click(cls, region, target, expand=[]):
