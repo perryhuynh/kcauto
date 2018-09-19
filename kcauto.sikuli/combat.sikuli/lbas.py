@@ -42,7 +42,7 @@ class LBAS(object):
             if not self.config.combat[lbas_group_nodes]:
                 # if no lbas nodes are specified for this group, skip it
                 continue
-            Util.log_msg("Assigning nodes for LBAS group #{}.".format(
+            Util.log_msg("Assigning nodes for LBAS Group #{}.".format(
                 lbas_group_nodes[11]))
             nodes = self.config.combat[lbas_group_nodes]
             for node in nodes:
@@ -101,14 +101,14 @@ class LBAS(object):
             Pattern(resupply_menu_button_faded).exact())
         Util.kc_sleep(3)
         for group in self.config.combat['lbas_groups']:
-            Util.log_msg("Checking LBAS group #{} state.".format(group))
+            Util.log_msg("Checking LBAS Group #{} state.".format(group))
             if group != 1:
                 self.regions['right'].click('lbas_group_tab_{}.png'.format(
                     str(group)))
                 Util.kc_sleep()
             if Util.check_and_click(
                     self.regions['right'], 'lbas_resupply.png'):
-                Util.log_msg("Resupplying LBAS group #{}.".format(group))
+                Util.log_msg("Resupplying LBAS Group #{}.".format(group))
                 self.regions['right'].waitVanish('lbas_resupply.png', 10)
             if check_fatigue:
                 fatigue = self._check_and_manage_lbas_fatigue(fatigue, group)
