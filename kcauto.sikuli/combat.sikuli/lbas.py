@@ -216,12 +216,11 @@ class LBAS(object):
         Args:
             mode (str): which fatigue state to check for
         """
-        self.fatigue[mode] = (
-            True
-            if (self.module_regions['check_lbas_fatigue'].exists(
-                Pattern('ship_state_fatigue_{}.png'.format(mode))
-                    .similar(Globals.FATIGUE_SIMILARITY)))
-            else False)
+        self.fatigue[mode] = False
+        p = Pattern('ship_state_fatigue_{}.png'.format(mode)).similar(
+            Globals.FATIGUE_SIMILARITY)
+        if Util.region_contains(self.module_regions['check_lbas_fatigue'], p):
+            self.fatigue[mode] = True
 
     def print_fatigue_states(self, group):
         """Method to report the LBAS Group's fatigue state in a more
