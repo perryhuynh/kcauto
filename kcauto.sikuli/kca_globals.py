@@ -39,6 +39,8 @@ class Globals(object):
     # area expansion presets; format is in [left, right, up, down] relative to
     # the center of the match
     EXPAND = {
+        'shipgirl_off_next': [-470, 10, -450, -30],
+        'center_off_next': [-900, -180, -450, -150],
         'repair_list': [-500, 20, -12, 12],
         'arrow_navigation': [-10, 10, -8, 8],
         'shiplist_sort': [-4, 36, -10, 10],

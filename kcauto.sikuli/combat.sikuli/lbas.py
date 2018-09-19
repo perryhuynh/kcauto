@@ -5,18 +5,20 @@ from util import Util
 
 
 class LBAS(object):
-    def __init__(self, config, regions, map):
+    _LBAS_MODES = ('standby', 'sortie', 'defense', 'retreat', 'rest')
+
+    def __init__(self, config, regions, map_data):
         """Initializes the LBAS module for use in the Combat module.
 
         Args:
             config (Config): kcauto Config instance
             regions (dict): dict of pre-defined kcauto regions
-            map (MapData): MapData instance from the Combat module
+            map_data (MapData): MapData instance from the Combat module
         """
         self.config = config
         self.regions = regions
         self.kc_region = regions['game']
-        self.map = map
+        self.map = map_data
         self.fatigue = {}
 
         # lbas-related regions
@@ -32,7 +34,6 @@ class LBAS(object):
         on the sortie map.
         """
         self.kc_region.wait('lbas_panel_ready.png', 10)
-        Util.kc_sleep(2)
         Util.log_msg("Assign LBAS groups to nodes.")
         for lbas_group_nodes in (
                 'lbas_group_1_nodes', 'lbas_group_2_nodes',
@@ -40,10 +41,8 @@ class LBAS(object):
             if not self.config.combat[lbas_group_nodes]:
                 # if no lbas nodes are specified for this group, skip it
                 continue
-
-            Util.log_msg(
-                "Assigning nodes for LBAS group {}.".format(
-                    lbas_group_nodes[11]))
+            Util.log_msg("Assigning nodes for LBAS group #{}.".format(
+                lbas_group_nodes[11]))
             nodes = self.config.combat[lbas_group_nodes]
             for node in nodes:
                 node_obj = self.map.nodes[node]
@@ -99,14 +98,14 @@ class LBAS(object):
             Pattern(resupply_menu_button_faded).exact())
         Util.kc_sleep(3)
         for group in self.config.combat['lbas_groups']:
-            Util.log_msg("Checking LBAS group {} state.".format(group))
+            Util.log_msg("Checking LBAS group #{} state.".format(group))
             if group != 1:
                 self.regions['right'].click('lbas_group_tab_{}.png'.format(
                     str(group)))
                 Util.kc_sleep()
             if Util.check_and_click(
                     self.regions['right'], 'lbas_resupply.png'):
-                Util.log_msg("Resupplying LBAS group {}.".format(group))
+                Util.log_msg("Resupplying LBAS group #{}.".format(group))
                 self.regions['right'].waitVanish('lbas_resupply.png', 10)
             if check_fatigue:
                 fatigue = self._check_and_manage_lbas_fatigue(fatigue, group)
@@ -119,10 +118,10 @@ class LBAS(object):
             Pattern(resupply_menu_button).exact())
         Util.kc_sleep(1)
         if fatigue['high']:
-            return (False, 18)
+            return False, 18
         if fatigue['medium']:
-            return (False, 12)
-        return (True, 0)
+            return False, 12
+        return True, 0
 
     def _check_and_manage_lbas_fatigue(self, fatigue, group):
         """Checks LBAS group fatigue and manages its LBAS mode appropriately.
@@ -137,7 +136,9 @@ class LBAS(object):
         group_fatigue = self._check_fatigue()
         self.print_fatigue_states(group)
         if group_fatigue['high'] or group_fatigue['medium']:
-            # lbas group is fatigued; put it in rest mode
+            Util.log_msg(
+                "LBAS group #{} is fatigued, assigning to rest mode.".format(
+                    group))
             self._switch_lbas_mode('rest')
             fatigue['high'] = (
                 group_fatigue['high']
@@ -146,28 +147,45 @@ class LBAS(object):
                 group_fatigue['medium']
                 if group_fatigue['medium'] else fatigue['medium'])
         else:
+            Util.log_msg("LBAS group #{} has good morale.".format(group))
             lbas_group_nodes_key = 'lbas_group_{}_nodes'.format(group)
             # put LBAS group into air defense mode if it is active but no nodes
             # are assigned to it
             group_sortie_mode = (
                 'sortie'
-                if self.config.combat[lbas_group_nodes_key] else 'defense')
+                if self.config.combat[lbas_group_nodes_key]
+                else 'defense')
+            Util.log_msg("Assign LBAS group #{} to {} mode.".format(
+                group, group_sortie_mode))
             self._switch_lbas_mode(group_sortie_mode)
         return fatigue
 
-    def _switch_lbas_mode(self, final_mode):
+    def _switch_lbas_mode(self, target_mode):
         """Switches the lbas group mode to the specified final mode.
 
         Args:
-            final_mode (str): the mode to switch the LBAS group to
+            target_mode (str): the mode to switch the LBAS group to
         """
         Util.rejigger_mouse(self.regions, 'top')
-        while not self.module_regions['lbas_mode_switcher'].exists(
-                'lbas_group_mode_{}.png'.format(final_mode)):
-            Util.click_preset_region(self.regions, 'lbas_mode_switch_button')
+        if target_mode not in self._LBAS_MODES:
+            raise ValueError("Invalid LBAS mode: '{}'.".format(target_mode))
+
+        for idx, current_mode in enumerate(self._LBAS_MODES):
+            if self.module_regions['lbas_mode_switcher'].exists(
+                    'lbas_group_mode_{}.png'.format(current_mode), 0):
+                break
+
+        expected_modes = self._LBAS_MODES[idx:] + self._LBAS_MODES[:idx]
+        for idx, mode in enumerate(expected_modes):
+            Util.log_msg("LBAS group switched to {} mode.".format(mode))
+            if mode == target_mode:
+                break
+            Util.check_and_click(
+                self.module_regions['lbas_mode_switcher'],
+                'lbas_group_mode_{}.png'.format(mode))
             Util.rejigger_mouse(self.regions, 'top')
-            Util.kc_sleep(1)
-        Util.log_msg("LBAS group switched to {} mode.".format(final_mode))
+            self.module_regions['lbas_mode_switcher'].wait(
+                'lbas_group_mode_{}.png'.format(expected_modes[idx + 1]))
 
     def _check_fatigue(self):
         """Method to multithread detection of LBAS group fatigue states.
