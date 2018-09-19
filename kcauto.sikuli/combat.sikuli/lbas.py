@@ -121,10 +121,10 @@ class LBAS(object):
             Pattern(resupply_menu_button).exact())
         Util.kc_sleep(1)
         if fatigue['high']:
-            return False, 18
+            return (False, 18)
         if fatigue['medium']:
-            return False, 12
-        return True, 0
+            return (False, 12)
+        return (True, 0)
 
     def _check_and_manage_lbas_fatigue(self, fatigue, group):
         """Checks LBAS group fatigue and manages its LBAS mode appropriately.
@@ -219,8 +219,8 @@ class LBAS(object):
         self.fatigue[mode] = (
             True
             if (self.module_regions['check_lbas_fatigue'].exists(
-                Pattern('ship_state_fatigue_{}.png'.format(mode)).similar(
-                    Globals.FATIGUE_SIMILARITY)))
+                Pattern('ship_state_fatigue_{}.png'.format(mode))
+                    .similar(Globals.FATIGUE_SIMILARITY)))
             else False)
 
     def print_fatigue_states(self, group):

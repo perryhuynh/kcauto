@@ -92,8 +92,8 @@ class PvPModule(object):
                                        "home_menu_sortie.png"):
             if Util.region_contains(self.regions["lower_right_corner"], 
                                     "next.png"):
-                Util.check_and_click(self.regions["lower_right_corner"], 
-                                     "next.png")
+                Util.click_preset_region(self.regions, "shipgirl")
+                Util.kc_sleep(2)
                 Util.rejigger_mouse(self.regions, "top")
         self.stats.increment_pvp_done()
         Util.log_msg("Finished PvP sortie.")

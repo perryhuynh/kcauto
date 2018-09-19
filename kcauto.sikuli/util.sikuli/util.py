@@ -45,10 +45,10 @@ class Util(object):
                 to sleep for
         """
         if base is None:
-            return uniform(0.3, 0.7) + Globals.SLEEP_MODIFIER
+            sleep(uniform(0.3, 0.7) + Globals.SLEEP_MODIFIER)
         else:
             flex = base if flex is None else flex
-            return uniform(base, base + flex) + Globals.SLEEP_MODIFIER
+            sleep(uniform(base, base + flex) + Globals.SLEEP_MODIFIER)
 
     @staticmethod
     def convert_to_jst(time, config={}):
