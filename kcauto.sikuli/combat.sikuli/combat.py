@@ -402,12 +402,9 @@ class CombatModule(object):
                     Util.click_preset_region(self.regions, 'center')
                     Util.rejigger_mouse(self.regions, 'lbas')
 
-                # TODO: recovery_controller.start()
                 while not self.regions["lower_right"].exists("next.png"):
-                    # TODO: recovery_controller.check()
                     if self.kc_region.exists("combat_nb_fight.png"):
                         self._select_night_battle(self._resolve_night_battle())
-                # TODO: recovery_controller.finish()
 
                 # battle complete; resolve combat results
                 Util.click_preset_region(self.regions, 'center')
