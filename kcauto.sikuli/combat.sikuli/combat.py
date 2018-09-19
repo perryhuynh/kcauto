@@ -183,8 +183,8 @@ class CombatModule(object):
             # resupply and delay sortie time if LBAS fails fatigue check
             lbas_check_fatigue = (
                 'CheckFatigue' in self.config.combat['misc_options'])
-            pass_lbas_check, delay_time = self.lbas.resupply_groups(
-                lbas_check_fatigue)
+            pass_lbas_check, delay_time = (
+                self.lbas.resupply_groups(lbas_check_fatigue))
             if not pass_lbas_check:
                 self.set_next_combat_time({'minutes': delay_time})
                 return False
