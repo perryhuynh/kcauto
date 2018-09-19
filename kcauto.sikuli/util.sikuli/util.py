@@ -1,4 +1,4 @@
-from sikuli import Screen, App, Region, Location, Pattern, Match, Button
+from sikuli import Screen, App, Region, Location, Pattern, Match, Mouse, Button
 import org.sikuli.script.FindFailed as FindFailed
 # alternate Region class to check instasnce type against
 # https://answers.launchpad.net/sikuli/+question/269004
@@ -471,10 +471,11 @@ class Util(object):
             region (Region): sikuli Region instance containing the last known
                 location of the Kantai Collection game screen
         """
+        mouse_loc = Mouse.at()
         region.mouseDown(Button.LEFT)
         cls.kc_sleep()
         region.mouseUp(Button.LEFT)
-        cls.log_msg("Click")
+        cls.log_msg("Click {},{}".format(mouse_loc.x, mouse_loc.y))
 
     @classmethod
     def check_and_click(cls, region, target, expand=[]):
