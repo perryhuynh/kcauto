@@ -31,21 +31,6 @@ class Util(object):
     CLR_END = '\033[0m'
 
     @staticmethod
-    def _randomize_timeout(base=None, flex=None):
-        """Method to count a random amount of time.
-
-        Args:
-            base (int, optional): minimum amount of time to go to sleep for
-            flex (int, optional): the delta for the max amount of time to go
-                to sleep for
-        """
-        if base is None:
-            return uniform(0.3, 0.7) + Globals.SLEEP_MODIFIER
-        else:
-            flex = base if flex is None else flex
-            return uniform(base, base + flex) + Globals.SLEEP_MODIFIER
-
-    @staticmethod
     def kc_sleep(base=None, flex=None):
         """Method for putting the program to sleep for a random amount of time.
         If base is not provided, defaults to somewhere along with 0.3 and 0.7
@@ -59,7 +44,11 @@ class Util(object):
             flex (int, optional): the delta for the max amount of time to go
                 to sleep for
         """
-        sleep(Util._randomize_timeout(base, flex))
+        if base is None:
+            return uniform(0.3, 0.7) + Globals.SLEEP_MODIFIER
+        else:
+            flex = base if flex is None else flex
+            return uniform(base, base + flex) + Globals.SLEEP_MODIFIER
 
     @staticmethod
     def convert_to_jst(time, config={}):
@@ -443,6 +432,21 @@ class Util(object):
             rand_y = cls.random_coord(preset.y, preset.y + preset.h)
 
         regions['game'].mouseMove(Location(rand_x, rand_y))
+
+    @staticmethod
+    def _randomize_timeout(base=None, flex=None):
+        """Method to count a random amount of time.
+
+        Args:
+            base (int, optional): minimum amount of time to go to sleep for
+            flex (int, optional): the delta for the max amount of time to go
+                to sleep for
+        """
+        if base is None:
+            return uniform(0.3, 0.7) + Globals.SLEEP_MODIFIER
+        else:
+            flex = base if flex is None else flex
+            return uniform(base, base + flex) + Globals.SLEEP_MODIFIER
 
     @classmethod
     def region_contains(cls, region, target, time_base=None, time_flex=None):

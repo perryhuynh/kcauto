@@ -64,115 +64,6 @@ class LBAS(object):
             Util.rejigger_mouse(self.regions, 'lbas')
             Util.kc_sleep(1)
 
-    def _check_fatigue_func(self, mode):
-        """Child multithreaded method for fatigue states.
-
-        Args:
-            mode (str): which fatigue state to check for
-        """
-        self.fatigue[mode] = (
-            True
-            if (self.module_regions['check_lbas_fatigue'].exists(
-                Pattern('ship_state_fatigue_{}.png'.format(mode)).similar(
-                    Globals.FATIGUE_SIMILARITY)))
-            else False)
-
-    def _check_fatigue(self):
-        """Method to multithread detection of LBAS group fatigue states.
-
-        Returns:
-            dict: updated fatigue counter dict
-        """
-        # reset fatigue
-        thread_check_low_fatigue = Thread(
-            target=self._check_fatigue_func, args=('medium', ))
-        thread_check_high_fatigue = Thread(
-            target=self._check_fatigue_func, args=('high', ))
-        Util.multithreader([
-            thread_check_low_fatigue, thread_check_high_fatigue])
-        return self.fatigue
-
-    def print_fatigue_states(self, group):
-        """Method to report the LBAS Group's fatigue state in a more
-        human-readable format
-        """
-        fatigue = 'Rested'
-        if self.fatigue['high']:
-            fatigue = 'High'
-        elif self.fatigue['medium']:
-            fatigue = 'Medium'
-        Util.log_msg(
-            "LBAS Group #{} fatigue state: \"{}\"".format(group, fatigue))
-
-    def _switch_lbas_mode(self, target_mode):
-        """Switches the lbas group mode to the specified final mode.
-
-        Args:
-            target_mode (str): the mode to switch the LBAS group to
-        """
-        if target_mode not in self._LBAS_GROUP_MODES:
-            raise ValueError("No such LBAS Group mode: \"{}\".".format(
-                target_mode))
-        Util.rejigger_mouse(self.regions, "top")
-        idx = 0
-        for idx, available_mode in enumerate(self._LBAS_GROUP_MODES):
-            if Util.region_contains(
-                    self.module_regions["lbas_mode_switcher"],
-                    "lbas_group_mode_{}.png".format(available_mode)):
-                break
-        expected_modes = self._LBAS_GROUP_MODES[
-                         idx:] + self._LBAS_GROUP_MODES[:idx]
-        for idx, current_mode in enumerate(expected_modes):
-            Util.log_msg(
-                "Current LBAS Group mode: \"{}\".".format(current_mode))
-            if current_mode == target_mode:
-                break
-            Util.check_and_click(self.module_regions["lbas_mode_switcher"],
-                                 "lbas_group_mode_{}.png".format(current_mode))
-            Util.rejigger_mouse(self.regions, "top")
-            try:
-                next_mode = expected_modes[idx + 1]
-            except IndexError:
-                next_mode = expected_modes[0]
-            Util.wait_until_appears(self.module_regions["lbas_mode_switcher"],
-                                    "lbas_group_mode_{}.png".format(next_mode))
-        Util.log_msg("LBAS Group switched to {} mode.".format(target_mode))
-
-    def _check_and_manage_lbas_fatigue(self, fatigue, group):
-        """Checks LBAS group fatigue and manages its LBAS mode appropriately.
-
-        Args:
-            fatigue (dict): fatigue counter
-            group (int): LBAS group ID
-
-        Returns:
-            dict: updated fatigue counter
-        """
-        group_fatigue = self._check_fatigue()
-        self.print_fatigue_states(group)
-        if group_fatigue['high'] or group_fatigue['medium']:
-            Util.log_warning(
-                "LBAS Group #{} is fatigued, sortie cancelled.".format(group))
-            self._switch_lbas_mode('rest')
-            fatigue['high'] = (
-                group_fatigue['high']
-                if group_fatigue['high'] else fatigue['high'])
-            fatigue['medium'] = (
-                group_fatigue['medium']
-                if group_fatigue['medium'] else fatigue['medium'])
-        else:
-            Util.log_msg("LBAS Group #{} has good morale.".format(group))
-            lbas_group_nodes_key = 'lbas_group_{}_nodes'.format(group)
-            # put LBAS group into air defense mode if it is active but no nodes
-            # are assigned to it
-            group_sortie_mode = (
-                'sortie'
-                if self.config.combat[lbas_group_nodes_key] else 'defense')
-            Util.log_msg("Assigning LBAS Group #{} to {} mode.".format(
-                group, group_sortie_mode))
-            self._switch_lbas_mode(group_sortie_mode)
-        return fatigue
-
     def resupply_groups(self, check_fatigue):
         """Method for resupplying the LBAS groups. If check_fatigue is set to
         True, this method will also resolve the LBAS fatigue, set their LBAS
@@ -234,3 +125,112 @@ class LBAS(object):
         if fatigue['medium']:
             return False, 12
         return True, 0
+
+    def _check_and_manage_lbas_fatigue(self, fatigue, group):
+        """Checks LBAS group fatigue and manages its LBAS mode appropriately.
+
+        Args:
+            fatigue (dict): fatigue counter
+            group (int): LBAS group ID
+
+        Returns:
+            dict: updated fatigue counter
+        """
+        group_fatigue = self._check_fatigue()
+        self.print_fatigue_states(group)
+        if group_fatigue['high'] or group_fatigue['medium']:
+            Util.log_warning(
+                "LBAS Group #{} is fatigued, sortie cancelled.".format(group))
+            self._switch_lbas_mode('rest')
+            fatigue['high'] = (
+                group_fatigue['high']
+                if group_fatigue['high'] else fatigue['high'])
+            fatigue['medium'] = (
+                group_fatigue['medium']
+                if group_fatigue['medium'] else fatigue['medium'])
+        else:
+            Util.log_msg("LBAS Group #{} has good morale.".format(group))
+            lbas_group_nodes_key = 'lbas_group_{}_nodes'.format(group)
+            # put LBAS group into air defense mode if it is active but no nodes
+            # are assigned to it
+            group_sortie_mode = (
+                'sortie'
+                if self.config.combat[lbas_group_nodes_key] else 'defense')
+            Util.log_msg("Assigning LBAS Group #{} to {} mode.".format(
+                group, group_sortie_mode))
+            self._switch_lbas_mode(group_sortie_mode)
+        return fatigue
+
+    def _switch_lbas_mode(self, target_mode):
+        """Switches the lbas group mode to the specified final mode.
+
+        Args:
+            target_mode (str): the mode to switch the LBAS group to
+        """
+        if target_mode not in self._LBAS_GROUP_MODES:
+            raise ValueError("No such LBAS Group mode: \"{}\".".format(
+                target_mode))
+        Util.rejigger_mouse(self.regions, "top")
+        idx = 0
+        for idx, available_mode in enumerate(self._LBAS_GROUP_MODES):
+            if Util.region_contains(
+                    self.module_regions["lbas_mode_switcher"],
+                    "lbas_group_mode_{}.png".format(available_mode)):
+                break
+        expected_modes = self._LBAS_GROUP_MODES[
+                         idx:] + self._LBAS_GROUP_MODES[:idx]
+        for idx, current_mode in enumerate(expected_modes):
+            Util.log_msg(
+                "Current LBAS Group mode: \"{}\".".format(current_mode))
+            if current_mode == target_mode:
+                break
+            Util.check_and_click(self.module_regions["lbas_mode_switcher"],
+                                 "lbas_group_mode_{}.png".format(current_mode))
+            Util.rejigger_mouse(self.regions, "top")
+            try:
+                next_mode = expected_modes[idx + 1]
+            except IndexError:
+                next_mode = expected_modes[0]
+            Util.wait_until_appears(self.module_regions["lbas_mode_switcher"],
+                                    "lbas_group_mode_{}.png".format(next_mode))
+        Util.log_msg("LBAS Group switched to {} mode.".format(target_mode))
+
+    def _check_fatigue(self):
+        """Method to multithread detection of LBAS group fatigue states.
+
+        Returns:
+            dict: updated fatigue counter dict
+        """
+        # reset fatigue
+        thread_check_low_fatigue = Thread(
+            target=self._check_fatigue_func, args=('medium', ))
+        thread_check_high_fatigue = Thread(
+            target=self._check_fatigue_func, args=('high', ))
+        Util.multithreader([
+            thread_check_low_fatigue, thread_check_high_fatigue])
+        return self.fatigue
+
+    def _check_fatigue_func(self, mode):
+        """Child multithreaded method for fatigue states.
+
+        Args:
+            mode (str): which fatigue state to check for
+        """
+        self.fatigue[mode] = (
+            True
+            if (self.module_regions['check_lbas_fatigue'].exists(
+                Pattern('ship_state_fatigue_{}.png'.format(mode)).similar(
+                    Globals.FATIGUE_SIMILARITY)))
+            else False)
+
+    def print_fatigue_states(self, group):
+        """Method to report the LBAS Group's fatigue state in a more
+        human-readable format
+        """
+        fatigue = 'Rested'
+        if self.fatigue['high']:
+            fatigue = 'High'
+        elif self.fatigue['medium']:
+            fatigue = 'Medium'
+        Util.log_msg(
+            "LBAS Group #{} fatigue state: \"{}\"".format(group, fatigue))
