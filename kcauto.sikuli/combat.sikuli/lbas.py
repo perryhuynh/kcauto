@@ -179,7 +179,7 @@ class LBAS(object):
 
         expected_modes = self._LBAS_MODES[idx:] + self._LBAS_MODES[:idx]
         for idx, mode in enumerate(expected_modes):
-            Util.log_msg("LBAS group switched to {} mode.".format(target_mode))
+            Util.log_msg("LBAS group switched to {} mode.".format(mode))
             if mode == target_mode:
                 break
             Util.check_and_click(
