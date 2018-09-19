@@ -517,7 +517,7 @@ class Config(object):
         if config.get('Combat', 'LBASGroups'):
             self.combat['lbas_enabled'] = True
             self.combat['lbas_groups'] = map(
-                int, self._getlist(config, 'Combat', 'LBASGroups'))
+                int, sorted(self._getlist(config, 'Combat', 'LBASGroups')))
             self.combat['lbas_group_1_nodes'] = self._getlist(
                 config, 'Combat', 'LBASGroup1Nodes')
             self.combat['lbas_group_2_nodes'] = self._getlist(
