@@ -442,14 +442,15 @@ class CombatModule(object):
                         or self.fast_kc_region.exists(
                             'combat_flagship_dmg.png')
                         or self.fast_kc_region.exists('combat_retreat.png')):
-                    if self.regions['lower_right_corner'].exists('next.png'):
-                        Util.click_preset_region(self.regions, 'shipgirl')
+                    if Util.check_and_click(
+                            self.regions['lower_right_corner'], 'next.png',
+                            Globals.EXPAND['shipgirl_off_next']):
                         Util.rejigger_mouse(self.regions, 'top')
                         if 'ClearStop' in self.config.combat['misc_options']:
                             post_combat_screens.append('next')
-                    elif self.regions['lower_right_corner'].exists(
-                            'next_alt.png'):
-                        Util.click_preset_region(self.regions, 'shipgirl')
+                    elif Util.check_and_click(
+                            self.regions['lower_right_corner'], 'next_alt.png',
+                            Globals.EXPAND['shipgirl_off_next']):
                         Util.rejigger_mouse(self.regions, 'top')
                         if 'ClearStop' in self.config.combat['misc_options']:
                             post_combat_screens.append('next_alt')
@@ -457,9 +458,9 @@ class CombatModule(object):
                         # if the 'next' asset exists in this region during an
                         # event map sortie, the map is cleared. This 'next' is
                         # for the screen indicating the opening of EOs.
-                        if self.module_regions['event_next'].exists(
-                                'next.png'):
-                            Util.click_preset_region(self.regions, 'shipgirl')
+                        if Util.check_and_click(
+                                self.regions['event_next'], 'next.png',
+                                Globals.EXPAND['shipgirl_off_next']):
                             Util.rejigger_mouse(self.regions, 'top')
                             if ('ClearStop' in self.config.combat[
                                     'misc_options']):
@@ -487,12 +488,13 @@ class CombatModule(object):
             if self.regions['lower_right_corner'].exists('next_alt.png'):
                 # resource node end; sortie complete
                 while not self.regions['left'].exists('home_menu_sortie.png'):
-                    if self.regions['lower_right_corner'].exists('next.png'):
-                        Util.click_preset_region(self.regions, 'shipgirl')
+                    if Util.check_and_click(
+                            self.regions['lower_right_corner'], 'next.png',
+                            Globals.EXPAND['shipgirl_off_next']):
                         Util.rejigger_mouse(self.regions, 'top')
-                    elif self.regions['lower_right_corner'].exists(
-                            'next_alt.png'):
-                        Util.click_preset_region(self.regions, 'shipgirl')
+                    elif Util.check_and_click(
+                            self.regions['lower_right_corner'], 'next_alt.png',
+                            Globals.EXPAND['shipgirl_off_next']):
                         Util.rejigger_mouse(self.regions, 'top')
                 self._print_sortie_complete_msg(self.nodes_run)
                 sortieing = False
