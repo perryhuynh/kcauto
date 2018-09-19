@@ -1,3 +1,7 @@
+#### 6.8.1
+
+* Push staged 6.8.0 files to master
+
 #### 6.8.0
 
 * Refactor parts of PvP, Combat, and LBAS to avoid blind clicking calls (thanks to @stackhanovets)
