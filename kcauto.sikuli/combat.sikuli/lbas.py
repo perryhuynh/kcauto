@@ -5,20 +5,20 @@ from util import Util
 
 
 class LBAS(object):
-    _lbas_group_modes_tuple = ("defense", "retreat", "rest", "sortie", "standby")
+    _LBAS_MODES = ('standby', 'sortie', 'defense', 'retreat', 'rest')
 
-    def __init__(self, config, regions, map):
+    def __init__(self, config, regions, map_data):
         """Initializes the LBAS module for use in the Combat module.
 
         Args:
             config (Config): kcauto Config instance
             regions (dict): dict of pre-defined kcauto regions
-            map (MapData): MapData instance from the Combat module
+            map_data (MapData): MapData instance from the Combat module
         """
         self.config = config
         self.regions = regions
         self.kc_region = regions['game']
-        self.map = map
+        self.map = map_data
         self.fatigue = {}
 
         # lbas-related regions
