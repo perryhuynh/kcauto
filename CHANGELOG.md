@@ -1,3 +1,9 @@
+#### 6.8.0
+
+* Refactor parts of PvP, Combat, and LBAS to avoid blind clicking calls (thanks to @stackhanovets)
+* Blind clicks are reported to console
+* Additional check in Recovery
+
 #### 6.7.0
 
 * Update FCF assets for FCF compatibility (thanks to @perryhuynh)
