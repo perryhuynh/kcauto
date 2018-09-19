@@ -26,15 +26,16 @@ class LBAS(object):
         y = self.kc_region.y
         self.module_regions = {
             'check_lbas_fatigue': Region(x + 850, y + 350, 55, 330),
-            'lbas_mode_switcher': Region(x + 1135, y + 200, 55, 80)
+            'lbas_mode_switcher': Region(x + 1135, y + 200, 55, 80),
+            'fast_lbas_mode_switcher': Region(x + 1135, y + 200, 55, 80)
         }
+        self.module_regions['fast_lbas_mode_switcher'].setAutoWaitTimeout(0)
 
     def assign_groups(self):
         """Method for assigning sortied LBAS groups to their respective nodes
         on the sortie map.
         """
-        while not self.regions['upper'].exists("lbas_panel_ready.png", 1 + Globals.SLEEP_MODIFIER):
-            pass
+        self.kc_region.wait('lbas_panel_ready.png', 10)
         Util.log_msg("Assign LBAS groups to nodes.")
         for lbas_group_nodes in (
                 'lbas_group_1_nodes', 'lbas_group_2_nodes',
@@ -42,18 +43,18 @@ class LBAS(object):
             if not self.config.combat[lbas_group_nodes]:
                 # if no lbas nodes are specified for this group, skip it
                 continue
-            Util.log_msg("Assigning nodes for LBAS group #{}.".format(lbas_group_nodes[11]))
+            Util.log_msg("Assigning nodes for LBAS group #{}.".format(
+                lbas_group_nodes[11]))
             nodes = self.config.combat[lbas_group_nodes]
             for node in nodes:
                 node_obj = self.map.nodes[node]
                 lbas_sidebar_pos = 'left'
-                lbas_sidebar_match = None
-                while not lbas_sidebar_match:
-                    lbas_sidebar_match = self.kc_region.exists("lbas_panel_side.png", 1 + Globals.SLEEP_MODIFIER)
-                if lbas_sidebar_match.x > 600:
+                lbas_sidebar = self.kc_region.find('lbas_panel_side.png')
+                if lbas_sidebar.x > 600:
                     lbas_sidebar_pos = 'right'
-                if ((lbas_sidebar_pos == 'left' and node_obj.coords[0] < 420) or
-                        (lbas_sidebar_pos == 'right' and node_obj.coords[0] > 780)):
+                if ((lbas_sidebar_pos == 'left' and node_obj.coords[0] < 420)
+                        or (lbas_sidebar_pos == 'right'
+                            and node_obj.coords[0] > 780)):
                     self.kc_region.hover('lbas_panel_side.png')
                 node_obj.click_node(self.kc_region)
                 Util.rejigger_mouse(self.regions, 'lbas')
@@ -137,7 +138,9 @@ class LBAS(object):
         group_fatigue = self._check_fatigue()
         self.print_fatigue_states(group)
         if group_fatigue['high'] or group_fatigue['medium']:
-            Util.log_msg("LBAS group #{} is fatigued, assigning to rest mode.".format(group))
+            Util.log_msg(
+                "LBAS group #{} is fatigued, assigning to rest mode.".format(
+                    group))
             self._switch_lbas_mode('rest')
             fatigue['high'] = (
                 group_fatigue['high']
@@ -152,31 +155,39 @@ class LBAS(object):
             # are assigned to it
             group_sortie_mode = (
                 'sortie'
-                if self.config.combat[lbas_group_nodes_key] else 'defense')
-            Util.log_msg("Assign LBAS group #{a} to {b} mode.".format(a=group, b=group_sortie_mode))
+                if self.config.combat[lbas_group_nodes_key]
+                else 'defense')
+            Util.log_msg("Assign LBAS group #{} to {} mode.".format(
+                group, group_sortie_mode))
             self._switch_lbas_mode(group_sortie_mode)
         return fatigue
 
-    def _switch_lbas_mode(self, lbas_group_mode_name_target):
+    def _switch_lbas_mode(self, target_mode):
         """Switches the lbas group mode to the specified final mode.
 
         Args:
-            lbas_group_mode_name_target (str): the mode to switch the LBAS group to
+            target_mode (str): the mode to switch the LBAS group to
         """
         Util.rejigger_mouse(self.regions, 'top')
-        # Must be relevant to http://kancolle.wikia.com/wiki/Land_Base_Aerial_Support#Options
-        if sum([lbas_group_mode_name_target == i for i in self._lbas_group_modes_tuple]) != 1:
-            raise ValueError("No such LBAS mode: \"{}\".".format(lbas_group_mode_name_target))
-        while not self.module_regions['lbas_mode_switcher'].exists('lbas_group_mode_{}.png'.format(lbas_group_mode_name_target), 1 + Globals.SLEEP_MODIFIER):
-            for lbas_group_mode_name_current in self._lbas_group_modes_tuple:
-                lbas_group_mode_pattern = Pattern('lbas_group_mode_{}.png'.format(lbas_group_mode_name_current)).similar(Globals.DEFAULT_SIMILARITY)
-                Util.rejigger_mouse(self.regions, 'top')
-                if self.module_regions['lbas_mode_switcher'].exists(lbas_group_mode_pattern, 1 + Globals.SLEEP_MODIFIER):
-                    print("Current LBAS group mode is \"{}\".".format(lbas_group_mode_name_current))
-                    if lbas_group_mode_name_current == lbas_group_mode_name_target:
-                        break
-                    Util.check_and_click(self.module_regions['lbas_mode_switcher'], lbas_group_mode_pattern)
-        Util.log_msg("LBAS group switched to {} mode.".format(lbas_group_mode_name_target))
+        if target_mode not in self._LBAS_MODES:
+            raise ValueError("Invalid LBAS mode: '{}'.".format(target_mode))
+
+        for idx, current_mode in enumerate(self._LBAS_MODES):
+            if self.module_regions['lbas_mode_switcher'].exists(
+                    'lbas_group_mode_{}.png'.format(current_mode), 1):
+                break
+
+        expected_modes = self._LBAS_MODES[idx:] + self._LBAS_MODES[:idx]
+        for idx, mode in enumerate(expected_modes):
+            Util.log_msg("LBAS group switched to {} mode.".format(target_mode))
+            if mode == target_mode:
+                break
+            Util.check_and_click(
+                self.module_regions['lbas_mode_switcher'],
+                'lbas_group_mode_{}.png'.format(mode))
+            Util.rejigger_mouse(self.regions, 'top')
+            self.module_regions['lbas_mode_switcher'].wait(
+                'lbas_group_mode_{}.png'.format(expected_modes[idx + 1]))
 
     def _check_fatigue(self):
         """Method to multithread detection of LBAS group fatigue states.
