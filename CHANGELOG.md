@@ -1,3 +1,7 @@
+#### 6.8.3
+
+* Bugfix to LBAS fatigue check sometimes not working
+
 #### 6.8.2
 
 * Bugfix to Event-map specific combat region definition
