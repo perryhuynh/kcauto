@@ -106,8 +106,10 @@ class LBAS(object):
             if Util.check_and_click(
                     self.regions['right'], 'lbas_resupply.png'):
                 Util.log_msg("Resupplying LBAS group #{}.".format(group))
-                self.regions['right'].waitVanish('lbas_resupply.png', 10)
+                self.regions['upper_right'].waitVanish(
+                    'lbas_resupply_in_progress.png', 10)
             if check_fatigue:
+                Util.kc_sleep(1)
                 fatigue = self._check_and_manage_lbas_fatigue(fatigue, group)
             Util.kc_sleep(1)
         Util.kc_sleep(1)
