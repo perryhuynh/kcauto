@@ -138,6 +138,7 @@ class CombatModule(object):
         if self.combined_fleet:
             self.fleets[1].reset_fcf_retreat_counts()
             self.fleets[2].reset_fcf_retreat_counts()
+            self.fleets[2].flagship_damaged = False
         if self.striking_fleet:
             self.fleets[3].reset_fcf_retreat_counts()
 
@@ -1050,6 +1051,8 @@ class CombatFleet(Fleet):
                     self.fleet_id, self.damage_counts['heavy'],
                     self.damage_counts['moderate'],
                     self.damage_counts['minor']))
+            if self.flagship_damaged:
+                Util.log_warning("Fleet {} flagship is critically damaged.")
 
     def print_fatigue_states(self):
         """Method to report the fleet's fatigue state in a more human-readable
@@ -1159,6 +1162,7 @@ class CombatFleet(Fleet):
         if (regions['check_damage_flagship'].exists(Pattern(
                 'ship_state_dmg_heavy.png').similar(
                     Globals.DAMAGE_SIMILARITY))):
+            Util.log_warning("Flagship of second fleet is damaged.")
             self.flagship_damaged = True
         else:
             self.flagship_damaged = False
