@@ -1,3 +1,7 @@
+#### 6.8.4
+
+* Bugfix to Combat where Combined Fleet 2nd fleet damage states would carry over to the next sortie
+
 #### 6.8.3
 
 * Bugfix to LBAS fatigue check sometimes not working
