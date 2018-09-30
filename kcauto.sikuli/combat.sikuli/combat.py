@@ -910,6 +910,7 @@ class CombatModule(object):
             continue_sortie (bool): True if the the sortie continue button
             should be pressed, False otherwise
         """
+        Util.kc_sleep()
         if continue_sortie:
             Util.log_msg("Continuing sortie.")
             Util.check_and_click(self.kc_region, 'combat_continue.png')
