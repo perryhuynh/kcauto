@@ -434,10 +434,9 @@ class CombatModule(object):
                     self.fleets[2].print_damage_counts()
                     self.dmg = self._combine_fleet_damages(
                         self.dmg, fleet_two_damages)
-                    # ascertain whether or not the escort fleet's flagship is
-                    # damaged if necessary
-                    if (fleet_two_damages['heavy'] == 1
-                            and not self.fleets[2].flagship_damaged):
+                    # ascertain whether or not the one heavily damaged ship is
+                    # the escort fleet's flagship
+                    if fleet_two_damages['heavy'] == 1:
                         self.fleets[2].check_damage_flagship(
                             self.module_regions)
                 Util.rejigger_mouse(self.regions, 'lbas')
