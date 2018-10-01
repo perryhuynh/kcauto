@@ -1,3 +1,9 @@
+#### 6.8.5
+
+* Update assets for better World 6 sortie compatibility
+* Update Combat module code and assets to help mitigate mid-sortie crashes
+* Bugfix to LBAS module so that kcauto does not crash when all active LBAS groups are in Defense mode
+
 #### 6.8.4
 
 * Bugfix to Combat where Combined Fleet 2nd fleet damage states would carry over to the next sortie
