@@ -33,7 +33,13 @@ class LBAS(object):
         """Method for assigning sortied LBAS groups to their respective nodes
         on the sortie map.
         """
-        self.kc_region.wait('lbas_panel_ready.png', 10)
+        if not (
+                self.config.combat['lbas_group_1_nodes']
+                or self.config.combat['lbas_group_2_nodes']
+                or self.config.combat['lbas_group_3_nodes']):
+            # do not assign groups if there are no nodes to assign
+            return
+        self.kc_region.wait('lbas_panel_ready.png', 20)
         Util.log_msg("Assign LBAS groups to nodes.")
         for lbas_group_nodes in (
                 'lbas_group_1_nodes', 'lbas_group_2_nodes',
