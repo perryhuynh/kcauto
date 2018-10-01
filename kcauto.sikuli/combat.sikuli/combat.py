@@ -410,7 +410,9 @@ class CombatModule(object):
                         self._select_night_battle(self._resolve_night_battle())
 
                 # battle complete; resolve combat results
-                Util.click_preset_region(self.regions, 'center')
+                Util.check_and_click(
+                    self.regions['lower_right'], 'next.png',
+                    Globals.EXPAND['center_off_next'])
                 self.regions['game'].wait('mvp_marker.png', 30)
                 self.dmg = self.primary_fleet.check_damages(
                     self.module_regions['check_damage_combat'])
@@ -422,7 +424,9 @@ class CombatModule(object):
                         disable_combat = True
                 if self.combined_fleet:
                     self.regions['lower_right_corner'].wait('next.png', 30)
-                    Util.click_preset_region(self.regions, 'center')
+                    Util.check_and_click(
+                        self.regions['lower_right'], 'next.png',
+                        Globals.EXPAND['center_off_next'])
                     Util.kc_sleep(2)
                     self.regions['game'].wait('mvp_marker.png', 30)
                     fleet_two_damages = self.fleets[2].check_damages(
@@ -480,7 +484,9 @@ class CombatModule(object):
                     'combat_flagship_dmg.png'):
                 # flagship retreat; sortie complete
                 Util.log_msg("Flagship damaged. Automatic retreat.")
-                Util.click_preset_region(self.regions, 'shipgirl')
+                Util.check_and_click(
+                    self.regions['lower_right'], 'combat_flagship_dmg.png',
+                    Globals.EXPAND['shipgirl_off_next'])
                 self.regions['left'].wait('home_menu_sortie.png', 30)
                 self._print_sortie_complete_msg(self.nodes_run)
                 sortieing = False
@@ -904,6 +910,7 @@ class CombatModule(object):
             continue_sortie (bool): True if the the sortie continue button
             should be pressed, False otherwise
         """
+        Util.kc_sleep()
         if continue_sortie:
             Util.log_msg("Continuing sortie.")
             Util.check_and_click(self.kc_region, 'combat_continue.png')
