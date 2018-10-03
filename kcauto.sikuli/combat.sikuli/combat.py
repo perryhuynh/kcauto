@@ -434,10 +434,9 @@ class CombatModule(object):
                     self.fleets[2].print_damage_counts()
                     self.dmg = self._combine_fleet_damages(
                         self.dmg, fleet_two_damages)
-                    # ascertain whether or not the escort fleet's flagship is
-                    # damaged if necessary
-                    if (fleet_two_damages['heavy'] == 1
-                            and not self.fleets[2].flagship_damaged):
+                    # ascertain whether or not the one heavily damaged ship is
+                    # the escort fleet's flagship
+                    if fleet_two_damages['heavy'] == 1:
                         self.fleets[2].check_damage_flagship(
                             self.module_regions)
                 Util.rejigger_mouse(self.regions, 'lbas')
@@ -854,8 +853,8 @@ class CombatModule(object):
                         and self.fleets[2].flagship_damaged):
                     continue_override = True
                     Util.log_msg(
-                        "The 1 ship damaged beyond threshold is the escort "
-                        "fleet's flagship (unsinkable). Continuing sortie.")
+                        "The one heavily damaged ship is the escort fleet's "
+                        "flagship, which is unsinkable. Continuing sortie.")
             if not continue_override:
                 Util.log_warning(
                     "{} ship(s) damaged above threshold. Retreating.".format(
@@ -1058,8 +1057,6 @@ class CombatFleet(Fleet):
                     self.fleet_id, self.damage_counts['heavy'],
                     self.damage_counts['moderate'],
                     self.damage_counts['minor']))
-            if self.flagship_damaged:
-                Util.log_warning("Fleet {} flagship is critically damaged.")
 
     def print_fatigue_states(self):
         """Method to report the fleet's fatigue state in a more human-readable
@@ -1169,7 +1166,7 @@ class CombatFleet(Fleet):
         if (regions['check_damage_flagship'].exists(Pattern(
                 'ship_state_dmg_heavy.png').similar(
                     Globals.DAMAGE_SIMILARITY))):
-            Util.log_warning("Flagship of second fleet is damaged.")
+            Util.log_warning("Flagship of escort fleet is heavily damaged.")
             self.flagship_damaged = True
         else:
             self.flagship_damaged = False
