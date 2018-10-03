@@ -853,8 +853,8 @@ class CombatModule(object):
                         and self.fleets[2].flagship_damaged):
                     continue_override = True
                     Util.log_msg(
-                        "The 1 ship damaged beyond threshold is the escort "
-                        "fleet's flagship (unsinkable). Continuing sortie.")
+                        "The one heavily damaged ship is the escort fleet's "
+                        "flagship, which is unsinkable. Continuing sortie.")
             if not continue_override:
                 Util.log_warning(
                     "{} ship(s) damaged above threshold. Retreating.".format(
@@ -1057,8 +1057,6 @@ class CombatFleet(Fleet):
                     self.fleet_id, self.damage_counts['heavy'],
                     self.damage_counts['moderate'],
                     self.damage_counts['minor']))
-            if self.flagship_damaged:
-                Util.log_warning("Fleet {} flagship is critically damaged.")
 
     def print_fatigue_states(self):
         """Method to report the fleet's fatigue state in a more human-readable
@@ -1168,7 +1166,7 @@ class CombatFleet(Fleet):
         if (regions['check_damage_flagship'].exists(Pattern(
                 'ship_state_dmg_heavy.png').similar(
                     Globals.DAMAGE_SIMILARITY))):
-            Util.log_warning("Flagship of second fleet is damaged.")
+            Util.log_warning("Flagship of escort fleet is heavily damaged.")
             self.flagship_damaged = True
         else:
             self.flagship_damaged = False
