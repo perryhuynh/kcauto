@@ -278,27 +278,26 @@ class ShipSwitcherModule(object):
         list.
 
         Args:
-            position (int): integer between 1 and 10 specifying the position
-                that should be clicked on the ship list
+            position (int): the 0-based position that should be clicked on the
+                ship list
 
         Raises:
             ValueError: invalid position specified
         """
-        if not 1 <= position <= 10:
+        if not 0 <= position <= 9:
             raise ValueError(
                 "Invalid position passed to _choose_ship_by_position: {}"
                 .format(position))
-        zero_position = position - 1
         # x start/stop do not change
         x_start = 590
         x_stop = 1050
         # y start/stop change depending on specified position; region has width
         # of 460 pixels, height of 35 pixels, with a 8-pixel padding between
         # each nth position on the list
-        y_start = 225 + (zero_position * 8) + (zero_position * 35)
+        y_start = 225 + (position * 8) + (position * 35)
         y_stop = y_start + 35
 
-        Util.log_msg("Selecting ship in position {}.".format(position))
+        Util.log_msg("Selecting ship in position {}.".format(position + 1))
         Util.click_coords(
             self.kc_region,
             Util.random_coord(x_start, x_stop),
@@ -354,7 +353,7 @@ class ShipSwitcherModule(object):
             Util.log_msg("Candidate ship successfully switched in.")
             return True
         else:
-            Util.log_warning("Candidate ship has conflict.")
+            Util.log_warning("Candidate ship has conflict with fleet.")
             return 'conflict'
 
     def _resolve_ship_page_and_position(self, reference, offset):
@@ -364,11 +363,11 @@ class ShipSwitcherModule(object):
         Args:
             reference (str): 'start' or 'end', indiciating where the offset
                 begins from
-            offset (int): n-position from reference
+            offset (int): 1-based offset from reference
 
         Returns:
             int: page where the specified ship is
-            list: list with one value indicating the position where the
+            list: list with one value indicating the 0-based position where the
                 specified ship is on the specified page
         """
         if reference == 'start':
@@ -376,10 +375,11 @@ class ShipSwitcherModule(object):
         if reference == 'end':
             start_offset = self.ship_count - offset + 1
         page = int(ceil(start_offset / float(Globals.SHIPS_PER_PAGE)))
+        # convert the provided 1-based offset to 0-based position on shiplist
         position = (
             start_offset % Globals.SHIPS_PER_PAGE
             if start_offset % Globals.SHIPS_PER_PAGE is not 0
-            else Globals.SHIPS_PER_PAGE)
+            else Globals.SHIPS_PER_PAGE) - 1
         return (page, [position])
 
     def _filter_ships(self, matched_ships, ship_config):
@@ -401,8 +401,8 @@ class ShipSwitcherModule(object):
             # create new region based on the match
             ship_row = ship.left(1).right(640)
             ship_row.setAutoWaitTimeout(0)  # speed
-            # find 1-based numeric position based on the new region's y-pos
-            position = ((ship_row.y - self.kc_region.y - 232) / 43) + 1
+            # find 0-based position based on the new region's y-pos
+            position = (ship_row.y - self.kc_region.y - 232) / 43
 
             # check against ship-specific criterias, if any
             if 'locked' in ship_config and criteria_matched:
@@ -427,8 +427,8 @@ class ShipSwitcherModule(object):
         levels.
 
         Args:
-            ship_positions (list): list of ints of previously matched ship
-                positions
+            ship_positions (list): list of ints of previously matched 0-based
+                ship positions
 
         Returns:
             list: list of positions of ships matching the level criteria
@@ -446,7 +446,7 @@ class ShipSwitcherModule(object):
                 # create new region based on the position
                 level_area = Region(
                     self.kc_region.x + 820,
-                    self.kc_region.y + 225 + (43 * (position - 1)),
+                    self.kc_region.y + 225 + (43 * position),
                     55, 35)
                 ship_level = Util.read_ocr_number_text(level_area)
                 ship_level = sub(r"\D", "", ship_level)
@@ -467,7 +467,7 @@ class ShipSwitcherModule(object):
         and see if it available for switching in.
 
         Args:
-            position (int): position in ship list
+            position (int): 0-based position in ship list
             criteria (dict): dictionary of criteria
 
         Returns:
