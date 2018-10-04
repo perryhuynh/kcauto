@@ -201,7 +201,6 @@ class ShipSwitcherModule(object):
         Returns:
             bool: always returns True after switching to the specified tabs
         """
-
         for target in targets:
             if target not in self.VALID_TABS:
                 raise ValueError(
@@ -215,6 +214,7 @@ class ShipSwitcherModule(object):
         if 'all' in targets:
             # if target is all tabs, click the quick tab arrow once if not
             # already at all tabs; if arrow is clicked, reset page to 1
+            Util.log_msg("Enabling all shiplist tabs.")
             if not self.regions['top_submenu'].exists(
                     Pattern('shiplist_quick_tab_all.png').exact()):
                 Util.check_and_click(
@@ -225,6 +225,7 @@ class ShipSwitcherModule(object):
 
         # if target is specific tabs, click the quick tab arrow until the
         # shiplist is empty, then click the tabs; afterwards, reset page to 1
+        Util.log_msg("Enabling shiplist tabs {}.".format(', '.join(targets)))
         while not self.regions['right'].exists('shiplist_empty_indicator.png'):
             Util.check_and_click(
                 self.regions['top_submenu'], 'shiplist_quick_tab_none.png')
@@ -243,6 +244,7 @@ class ShipSwitcherModule(object):
         Args:
             target (str): the sorting to switch the shiplist to
         """
+        Util.log_msg("Sort shiplist by {}.".format(target))
         while not self.regions['top_submenu'].exists(
                 'shiplist_sort_{}.png'.format(target)):
             Util.check_and_click(
@@ -266,6 +268,7 @@ class ShipSwitcherModule(object):
                 "Invalid shiplist target page ({}) for number of known pages "
                 "({}).".format(target_page, self.ship_page_count))
 
+        Util.log_msg("Navigate to shiplist page {}.".format(target_page))
         self.current_shiplist_page = NavList.navigate_to_page(
             self.regions, self.ship_page_count, self.current_shiplist_page,
             target_page)
@@ -295,6 +298,7 @@ class ShipSwitcherModule(object):
         y_start = 225 + (zero_position * 8) + (zero_position * 35)
         y_stop = y_start + 35
 
+        Util.log_msg("Selecting ship in position {}.".format(position))
         Util.click_coords(
             self.kc_region,
             Util.random_coord(x_start, x_stop),
@@ -328,6 +332,7 @@ class ShipSwitcherModule(object):
             if temp_region.exists(
                     Pattern('ship_state_dmg_{}.png'.format(damage))
                     .similar(Globals.DAMAGE_SIMILARITY)):
+                Util.log_warning("Candidate ship is damaged.")
                 return False
         # check fatigue states if it is a criteria
         if 'fatigue' in criteria:
@@ -335,17 +340,21 @@ class ShipSwitcherModule(object):
                 if temp_region.exists(
                         Pattern('ship_state_fatigue_{}.png'.format(fatigue))
                         .similar(Globals.FATIGUE_SIMILARITY)):
+                    Util.log_warning("Candidate ship is fatigued.")
                     return False
         # check sparkle if it is a criteria
         if 'sparkle' in criteria:
             if temp_region.exists(
                     Pattern('sparkle_indicator_shiplist.png').similar(0.9), 2):
+                Util.log_warning("Candidate ship is sparkled.")
                 return False
         # passed criteria; check if there is a conflicting ship in fleet
         if Util.check_and_click(
                 self.regions['lower_right'], 'shiplist_shipswitch_button.png'):
+            Util.log_msg("Candidate ship successfully switched in.")
             return True
         else:
+            Util.log_warning("Candidate ship has conflict.")
             return 'conflict'
 
     def _resolve_ship_page_and_position(self, reference, offset):
@@ -374,7 +383,7 @@ class ShipSwitcherModule(object):
         return (page, [position])
 
     def _filter_ships(self, matched_ships, ship_config):
-        """Given a list of possible ship matches on the current ship list page,
+        """Given a list of candidate ship matches on the current ship list page,
         filter on the ship lock and ring criteria and return a list of valid
         positions on the page.
 
@@ -513,7 +522,7 @@ class ShipSwitcherModule(object):
                 self._navigate_to_shiplist_page(page)
             if 'sparkle' in slot_config['criteria']:
                 # if in sparkle mode, remove the checked ship from the list of
-                # possible ships so we don't go back to it
+                # candidate ships so we don't go back to it
                 slot_config['ships'].pop(0)
             # there should only be one returned position
             if self._choose_and_check_availability_of_ship(
@@ -521,7 +530,7 @@ class ShipSwitcherModule(object):
                 return True
         if 'sparkle' in slot_config['criteria']:
             # if in sparkle mode and we reach this point, we've exhausted the
-            # list of possible ships; disable the combat module
+            # list of candidate ships; disable the combat module
             self.combat.disable_module()
         return False
 
@@ -586,8 +595,7 @@ class ShipSwitcherModule(object):
                 ship_position_list)
 
             Util.log_msg(
-                "Potential replacement ships found in page {} positions {}"
-                .format(
+                "Candidate ships found in page {} positions {}".format(
                     self.current_shiplist_page,
                     ", ".join([str(i) for i in ship_position_list])))
 
@@ -628,7 +636,7 @@ class ShipSwitcherModule(object):
                 return False
         if 'sparkle' in slot_config['criteria']:
             # if in sparkle mode and we reach this point, we've exhausted the
-            # list of possible ships; disable the combat module
+            # list of candidate ships; disable the combat module
             self.combat.disable_module()
         return False
 
