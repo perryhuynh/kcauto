@@ -380,7 +380,7 @@ class ShipSwitcherModule(object):
         if offset <= 0:
             raise ValueError(
                 "Negative or zero offset ({}) specified. Offsets must be "
-                "greater than 1.".format(offset))
+                "greater than 0.".format(offset))
 
         if reference == 'start':
             start_offset = offset
