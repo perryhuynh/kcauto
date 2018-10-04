@@ -253,11 +253,7 @@ class Util(object):
         if len(number_read) > 3:
             # the read number is too long; truncate anything past the 3rd digit
             number_read = number_read[:3]
-        number_read = int(number_read)
-        if number_read > 370:
-            # to account for edge cases where a digit is appended at the end
-            number_read = number_read / 10
-        return number_read
+        return int(number_read)
 
     @staticmethod
     def findAll_wrapper(region, pattern):
