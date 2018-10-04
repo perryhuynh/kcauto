@@ -365,11 +365,23 @@ class ShipSwitcherModule(object):
                 begins from
             offset (int): 1-based offset from reference
 
+        Raises:
+            ValueError: invalid offset specified
+
         Returns:
             int: page where the specified ship is
             list: list with one value indicating the 0-based position where the
                 specified ship is on the specified page
         """
+        if offset > self.ship_count:
+            raise ValueError(
+                "Specified ship position offset is larger than detected "
+                "number of ships. This may be due to an OCR error.")
+        if offset <= 0:
+            raise ValueError(
+                "Negative or zero offset ({}) specified. Offsets must be "
+                "greater than 1.".format(offset))
+
         if reference == 'start':
             start_offset = offset
         if reference == 'end':
