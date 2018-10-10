@@ -1,3 +1,35 @@
+#### 6.8.5
+
+* Update assets for better World 6 sortie compatibility
+* Update Combat module code and assets to help mitigate mid-sortie crashes
+* Bugfix to LBAS module so that kcauto does not crash when all active LBAS groups are in Defense mode
+
+#### 6.8.4
+
+* Bugfix to Combat where Combined Fleet 2nd fleet damage states would carry over to the next sortie
+
+#### 6.8.3
+
+* Bugfix to LBAS fatigue check sometimes not working
+
+#### 6.8.2
+
+* Bugfix to Event-map specific combat region definition
+
+#### 6.8.1
+
+* Push staged 6.8.0 files to master
+
+#### 6.8.0
+
+* Refactor parts of PvP, Combat, and LBAS to avoid blind clicking calls (thanks to @stackhanovets)
+* Blind clicks are reported to console
+* Additional check in Recovery
+
+#### 6.7.0
+
+* Update FCF assets for FCF compatibility (thanks to @perryhuynh)
+
 #### 6.6.2
 
 * Better fleet icon tracking in Live combat engine
