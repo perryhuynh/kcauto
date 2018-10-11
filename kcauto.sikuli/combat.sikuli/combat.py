@@ -399,7 +399,13 @@ class CombatModule(object):
                 if dialogue_click:
                     # click to get rid of initial boss dialogue in case it
                     # exists
-                    Util.kc_sleep(5)
+                    while not self.regions["right"].exists(
+                            "message_combat_start.png"):
+                        pass
+                    while self.regions["right"].exists(
+                            "message_combat_start.png"):
+                        pass
+                    Util.kc_sleep()
                     Util.click_preset_region(self.regions, 'center')
                     Util.kc_sleep()
                     Util.click_preset_region(self.regions, 'center')
