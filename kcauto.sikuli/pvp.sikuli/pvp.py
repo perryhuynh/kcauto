@@ -54,7 +54,8 @@ class PvPModule(object):
             boolean: True if PvP was run, False otherwise
         """
         if not Util.check_and_click(
-                self.kc_region, Pattern('pvp_row.png').similar(0.8)):
+                self.kc_region, Pattern('pvp_row.png').similar(
+                    Globals.TEXT_SIMILARITY)):
             Util.log_warning("No PvP opponents available.")
             self._reset_next_pvp_time()
             return False
