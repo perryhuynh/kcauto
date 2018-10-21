@@ -75,7 +75,7 @@ If you do not have git, tortoisegit, or a clone of the kcauto repository, head t
 
 ### Getting help and contacting the dev
 
-Please submit bugs and feature requests on the [kcauto issue tracker](https://github.com/mrmin123/kcauto/issues). Please make sure you are on the latest release of kcauto and that the bug/feature has not been reported already before opening an issue on the tracker.
+If you are encountering issues with kcauto, please first check the [problems running kcauto](https://github.com/mrmin123/kcauto/wiki/FAQ#problems-running-kcauto) portion of the [FAQ](https://github.com/mrmin123/kcauto/wiki/FAQ) first, as the solution to your issue may be documented already. Otherwise, please submit bugs and feature requests on the [kcauto issue tracker](https://github.com/mrmin123/kcauto/issues). Please make sure you are on the latest release of kcauto and that the bug/feature has not been reported already before opening an issue on the tracker.
 
 In addition, there are two kcauto-related Discord servers available:
 * The [official kcauto server](https://discord.gg/KEHSmUs) &mdash; join for kcauto-specific news, updates, help, and discussion
