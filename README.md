@@ -44,6 +44,10 @@ Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)
 * Hot-reload config files
 * [Web interface](https://mrmin123.github.io/kcauto/) to generate and modify config files
 
+### Prerequisites
+
+* Game is scaled to 100% size/1x scaling &mdash; the entire game should be 1200 pixels wide and 720 pixels tall if you take a screenshot of it
+* Turn off any browser/viewer features that obscure the game (e.g. subtitles) &mdash; these can keep kcauto from properly operating. Subtitles specifically can block the damage states of ships during combat, which may lead to loss of ships due to hampered damage detection. At the very least, lower the subtitles' font size
 
 ### Installation and Usage
 
@@ -53,7 +57,6 @@ Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)
 4. Set up kcauto's config file using the [web interface](https://mrmin123.github.io/kcauto/) or by opening the local copy of `docs/index.html` in a browser
     * Please refer to the [Wiki](https://github.com/mrmin123/kcauto/wiki/Configuration#config-file) for a detailed explanation of each of the config fields
 5. Run Kantai Collection in your favorite browser or viewer
-    * Take note to turn off any browser/viewer features that obscure parts of the game screen (such as subtitles). These have the ability to hinder proper damage state detection by kcauto, which may lead to loss of ships.
 6. Run kcauto using the command `java -jar <path_to_sikuli>/sikulix.jar -r <path_to_kcauto>/kcauto.sikuli` (replacing `<path_to_sikuli>` and `<path_to_kcauto>` with the correct directories for your installs); you can also use the [RunCmd tab](https://mrmin123.github.io/kcauto/#runcmd) of the web interface to help generate the command
 
 Users not comfortable with the command line and looking for a GUI solution can use [KAGA](https://github.com/waicool20/KAGA) to both create the config and run kcauto. Please note that KAGA is not developed by the developer of kcauto, and there may be times when KAGA is not compatible with the latest version of kcauto.
@@ -72,7 +75,7 @@ If you do not have git, tortoisegit, or a clone of the kcauto repository, head t
 
 ### Getting help and contacting the dev
 
-Please submit bugs and feature requests on the [kcauto issue tracker](https://github.com/mrmin123/kcauto/issues). Please make sure you are on the latest release of kcauto and that the bug/feature has not been reported already before opening an issue on the tracker.
+If you are encountering issues with kcauto, please first check the [problems running kcauto](https://github.com/mrmin123/kcauto/wiki/FAQ#problems-running-kcauto) portion of the [FAQ](https://github.com/mrmin123/kcauto/wiki/FAQ) first, as the solution to your issue may be documented already. Otherwise, please submit bugs and feature requests on the [kcauto issue tracker](https://github.com/mrmin123/kcauto/issues). Please make sure you are on the latest release of kcauto and that the bug/feature has not been reported already before opening an issue on the tracker.
 
 In addition, there are two kcauto-related Discord servers available:
 * The [official kcauto server](https://discord.gg/KEHSmUs) &mdash; join for kcauto-specific news, updates, help, and discussion

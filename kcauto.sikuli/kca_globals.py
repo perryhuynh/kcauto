@@ -16,10 +16,13 @@ class Globals(object):
     DEFAULT_SIMILARITY = 0.8
     DAMAGE_SIMILARITY = 0.88
     FATIGUE_SIMILARITY = 0.85
-    SHIP_LIST_SIMILARITY = 0.96
     FLEET_ICON_SIMILARITY = 0.86
     SHIP_LIST_TAB_SIMILARITY = 0.85
     SHIP_LIST_FLEET_ICON_SIMILARITY = 0.75
+    # lower the values below if you encounter issues with the expedition, pvp,
+    # or ship switcher modules; please note that this may lead to false matches
+    TEXT_SIMILARITY = 0.8  # suggested lower value: 0.6
+    SHIP_LIST_SIMILARITY = 0.96  # suggested lower value: 0.7?
 
     # types of recoveries enabled for the recovery module. Valid options are
     # 'catbomb' and 'chrome'. Enabled recoveries mean that the script will
