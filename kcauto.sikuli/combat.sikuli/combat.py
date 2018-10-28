@@ -66,7 +66,8 @@ class CombatModule(object):
             'check_damage_7th': Region(x + 710, y + 570, 20, 64),
             'check_damage_flagship': Region(x + 470, y + 280, 42, 70),
             'check_damage_combat': Region(x + 470, y + 215, 50, 475),
-            'observe_region': Region(x + 110, y + 95, 986, 478),
+            'fleet_observe_region': Region(x + 110, y + 95, 986, 478),
+            'dialogue_observe_region': Region(x, y, 260, 720),
             'event_next': Region(x + 1090, y + 525, 110, 75)
         }
 
@@ -385,7 +386,7 @@ class CombatModule(object):
         disable_combat = False
         post_combat_screens = []
         while sortieing:
-            at_node, dialogue_click = self._run_loop_between_nodes()
+            at_node, dialogue_check = self._run_loop_between_nodes()
 
             if at_node:
                 # arrived at combat node
@@ -396,14 +397,8 @@ class CombatModule(object):
                     disable_combat = False
                     post_combat_screens = []
 
-                if dialogue_click:
-                    # click to get rid of initial boss dialogue in case it
-                    # exists
-                    Util.kc_sleep(5)
-                    Util.click_preset_region(self.regions, 'center')
-                    Util.kc_sleep()
-                    Util.click_preset_region(self.regions, 'center')
-                    Util.rejigger_mouse(self.regions, 'lbas')
+                if dialogue_check:
+                    self._start_boss_dialogue_observer()
 
                 while not self.regions['lower_right'].exists('next.png', 1):
                     if self.kc_region.exists('combat_nb_fight.png', 1):
@@ -626,15 +621,16 @@ class CombatModule(object):
         that tracks the fleet position icon in real-time in the live engine
         mode.
         """
-        self.module_regions['observe_region'].onAppear(
+        self.module_regions['fleet_observe_region'].onAppear(
             Pattern(self.fleet_icon).similar(Globals.FLEET_ICON_SIMILARITY),
             self._update_fleet_position)
-        self.module_regions['observe_region'].observeInBackground(FOREVER)
+        self.module_regions['fleet_observe_region'].observeInBackground(
+            FOREVER)
 
     def _stop_fleet_observer(self):
         """Stops the observer started by the _start_fleet_observer() method.
         """
-        self.module_regions['observe_region'].stopObserver()
+        self.module_regions['fleet_observe_region'].stopObserver()
         # add sleep to account for async nature of observer overwriting backup
         # node logic
         Util.kc_sleep(1)
@@ -690,6 +686,46 @@ class CombatModule(object):
         # debug console print for the method's found position of the fleet
         # print("{} {}".format(self.current_position, self.current_node))
         Util.log_msg("Fleet at node {}.".format(self.current_node))
+
+    def _start_boss_dialogue_observer(self):
+        """Method that starts the observeRegion/observeInBackground methods
+        that resolves the boss dialogue.
+        """
+        # register onAppear for the boss dialogue screen
+        self.module_regions['dialogue_observe_region'].onAppear(
+            Pattern('boss_dialogue.png').similar(0.9),
+            self._dismiss_boss_dialogue)
+        # register onAppear for combat (post- or no boss dialogue screen)
+        self.module_regions['dialogue_observe_region'].onAppear(
+            'flagship_marker.png', self._stop_boss_dialogue_observer_event)
+        self.module_regions['dialogue_observe_region'].observeInBackground(
+            FOREVER)
+
+    def _stop_boss_dialogue_observer_event(self, event):
+        """Method that is run by the boss dialogue-related observer to stop
+        said observer.
+
+        Args:
+            event (event): sikuli observer event
+        """
+        event.region.stopObserver()
+
+    def _dismiss_boss_dialogue(self, event):
+        """Method that clicks the center of the screen to dismiss the boss
+        dialogue. If the boss dialogue is no longer present, it stops the
+        boss dialogue observer.
+
+        Args:
+            event (event): sikuli observer event
+        """
+        Util.log_msg("Dismissing boss dialogue.")
+        Util.kc_sleep()
+        Util.click_preset_region(self.regions, 'center')
+        Util.rejigger_mouse(self.regions, 'lbas')
+        Util.kc_sleep()
+
+        if not event.region.exists('boss_dialogue.png'):
+            event.region.stopObserver()
 
     def _increment_nodes_run(self):
         """Method to properly append to the nodes_run attribute; the combat
