@@ -408,18 +408,12 @@ class QuestModule(object):
             # define expedition-specific quests
             if 5 in self.config.expeditions_all:
                 self.quest_list.append(get_quest_info('d22'))
-            if (len(set([37, 38]) & set(self.config.expeditions_all)) > 1):
+            if (len(set([37, 38]) & set(self.config.expeditions_all))):
                 self.quest_list.append(get_quest_info('d9'))
                 self.quest_list.append(get_quest_info('d11'))
-            if (
-                    len(
-                        set([3, 4, 5, 10]) & set(self.config.expeditions_all)
-                    ) > 1):
+            if (len(set([3, 4, 5, 10]) & set(self.config.expeditions_all))):
                 self.quest_list.append(get_quest_info('d24'))
-            if (
-                    len(
-                        set([4, 'A2', 'A3']) & set(self.config.expeditions_all)
-                    ) > 1):
+            if (len(set([4, 'A2', 'A3']) & set(self.config.expeditions_all))):
                 self.quest_list.append(get_quest_info('d26'))
 
 
