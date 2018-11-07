@@ -2,12 +2,13 @@ from sikuli import Region, Pattern
 from datetime import datetime, timedelta
 from random import randint
 from threading import Thread
+from recovery import RecoverableModule
 from nav import Nav
 from util import Util
 from kca_globals import Globals
 
 
-class PvPModule(object):
+class PvPModule(RecoverableModule):
     def __init__(self, config, stats, regions, fleet):
         """Initialies the PvP module.
 
@@ -81,6 +82,7 @@ class PvPModule(object):
         Util.rejigger_mouse(self.regions, 'top')
         Util.wait_and_click(self.regions[formation], formation)
 
+        self._start_crash_observer()
         while not self.regions['lower_right_corner'].exists('next.png', 1):
             if self.kc_region.exists('combat_nb_fight.png', 1):
                 if night_battle:
@@ -89,12 +91,16 @@ class PvPModule(object):
                     Util.check_and_click(
                         self.kc_region, 'combat_nb_retreat.png')
                 Util.rejigger_mouse(self.regions, 'top')
+            self._check_and_recovery_crash()
 
         while not self.regions['home_menu'].exists('home_menu_sortie.png', 1):
             if Util.check_and_click(
                     self.regions['lower_right_corner'], 'next.png',
                     Globals.EXPAND['shipgirl_off_next']):
                 Util.rejigger_mouse(self.regions, 'top')
+            self._check_and_recovery_crash()
+        self._stop_crash_observer()
+
         self.stats.increment_pvp_done()
         Util.log_msg("Finished PvP sortie.")
         self.fleet.needs_resupply = True
