@@ -2,6 +2,7 @@ from sikuli import Region, Pattern, FOREVER
 from datetime import datetime, timedelta
 from threading import Thread
 from kca_globals import Globals
+from recovery import RecoverableModule
 from fleet import Fleet
 from lbas import LBAS
 from map_data import MapData, Node, UnknownNode
@@ -10,7 +11,7 @@ from nav import Nav
 from util import Util
 
 
-class CombatModule(object):
+class CombatModule(RecoverableModule):
     def __init__(self, config, stats, regions, fleets):
         """Initializes the Combat module.
 
@@ -400,9 +401,14 @@ class CombatModule(object):
                 if dialogue_check:
                     self._start_boss_dialogue_observer()
 
+                self._start_crash_observer()
                 while not self.regions['lower_right'].exists('next.png', 1):
                     if self.kc_region.exists('combat_nb_fight.png', 1):
                         self._select_night_battle(self._resolve_night_battle())
+                    self._check_and_recovery_crash((
+                        self.module_regions['fleet_observe_region'],
+                        self.module_regions['dialogue_observe_region']))
+                self._stop_crash_observer()
 
                 # battle complete; resolve combat results
                 Util.check_and_click(
@@ -436,6 +442,7 @@ class CombatModule(object):
                             self.module_regions)
                 Util.rejigger_mouse(self.regions, 'lbas')
                 # click through while not next battle or home
+                self._start_crash_observer()
                 while not (
                         self.fast_kc_region.exists('home_menu_sortie.png')
                         or self.fast_kc_region.exists(
@@ -467,6 +474,8 @@ class CombatModule(object):
                     if self.combined_fleet or self.striking_fleet:
                         self._resolve_fcf()
                         Util.rejigger_mouse(self.regions, 'top')
+                    self._check_and_recovery_crash()
+                self._stop_crash_observer()
 
             if self.regions['left'].exists('home_menu_sortie.png'):
                 # arrived at home; sortie complete
@@ -559,6 +568,7 @@ class CombatModule(object):
             self.current_node_backup = None
             self._start_fleet_observer()
 
+        self._start_crash_observer()
         while not at_node:
             if self.fast_kc_region.exists('compass.png'):
                 while self.kc_region.exists('compass.png'):
@@ -574,6 +584,7 @@ class CombatModule(object):
                 # check for both single fleet and combined fleet formations
                 # since combined fleets can have single fleet battles
                 self._stop_fleet_observer()
+                self._stop_crash_observer()
                 self._print_current_node()
                 formations = self._resolve_formation()
                 for formation in formations:
@@ -602,6 +613,7 @@ class CombatModule(object):
                 # post-combat or night battle select without selecting a
                 # formation
                 self._stop_fleet_observer()
+                self._stop_crash_observer()
                 self._print_current_node()
                 Util.rejigger_mouse(self.regions, 'lbas')
                 at_node = True
@@ -610,11 +622,14 @@ class CombatModule(object):
                     'combat_flagship_dmg.png'):
                 # flagship retreat
                 self._stop_fleet_observer()
+                self._stop_crash_observer()
                 return (False, False)
             elif self.regions['lower_right_corner'].exists('next_alt.png'):
                 # resource node end
                 self._stop_fleet_observer()
+                self._stop_crash_observer()
                 return (False, False)
+            self._check_and_recovery_crash()
 
     def _start_fleet_observer(self):
         """Method that starts the observeRegion/observeInBackground methods

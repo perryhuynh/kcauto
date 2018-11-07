@@ -337,7 +337,7 @@ class Util(object):
             sleep(1)
             if find_attempt > 3:
                 Util.log_error("Could not find a reference point.")
-                raise FindFailed
+                raise FindFailed(None)
         x = ref_region.x - 144
         y = ref_region.y
 
