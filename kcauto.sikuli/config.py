@@ -255,7 +255,7 @@ class Config(object):
             for option in self.combat['misc_options']:
                 if option not in (
                         'CheckFatigue', 'ReserveDocks', 'PortCheck',
-                        'ClearStop'):
+                        'ClearStop', 'LastNodePush'):
                     Util.log_error(
                         "Invalid Combat MiscOption: '{}'.".format(option))
                     self.ok = False
