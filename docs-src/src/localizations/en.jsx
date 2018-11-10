@@ -95,6 +95,7 @@ export const en = {
     combatReserveDocks: 'Reserve Docks',
     combatPortCheck: 'Port Check',
     combatClearStop: 'Clear Stop',
+    combatLastNodePush: 'Last Node Push',
     eventResetHeader: 'Event Map Progress Reset',
     eventResetDifficultyCasual: 'Casual',
     eventResetDifficultyEasy: 'Easy',

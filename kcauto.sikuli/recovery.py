@@ -43,7 +43,7 @@ class Recovery(object):
         Region.type(kc_region, Key.SPACE)
         sleep(1)
         Region.type(kc_region, Key.F10)  # clear KC3Kai overlay
-        sleep()
+        sleep(1)
         if (kc_region.exists(Pattern('kc_ref_point_1.png').exact())
                 or kc_region.exists(Pattern('kc_ref_point_2.png').exact())
                 or kc_region.exists(Pattern('kc_ref_point_3.png').exact())):
@@ -83,7 +83,7 @@ class Recovery(object):
 
         # catbomb recovery
         if ('catbomb' in Globals.ENABLED_RECOVERIES):
-            if kc_region.exists('catbomb.png', 10):
+            if kc_region.exists('catbomb.png', 60):
                 Util.log_warning("** Catbomb detected. **")
                 catbombed = True
                 catbomb_n = 0
