@@ -881,11 +881,26 @@ class CombatModule(RecoverableModule):
         """
         # check whether to retreat against combat nodes count
         if len(self.nodes_run) >= self.config.combat['combat_nodes']:
+            if 'LastNodePush' in self.config.combat['misc_options']:
+                Util.log_msg(
+                    "Ran the necessary number of nodes, but LastNodePush is "
+                    "set. Pushing.")
+                return True
+            if (self.config.combat['engine'] == 'live'
+                    and 'push' in self.current_node.types):
+                Util.log_msg(
+                    "Ran the necessary number of nodes, but Node {} is a push "
+                    "node. Pushing.".format(self.current_node))
+                return True
             Util.log_msg("Ran the necessary number of nodes. Retreating.")
             return False
 
         # if on live engine mode, check if the current node is a retreat node
         if self.config.combat['engine'] == 'live':
+            if 'push' in self.current_node.types:
+                Util.log_msg("Node {} is a push node. Pushing.".format(
+                    self.current_node))
+                return True
             if not self.map.resolve_continue_sortie(self.current_node):
                 Util.log_msg("Node {} is a retreat node. Retreating.".format(
                     self.current_node))

@@ -63,6 +63,7 @@ const jsonConfigDefaults = {
   combatOptionReserveDocks: false,
   combatOptionPortCheck: false,
   combatOptionClearStop: false,
+  combatOptionLastNodePush: false,
   eventResetEnabled: false,
   eventResetFrequency: '3',
   eventResetFarmDifficulty: 'easy',
