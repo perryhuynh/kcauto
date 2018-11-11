@@ -104,6 +104,9 @@ export const setPythonConfig = config => (
     if (config.combatOptionClearStop) {
       combatOptions.push('ClearStop')
     }
+    if (config.combatOptionLastNodePush) {
+      combatOptions.push('LastNodePush')
+    }
     if (!configTemp.shipSwitcherSlot1Criteria || !configTemp.shipSwitcherSlot1Ships) {
       configTemp.shipSwitcherSlot1Criteria = ''
       configTemp.shipSwitcherSlot1Ships = ''

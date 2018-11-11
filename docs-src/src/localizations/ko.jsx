@@ -99,6 +99,7 @@ export const ko = {
     combatReserveDocks: null,
     combatPortCheck: '모항 체크',
     combatClearStop: '해역클리어 정지',
+    combatLastNodePush: null,
     eventResetHeader: null,
     eventResetFrequency: null,
     eventResetFarmDifficulty: null,

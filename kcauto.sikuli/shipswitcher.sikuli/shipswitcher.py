@@ -201,7 +201,6 @@ class ShipSwitcherModule(object):
         Returns:
             bool: always returns True after switching to the specified tabs
         """
-
         for target in targets:
             if target not in self.VALID_TABS:
                 raise ValueError(
@@ -215,6 +214,7 @@ class ShipSwitcherModule(object):
         if 'all' in targets:
             # if target is all tabs, click the quick tab arrow once if not
             # already at all tabs; if arrow is clicked, reset page to 1
+            Util.log_msg("Enabling all shiplist tabs.")
             if not self.regions['top_submenu'].exists(
                     Pattern('shiplist_quick_tab_all.png').exact()):
                 Util.check_and_click(
@@ -225,6 +225,7 @@ class ShipSwitcherModule(object):
 
         # if target is specific tabs, click the quick tab arrow until the
         # shiplist is empty, then click the tabs; afterwards, reset page to 1
+        Util.log_msg("Enabling shiplist tabs {}.".format(', '.join(targets)))
         while not self.regions['right'].exists('shiplist_empty_indicator.png'):
             Util.check_and_click(
                 self.regions['top_submenu'], 'shiplist_quick_tab_none.png')
@@ -243,6 +244,7 @@ class ShipSwitcherModule(object):
         Args:
             target (str): the sorting to switch the shiplist to
         """
+        Util.log_msg("Sort shiplist by {}.".format(target))
         while not self.regions['top_submenu'].exists(
                 'shiplist_sort_{}.png'.format(target)):
             Util.check_and_click(
@@ -266,6 +268,7 @@ class ShipSwitcherModule(object):
                 "Invalid shiplist target page ({}) for number of known pages "
                 "({}).".format(target_page, self.ship_page_count))
 
+        Util.log_msg("Navigate to shiplist page {}.".format(target_page))
         self.current_shiplist_page = NavList.navigate_to_page(
             self.regions, self.ship_page_count, self.current_shiplist_page,
             target_page)
@@ -275,26 +278,26 @@ class ShipSwitcherModule(object):
         list.
 
         Args:
-            position (int): integer between 1 and 10 specifying the position
-                that should be clicked on the ship list
+            position (int): the 0-based position that should be clicked on the
+                ship list
 
         Raises:
             ValueError: invalid position specified
         """
-        if not 1 <= position <= 10:
+        if not 0 <= position <= 9:
             raise ValueError(
                 "Invalid position passed to _choose_ship_by_position: {}"
                 .format(position))
-        zero_position = position - 1
         # x start/stop do not change
         x_start = 590
         x_stop = 1050
         # y start/stop change depending on specified position; region has width
         # of 460 pixels, height of 35 pixels, with a 8-pixel padding between
         # each nth position on the list
-        y_start = 225 + (zero_position * 8) + (zero_position * 35)
+        y_start = 225 + (position * 8) + (position * 35)
         y_stop = y_start + 35
 
+        Util.log_msg("Selecting ship in position {}.".format(position + 1))
         Util.click_coords(
             self.kc_region,
             Util.random_coord(x_start, x_stop),
@@ -328,6 +331,7 @@ class ShipSwitcherModule(object):
             if temp_region.exists(
                     Pattern('ship_state_dmg_{}.png'.format(damage))
                     .similar(Globals.DAMAGE_SIMILARITY)):
+                Util.log_warning("Candidate ship is damaged.")
                 return False
         # check fatigue states if it is a criteria
         if 'fatigue' in criteria:
@@ -335,17 +339,21 @@ class ShipSwitcherModule(object):
                 if temp_region.exists(
                         Pattern('ship_state_fatigue_{}.png'.format(fatigue))
                         .similar(Globals.FATIGUE_SIMILARITY)):
+                    Util.log_warning("Candidate ship is fatigued.")
                     return False
         # check sparkle if it is a criteria
         if 'sparkle' in criteria:
             if temp_region.exists(
                     Pattern('sparkle_indicator_shiplist.png').similar(0.9), 2):
+                Util.log_warning("Candidate ship is sparkled.")
                 return False
         # passed criteria; check if there is a conflicting ship in fleet
         if Util.check_and_click(
                 self.regions['lower_right'], 'shiplist_shipswitch_button.png'):
+            Util.log_msg("Candidate ship successfully switched in.")
             return True
         else:
+            Util.log_warning("Candidate ship has conflict with fleet.")
             return 'conflict'
 
     def _resolve_ship_page_and_position(self, reference, offset):
@@ -355,26 +363,39 @@ class ShipSwitcherModule(object):
         Args:
             reference (str): 'start' or 'end', indiciating where the offset
                 begins from
-            offset (int): n-position from reference
+            offset (int): 1-based offset from reference
+
+        Raises:
+            ValueError: invalid offset specified
 
         Returns:
             int: page where the specified ship is
-            list: list with one value indicating the position where the
+            list: list with one value indicating the 0-based position where the
                 specified ship is on the specified page
         """
+        if offset > self.ship_count:
+            raise ValueError(
+                "Specified ship position offset is larger than detected "
+                "number of ships. This may be due to an OCR error.")
+        if offset <= 0:
+            raise ValueError(
+                "Negative or zero offset ({}) specified. Offsets must be "
+                "greater than 0.".format(offset))
+
         if reference == 'start':
             start_offset = offset
         if reference == 'end':
             start_offset = self.ship_count - offset + 1
         page = int(ceil(start_offset / float(Globals.SHIPS_PER_PAGE)))
+        # convert the provided 1-based offset to 0-based position on shiplist
         position = (
             start_offset % Globals.SHIPS_PER_PAGE
             if start_offset % Globals.SHIPS_PER_PAGE is not 0
-            else Globals.SHIPS_PER_PAGE)
+            else Globals.SHIPS_PER_PAGE) - 1
         return (page, [position])
 
     def _filter_ships(self, matched_ships, ship_config):
-        """Given a list of possible ship matches on the current ship list page,
+        """Given a list of candidate ship matches on the current ship list page,
         filter on the ship lock and ring criteria and return a list of valid
         positions on the page.
 
@@ -392,8 +413,8 @@ class ShipSwitcherModule(object):
             # create new region based on the match
             ship_row = ship.left(1).right(640)
             ship_row.setAutoWaitTimeout(0)  # speed
-            # find 1-based numeric position based on the new region's y-pos
-            position = ((ship_row.y - self.kc_region.y - 232) / 43) + 1
+            # find 0-based position based on the new region's y-pos
+            position = (ship_row.y - self.kc_region.y - 232) / 43
 
             # check against ship-specific criterias, if any
             if 'locked' in ship_config and criteria_matched:
@@ -418,8 +439,8 @@ class ShipSwitcherModule(object):
         levels.
 
         Args:
-            ship_positions (list): list of ints of previously matched ship
-                positions
+            ship_positions (list): list of ints of previously matched 0-based
+                ship positions
 
         Returns:
             list: list of positions of ships matching the level criteria
@@ -437,7 +458,7 @@ class ShipSwitcherModule(object):
                 # create new region based on the position
                 level_area = Region(
                     self.kc_region.x + 820,
-                    self.kc_region.y + 225 + (43 * (position - 1)),
+                    self.kc_region.y + 225 + (43 * position),
                     55, 35)
                 ship_level = Util.read_ocr_number_text(level_area)
                 ship_level = sub(r"\D", "", ship_level)
@@ -458,7 +479,7 @@ class ShipSwitcherModule(object):
         and see if it available for switching in.
 
         Args:
-            position (int): position in ship list
+            position (int): 0-based position in ship list
             criteria (dict): dictionary of criteria
 
         Returns:
@@ -513,7 +534,7 @@ class ShipSwitcherModule(object):
                 self._navigate_to_shiplist_page(page)
             if 'sparkle' in slot_config['criteria']:
                 # if in sparkle mode, remove the checked ship from the list of
-                # possible ships so we don't go back to it
+                # candidate ships so we don't go back to it
                 slot_config['ships'].pop(0)
             # there should only be one returned position
             if self._choose_and_check_availability_of_ship(
@@ -521,7 +542,7 @@ class ShipSwitcherModule(object):
                 return True
         if 'sparkle' in slot_config['criteria']:
             # if in sparkle mode and we reach this point, we've exhausted the
-            # list of possible ships; disable the combat module
+            # list of candidate ships; disable the combat module
             self.combat.disable_module()
         return False
 
@@ -586,8 +607,7 @@ class ShipSwitcherModule(object):
                 ship_position_list)
 
             Util.log_msg(
-                "Potential replacement ships found in page {} positions {}"
-                .format(
+                "Candidate ships found in page {} positions {}".format(
                     self.current_shiplist_page,
                     ", ".join([str(i) for i in ship_position_list])))
 
@@ -628,7 +648,7 @@ class ShipSwitcherModule(object):
                 return False
         if 'sparkle' in slot_config['criteria']:
             # if in sparkle mode and we reach this point, we've exhausted the
-            # list of possible ships; disable the combat module
+            # list of candidate ships; disable the combat module
             self.combat.disable_module()
         return False
 

@@ -155,7 +155,8 @@ class ExpeditionModule(object):
             fleet (ExpeditionFleet): expedition fleet instance
         """
         expedition_line = Pattern(
-            'expedition_{}.png'.format(fleet.expedition)).similar(0.7)
+            'expedition_{}.png'.format(fleet.expedition)).similar(
+                Globals.TEXT_SIMILARITY)
         while not self.kc_region.exists(expedition_line):
             # if the expedition does not already exist on-screen, try selecting
             # the world first

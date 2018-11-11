@@ -280,6 +280,7 @@ class BodyConfigCombat extends PureComponent {
       combatOptionReserveDocks,
       combatOptionPortCheck,
       combatOptionClearStop,
+      combatOptionLastNodePush,
     } = this.state
 
     const combatNodeSelectOptions = combatNodeSelects ?
@@ -778,6 +779,16 @@ class BodyConfigCombat extends PureComponent {
                   value='combatOptionClearStop' />
               }
               label={<Localize field='bodyConfig.combatClearStop' />}
+              disabled={!combatEnabled} />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={combatOptionLastNodePush}
+                  onChange={this.handleMiscOptionCheck}
+                  disabled={!combatEnabled}
+                  value='combatOptionLastNodePush' />
+              }
+              label={<Localize field='bodyConfig.combatLastNodePush' />}
               disabled={!combatEnabled} />
           </Grid>
         </Grid>

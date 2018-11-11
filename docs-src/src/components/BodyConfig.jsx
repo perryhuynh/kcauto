@@ -160,6 +160,7 @@ const createStateObjFromPythonConfig = (pyConfig) => {
     combatOptionReserveDocks: pyConfigObj.combatMiscOptions.includes('ReserveDocks') || false,
     combatOptionPortCheck: pyConfigObj.combatMiscOptions.includes('PortCheck') || false,
     combatOptionClearStop: pyConfigObj.combatMiscOptions.includes('ClearStop') || false,
+    combatOptionLastNodePush: pyConfigObj.combatMiscOptions.includes('LastNodePush') || false,
     eventResetEnabled: pyConfigObj.eventResetEnabled === 'True',
     eventResetFrequency: pyConfigObj.eventResetFrequency || '3',
     eventResetFarmDifficulty: pyConfigObj.eventResetFarmDifficulty || 'easy',

@@ -102,6 +102,7 @@ export const TMP = {
     combatReserveDocks: null,
     combatPortCheck: null,
     combatClearStop: null,
+    combatLastNodePush: null,
     eventResetHeader: null,
     eventResetFrequency: null,
     eventResetFarmDifficulty: null,

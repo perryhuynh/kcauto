@@ -2,6 +2,7 @@ from sikuli import Region, Pattern, FOREVER
 from datetime import datetime, timedelta
 from threading import Thread
 from kca_globals import Globals
+from recovery import RecoverableModule
 from fleet import Fleet
 from lbas import LBAS
 from map_data import MapData, Node, UnknownNode
@@ -10,7 +11,7 @@ from nav import Nav
 from util import Util
 
 
-class CombatModule(object):
+class CombatModule(RecoverableModule):
     def __init__(self, config, stats, regions, fleets):
         """Initializes the Combat module.
 
@@ -66,7 +67,8 @@ class CombatModule(object):
             'check_damage_7th': Region(x + 710, y + 570, 20, 64),
             'check_damage_flagship': Region(x + 470, y + 280, 42, 70),
             'check_damage_combat': Region(x + 470, y + 215, 50, 475),
-            'observe_region': Region(x + 110, y + 95, 986, 478),
+            'fleet_observe_region': Region(x + 110, y + 95, 986, 478),
+            'dialogue_observe_region': Region(x, y, 260, 720),
             'event_next': Region(x + 1090, y + 525, 110, 75)
         }
 
@@ -385,7 +387,7 @@ class CombatModule(object):
         disable_combat = False
         post_combat_screens = []
         while sortieing:
-            at_node, dialogue_click = self._run_loop_between_nodes()
+            at_node, dialogue_check = self._run_loop_between_nodes()
 
             if at_node:
                 # arrived at combat node
@@ -396,18 +398,17 @@ class CombatModule(object):
                     disable_combat = False
                     post_combat_screens = []
 
-                if dialogue_click:
-                    # click to get rid of initial boss dialogue in case it
-                    # exists
-                    Util.kc_sleep(5)
-                    Util.click_preset_region(self.regions, 'center')
-                    Util.kc_sleep()
-                    Util.click_preset_region(self.regions, 'center')
-                    Util.rejigger_mouse(self.regions, 'lbas')
+                if dialogue_check:
+                    self._start_boss_dialogue_observer()
 
+                self._start_crash_observer()
                 while not self.regions['lower_right'].exists('next.png', 1):
                     if self.kc_region.exists('combat_nb_fight.png', 1):
                         self._select_night_battle(self._resolve_night_battle())
+                    self._check_and_recovery_crash((
+                        self.module_regions['fleet_observe_region'],
+                        self.module_regions['dialogue_observe_region']))
+                self._stop_crash_observer()
 
                 # battle complete; resolve combat results
                 Util.check_and_click(
@@ -434,14 +435,14 @@ class CombatModule(object):
                     self.fleets[2].print_damage_counts()
                     self.dmg = self._combine_fleet_damages(
                         self.dmg, fleet_two_damages)
-                    # ascertain whether or not the escort fleet's flagship is
-                    # damaged if necessary
-                    if (fleet_two_damages['heavy'] == 1
-                            and not self.fleets[2].flagship_damaged):
+                    # ascertain whether or not the one heavily damaged ship is
+                    # the escort fleet's flagship
+                    if fleet_two_damages['heavy'] == 1:
                         self.fleets[2].check_damage_flagship(
                             self.module_regions)
                 Util.rejigger_mouse(self.regions, 'lbas')
                 # click through while not next battle or home
+                self._start_crash_observer()
                 while not (
                         self.fast_kc_region.exists('home_menu_sortie.png')
                         or self.fast_kc_region.exists(
@@ -473,6 +474,8 @@ class CombatModule(object):
                     if self.combined_fleet or self.striking_fleet:
                         self._resolve_fcf()
                         Util.rejigger_mouse(self.regions, 'top')
+                    self._check_and_recovery_crash()
+                self._stop_crash_observer()
 
             if self.regions['left'].exists('home_menu_sortie.png'):
                 # arrived at home; sortie complete
@@ -565,6 +568,7 @@ class CombatModule(object):
             self.current_node_backup = None
             self._start_fleet_observer()
 
+        self._start_crash_observer()
         while not at_node:
             if self.fast_kc_region.exists('compass.png'):
                 while self.kc_region.exists('compass.png'):
@@ -580,6 +584,7 @@ class CombatModule(object):
                 # check for both single fleet and combined fleet formations
                 # since combined fleets can have single fleet battles
                 self._stop_fleet_observer()
+                self._stop_crash_observer()
                 self._print_current_node()
                 formations = self._resolve_formation()
                 for formation in formations:
@@ -608,6 +613,7 @@ class CombatModule(object):
                 # post-combat or night battle select without selecting a
                 # formation
                 self._stop_fleet_observer()
+                self._stop_crash_observer()
                 self._print_current_node()
                 Util.rejigger_mouse(self.regions, 'lbas')
                 at_node = True
@@ -616,26 +622,30 @@ class CombatModule(object):
                     'combat_flagship_dmg.png'):
                 # flagship retreat
                 self._stop_fleet_observer()
+                self._stop_crash_observer()
                 return (False, False)
             elif self.regions['lower_right_corner'].exists('next_alt.png'):
                 # resource node end
                 self._stop_fleet_observer()
+                self._stop_crash_observer()
                 return (False, False)
+            self._check_and_recovery_crash()
 
     def _start_fleet_observer(self):
         """Method that starts the observeRegion/observeInBackground methods
         that tracks the fleet position icon in real-time in the live engine
         mode.
         """
-        self.module_regions['observe_region'].onAppear(
+        self.module_regions['fleet_observe_region'].onAppear(
             Pattern(self.fleet_icon).similar(Globals.FLEET_ICON_SIMILARITY),
             self._update_fleet_position)
-        self.module_regions['observe_region'].observeInBackground(FOREVER)
+        self.module_regions['fleet_observe_region'].observeInBackground(
+            FOREVER)
 
     def _stop_fleet_observer(self):
         """Stops the observer started by the _start_fleet_observer() method.
         """
-        self.module_regions['observe_region'].stopObserver()
+        self.module_regions['fleet_observe_region'].stopObserver()
         # add sleep to account for async nature of observer overwriting backup
         # node logic
         Util.kc_sleep(1)
@@ -691,6 +701,46 @@ class CombatModule(object):
         # debug console print for the method's found position of the fleet
         # print("{} {}".format(self.current_position, self.current_node))
         Util.log_msg("Fleet at node {}.".format(self.current_node))
+
+    def _start_boss_dialogue_observer(self):
+        """Method that starts the observeRegion/observeInBackground methods
+        that resolves the boss dialogue.
+        """
+        # register onAppear for the boss dialogue screen
+        self.module_regions['dialogue_observe_region'].onAppear(
+            Pattern('boss_dialogue.png').similar(0.9),
+            self._dismiss_boss_dialogue)
+        # register onAppear for combat (post- or no boss dialogue screen)
+        self.module_regions['dialogue_observe_region'].onAppear(
+            'flagship_marker.png', self._stop_boss_dialogue_observer_event)
+        self.module_regions['dialogue_observe_region'].observeInBackground(
+            FOREVER)
+
+    def _stop_boss_dialogue_observer_event(self, event):
+        """Method that is run by the boss dialogue-related observer to stop
+        said observer.
+
+        Args:
+            event (event): sikuli observer event
+        """
+        event.region.stopObserver()
+
+    def _dismiss_boss_dialogue(self, event):
+        """Method that clicks the center of the screen to dismiss the boss
+        dialogue. If the boss dialogue is no longer present, it stops the
+        boss dialogue observer.
+
+        Args:
+            event (event): sikuli observer event
+        """
+        Util.log_msg("Dismissing boss dialogue.")
+        Util.kc_sleep()
+        Util.click_preset_region(self.regions, 'center')
+        Util.rejigger_mouse(self.regions, 'lbas')
+        Util.kc_sleep()
+
+        if not event.region.exists('boss_dialogue.png'):
+            event.region.stopObserver()
 
     def _increment_nodes_run(self):
         """Method to properly append to the nodes_run attribute; the combat
@@ -831,11 +881,26 @@ class CombatModule(object):
         """
         # check whether to retreat against combat nodes count
         if len(self.nodes_run) >= self.config.combat['combat_nodes']:
+            if 'LastNodePush' in self.config.combat['misc_options']:
+                Util.log_msg(
+                    "Ran the necessary number of nodes, but LastNodePush is "
+                    "set. Pushing.")
+                return True
+            if (self.config.combat['engine'] == 'live'
+                    and 'push' in self.current_node.types):
+                Util.log_msg(
+                    "Ran the necessary number of nodes, but Node {} is a push "
+                    "node. Pushing.".format(self.current_node))
+                return True
             Util.log_msg("Ran the necessary number of nodes. Retreating.")
             return False
 
         # if on live engine mode, check if the current node is a retreat node
         if self.config.combat['engine'] == 'live':
+            if 'push' in self.current_node.types:
+                Util.log_msg("Node {} is a push node. Pushing.".format(
+                    self.current_node))
+                return True
             if not self.map.resolve_continue_sortie(self.current_node):
                 Util.log_msg("Node {} is a retreat node. Retreating.".format(
                     self.current_node))
@@ -854,8 +919,8 @@ class CombatModule(object):
                         and self.fleets[2].flagship_damaged):
                     continue_override = True
                     Util.log_msg(
-                        "The 1 ship damaged beyond threshold is the escort "
-                        "fleet's flagship (unsinkable). Continuing sortie.")
+                        "The one heavily damaged ship is the escort fleet's "
+                        "flagship, which is unsinkable. Continuing sortie.")
             if not continue_override:
                 Util.log_warning(
                     "{} ship(s) damaged above threshold. Retreating.".format(
@@ -1058,8 +1123,6 @@ class CombatFleet(Fleet):
                     self.fleet_id, self.damage_counts['heavy'],
                     self.damage_counts['moderate'],
                     self.damage_counts['minor']))
-            if self.flagship_damaged:
-                Util.log_warning("Fleet {} flagship is critically damaged.")
 
     def print_fatigue_states(self):
         """Method to report the fleet's fatigue state in a more human-readable
@@ -1169,7 +1232,7 @@ class CombatFleet(Fleet):
         if (regions['check_damage_flagship'].exists(Pattern(
                 'ship_state_dmg_heavy.png').similar(
                     Globals.DAMAGE_SIMILARITY))):
-            Util.log_warning("Flagship of second fleet is damaged.")
+            Util.log_warning("Flagship of escort fleet is heavily damaged.")
             self.flagship_damaged = True
         else:
             self.flagship_damaged = False
