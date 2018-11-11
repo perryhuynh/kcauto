@@ -1,3 +1,17 @@
+#### 7.0.0
+
+* Catbomb and Chrome crash recovery mid-combat and mid-PvP
+* Improved and dynamic support for boss dialogue screens
+* Add `TEXT_SIMILARITY` and `SHIP_LIST_SIMILARITY` variables to `kca_globals` to compensate for fonts being rendered differently on different machines
+  * Use when having issues with finding PvP opponents and Expeditions
+* Harden escort fleet flagship damage detection
+* Add support for variable number of chalkboards pre-event sortie
+* Archive 2018 Early Fall Event assets
+* Add alt coords for 5-5 boss node
+* Bugfix to ShipSwitcher page navigation
+* Bugfix to quest logic for quests D9 and D11
+* Bugfix and improvements to Recovery module (both Catbomb and Chrome crashes)
+
 #### 6.8.5
 
 * Update assets for better World 6 sortie compatibility
