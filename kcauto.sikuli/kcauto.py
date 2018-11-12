@@ -15,9 +15,9 @@ sys.path.append(os.getcwd())
 from main import KCAuto  # noqa
 from kca_globals import Globals  # noqa
 from args import Args  # noqa
-from config import Config  # noqa
 from debug import Debug  # noqa
 from recovery import Recovery  # noqa
+from config import ConfigModule  # noqa
 from util import Util  # noqa
 
 # Sikuli settings
@@ -35,7 +35,7 @@ if len(sys.argv) > 1:
 
 # check args, and if none provided, load default config
 if args and args.mode == 'cfg':
-    config = Config(args.cfg)
+    config = ConfigModule(args.cfg)
 elif args and args.mode == 'debug':
     Debug.find(args.window, args.target, args.similarity)
     sys.exit(0)
@@ -43,7 +43,7 @@ elif args and args.mode == 'debugc':
     Debug.continuously_find(args.window, args.target, args.similarity)
     sys.exit(0)  # never actually reached
 else:
-    config = Config('config.ini')
+    config = ConfigModule('config.ini')
 
 kcauto = KCAuto(config)
 
