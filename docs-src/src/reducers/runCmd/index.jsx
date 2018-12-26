@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
-import { sikuliPath, kcautoKaiPath } from 'reducers/runCmd/runCmd'
+import { sikuliPath, kcautoPath } from 'reducers/runCmd/runCmd'
 
 export default combineReducers({
   sikuliPath,
-  kcautoKaiPath,
+  kcautoPath,
 })
