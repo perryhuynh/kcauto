@@ -1,20 +1,21 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import { setSikuliPath, setKCAutoKaiPath } from 'actions/runCmd'
+import { setSikuliPath, setKCAutoPath } from 'actions/runCmd'
 import BodyRunCmd from 'components/BodyRunCmd'
 
 
 const mapStateToProps = state => (
   {
-    runCmd: state.runCmd,
+    sikuliPath: state.runCmd.sikuliPath,
+    kcautoPath: state.runCmd.kcautoPath,
   }
 )
 
 const mapDispatchToProps = dispatch => (
   bindActionCreators({
     setSikuliPath,
-    setKCAutoKaiPath,
+    setKCAutoPath,
   }, dispatch)
 )
 

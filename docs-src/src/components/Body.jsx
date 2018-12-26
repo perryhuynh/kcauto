@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from 'material-ui/styles'
-import AppBar from 'material-ui/AppBar'
-import Tabs, { Tab } from 'material-ui/Tabs'
+import { withStyles } from '@material-ui/core/styles'
+import AppBar from '@material-ui/core/AppBar'
+import Tabs from '@material-ui/core/Tabs'
+import Tab from '@material-ui/core/Tab'
 import { Play, Settings, InformationOutline } from 'mdi-material-ui'
 
 import BodyConfigContainer from 'containers/BodyConfigContainer'
@@ -41,15 +42,15 @@ class Body extends PureComponent {
             <Tab icon={<InformationOutline />} label='About' />
           </Tabs>
         </AppBar>
-        { tab === 'config' ?
-          <BodyConfigContainer /> :
-          null}
-        { tab === 'runcmd' ?
-          <BodyRunCmdContainer /> :
-          null}
-        { tab === 'about' ?
-          <BodyAbout /> :
-          null}
+        { tab === 'config'
+          ? <BodyConfigContainer />
+          : null}
+        { tab === 'runcmd'
+          ? <BodyRunCmdContainer />
+          : null}
+        { tab === 'about'
+          ? <BodyAbout />
+          : null}
       </div>
     )
   }

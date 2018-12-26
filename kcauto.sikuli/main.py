@@ -15,47 +15,7 @@ from util import Util
 class KCAuto(object):
     """Primary class of kcauto. The master class that contains the high
     level logic.
-
-    Attributes:
-        active_fleets (dict): dictionary of Fleet instances undergoing any
-            kcauto-mediated activity
-        combat_fleets (dict): dictionary of Fleet instances undergoing combat
-            sorties
-        config (Config): Config instance, passed in during instantiation
-        expedition_fleets (dict): dictionary of Fleet instances undergoing
-            expeditions
-        kc_region (Region): sikuli Region instance containing the last known
-            location of the Kantai Collection game screen
-        modules (dict): dictionary of individual module instances
-        regions (dict): dictionary of pre-calculated game regions for faster
-            searching and matching
-        paused (bool): whether or not the script was in a paused state
-        print_stats_check (bool): whether or not the stats should be displayed
-            at the end of the loop
-        stats (Stats): Stats instance
     """
-
-    kc_region = None
-    config = None
-    stats = None
-    scheduler = None
-    modules = {
-        'resupply': None,
-        'pvp': None,
-        'combat': None,
-        'repair': None,
-        'ship_switcher': None,
-        'fleet_switcher': None,
-        'expedition': None,
-        'quest': None
-    }
-    print_stats_check = True
-    paused = False
-    regions = {}
-    active_fleets = {}
-    combat_fleets = {}
-    expedition_fleets = {}
-    combat_cycle = False
 
     def __init__(self, config):
         """Initializes the primary kcauto instance with the passed in
@@ -65,9 +25,27 @@ class KCAuto(object):
         Args:
             config (Config): kcauto Config instance
         """
+        self.kc_region = None
         self.config = config
         self.stats = Stats(self.config)
         self.scheduler = Scheduler(self.config, self.stats)
+        self.modules = {
+            'resupply': None,
+            'pvp': None,
+            'combat': None,
+            'repair': None,
+            'ship_switcher': None,
+            'fleet_switcher': None,
+            'expedition': None,
+            'quest': None
+        }
+        self.print_stats_check = True
+        self.paused = False
+        self.regions = {}
+        self.active_fleets = {}
+        self.combat_fleets = {}
+        self.expedition_fleets = {}
+        self.combat_cycle = False
 
     def refresh_config(self):
         """Method that allows for the hot-reloading of the config files. Run at
@@ -75,7 +53,6 @@ class KCAuto(object):
         destroys modules as necessary.
         """
         self.config.read()
-        self.config.validate()
 
         if self.config.changed:
             self.active_fleets = {}

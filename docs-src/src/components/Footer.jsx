@@ -1,8 +1,8 @@
 import React from 'react'
-import { withStyles } from 'material-ui/styles'
+import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
-import Divider from 'material-ui/Divider'
-import blueGrey from 'material-ui/colors/blueGrey'
+import Divider from '@material-ui/core/Divider'
+import blueGrey from '@material-ui/core/colors/blueGrey'
 import * as urls from 'urls'
 
 const styles = () => ({

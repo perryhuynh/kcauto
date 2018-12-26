@@ -1,3 +1,9 @@
+#### 7.1.0
+
+* Major housekeeping release
+  * Refactor and overhaul config reader for cleaner code, hardened config checking, and ease of maintenance moving forward
+  * Update, upgrade, refactor, and overhaul webUI for cleaner code, more complex logic, and ease of maintenance moving forward
+
 #### 7.0.0
 
 * Catbomb and Chrome crash recovery mid-combat and mid-PvP

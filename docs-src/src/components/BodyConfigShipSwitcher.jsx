@@ -1,21 +1,23 @@
+/* eslint react/no-unused-prop-types: 0 */
 import React, { PureComponent, Fragment } from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from 'material-ui/styles'
+import { withStyles } from '@material-ui/core/styles'
 
 import Select from 'react-select'
-import Grid from 'material-ui/Grid'
-import Typography from 'material-ui/Typography'
-import Modal from 'material-ui/Modal'
-import Switch from 'material-ui/Switch'
-import Button from 'material-ui/Button'
-import { InputLabel } from 'material-ui/Input'
-import { FormControl } from 'material-ui/Form'
+import CreatableSelect from 'react-select/lib/Creatable'
+import Grid from '@material-ui/core/Grid'
+import Typography from '@material-ui/core/Typography'
+import Modal from '@material-ui/core/Modal'
+import Switch from '@material-ui/core/Switch'
+import Button from '@material-ui/core/Button'
+import InputLabel from '@material-ui/core/InputLabel'
+import FormControl from '@material-ui/core/FormControl'
 import { PlusBox } from 'mdi-material-ui'
 
 import Localize from 'containers/LocalizeContainer'
 import { styles } from 'components/BodyConfigStyles'
 import BodyConfigShipSwitcherModal from 'components/BodyConfigShipSwitcherModal'
-
+import { SWITCH_CRITERIA } from 'types/formOptions'
 
 const getModalStyle = () => {
   const top = 50
@@ -28,18 +30,10 @@ const getModalStyle = () => {
   }
 }
 
-const SWITCH_CRITERIA = [
-  { value: 'damage', label: <Localize field='bodyConfig.shipSwitcherCriteriaDamage' /> },
-  { value: 'fatigue', label: <Localize field='bodyConfig.shipSwitcherCriteriaFatigue' /> },
-  { value: 'sparkle', label: <Localize field='bodyConfig.shipSwitcherCriteriaSparkle' /> }]
-
 class BodyConfigShipSwitcher extends PureComponent {
-  state = this.props.config
-
-  componentWillReceiveProps = (nextProps) => {
-    if (this.props.config !== nextProps.config) {
-      this.setState(nextProps.config)
-    }
+  state = {
+    modalOpen: false,
+    modalSlot: null,
   }
 
   openModal = (modalSlot) => {
@@ -52,47 +46,40 @@ class BodyConfigShipSwitcher extends PureComponent {
 
   modalCallback = (slot, line) => {
     // take value from modal form and update the ship value in the parent form accordingly
+    const {
+      config,
+      updateObject,
+    } = this.props
     const varName = `shipSwitcherSlot${slot}Ships`
-    const prevVal = this.state[varName] ? this.state[varName] : ''
-    const newVal = prevVal ? `${prevVal},${line}` : line
-    this.setState({
-      modalOpen: false,
-      [varName]: newVal,
-    }, () => this.props.callback(this.state))
+    const newOpt = { label: line, value: line }
+    const updatedOpts = config[varName] || []
+    updatedOpts.push(newOpt)
+    this.setState({ modalOpen: false })
+    updateObject(config, { [varName]: updatedOpts })
   }
 
   render = () => {
     const {
       classes,
-    } = this.props
-    const {
+      config,
       shipSwitcherEnabled,
       combatEnabled,
+      updateSwitch,
+      updateSelect,
+    } = this.props
+    const {
       modalOpen,
       modalSlot,
     } = this.state
-    // create react-select-friendly form values for ship specifications
-    const slotShipChoices = [...Array(6).keys()].reduce((obj, slot) => {
-      const tempObj = obj
-      const nSlot = slot + 1
-      if (this.state[`shipSwitcherSlot${nSlot}Ships`]) {
-        tempObj[nSlot] = this.state[`shipSwitcherSlot${nSlot}Ships`].split(',').map(value => ({ value, label: value }))
-      }
-      return tempObj
-    }, {})
     return (
-      <Fragment>
-        <Typography variant='display1'>
+      <>
+        <Typography variant='h5'>
           <Localize field='bodyConfig.shipSwitcherHeader' />
           <Switch
             className={classes.switch}
             checked={shipSwitcherEnabled}
             disabled={!combatEnabled}
-            onChange={
-              (event, checked) => this.setState(
-                { shipSwitcherEnabled: checked },
-                () => this.props.callback(this.state)
-              )} />
+            onChange={(event, checked) => updateSwitch(config, event, checked, 'shipSwitcherEnabled')} />
         </Typography>
 
         { [...Array(6).keys()].map((key) => {
@@ -109,30 +96,29 @@ class BodyConfigShipSwitcher extends PureComponent {
                       <Localize field={`bodyConfig.${label}`} />
                     </InputLabel>
                     <Select
-                      multi
+                      isMulti
                       className={classes.reactSelect}
-                      simpleValue={true}
                       name={criteria}
-                      value={this.state[criteria]}
+                      value={config[criteria]}
                       options={SWITCH_CRITERIA}
-                      onChange={value => this.setState({ [criteria]: value }, () => this.props.callback(this.state))}
-                      disabled={!shipSwitcherEnabled}
+                      onChange={value => updateSelect(config, value, criteria)}
+                      isDisabled={!shipSwitcherEnabled}
                       placeholder={<Localize field='bodyConfig.shipSwitcherCriteria' />}
                       fullWidth />
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={7} className={classes.formGrid}>
                   <FormControl disabled={!shipSwitcherEnabled} margin='normal' fullWidth>
-                    <Select
-                      multi
+                    <CreatableSelect
+                      isMulti
+                      isClearable
+                      components={{ DropdownIndicator: null }}
                       className={classes.reactSelect}
-                      simpleValue={true}
-                      options={slotShipChoices[slot]}
                       name={ships}
-                      value={this.state[ships]}
-                      onChange={value => this.setState({ [ships]: value }, () => this.props.callback(this.state))}
-                      disabled={!shipSwitcherEnabled}
-                      fullWidth />
+                      menuIsOpen={false}
+                      value={config[ships]}
+                      onChange={value => updateSelect(config, value, ships)}
+                      isDisabled={!shipSwitcherEnabled} />
                   </FormControl>
                 </Grid>
                 <Grid item xs={4} sm={1} className={classes.formGridButton}>
@@ -157,11 +143,11 @@ class BodyConfigShipSwitcher extends PureComponent {
           <div style={getModalStyle()} className={classes.modal}>
             <BodyConfigShipSwitcherModal
               slot={modalSlot}
-              prevValues={this.state[`shipSwitcherSlot${modalSlot}Ships`] || ''}
+              prevValues={config[`shipSwitcherSlot${modalSlot}Ships`] || []}
               callback={this.modalCallback} />
           </div>
         </Modal>
-      </Fragment>
+      </>
     )
   }
 }
@@ -169,7 +155,23 @@ class BodyConfigShipSwitcher extends PureComponent {
 BodyConfigShipSwitcher.propTypes = {
   classes: PropTypes.object.isRequired,
   config: PropTypes.object.isRequired,
-  callback: PropTypes.func.isRequired,
+  shipSwitcherEnabled: PropTypes.bool.isRequired,
+  shipSwitcherSlot1Criteria: PropTypes.array,
+  shipSwitcherSlot1Ships: PropTypes.array,
+  shipSwitcherSlot2Criteria: PropTypes.array,
+  shipSwitcherSlot2Ships: PropTypes.array,
+  shipSwitcherSlot3Criteria: PropTypes.array,
+  shipSwitcherSlot3Ships: PropTypes.array,
+  shipSwitcherSlot4Criteria: PropTypes.array,
+  shipSwitcherSlot4Ships: PropTypes.array,
+  shipSwitcherSlot5Criteria: PropTypes.array,
+  shipSwitcherSlot5Ships: PropTypes.array,
+  shipSwitcherSlot6Criteria: PropTypes.array,
+  shipSwitcherSlot6Ships: PropTypes.array,
+  combatEnabled: PropTypes.bool.isRequired,
+  updateSwitch: PropTypes.func.isRequired,
+  updateSelect: PropTypes.func.isRequired,
+  updateObject: PropTypes.func.isRequired,
 }
 
 export default withStyles(styles)(BodyConfigShipSwitcher)
