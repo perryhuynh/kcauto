@@ -1,12 +1,15 @@
 import React, { PureComponent } from 'react'
-import { withStyles } from 'material-ui/styles'
+import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
-import AppBar from 'material-ui/AppBar'
-import Toolbar from 'material-ui/Toolbar'
-import MuiMenu, { MenuItem } from 'material-ui/Menu'
-import Typography from 'material-ui/Typography'
-import IconButton from 'material-ui/IconButton'
-import { Ferry, WalletGiftcard, Earth, GithubCircle, Discord } from 'mdi-material-ui'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import MuiMenu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
+import Typography from '@material-ui/core/Typography'
+import IconButton from '@material-ui/core/IconButton'
+import {
+  Ferry, WalletGiftcard, Earth, GithubCircle, Discord,
+} from 'mdi-material-ui'
 
 import * as urls from 'urls'
 import { availableLocalizations } from 'localizations'
@@ -60,7 +63,8 @@ class Menu extends PureComponent {
   }
 
   handleChangeLanguage = (language) => {
-    this.props.setUILanguage(language)
+    const { setUILanguage } = this.props
+    setUILanguage(language)
     this.setState({ languageDropdownAnchor: null })
   }
 
@@ -75,14 +79,13 @@ class Menu extends PureComponent {
 
     const renderSupportIcon = () => <WalletGiftcard className={classes.icon} />
     const renderPatreonLink = () => <a href={urls.PATREON_LINK} className={classes.link}>Patreon</a>
-    const renderMakerSupportLink = () => <a href={urls.MAKERSUPPORT_LINK} className={classes.link}>MakerSupport</a>
-    const renderSupportText = () => <span>support the dev on {renderPatreonLink()} or {renderMakerSupportLink()}</span>
+    const renderSupportText = () => <span>support the dev on {renderPatreonLink()}</span>
     const dropdownOpen = Boolean(languageDropdownAnchor)
     return (
       <div className={classes.root}>
         <AppBar position='static'>
           <Toolbar>
-            <Typography variant='title' color='inherit' className={classes.flex}>
+            <Typography variant='h6' color='inherit' className={classes.flex}>
               <Ferry /> kcauto
             </Typography>
 

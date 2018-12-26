@@ -1,11 +1,11 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from 'material-ui/styles'
+import { withStyles } from '@material-ui/core/styles'
 
-import Grid from 'material-ui/Grid'
-import Paper from 'material-ui/Paper'
-import Typography from 'material-ui/Typography'
-import TextField from 'material-ui/TextField'
+import Grid from '@material-ui/core/Grid'
+import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography'
+import TextField from '@material-ui/core/TextField'
 
 import Localize from 'containers/LocalizeContainer'
 
@@ -38,37 +38,30 @@ const styles = () => ({
 })
 
 class BodyRunCmd extends PureComponent {
-  state = {
-    sikuliPath: this.props.runCmd.sikuliPath,
-    kcautoKaiPath: this.props.runCmd.kcautoKaiPath,
-  }
-
   handleChangeSikuliPath = (event) => {
-    this.setState({ sikuliPath: event.target.value })
-    this.props.setSikuliPath(event.target.value)
+    const { setSikuliPath } = this.props
+    setSikuliPath(event.target.value)
   }
 
   handleChangeKCAutoKaiPath = (event) => {
-    this.setState({ kcautoKaiPath: event.target.value })
-    this.props.setKCAutoKaiPath(event.target.value)
+    const { setKCAutoPath } = this.props
+    setKCAutoPath(event.target.value)
   }
 
   render = () => {
     const {
       classes,
-    } = this.props
-    const {
       sikuliPath,
-      kcautoKaiPath,
-    } = this.state
+      kcautoPath,
+    } = this.props
     const sikuliPathSlash = sikuliPath && sikuliPath.indexOf('/') > -1 ? '/' : '\\'
-    const kcautoKaiPathSlash = kcautoKaiPath && kcautoKaiPath.indexOf('/') > -1 ? '/' : '\\'
+    const kcautoPathSlash = kcautoPath && kcautoPath.indexOf('/') > -1 ? '/' : '\\'
 
     return (
       <Grid container justify='center' spacing={0}>
         <Grid item xs={6}>
           <Paper className={classes.paper} elevation={0}>
-            <Typography variant='body1' className={classes.paragraph}>
+            <Typography variant='body2' className={classes.paragraph}>
               <Localize field='bodyRunCmd.intro' />
             </Typography>
 
@@ -87,31 +80,32 @@ class BodyRunCmd extends PureComponent {
               </Grid>
               <Grid item xs={12} className={classes.formGrid}>
                 <TextField
-                  id='kcautoKaiPath'
-                  label={<Localize field='bodyRunCmd.kcautoKaiPath' />}
+                  id='kcautoPath'
+                  label={<Localize field='bodyRunCmd.kcautoPath' />}
                   placeholder='C:\kcauto'
-                  value={kcautoKaiPath}
+                  value={kcautoPath}
                   onChange={this.handleChangeKCAutoKaiPath}
-                  helperText={<Localize field='bodyRunCmd.kcautoKaiPathDesc' />}
+                  helperText={<Localize field='bodyRunCmd.kcautoPathDesc' />}
                   className={classes.formControl}
                   fullWidth
                   margin='normal' />
               </Grid>
             </Grid>
 
-            <Typography variant='title' className={classes.title}>
+            <Typography variant='h6' className={classes.title}>
               <Localize field='bodyRunCmd.commandHeader' />
             </Typography>
-            {sikuliPath && kcautoKaiPath ?
+            {sikuliPath && kcautoPath ? (
               <Paper elevation={2}>
                 <pre className={classes.pre}>
                   java -jar {sikuliPath || '<placeholder>'}{sikuliPathSlash}sikulix.jar -r&nbsp;
-                  {kcautoKaiPath || '<placeholder>'}{kcautoKaiPathSlash}kcauto.sikuli
+                  {kcautoPath || '<placeholder>'}{kcautoPathSlash}kcauto.sikuli
                 </pre>
-              </Paper> :
-              <Typography variant='body1' className={classes.paragraph}>
-                <Localize field='bodyRunCmd.noCommandNotice' />
-              </Typography>
+              </Paper>)
+              : (
+                <Typography variant='body2' className={classes.paragraph}>
+                  <Localize field='bodyRunCmd.noCommandNotice' />
+                </Typography>)
             }
           </Paper>
         </Grid>
@@ -122,9 +116,10 @@ class BodyRunCmd extends PureComponent {
 
 BodyRunCmd.propTypes = {
   classes: PropTypes.object.isRequired,
-  runCmd: PropTypes.object.isRequired,
+  sikuliPath: PropTypes.string,
+  kcautoPath: PropTypes.string,
   setSikuliPath: PropTypes.func.isRequired,
-  setKCAutoKaiPath: PropTypes.func.isRequired,
+  setKCAutoPath: PropTypes.func.isRequired,
 }
 
 export default withStyles(styles)(BodyRunCmd)

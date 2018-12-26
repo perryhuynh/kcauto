@@ -1,47 +1,26 @@
-import React, { PureComponent, Fragment } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from 'material-ui/styles'
+import { withStyles } from '@material-ui/core/styles'
 
-import Select, { Creatable } from 'react-select'
-import Grid from 'material-ui/Grid'
-import Paper from 'material-ui/Paper'
-import Typography from 'material-ui/Typography'
-import Switch from 'material-ui/Switch'
-import TextField from 'material-ui/TextField'
-import Button from 'material-ui/Button'
-import Divider from 'material-ui/Divider'
-import { InputLabel } from 'material-ui/Input'
-import { FormControl } from 'material-ui/Form'
+import Select from 'react-select'
+import CreatableSelect from 'react-select/lib/Creatable'
+import Grid from '@material-ui/core/Grid'
+import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography'
+import Switch from '@material-ui/core/Switch'
+import TextField from '@material-ui/core/TextField'
+import Button from '@material-ui/core/Button'
+import Divider from '@material-ui/core/Divider'
+import InputLabel from '@material-ui/core/InputLabel'
+import FormControl from '@material-ui/core/FormControl'
 import { PlusBox } from 'mdi-material-ui'
 
 import Localize from 'containers/LocalizeContainer'
 import { styles } from 'components/BodyConfigStyles'
+import {
+  BASE_SPECIFICATION, SORT_BY, OFFSET_START, ASSETS, LEVEL_EQUALITY, LOCKED, RINGED,
+} from 'types/formOptions'
 
-
-const BASE_SPECIFICATION = [
-  { value: 'P', label: <Localize field='bodyConfig.shipSwitcherModalSpecificationPosition' /> },
-  { value: 'A', label: <Localize field='bodyConfig.shipSwitcherModalSpecificationAsset' /> }]
-const SORT_BY = [
-  { value: 'N', label: <Localize field='bodyConfig.shipSwitcherModalSortByDateAcquired' /> },
-  { value: 'C', label: <Localize field='bodyConfig.shipSwitcherModalSortByClass' /> },
-  { value: 'L', label: <Localize field='bodyConfig.shipSwitcherModalSortByLevel' /> }]
-const OFFSET_START = [
-  { value: 'S', label: <Localize field='bodyConfig.shipSwitcherModalOffsetStartStart' /> },
-  { value: 'E', label: <Localize field='bodyConfig.shipSwitcherModalOffsetStartEnd' /> }]
-const CLASSES = ['AO', 'AR', 'AS', 'AV', 'BB', 'BBV', 'CA', 'CAV', 'CL', 'CLT', 'CT', 'CV', 'CVB', 'CVL', 'DD', 'DE',
-  'LHA', 'SS', 'SSV']
-  .map(value => ({ value, label: value }))
-const SHIPS = ['SS_U-511']
-  .map(value => ({ value, label: value }))
-const LEVEL_EQUALITY = ['<', '>'].map(value => ({ value, label: value }))
-const LOCKED = [
-  { value: '_', label: <Localize field='bodyConfig.shipSwitcherModalLockedIgnore' /> },
-  { value: 'L', label: <Localize field='bodyConfig.shipSwitcherModalLockedYes' /> },
-  { value: 'N', label: <Localize field='bodyConfig.shipSwitcherModalLockedNo' /> }]
-const RINGED = [
-  { value: '_', label: <Localize field='bodyConfig.shipSwitcherModalRingedIgnore' /> },
-  { value: 'R', label: <Localize field='bodyConfig.shipSwitcherModalRingedYes' /> },
-  { value: 'N', label: <Localize field='bodyConfig.shipSwitcherModalRingedNo' /> }]
 
 class BodyConfigShipSwitcherModal extends PureComponent {
   state = {
@@ -52,10 +31,10 @@ class BodyConfigShipSwitcherModal extends PureComponent {
     offset: 1,
     shipClass: '',
     levelEnabled: false,
-    levelEquality: '',
+    levelEquality: LEVEL_EQUALITY.filter(opt => opt.value === '<')[0],
     level: '',
-    locked: '_',
-    ringed: '_',
+    locked: LOCKED.filter(opt => opt.value === '_')[0],
+    ringed: RINGED.filter(opt => opt.value === '_')[0],
   }
 
   componentDidUpdate = (nextProp, nextState) => {
@@ -67,11 +46,17 @@ class BodyConfigShipSwitcherModal extends PureComponent {
   setSpecificationType = (value) => {
     // reset fields for other specification when switching specification
     this.setState({ specificationType: value })
-    if (value === 'P') {
+    if (value.value === 'P') {
       this.setState({
-        configLine: null, shipClass: '', levelEnabled: false, levelEquality: '', level: '', locked: '_', ringed: '_',
+        configLine: null,
+        shipClass: '',
+        levelEnabled: false,
+        levelEquality: LEVEL_EQUALITY.filter(opt => opt.value === '<')[0],
+        level: '',
+        locked: LOCKED.filter(opt => opt.value === '_')[0],
+        ringed: RINGED.filter(opt => opt.value === '_')[0],
       })
-    } else if (value === 'A') {
+    } else if (value.value === 'A') {
       this.setState({
         configLine: null, shipClass: '', sortOrder: false, offsetStart: '', offset: 1,
       })
@@ -94,19 +79,19 @@ class BodyConfigShipSwitcherModal extends PureComponent {
     } = this.state
     let configLine = null
     let levelLine = null
-    if (this.state.specificationType === 'P') {
+    if (specificationType.value === 'P') {
       if (!sortOrder || !offsetStart || !offset) {
         this.setState({ configLine })
         return configLine
       }
-      configLine = `${specificationType}:${sortOrder}:${offsetStart}:${offset}`
-    } else if (this.state.specificationType === 'A') {
+      configLine = `${specificationType.value}:${sortOrder.value}:${offsetStart.value}:${offset}`
+    } else if (specificationType.value === 'A') {
       if (levelEnabled) {
         if (!levelEquality || !level) {
           this.setState({ configLine })
           return configLine
         }
-        levelLine = `${levelEquality}${level}`
+        levelLine = `${levelEquality.value}${level}`
       } else {
         levelLine = '_'
       }
@@ -114,7 +99,7 @@ class BodyConfigShipSwitcherModal extends PureComponent {
         this.setState({ configLine })
         return configLine
       }
-      configLine = `${specificationType}:${shipClass}:${levelLine}:${locked}:${ringed}`
+      configLine = `${specificationType.value}:${shipClass.value}:${levelLine}:${locked.value}:${ringed.value}`
     }
     this.setState({ configLine })
     return configLine
@@ -122,7 +107,12 @@ class BodyConfigShipSwitcherModal extends PureComponent {
 
   addAction = () => {
     // fires callback method from parent form, which also closes the modal
-    this.props.callback(this.props.slot, this.state.configLine)
+    const {
+      slot,
+      callback,
+    } = this.props
+    const { configLine } = this.state
+    callback(slot, configLine)
   }
 
   render = () => {
@@ -145,10 +135,12 @@ class BodyConfigShipSwitcherModal extends PureComponent {
       ringed,
     } = this.state
     // only allow the same type of specification, if one exists already
-    const SPECIFICATION = BASE_SPECIFICATION.filter(spec => spec.value.startsWith(prevValues ? prevValues[0] : ''))
+    const SPECIFICATION = BASE_SPECIFICATION.filter(
+      spec => spec.value.startsWith(prevValues.length > 0 ? prevValues[0].value[0] : '')
+    )
     return (
-      <Fragment>
-        <Typography variant='title'>Specifications for Slot {slot}</Typography>
+      <>
+        <Typography variant='h6'>Specifications for Slot {slot}</Typography>
 
         <Divider />
 
@@ -164,8 +156,6 @@ class BodyConfigShipSwitcherModal extends PureComponent {
                 </InputLabel>
                 <Select
                   className={classes.reactSelect}
-                  simpleValue={true}
-                  clearable={false}
                   name='specificationType'
                   value={specificationType}
                   options={SPECIFICATION}
@@ -173,8 +163,8 @@ class BodyConfigShipSwitcherModal extends PureComponent {
                   fullWidth />
               </FormControl>
             </Grid>
-            {specificationType === 'P' ?
-              <Fragment>
+            {specificationType.value === 'P'
+              ? <>
                 <Grid item xs={12} sm={4} className={classes.formGrid}>
                   <FormControl
                     margin='normal'
@@ -185,8 +175,6 @@ class BodyConfigShipSwitcherModal extends PureComponent {
                     </InputLabel>
                     <Select
                       className={classes.reactSelect}
-                      simpleValue={true}
-                      clearable={false}
                       name='sortOrder'
                       value={sortOrder}
                       options={SORT_BY}
@@ -204,8 +192,6 @@ class BodyConfigShipSwitcherModal extends PureComponent {
                     </InputLabel>
                     <Select
                       className={classes.reactSelect}
-                      simpleValue={true}
-                      clearable={false}
                       name='offsetStart'
                       value={offsetStart}
                       options={OFFSET_START}
@@ -224,57 +210,36 @@ class BodyConfigShipSwitcherModal extends PureComponent {
                     fullWidth
                     margin='normal' />
                 </Grid>
-              </Fragment> :
-              null
+              </>
+              : null
             }
 
-            {specificationType === 'A' ?
-              <Fragment>
-                <Grid item xs={4} sm={4} className={classes.formGrid}>
+            {specificationType.value === 'A'
+              ? <>
+                <Grid item xs={12} sm={12} className={classes.formGrid}>
                   <FormControl
                     margin='normal'
                     fullWidth
                   >
                     <InputLabel htmlFor='shipClass' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.shipSwitcherModalClasses' />
+                      <Localize field='bodyConfig.shipSwitcherModalAssets' />
                     </InputLabel>
-                    <Select
+                    <CreatableSelect
                       className={classes.reactSelect}
-                      simpleValue={true}
-                      clearable={false}
                       name='shipClass'
                       value={shipClass}
-                      options={CLASSES}
+                      options={ASSETS}
                       onChange={value => this.setState({ shipClass: value })}
+                      isClearable
                       fullWidth />
-                  </FormControl>
-                </Grid>
-                <Grid container xs={2} sm={2} justify='center' alignItems='center' className={classes.formGrid}>
-                  <Typography variant='body1'>- or -</Typography>
-                </Grid>
-                <Grid item xs={6} sm={6} className={classes.formGrid}>
-                  <FormControl
-                    margin='normal'
-                    fullWidth
-                  >
-                    <InputLabel htmlFor='shipClass' shrink={true} className={classes.reactSelectLabel}>
-                      <Localize field='bodyConfig.shipSwitcherModalShips' />
-                    </InputLabel>
-                    <Creatable
-                      className={classes.reactSelect}
-                      simpleValue={true}
-                      clearable={false}
-                      name='shipClass'
-                      value={shipClass}
-                      options={SHIPS}
-                      onChange={value => this.setState({ shipClass: value })}
-                      fullWidth />
-                    <span className={classes.helperText}><Localize field='bodyConfig.shipSwitcherModalShipsDesc' /></span>
+                    <span className={classes.helperText}>
+                      <Localize field='bodyConfig.shipSwitcherModalAssetsDesc' />
+                    </span>
                   </FormControl>
                 </Grid>
 
                 <Grid item xs={4} sm={4} className={classes.formGrid}>
-                  <Typography variant='body1'>
+                  <Typography variant='body2'>
                     <Localize field='bodyConfig.shipSwitcherModalLevel' />
                     <Switch
                       className={classes.switch}
@@ -285,13 +250,11 @@ class BodyConfigShipSwitcherModal extends PureComponent {
                 <Grid item xs={2} sm={2} className={classes.formGrid}>
                   <Select
                     className={classes.reactSelect}
-                    simpleValue={true}
-                    clearable={false}
                     name='levelEquality'
                     value={levelEquality}
                     options={LEVEL_EQUALITY}
                     onChange={value => this.setState({ levelEquality: value })}
-                    disabled={!levelEnabled}
+                    isDisabled={!levelEnabled}
                     fullWidth />
                 </Grid>
                 <Grid item xs={6} sm={6} className={classes.formGrid}>
@@ -309,7 +272,6 @@ class BodyConfigShipSwitcherModal extends PureComponent {
                 <Grid item xs={6} sm={6} className={classes.formGrid}>
                   <Select
                     className={classes.reactSelect}
-                    simpleValue={true}
                     clearable={false}
                     name='locked'
                     value={locked}
@@ -320,7 +282,6 @@ class BodyConfigShipSwitcherModal extends PureComponent {
                 <Grid item xs={6} sm={6} className={classes.formGrid}>
                   <Select
                     className={classes.reactSelect}
-                    simpleValue={true}
                     clearable={false}
                     name='ringed'
                     value={ringed}
@@ -328,8 +289,8 @@ class BodyConfigShipSwitcherModal extends PureComponent {
                     onChange={value => this.setState({ ringed: value })}
                     fullWidth />
                 </Grid>
-              </Fragment> :
-              null
+              </>
+              : null
             }
           </Grid>
         </Paper>
@@ -348,7 +309,7 @@ class BodyConfigShipSwitcherModal extends PureComponent {
             </Button>
           </Grid>
         </Grid>
-      </Fragment>
+      </>
     )
   }
 }
@@ -356,7 +317,7 @@ class BodyConfigShipSwitcherModal extends PureComponent {
 BodyConfigShipSwitcherModal.propTypes = {
   classes: PropTypes.object.isRequired,
   slot: PropTypes.number.isRequired,
-  prevValues: PropTypes.string.isRequired,
+  prevValues: PropTypes.array.isRequired,
   callback: PropTypes.func.isRequired,
 }
 

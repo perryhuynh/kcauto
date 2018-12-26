@@ -4,13 +4,11 @@ const srcPath = path.join(__dirname, 'src');
 const modulesPath = path.join(__dirname, '..', 'node_modules');
 const outputPath = path.join(__dirname, '..', 'docs');
 
-module.exports = env => {
-  const isProd = env.prod;
-  const isDev = env.dev;
+module.exports = (env, argv) => {
   const pluginsArray = [new webpack.DefinePlugin({
     'process.version': JSON.stringify(process.env.npm_package_version),
   })];
-  if (isProd) {
+  if (argv.mode === 'production') {
     pluginsArray.push(new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify('production')
@@ -32,28 +30,14 @@ module.exports = env => {
         {
           test: /\.jsx?$/,
           include: [srcPath],
-          use: [
-            {
-              loader: 'babel-loader',
-              options: {
-                presets: ['env', 'react', 'stage-0']
-              }
-            }
-          ]
+          use: ['babel-loader']
         },
         {
           test: /\.css$/,
           include: [modulesPath],
           use: [
-            {
-              loader: 'style-loader'
-            },
-            {
-              loader: 'css-loader',
-              options: {
-                'sourceMap': true
-              }
-            }
+            'style-loader',
+            'css-loader'
           ]
         },
       ]

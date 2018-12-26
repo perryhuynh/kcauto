@@ -15,7 +15,7 @@ export const setSikuliPath = sikuliPath => (
 
 export const setKCAutoPathSuccess = kcautoPath => (
   {
-    type: types.SET_KCAUTO_KAI_PATH,
+    type: types.SET_KCAUTO_PATH,
     kcautoPath,
   }
 )
