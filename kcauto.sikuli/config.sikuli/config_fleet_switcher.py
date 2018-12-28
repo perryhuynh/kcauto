@@ -12,6 +12,10 @@ class ConfigFleetSwitcher(AbstractConfigModule):
             self.config['enabled'] = False
             return
 
+        self.config['enabled'] = True
+
+        return self.config
+
     @staticmethod
     def validate_cfg(config):
         """Method to validate the FleetSwitcher settings.
