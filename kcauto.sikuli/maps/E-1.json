@@ -1,7 +1,7 @@
 {
 	"world": "event",
 	"subworld": "1-1",
-	"quest_context": [],
+	"quest_context": ["subs"],
 	"nodes": {
 		"B": {
 			"coords": [515, 228],
@@ -12,7 +12,7 @@
 		},
 		"D": {
 			"coords": [675, 403]
-		},		
+		},
 		"E": {
 			"coords": [718, 436]
 		},
@@ -21,6 +21,9 @@
 		},
 		"G": {
 			"coords": [835, 431],
+			"altCoords": [
+				[764, 463]
+			],
 			"types": ["boss"]
 		},
 		"H": {
@@ -34,6 +37,9 @@
 		},
 		"L": {
 			"coords": [850, 365],
+			"altCoords": [
+				[804, 346]
+			],
 			"types": ["boss"]
 		}
 	}
