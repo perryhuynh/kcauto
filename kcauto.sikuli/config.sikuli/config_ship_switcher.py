@@ -13,6 +13,7 @@ class ConfigShipSwitcher(AbstractConfigModule):
             self.config['enabled'] = False
             return self.config
 
+        self.config['enabled'] = True
         for slot in range(0, 6):
             criteria = self._getlist(
                 cp, 'ShipSwitcher', 'Slot{}Criteria'.format(slot + 1))

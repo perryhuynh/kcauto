@@ -1,3 +1,7 @@
+#### 7.1.1
+
+* Bugfix to config readers
+
 #### 7.1.0
 
 * Major housekeeping release
