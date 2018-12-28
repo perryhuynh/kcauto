@@ -1,0 +1,40 @@
+{
+	"world": "event",
+	"subworld": "1-1",
+	"quest_context": [],
+	"nodes": {
+		"B": {
+			"coords": [515, 228],
+			"types": ["sub"]
+		},
+		"C": {
+			"coords": [694, 345]
+		},
+		"D": {
+			"coords": [675, 403]
+		},		
+		"E": {
+			"coords": [718, 436]
+		},
+		"F": {
+			"coords": [763, 464]
+		},
+		"G": {
+			"coords": [835, 431],
+			"types": ["boss"]
+		},
+		"H": {
+			"coords": [677, 277]
+		},
+		"I": {
+			"coords": [776, 313]
+		},
+		"J": {
+			"coords": [849, 287]
+		},
+		"L": {
+			"coords": [850, 365],
+			"types": ["boss"]
+		}
+	}
+}
