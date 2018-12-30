@@ -56,7 +56,7 @@ export const setPythonConfig = config => (
       scheduledStopScriptStopTime = config.scheduledStopScriptStopTime
         ? `${String(config.scheduledStopScriptStopTime.getHours()).padStart(2, '0')}`
           + `${String(config.scheduledStopScriptStopTime.getMinutes()).padStart(2, '0')}`
-        : '0000'
+        : ''
     } catch (e) {
       scheduledStopScriptStopTime = ''
     }
@@ -65,7 +65,7 @@ export const setPythonConfig = config => (
       scheduledStopExpeditionStopTime = config.scheduledStopExpeditionStopTime
         ? `${String(config.scheduledStopExpeditionStopTime.getHours()).padStart(2, '0')}`
           + `${String(config.scheduledStopExpeditionStopTime.getMinutes()).padStart(2, '0')}`
-        : '0000'
+        : ''
     } catch (e) {
       scheduledStopExpeditionStopTime = ''
     }
@@ -74,14 +74,14 @@ export const setPythonConfig = config => (
       scheduledStopCombatStopTime = config.scheduledStopCombatStopTime
         ? `${String(config.scheduledStopCombatStopTime.getHours()).padStart(2, '0')}`
           + `${String(config.scheduledStopCombatStopTime.getMinutes()).padStart(2, '0')}`
-        : '0000'
+        : ''
     } catch (e) {
       scheduledStopCombatStopTime = ''
     }
     const combatRepairTimeLimit = config.combatRepairTimeLimit
       ? `${String(config.combatRepairTimeLimit.getHours()).padStart(2, '0')}`
         + `${String(config.combatRepairTimeLimit.getMinutes()).padStart(2, '0')}`
-      : '0000'
+      : ''
     const combatLBASGroup1Nodes = configTemp.combatLBASGroup1Node1 && configTemp.combatLBASGroup1Node2
       ? `${configTemp.combatLBASGroup1Node1.value},${configTemp.combatLBASGroup1Node2.value}`
       : ''
