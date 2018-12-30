@@ -1,3 +1,8 @@
+#### 7.2.0
+
+* Preliminary pass of 2019 Winter Event support
+* Bugfix to Scheduled Stop section of webUI
+
 #### 7.1.1
 
 * Bugfix to config readers
