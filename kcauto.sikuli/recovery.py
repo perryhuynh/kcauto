@@ -67,8 +67,8 @@ class Recovery(object):
                 return True
 
         # Chrome crash recovery
-        if ('chrome' in Globals.ENABLED_RECOVERIES):
-            if kc_region.exists('chrome_crash.png'):
+        if kc_region.exists('chrome_crash.png', 30):
+            if ('chrome' in Globals.ENABLED_RECOVERIES):
                 Util.log_warning("** Chrome crash detected. **")
                 Region.type(kc_region, Key.F5)
                 sleep(1)
@@ -80,10 +80,14 @@ class Recovery(object):
                 Util.log_success("Chrome crash recovery successful.")
                 kcauto.stats.increment_recoveries()
                 return True
+            else:
+                Util.log_error(
+                    "** Chrome crash detected, but Chrome crash recovery is "
+                    "disabled. **")
 
         # catbomb recovery
-        if ('catbomb' in Globals.ENABLED_RECOVERIES):
-            if kc_region.exists('catbomb.png', 60):
+        if kc_region.exists('catbomb.png', 30):
+            if ('catbomb' in Globals.ENABLED_RECOVERIES):
                 Util.log_warning("** Catbomb detected. **")
                 catbombed = True
                 catbomb_n = 0
@@ -117,6 +121,9 @@ class Recovery(object):
                 Util.log_success("Catbomb recovery successful.")
                 kcauto.stats.increment_recoveries()
                 return True
+        else:
+            Util.log_error(
+                "** Catbomb detected, but catbomb recovery is disabled. **")
 
         # recovery failed
         Util.log_error("** Irrecoverable crash. **")

@@ -1,11 +1,18 @@
+#### 7.2.1
+
+* Add support for node ZZ to webUI
+* Revise 2019 Winter Event node information
+* Bugfix to FleetSwitcher not initializing properly
+* Better recovery reports
+
 #### 7.2.0
 
-* Preliminary pass of 2019 Winter Event support
+* Preliminary pass of 2019 Winter Event support (thanks to @perryhuynh)
 * Bugfix to Scheduled Stop section of webUI
 
 #### 7.1.1
 
-* Bugfix to config readers
+* Bugfix to config readers (thanks to @perryhuynh)
 
 #### 7.1.0
 
