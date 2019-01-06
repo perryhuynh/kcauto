@@ -6,12 +6,7 @@ class ConfigFleetSwitcher(AbstractConfigModule):
     def parse_cfg(self):
         """Method to parse the PvP settings of the passed-in config.
         """
-
-        if not self.config['enabled']:
-            self.config.clear()
-            self.config['enabled'] = False
-            return
-
+        self.config.clear()
         self.config['enabled'] = True
 
         return self.config
