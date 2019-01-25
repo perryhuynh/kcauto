@@ -35,6 +35,10 @@ class Stats(object):
         self.quests_started = 0
         self.quests_finished = 0
         self.recoveries = 0
+        self.basic_recoveries = 0
+        self.catbomb_recoveries = 0
+        self.chrome_recoveries = 0
+        self.whitescreen_recoveries = 0
 
     def _pretty_timedelta(self, delta):
         """Generate a human-readable time delta representation of how long the
@@ -186,3 +190,15 @@ class Stats(object):
 
     def increment_recoveries(self):
         self.recoveries += 1
+
+    def increment_basic_recoveries(self):
+        self.basic_recoveries += 1
+
+    def increment_catbomb_recoveries(self):
+        self.catbomb_recoveries += 1
+
+    def increment_chrome_recoveries(self):
+        self.chrome_recoveries += 1
+
+    def increment_whitescreen_recoveries(self):
+        self.whitescreen_recoveries += 1

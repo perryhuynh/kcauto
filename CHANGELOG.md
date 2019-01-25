@@ -1,3 +1,10 @@
+#### 7.3.0
+
+* Archive 2019 Winter Event assets
+* Add support for 2019 Setsubun PvP quest
+* Add support for whitescreen crash recovery
+* Refactor Recovery module
+
 #### 7.2.1
 
 * Add support for node ZZ to webUI

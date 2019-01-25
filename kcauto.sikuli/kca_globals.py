@@ -25,10 +25,10 @@ class Globals(object):
     SHIP_LIST_SIMILARITY = 0.96  # suggested lower value: 0.7?
 
     # types of recoveries enabled for the recovery module. Valid options are
-    # 'catbomb' and 'chrome'. Enabled recoveries mean that the script will
-    # attempt to restart the game when encountering a relevant crash; otherwise
-    # the script will halt.
-    ENABLED_RECOVERIES = ('chrome')
+    # 'catbomb', 'chrome', and 'whitescreen'. Enabled recoveries mean that the
+    # script will attempt to restart the game when encountering a relevant
+    # crash; otherwise the script will halt.
+    ENABLED_RECOVERIES = ('chrome', 'whitescreen')
 
     # how many minutes to wait between sorties to allow for natural fatigue
     # recovery
