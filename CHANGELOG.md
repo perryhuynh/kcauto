@@ -1,3 +1,7 @@
+#### 7.3.1
+
+* Dial back the aggressiveness of whitescreen crash detection
+
 #### 7.3.0
 
 * Archive 2019 Winter Event assets

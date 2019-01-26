@@ -75,7 +75,7 @@ class Recovery(object):
         if kc_region.exists('catbomb.png', 30):
             if cls._handle_catbomb(kcauto, kc_region):
                 return True
-        if kc_region.exists('whitescreen.png', 30):
+        if kc_region.exists(Pattern('whitescreen.png').exact(), 30):
             if cls._handle_whitescreen(kcauto, kc_region):
                 return True
 
@@ -236,7 +236,7 @@ class Recovery(object):
             kc_region.wait('home_menu_resupply.png', 60)
             Util.log_success("Game restarted.")
             return True
-        elif kc_region.exists('whitescreen.png', 30):
+        elif kc_region.exists(Pattern('whitescreen.png').exact(), 30):
             return cls._handle_whitescreen(kcauto, kc_region)
         return False
 
@@ -275,7 +275,6 @@ class RecoverableModule:
         """
         self.kc_region.onAppear('catbomb.png', self._set_crash_detected)
         self.kc_region.onAppear('chrome_crash.png', self._set_crash_detected)
-        self.kc_region.onAppear('whitescreen.png', self._set_crash_detected)
         self.kc_region.observeInBackground(FOREVER)
 
     def _stop_crash_observer(self):
