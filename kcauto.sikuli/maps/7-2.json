@@ -1,0 +1,42 @@
+{
+	"world": 7,
+	"subworld": 2,
+	"quest_context": ["carriers", "subs"],
+	"nodes": {
+		"B": {
+			"coords": [472, 514]
+		},
+		"C": {
+            "coords": [563, 451],
+            "types": ["sub"]
+		},
+		"E": {
+			"coords": [675, 374],
+			"types": ["sub"]
+		},
+		"G": {
+            "coords": [582, 246],
+			"altCoords": [
+				[642, 320]
+			],
+            "types": ["boss", "sub"]
+		},
+		"H": {
+			"coords": [853, 506],
+			"types": ["air"]
+		},
+		"I": {
+			"coords": [914, 369]
+		},
+		"J": {
+			"coords": [978, 212]
+		},
+		"M": {
+			"coords": [1023, 471],
+			"altCoords": [
+				[963, 405]
+			],
+			"types": ["boss"]
+		}
+	}
+}
