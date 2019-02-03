@@ -81,6 +81,7 @@ class PvPModule(RecoverableModule):
         Util.log_msg("Beginning PvP sortie.")
         Util.rejigger_mouse(self.regions, 'top')
         Util.wait_and_click(self.regions[formation], formation)
+        Util.rejigger_mouse(self.regions, 'top')
 
         self._start_crash_observer()
         while not self.regions['lower_right_corner'].exists('next.png', 1):
