@@ -83,7 +83,7 @@ class PvPModule(RecoverableModule):
         Util.wait_and_click(self.regions[formation], formation)
         Util.rejigger_mouse(self.regions, 'top')
 
-        self._start_crash_observer()
+        self._start_crash_observer(start_delay=10)
         while not self.regions['lower_right_corner'].exists('next.png', 1):
             if self.kc_region.exists('combat_nb_fight.png', 1):
                 if night_battle:

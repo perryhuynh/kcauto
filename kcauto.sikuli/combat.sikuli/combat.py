@@ -401,7 +401,7 @@ class CombatModule(RecoverableModule):
                 if dialogue_check:
                     self._start_boss_dialogue_observer()
 
-                self._start_crash_observer()
+                self._start_crash_observer(start_delay=10)
                 while not self.regions['lower_right'].exists('next.png', 1):
                     if self.kc_region.exists('combat_nb_fight.png', 1):
                         self._select_night_battle(self._resolve_night_battle())
