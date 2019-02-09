@@ -269,10 +269,11 @@ class RecoverableModule:
 
     crash_detected = False
 
-    def _start_crash_observer(self):
+    def _start_crash_observer(self, start_delay=0):
         """Method that starts the observeInBackground to check for catbombs
         and chrome crashes.
         """
+        sleep(start_delay)
         self.kc_region.onAppear('catbomb.png', self._set_crash_detected)
         self.kc_region.onAppear('chrome_crash.png', self._set_crash_detected)
         self.kc_region.observeInBackground(FOREVER)
