@@ -1,3 +1,10 @@
+#### 7.4.0
+
+* Add support for 7-2 to kcauto core and webUI
+* Update asset in Resupply Module for February 2019 Kantai Collection update
+* Remove support for 2019 Setsubun PvP Quest
+* Further adjust crash detection functionality
+
 #### 7.3.1
 
 * Dial back the aggressiveness of whitescreen crash detection

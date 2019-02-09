@@ -396,8 +396,7 @@ class QuestModule(object):
                 get_quest_info('c3'),
                 get_quest_info('c4'),
                 get_quest_info('c8'),
-                get_quest_info('c15'),
-                get_quest_info('c_sc01')])
+                get_quest_info('c15')])
         if self.config.expeditions['enabled']:
             # define expedition quests if expedition is enabled
             self.active_quest_types.append('d')
@@ -571,7 +570,3 @@ def get_quest_info(quest):
     elif quest == 'e4':
         return {
             'name': 'e4', 'wait': (15, 10, 15), 'rewards': (50, 50, 50, 50)}
-    elif quest == 'c_sc01':
-        # 2019 Setsubun daily PvP quest
-        return {
-            'name': 'c_sc01', 'wait': (0, 4, 0), 'rewards': (23, 23, 0, 0)}
