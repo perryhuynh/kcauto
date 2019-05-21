@@ -1,7 +1,7 @@
 {
 	"world": "event",
 	"subworld": "1-1",
-	"quest_context": ["subs"],
+	"quest_context": ["subs", "transports"],
 	"nodes": {
 		"B": {
 			"coords": [515, 228],

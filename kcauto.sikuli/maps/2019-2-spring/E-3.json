@@ -1,0 +1,76 @@
+{
+	"world": "event",
+	"subworld": "1-3",
+	"quest_context": ["carriers", "subs", "transports"],
+	"nodes": {
+		"A": {
+			"coords": [228, 294],
+			"types": ["sub"]
+		},
+		"B": {
+			"coords": [232, 428]
+		},
+		"C": {
+			"coords": [345, 493],
+			"types": ["sub"]
+		},
+		"D": {
+			"coords": [348, 233]
+		},
+		"E": {
+			"coords": [466, 168],
+			"types": ["air"]
+		},
+		"F": {
+			"coords": [497, 430],
+			"types": ["select"]
+		},
+		"G": {
+			"coords": [580, 168],
+			"types": ["air"]
+		},
+		"H": {
+			"coords": [598, 333],
+			"types": ["select"]
+		},
+		"I": {
+			"coords": [643, 437],
+			"types": ["air"]
+		},
+		"J": {
+			"coords": [687, 290]
+		},
+		"K": {
+			"coords": [688, 518]
+		},
+		"L": {
+			"coords": [832, 448]
+		},
+		"N": {
+			"coords": [1007, 387],
+			"altCoords": [
+				[926, 408]
+			],
+			"types": ["boss"]
+		},
+		"O": {
+			"coords": [795, 195]
+		},
+		"P": {
+			"coords": [809, 313],
+			"types": ["air"]
+		},
+		"R": {
+			"coords": [916, 268],
+			"altCoords": [
+				[855, 225],
+				[870, 287]
+			],
+			"types": ["boss"]
+		},
+		"S": {
+			"coords": [492, 323],
+			"types": ["sub"]
+		}
+	}
+}
