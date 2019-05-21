@@ -4,11 +4,7 @@
 	"quest_context": ["subs"],
 	"nodes": {
 		"A": {
-<<<<<<< HEAD
 			"coords": [852, 340]
-=======
-			"coords": [842, 340]
->>>>>>> bb777db... add initial coordinates for main operation
 		},
 		"B": {
 			"coords": [804, 482],
@@ -29,11 +25,7 @@
 			"coords": [600, 432]
 		},
 		"G": {
-<<<<<<< HEAD
 			"coords": [578, 542]
-=======
-			"coords": [578, 473]
->>>>>>> bb777db... add initial coordinates for main operation
 		},
 		"H": {
 			"coords": [503, 268]
