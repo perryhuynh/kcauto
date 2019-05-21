@@ -1,0 +1,70 @@
+{
+	"world": "event",
+	"subworld": "1-3",
+	"quest_context": [],
+	"nodes": {
+		"A": {
+			"coords": [228, 294]
+		},
+		"B": {
+			"coords": [229, 428]
+		},
+		"C": {
+			"coords": [345, 493]
+		},
+		"D": {
+			"coords": [348, 233]
+		},
+		"E": {
+			"coords": [463, 168],
+			"types": ["air"]
+		},
+		"F": {
+			"coords": [497, 428]
+		},
+		"G": {
+			"coords": [579, 168],
+			"types": ["air"]
+		},
+		"H": {
+			"coords": [598, 333]
+		},
+		"I": {
+			"coords": [643, 437],
+			"types": ["air"]
+		},
+		"J": {
+			"coords": [687, 290]
+		},
+		"K": {
+			"coords": [688, 518]
+		},
+		"L": {
+			"coords": [832, 448]
+		},
+		"M": {
+			"coords": [968, 511]
+		},
+		"N": {
+			"coords": [1007, 384],
+			"types": ["boss"]
+		},
+		"O": {
+			"coords": [795, 195]
+		},
+		"P": {
+			"coords": [802, 316],
+			"types": ["air"]
+		},
+		"Q": {
+			"coords": [868, 129]
+		},
+		"R": {
+			"coords": [914, 261],
+			"types": ["boss"]
+		},
+		"S": {
+			"coords": [492, 323]
+		}
+	}
+}
