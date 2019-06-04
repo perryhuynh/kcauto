@@ -1,3 +1,9 @@
+#### 7.4.1
+
+* Add support for event O, P, and Q nodes in webUI
+* Add anonymous analytics reporting to webUI
+* Update readme
+
 #### 7.4.0
 
 * Add support for 7-2 to kcauto core and webUI
