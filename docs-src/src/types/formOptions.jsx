@@ -47,8 +47,8 @@ export const COMBINED_FLEET_MODES = [
 export const COMBAT_NODE_COUNTS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'].map(value => (
   { value, label: value }))
 export const NODES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(value => ({ value, label: value }))
-NODES.push(...['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7', 'Z8', 'Z9', 'ZZ', 'ZZ1', 'ZZ2', 'ZZ3'].map(value => (
-  { value, label: value })))
+NODES.push(...['O1', 'O2', 'O3', 'P1', 'P2', 'P3', 'Q1', 'Q2', 'Q3', 'Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7', 'Z8',
+  'Z9', 'ZZ', 'ZZ1', 'ZZ2', 'ZZ3'].map(value => ({ value, label: value })))
 export const FORMATIONS = [
   { value: 'line_ahead', label: <Localize field='bodyConfig.combatFormationLineAhead' /> },
   { value: 'double_line', label: <Localize field='bodyConfig.combatFormationDoubleLine' /> },
