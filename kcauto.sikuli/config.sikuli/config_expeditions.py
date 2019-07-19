@@ -52,7 +52,8 @@ class ConfigExpeditions(AbstractConfigModule):
             return valid
 
         # validate expeditions
-        valid_expeditions = range(1, 41) + ['A1', 'A2', 'A3', 'B1', 9998, 9999]
+        valid_expeditions = range(1, 42) + [
+            'A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'S1', 'S2']
         for expedition in expeditions_cfg['expeditions_all']:
             if expedition not in valid_expeditions:
                 Util.log_error(

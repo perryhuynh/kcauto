@@ -19,15 +19,16 @@ export const EXPEDITIONS = Array.from({ length: 8 }, (value, key) => (
 EXPEDITIONS.push({ value: 'A1', label: 'A1' })
 EXPEDITIONS.push({ value: 'A2', label: 'A2' })
 EXPEDITIONS.push({ value: 'A3', label: 'A3' })
+EXPEDITIONS.push({ value: 'A3', label: 'A4' })
 EXPEDITIONS.push(...Array.from({ length: 8 }, (value, key) => ({ value: String(key + 9), label: String(key + 9) })))
 EXPEDITIONS.push({ value: 'B1', label: 'B1' })
 EXPEDITIONS.push({ value: 'B2', label: 'B2' })
 EXPEDITIONS.push(...Array.from({ length: 16 }, (value, key) => ({ value: String(key + 17), label: String(key + 17) })))
 EXPEDITIONS.push({ value: '33', label: '33 - Node Support' })
 EXPEDITIONS.push({ value: '34', label: '34 - Boss Support' })
-EXPEDITIONS.push(...Array.from({ length: 6 }, (value, key) => ({ value: String(key + 35), label: String(key + 35) })))
-EXPEDITIONS.push({ value: '9998', label: 'Event Node Support' })
-EXPEDITIONS.push({ value: '9999', label: 'Event Boss Support' })
+EXPEDITIONS.push(...Array.from({ length: 7 }, (value, key) => ({ value: String(key + 35), label: String(key + 35) })))
+EXPEDITIONS.push({ value: 'S1', label: 'S1 - Event Node Support' })
+EXPEDITIONS.push({ value: 'S2', label: 'S2 - Event Boss Support' })
 
 // pvp/combat sections
 export const FLEET_PRESETS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'].map(value => (
