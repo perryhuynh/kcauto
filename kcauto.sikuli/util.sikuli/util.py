@@ -78,7 +78,55 @@ class Util(object):
         return time - timedelta(hours=getattr(config, 'jst_offset', 0))
 
     @staticmethod
-    def read_ocr_number_text(kc_region, text_ref=None, rdir=None, width=None):
+    def read_ocr_text(kc_region, text_ref=None, rdir=None, dist=None):
+        """Method for reading in text in reference to an asset or Match
+        instance.
+
+        Args:
+            kc_region (Region): sikuli Region instance containing the last
+                known location of the Kantai Collection game screen
+            text_ref (str, Match): image name of reference or Match of
+                reference the OCR read should happen in relation to
+            rdir (str): specifies in what direction relative to text_ref the
+                OCR read should occur: 'r' for right, 'l' for left, 'a' for
+                above, 'b' for below
+            dist (int): distance away (in pixels) from the region the OCR read
+                should occur in
+
+        Returns:
+            str: OCR read results
+        """
+        if text_ref is None and rdir is None and dist is None:
+            text = kc_region.text().encode('utf-8')
+        if isinstance(text_ref, str) and rdir and dist:
+            if rdir == 'r':
+                text = kc_region.find(text_ref).right(dist).text().encode(
+                    'utf-8')
+            elif rdir == 'l':
+                text = kc_region.find(text_ref).left(dist).text().encode(
+                    'utf-8')
+            elif rdir == 'a':
+                text = kc_region.find(text_ref).above(dist).text().encode(
+                    'utf-8')
+            elif rdir == 'b':
+                text = kc_region.find(text_ref).below(dist).text().encode(
+                    'utf-8')
+        elif (
+                isinstance(text_ref, Match) or isinstance(text_ref, JMatch)
+                and rdir and dist):
+            if rdir == 'r':
+                text = text_ref.right(dist).text().encode('utf-8')
+            elif rdir == 'l':
+                text = text_ref.left(dist).text().encode('utf-8')
+            elif rdir == 'a':
+                text = text_ref.above(dist).text().encode('utf-8')
+            elif rdir == 'b':
+                text = text_ref.below(dist).text().encode('utf-8')
+        return text.strip()
+
+    @classmethod
+    def read_ocr_number_text(
+            cls, kc_region, text_ref=None, rdir=None, dist=None):
         """Method for reading in text in reference to an asset or Match
         instance, and then cleaning up the OCR results, tuned for numbers.
 
@@ -88,30 +136,15 @@ class Util(object):
             text_ref (str, Match): image name of reference or Match of
                 reference the OCR read should happen in relation to
             rdir (str): specifies in what direction relative to text_ref the
-                OCR read should occur: 'r' for 'right of text_ref' and 'l' for
-                'left of text_ref'
-            width (int): width (in pixels) of the region the OCR read should
-                occur in
+                OCR read should occur: 'r' for right, 'l' for left, 'a' for
+                above, 'b' for below
+            dist (int): distance away (in pixels) from the region the OCR read
+                should occur in
 
         Returns:
             str: OCR read results, tuned for numbers
         """
-        if text_ref is None and rdir is None and width is None:
-            text = kc_region.text().encode('utf-8')
-        if isinstance(text_ref, str) and rdir and width:
-            if rdir == 'r':
-                text = kc_region.find(text_ref).right(width).text().encode(
-                    'utf-8')
-            elif rdir == 'l':
-                text = kc_region.find(text_ref).left(width).text().encode(
-                    'utf-8')
-        elif (
-                isinstance(text_ref, Match) or isinstance(text_ref, JMatch)
-                and rdir and width):
-            if rdir == 'r':
-                text = text_ref.right(width).text().encode('utf-8')
-            elif rdir == 'l':
-                text = text_ref.left(width).text().encode('utf-8')
+        text = cls.read_ocr_text(kc_region, text_ref, rdir, dist)
         # replace characters to numbers
         text = (
             text.replace('O', '0').replace('o', '0').replace('D', '0')
@@ -125,7 +158,7 @@ class Util(object):
         return text
 
     @classmethod
-    def read_timer(cls, kc_region, timer_ref, dir, width, attempt_limit=0):
+    def read_timer(cls, kc_region, timer_ref, dir, dist, attempt_limit=0):
         """Method for reading various timers in the format of ##:##:## via OCR.
 
         Args:
@@ -134,10 +167,10 @@ class Util(object):
             timer_ref (str, Match): image name of reference or Match of
                 reference the OCR read should happen in relation to
             dir (str): specifies in what direction relative to text_ref the
-                OCR read should occur: 'r' for 'right of text_ref' and 'l' for
-                'left of text_ref'
-            width (int): width (in pixels) of the region the OCR read should
-                occur in
+                OCR read should occur: 'r' for right, 'l' for left, 'a' for
+                above, 'b' for below
+            dist (int): distance away (in pixels) from the region the OCR read
+                should occur in
             attempt_limit (int, optional): how many attempts should be made to
                 read the timer
 
@@ -151,7 +184,7 @@ class Util(object):
         while ocr_matching:
             attempt += 1
             timer = cls.read_ocr_number_text(
-                kc_region, timer_ref, dir, width).strip()
+                kc_region, timer_ref, dir, dist).strip()
             if len(timer) == 8:
                 # valid length for timer ('##:##:##')
                 timer = list(timer)
@@ -182,7 +215,63 @@ class Util(object):
             sleep(0.2)
 
     @classmethod
-    def read_number(cls, kc_region, number_ref, dir, width, attempt_limit=0):
+    def read_short_timer(
+            cls, kc_region, timer_ref, dir, dist, attempt_limit=0):
+        """Method for reading timers in the format of ##:## via OCR.
+
+        Args:
+            kc_region (Region): sikuli Region instance containing the last
+                known location of the Kantai Collection game screen
+            timer_ref (str, Match): image name of reference or Match of
+                reference the OCR read should happen in relation to
+            dir (str): specifies in what direction relative to text_ref the
+                OCR read should occur: 'r' for right, 'l' for left, 'a' for
+                above, 'b' for below
+            dist (int): distance away (in pixels) from the region the OCR read
+                should occur in
+            attempt_limit (int, optional): how many attempts should be made to
+                read the timer
+
+        Returns:
+            dict: dict of hours, minutes, and seconds of a successful timer
+                read
+        """
+        ocr_matching = True
+        timer_dict = {'hours': 95, 'minutes': 0}
+        attempt = 0
+        while ocr_matching:
+            attempt += 1
+            timer = cls.read_ocr_number_text(
+                kc_region, timer_ref, dir, dist).strip()
+            if len(timer) == 5:
+                # valid length for timer ('##:##')
+                timer = list(timer)
+                timer[2] = ':'
+                timer = ''.join(timer)
+                timer_format_match = match(r'^\d{2}:\d{2}$', timer)
+                if timer_format_match:
+                    # valid timer reading; return timer reading
+                    ocr_matching = False
+                    cls.log_msg("Got valid timer (%s)!" % timer)
+                    timer_dict = {
+                        'hours': int(timer[0:2]),
+                        'minutes': int(timer[3:5])
+                    }
+                    return timer_dict
+            # the timer reading is invalid; if the attempt_limit is set and
+            # met, return 95:00
+            if attempt_limit != 0 and attempt == attempt_limit:
+                cls.log_warning(
+                    "Got invalid timer and met attempt threshold. Returning "
+                    "95:00!")
+                return timer_dict
+            # otherwise, try again
+            cls.log_warning(
+                "Got invalid timer ({})... trying again!".format(timer))
+            sleep(0.2)
+
+    @classmethod
+    def read_number(cls, kc_region, number_ref, dir, dist, attempt_limit=0):
         """Method for reading various numbers via OCR.
 
         Args:
@@ -191,10 +280,10 @@ class Util(object):
             timer_ref (str, Match): image name of reference or Match of
                 reference the OCR read should happen in relation to
             dir (str): specifies in what direction relative to text_ref the
-                OCR read should occur: 'r' for 'right of text_ref' and 'l' for
-                'left of text_ref'
-            width (int): width (in pixels) of the region the OCR read should
-                occur in
+                OCR read should occur: 'r' for right, 'l' for left, 'a' for
+                above, 'b' for below
+            dist (int): distance away (in pixels) from the region the OCR read
+                should occur in
             attempt_limit (int, optional): how many attempts should be made to
                 read the number
 
@@ -206,7 +295,7 @@ class Util(object):
         while ocr_matching:
             attempt += 1
             number = cls.read_ocr_number_text(
-                kc_region, number_ref, dir, width).strip()
+                kc_region, number_ref, dir, dist).strip()
             m = match(r'^\d+$', number)
             if m:
                 # OCR match is a number; return it
