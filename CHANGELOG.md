@@ -1,3 +1,9 @@
+#### 7.5.0
+
+* Update Expedition Module logic and assets to support UI changes in July 2019 Kantai Collection update
+* Add support for expeditions A4 and 41 in both backend and webUI
+* Archive 2019 Spring Event assets
+
 #### 7.4.1
 
 * Add support for event O, P, and Q nodes in webUI
