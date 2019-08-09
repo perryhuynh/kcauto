@@ -1,3 +1,8 @@
+#### 7.5.1
+
+* Update Fleet flag assets to support UI changes from August 2019 Kantai Collection update
+* Update Expedition Module logic to better support UI changes from July 2019 Kantai Collection update
+
 #### 7.5.0
 
 * Update Expedition Module logic and assets to support UI changes in July 2019 Kantai Collection update
