@@ -103,7 +103,7 @@ class ExpeditionModule(object):
         self.navigate_to_expedition(fleet)
         if not Util.check_and_click(self.kc_region, 'sortie_select.png'):
             if self.regions['lower_right'].exists(
-                    Pattern('expedition_timer_complete.png').exact()):
+                    'expedition_timer_complete.png'):
                 fleet.update_return_time(0, -1)
             else:
                 expedition_timer = Util.read_short_timer(
@@ -168,7 +168,7 @@ class ExpeditionModule(object):
         Util.check_and_click(
             self.regions['lower'],
             'e_world_{}.png'.format(fleet.expedition_area))
-        Util.kc_sleep(1)
+        Util.kc_sleep(2)
 
         if type(fleet.expedition) == int:
             self._scroll_expedition_list_up()
@@ -183,9 +183,14 @@ class ExpeditionModule(object):
 
         expedition_display_name = str(fleet.expedition).zfill(2)
         for matched in matched_ranks:
-            expedition_name_area = matched.left(30)
+            expedition_name_area = matched.left(38)
             expedition_name = Util.read_ocr_text(expedition_name_area)
             expedition_name = expedition_name.replace('O', '0')
+            # disambiguate 'S' and '5' in proper locations
+            if expedition_name[0] == '5':
+                expedition_name = 'S' + expedition_name[1]
+            if expedition_name[1] == 'S':
+                expedition_name = expedition_name[0] + '5'
             if expedition_name == expedition_display_name:
                 click_region = expedition_name_area.right(530)
                 x = -self.kc_region.x + Util.random_coord(
