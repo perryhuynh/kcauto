@@ -141,7 +141,7 @@ class ConfigCombat(AbstractConfigModule):
             valid_formations = ((
                 'combinedfleet_1', 'combinedfleet_2', 'combinedfleet_3',
                 'combinedfleet_4'
-            ) if combat_cfg['fleet_mode'] in ('ctf', 'stf') else (
+            ) if combat_cfg['fleet_mode'] in ('ctf', 'stf', 'transport') else (
                 'line_ahead', 'double_line', 'diamond', 'echelon',
                 'line_abreast', 'vanguard'))
 
