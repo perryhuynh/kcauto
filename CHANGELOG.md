@@ -1,3 +1,8 @@
+#### 7.5.2
+
+* Archive 2019 Summer Event assets (thanks to @perryhuynh)
+* Fix bug where Transport fleet mode did not allow for combined fleet formations (thanks to @perryhuynh)
+
 #### 7.5.1
 
 * Update Fleet flag assets to support UI changes from August 2019 Kantai Collection update
