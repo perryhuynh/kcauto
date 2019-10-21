@@ -1,3 +1,6 @@
+#### 7.5.3
+* Add fancy Github Sponsor button
+
 #### 7.5.2
 
 * Archive 2019 Summer Event assets (thanks to @perryhuynh)
