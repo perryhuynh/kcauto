@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+flake8 = "~=3.7.9"
+
+[packages]
+matplotlib = "~=3.1.2"
+numpy = "~=1.17.4"
+pychromedevtools = "~=0.1"
+pysimplegui = "~=4.7.0"
+pyvisauto = "~=1.0.2"
+requests = "~=2.22.0"
+
+[requires]
+python_version = "3.7.3"

@@ -1,0 +1,77 @@
+{
+  "general.jst_offset": 0,
+  "general.interaction_mode": "direct_control",
+  "general.chrome_dev_port": 9222,
+  "general.paused": false,
+  "expedition.enabled": true,
+  "expedition.fleet_2": [
+    2
+  ],
+  "expedition.fleet_3": [
+    21
+  ],
+  "expedition.fleet_4": [
+    38
+  ],
+  "pvp.enabled": true,
+  "pvp.fleet_preset": null,
+  "combat.enabled": false,
+  "combat.sortie_map": "1-1",
+  "combat.fleet_mode": "standard",
+  "combat.fleet_presets": [],
+  "combat.node_selects": [],
+  "combat.retreat_points": [],
+  "combat.push_nodes": [],
+  "combat.node_formations": [
+    "1:diamond",
+    "B:double_line",
+    "C:double_line"
+  ],
+  "combat.node_night_battles": [
+    "1:True"
+  ],
+  "combat.retreat_limit": 4,
+  "combat.repair_limit": 3,
+  "combat.repair_timelimit_hours": 1,
+  "combat.repair_timelimit_minutes": 0,
+  "combat.lbas_groups": [],
+  "combat.lbas_group_1_nodes": [],
+  "combat.lbas_group_2_nodes": [],
+  "combat.lbas_group_3_nodes": [],
+  "combat.check_fatigue": false,
+  "combat.check_lbas_fatigue": false,
+  "combat.reserve_repair_dock": false,
+  "combat.port_check": false,
+  "combat.clear_stop": false,
+  "event_reset.enabled": false,
+  "event_reset.frequency": 3,
+  "event_reset.reset_difficulty": 3,
+  "event_reset.farm_difficulty": 2,
+  "ship_switcher.enabled": false,
+  "ship_switcher.slots": {},
+  "passive_repair.enabled": false,
+  "passive_repair.repair_threshold": 1,
+  "passive_repair.slots_to_reserve": 1,
+  "quest.enabled": false,
+  "quest.quests": [
+    "Bd1",
+    "Bd2",
+    "Bd3",
+    "Bd4",
+    "Bd5",
+    "Bd6",
+    "Bd7",
+    "Bd8",
+    "Bw1",
+    "Bw2",
+    "Bw3",
+    "Bw4",
+    "D2",
+    "D3",
+    "D4",
+    "E3",
+    "E4"
+  ],
+  "scheduler.enabled": false,
+  "scheduler.rules": []
+}

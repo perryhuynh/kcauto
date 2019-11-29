@@ -1,0 +1,7 @@
+flake8==3.7.8
+matplotlib==3.1.2
+numpy==1.17.4
+PyChromeDevTools==0.1
+PySimpleGUI==4.7.0
+pyvisauto==1.0.2
+requests==2.22.0
