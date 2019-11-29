@@ -1,4 +1,4 @@
-#### 8.0.0rc1
+#### v8.0.0-rc1
 * **kcauto re-write**
   * No longer dependent on Sikuli
   * Runs from Python directly
