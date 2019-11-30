@@ -1,12 +1,16 @@
 {
 	"world": "E",
 	"subworld": 4,
-    "panel": 1,
+	"panel": 1,
 	"page": 2,
 	"enemy_context": [],
 	"nodes": {
 		"C": {
 			"coords": [662, 380]
+		},
+		"D": {
+			"coords": [645, 470],
+			"types": ["air"]
 		},
 		"E": {
 			"coords": [518, 416]
