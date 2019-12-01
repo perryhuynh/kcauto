@@ -3,6 +3,9 @@
 	"subworld": 3,
 	"enemy_context": [],
 	"nodes": {
+		"A": {
+			"coords": [872, 470]
+		},
 		"D": {
 			"coords": [642, 391]
 		},
@@ -14,6 +17,9 @@
 		},
 		"G": {
 			"coords": [507, 329]
+		},
+		"I": {
+			"coords": [421, 214]
 		},
 		"J": {
 			"coords": [382, 270]
