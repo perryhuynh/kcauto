@@ -10,14 +10,25 @@
 			"coords": [1015, 413],
 			"types": ["air"]
 		},
+		"C": {
+			"coords": [979, 263],
+			"types": ["air"]
+		},
 		"E": {
 			"coords": [938, 336]
 		},
-        "I": {
+		"G": {
+			"coords": [855, 462]
+		},
+		"H": {
+			"coords": [763, 496],
+			"types": ["air"]
+		},
+		"I": {
 			"coords": [759, 259],
 			"types": ["select"]
-        },
-        "J": {
+		},
+		"J": {
 			"coords": [642, 298],
 			"types": ["air"]
 		},
