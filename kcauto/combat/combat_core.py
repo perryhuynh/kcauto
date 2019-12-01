@@ -88,8 +88,8 @@ class CombatCore(CoreBase):
 
                 self.available_maps[map_enum.value] = {
                     'enum': map_enum,
-                    'cleared': map_data['api_cleared'] == 1,
-                    'lbas_bases': map_data['api_air_base_decks'],
+                    'cleared': map_data.get('api_cleared', 0) == 1,
+                    'lbas_bases': map_data.get('api_air_base_decks', []),
                     'difficulty': EventDifficultyEnum(
                         map_data['api_eventmap']['api_selected_rank'])
                 }
