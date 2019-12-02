@@ -60,8 +60,8 @@ class EventReset(object):
                 'lower_right', 'combat|event_difficulty_cancel.png')
         else:
             kca_u.kca.click_existing(
-                'lower_right', 'event_difficulty_acecpt.png')
-        kca_u.kca.wait('lower_right', 'combat|sortie_select.png')
+                'lower_right', 'event_difficulty_accept.png')
+        kca_u.kca.wait('lower_right', 'global|sortie_select.png')
 
 
 reset = EventReset()
