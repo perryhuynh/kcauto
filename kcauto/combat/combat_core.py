@@ -56,6 +56,7 @@ class CombatCore(CoreBase):
     nodes_run = []
     combat_nodes_run = []
     rescued_ships = []
+    boss_api = False
     map_cleared = False
 
     def __init__(self):
@@ -275,6 +276,15 @@ class CombatCore(CoreBase):
 
             if at_combat_node:
                 self.combat_nodes_run.append(self.current_node)
+                if self.current_node.boss_node or self.boss_api:
+                    self.boss_api = False
+                    Log.log_msg("Dismissing boss dialogue.")
+                    kca_u.kca.sleep(3)
+                    kca_u.kca.r['center'].click()
+                    kca_u.kca.sleep()
+                    kca_u.kca.r['center'].click()
+                    kca_u.kca.r['lbas'].hover()
+
                 while not kca_u.kca.exists(
                         'lower_right_corner', 'global|next.png'):
                     if kca_u.kca.exists('kc', 'global|combat_nb_fight.png'):
@@ -505,10 +515,10 @@ class CombatCore(CoreBase):
         return continue_sortie
 
     def predict_battle(self, data):
-        print(data)
         Log.log_debug("Predicting battle from data.")
         if 'api_flavor_info' in data:
-            print('boss node')
+            Log.log_debug("Boss node detected via API.")
+            self.boss_api = True
         # if 'api_midnight_flag' in data:
         #     print(f"nightbattle: {data['api_midnight_flag']}")
 
@@ -516,9 +526,8 @@ class CombatCore(CoreBase):
             list(data['api_f_nowhps'] + data['api_f_nowhps_combined'])
             if flt.fleets.combined_fleet
             else list(data['api_f_nowhps']))
-        print('calculate hps')
         new_hps = self._calculate_hps(new_hps, data)
-        print(new_hps)
+        Log.log_debug(f"Calculated HPs: {new_hps}")
         flt.fleets.combat_fleets[0].update_ship_hps(new_hps[0:6])
         Log.log_msg(flt.fleets.combat_fleets[0])
         if flt.fleets.combined_fleet:
