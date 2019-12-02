@@ -17,7 +17,7 @@ if __name__ == '__main__':
             f"Initializing kcauto v{__version__} in command-line mode with "
             f"the '{cfg}' config file.")
         kcauto_main()
-    if args.debug:
+    elif args.debug:
         if not args.debug_asset:
             raise ValueError(
                 "--debug-asset must be specified when using --debug.")
