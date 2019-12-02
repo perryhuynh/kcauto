@@ -19,6 +19,8 @@ class EventReset(object):
 
     @property
     def need_to_reset(self):
+        if not self.enabled:
+            return False
         return sts.stats.combat.combat_sorties > self.next_reset_sortie_count
 
     def reset_event_difficulty(self):
