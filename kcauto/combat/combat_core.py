@@ -364,8 +364,8 @@ class CombatCore(CoreBase):
                         'formation_line_ahead',
                         'fleet|formation_line_ahead.png')
                     or kca_u.kca.exists(
-                        'formation_combinedfleet_1',
-                        'fleet|formation_combinedfleet_1.png')):
+                        'formation_combined_fleet_1',
+                        'fleet|formation_combined_fleet_1.png')):
                 Log.log_msg(f"Combat at node {self.current_node}.")
                 self._resolve_formation_prompt()
                 api.api.update_from_api(self.COMBAT_APIS, need_all=False)
