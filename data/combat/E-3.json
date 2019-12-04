@@ -1,19 +1,22 @@
 {
 	"world": "E",
 	"subworld": 3,
-	"enemy_context": [],
+	"enemy_context": ["subs"],
 	"nodes": {
 		"A": {
-			"coords": [872, 470]
+			"coords": [872, 470],
+			"types": ["sub"]
 		},
 		"B": {
 			"coords": [815, 386]
 		},
 		"D": {
-			"coords": [642, 391]
+			"coords": [642, 391],
+			"types": ["sub"]
 		},
 		"E": {
-			"coords": [606, 227]
+			"coords": [606, 227],
+			"types": ["sub"]
 		},
 		"F": {
 			"coords": [515, 221]
