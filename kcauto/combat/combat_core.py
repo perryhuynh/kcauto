@@ -97,6 +97,8 @@ class CombatCore(CoreBase):
 
     @property
     def should_and_able_to_sortie(self):
+        if not self.enabled:
+            return False
         if cfg.config.combat.port_check:
             if shp.ships.current_ship_count == shp.ships.max_ship_count:
                 Log.log_msg("Port is full.")
