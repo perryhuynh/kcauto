@@ -1,5 +1,6 @@
 import os
 import PyChromeDevTools
+from datetime import datetime
 from pyvisauto import Region, FindFailed, ImageMatch
 from random import randint, uniform
 from time import sleep
@@ -511,6 +512,52 @@ class Kca(object):
         else:
             flex = base if flex is None else flex
             sleep(uniform(base, base + flex) + SLEEP_MODIFIER)
+
+    def while_wrapper(self, conditional, timeout=None, attempt_limit=None):
+        """A wrapper for while conditionals that allow for execution timeouts
+        and loop number limits to be defined. The conditional parameter should
+        be a function or lambda with it returning True when the while loop
+        should exit successfully. Either timeout or attempt_limit must be
+        specified. Meant to facilitate visual asset searches in while loops.
+
+        Args:
+            conditional (func/lambda): conditional function/lambda.
+            timeout (int, optional): max number of seconds the while loop
+                should execute. Defaults to None.
+            attempt_limit (int, optional): max number of times the while loop
+                should execute. Defaults to None.
+
+        Raises:
+            TypeError: neither timeout or attempt_limit specified.
+            FindFailed:
+
+        Returns:
+            True: conditional succeeded and returned True
+        """
+        if not timeout and not attempt_limit:
+            raise TypeError("timeout or attempt_limit must be defined.")
+
+        failed_conditional = False
+        if timeout:
+            start_time = datetime.now()
+        elif attempt_limit:
+            counter = 0
+
+        while not conditional:
+            if timeout and datetime.now() > start_time:
+                failed_conditional = True
+                break
+            elif attempt_limit:
+                counter += 1
+                if counter >= attempt_limit:
+                    failed_conditional = True
+                    break
+
+        if failed_conditional:
+            raise FindFailed(
+                "Conditional failed by exceeding timeout or attempt limit")
+
+        return True
 
     def readable_list_join(self, raw_list):
         """Helper method for joining a list into a human-readable string,

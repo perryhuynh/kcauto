@@ -111,12 +111,22 @@ class LBASCore(object):
             kca_u.kca.r['lbas'].hover()
             kca_u.kca.sleep(1)
 
+    def _lbas_panel_check(self):
+        r = kca_u.kca.r['upper_right']
+        return (
+            True
+            if (
+                r.exists('combat|lbas_group_tab_1.png')
+                or r.exists('combat|lbas_group_tab_1_only.png'))
+            else False)
+
     def _open_lbas_panel(self):
         if cfg.config.combat.sortie_map.world == 'E':
             kca_u.kca.click_existing(
                 'lower_left', 'combat|lbas_resupply_menu_button_event.png')
             kca_u.kca.sleep()
             kca_u.kca.wait('upper_right', 'combat|lbas_group_tab_1.png')
+            kca_u.kca.while_wrapper(self._lbas_panel_check, timeout=10)
         else:
             kca_u.kca.click_existing(
                 'upper_right', 'combat|lbas_resupply_menu_button.png')
