@@ -266,13 +266,13 @@ class Kca(object):
         self._create_or_shift_region(
             'formation_vanguard', x + 989, y + 495, 150, 44)
         self._create_or_shift_region(
-            'formation_combinedfleet_1', x + 640, y + 240, 215, 45)
+            'formation_combined_fleet_1', x + 640, y + 240, 215, 45)
         self._create_or_shift_region(
-            'formation_combinedfleet_2', x + 890, y + 240, 215, 45)
+            'formation_combined_fleet_2', x + 890, y + 240, 215, 45)
         self._create_or_shift_region(
-            'formation_combinedfleet_3', x + 640, y + 445, 215, 45)
+            'formation_combined_fleet_3', x + 640, y + 445, 215, 45)
         self._create_or_shift_region(
-            'formation_combinedfleet_4', x + 890, y + 445, 215, 45)
+            'formation_combined_fleet_4', x + 890, y + 445, 215, 45)
 
     def _create_or_shift_region(self, key, x, y, w, h):
         """Helper method for generating or shifting an existing Region's x
