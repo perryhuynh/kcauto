@@ -3,8 +3,12 @@
 	"subworld": 4,
 	"panel": 1,
 	"page": 2,
-	"enemy_context": [],
+	"enemy_context": ["subs"],
 	"nodes": {
+		"B": {
+			"coords": [915, 495],
+			"types": ["sub"]
+		},
 		"C": {
 			"coords": [662, 380]
 		},
@@ -16,13 +20,15 @@
 			"coords": [518, 416]
 		},
 		"F": {
-			"coords": [475, 197]
+			"coords": [475, 197],
+			"types": ["sub"]
 		},
 		"G": {
 			"coords": [464, 293]
 		},
 		"K": {
-			"coords": [323, 216]
+			"coords": [323, 216],
+			"types": ["sub"]
 		},
 		"L": {
 			"coords": [283, 268]
@@ -35,7 +41,8 @@
 			"types": ["boss"]
 		},
 		"Q": {
-			"coords": [699, 332]
+			"coords": [699, 332],
+			"types": ["sub"]
 		},
 		"R": {
 			"coords": [219, 383],
