@@ -125,7 +125,6 @@ class LBASCore(object):
             kca_u.kca.click_existing(
                 'lower_left', 'combat|lbas_resupply_menu_button_event.png')
             kca_u.kca.sleep()
-            kca_u.kca.wait('upper_right', 'combat|lbas_group_tab_1.png')
             kca_u.kca.while_wrapper(self._lbas_panel_check_cond, timeout=10)
         else:
             kca_u.kca.click_existing(
