@@ -1,6 +1,6 @@
 import os
 import PyChromeDevTools
-from datetime import datetime
+from datetime import datetime, timedelta
 from pyvisauto import Region, FindFailed, ImageMatch
 from random import randint, uniform
 from time import sleep
@@ -546,12 +546,12 @@ class Kca(object):
 
         failed_conditional = False
         if timeout:
-            start_time = datetime.now()
+            end_time = datetime.now() + timedelta(seconds=timeout)
         elif attempt_limit:
             counter = 0
 
-        while not conditional_func:
-            if timeout and datetime.now() > start_time:
+        while not conditional_func():
+            if timeout and datetime.now() > end_time:
                 failed_conditional = True
                 break
             elif attempt_limit:
@@ -559,7 +559,8 @@ class Kca(object):
                 if counter >= attempt_limit:
                     failed_conditional = True
                     break
-            internal_func()
+            if internal_func:
+                internal_func()
 
         if failed_conditional:
             raise FindFailed(

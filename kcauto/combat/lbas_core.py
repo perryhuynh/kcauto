@@ -112,12 +112,12 @@ class LBASCore(object):
             kca_u.kca.sleep(1)
 
     def _lbas_panel_check_cond(self):
-        r = kca_u.kca.r['upper_right']
         return (
             True
             if (
-                r.exists('combat|lbas_group_tab_1.png')
-                or r.exists('combat|lbas_group_tab_1_only.png'))
+                kca_u.kca.exists('upper_right', 'combat|lbas_group_tab_1.png')
+                or kca_u.kca.exists(
+                    'upper_right', 'combat|lbas_group_tab_1_only.png'))
             else False)
 
     def _open_lbas_panel(self):
