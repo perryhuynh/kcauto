@@ -136,7 +136,7 @@ class LBASCore(object):
     def _lbas_panel_resupply_cond(self):
         return (
             True
-            if kca_u.kca.exists('upper_right', 'combat|lbas_resupply.png')
+            if not kca_u.kca.exists('upper_right', 'combat|lbas_resupply.png')
             else False)
 
     def _lbas_panel_resupply_func(self):
