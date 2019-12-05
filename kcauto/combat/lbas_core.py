@@ -111,7 +111,7 @@ class LBASCore(object):
             kca_u.kca.r['lbas'].hover()
             kca_u.kca.sleep(1)
 
-    def _lbas_panel_check(self):
+    def _lbas_panel_check_cond(self):
         r = kca_u.kca.r['upper_right']
         return (
             True
@@ -126,7 +126,7 @@ class LBASCore(object):
                 'lower_left', 'combat|lbas_resupply_menu_button_event.png')
             kca_u.kca.sleep()
             kca_u.kca.wait('upper_right', 'combat|lbas_group_tab_1.png')
-            kca_u.kca.while_wrapper(self._lbas_panel_check, timeout=10)
+            kca_u.kca.while_wrapper(self._lbas_panel_check_cond, timeout=10)
         else:
             kca_u.kca.click_existing(
                 'upper_right', 'combat|lbas_resupply_menu_button.png')
@@ -134,13 +134,23 @@ class LBASCore(object):
             kca_u.kca.wait('upper_right', 'combat|lbas_group_tab_1.png')
         kca_u.kca.sleep()
 
+    def _lbas_panel_resupply_cond(self):
+        return (
+            True
+            if kca_u.kca.exists('upper_right', 'combat|lbas_resupply.png')
+            else False)
+
+    def _lbas_panel_resupply_func(self):
+        kca_u.kca.click_existing(
+            'upper_right', 'combat|lbas_resupply.png', cached=True)
+        kca_u.kca.sleep(0.1)
+
     def _resupply(self, group_id):
         Log.log_msg(f"Resupplying LBAS group {group_id}.")
-        while kca_u.kca.exists('upper_right', 'combat|lbas_resupply.png'):
-            kca_u.kca.click_existing(
-                'upper_right', 'combat|lbas_resupply.png',
-                cached=True)
-            kca_u.kca.sleep(0.1)
+        kca_u.kca.while_wrapper(
+            self._lbas_panel_resupply_cond, self._lbas_panel_resupply_func,
+            timeout=10)
+
         kca_u.kca.wait_vanish(
             'lower_right', 'combat|lbas_resupply_in_progress.png')
         kca_u.kca.sleep()

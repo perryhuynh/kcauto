@@ -513,26 +513,33 @@ class Kca(object):
             flex = base if flex is None else flex
             sleep(uniform(base, base + flex) + SLEEP_MODIFIER)
 
-    def while_wrapper(self, conditional, timeout=None, attempt_limit=None):
+    def while_wrapper(
+            self, conditional_func, internal_func=None, timeout=None,
+            attempt_limit=None):
         """A wrapper for while conditionals that allow for execution timeouts
-        and loop number limits to be defined. The conditional parameter should
-        be a function or lambda with it returning True when the while loop
-        should exit successfully. Either timeout or attempt_limit must be
-        specified. Meant to facilitate visual asset searches in while loops.
+        and loop number limits to be defined. The conditional_func parameter
+        should be a function or lambda with it returning True when the while
+        loop should exit successfully. The internal_function, if specified,
+        will execute within the while loop. Either timeout or attempt_limit
+        must be specified. Meant to facilitate visual asset searches in while
+        loops.
 
         Args:
-            conditional (func/lambda): conditional function/lambda.
+            conditional_func (func/lambda): conditional function/lambda.
+            internal_func (func/lambda): function/lambda to execute within
+                the while loop. Defaults to None.
             timeout (int, optional): max number of seconds the while loop
                 should execute. Defaults to None.
             attempt_limit (int, optional): max number of times the while loop
                 should execute. Defaults to None.
 
         Raises:
-            TypeError: neither timeout or attempt_limit specified.
-            FindFailed:
+            TypeError: neither timeout or attempt limit specified.
+            FindFailed: the conditional failed to succeed before the timeout
+                or within the attempt limit.
 
         Returns:
-            True: conditional succeeded and returned True
+            True: conditional_func succeeded and returned True
         """
         if not timeout and not attempt_limit:
             raise TypeError("timeout or attempt_limit must be defined.")
@@ -543,7 +550,7 @@ class Kca(object):
         elif attempt_limit:
             counter = 0
 
-        while not conditional:
+        while not conditional_func:
             if timeout and datetime.now() > start_time:
                 failed_conditional = True
                 break
@@ -552,6 +559,7 @@ class Kca(object):
                 if counter >= attempt_limit:
                     failed_conditional = True
                     break
+            internal_func()
 
         if failed_conditional:
             raise FindFailed(
