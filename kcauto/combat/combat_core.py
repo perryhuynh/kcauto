@@ -530,10 +530,11 @@ class CombatCore(CoreBase):
             else list(data['api_f_nowhps']))
         new_hps = self._calculate_hps(new_hps, data)
         Log.log_debug(f"Calculated HPs: {new_hps}")
-        flt.fleets.combat_fleets[0].update_ship_hps(new_hps[0:6])
+        fleet1_size = len(flt.fleets.combat_fleets[0].ship_data)
+        flt.fleets.combat_fleets[0].update_ship_hps(new_hps[0:fleet1_size])
         Log.log_msg(flt.fleets.combat_fleets[0])
         if flt.fleets.combined_fleet:
-            flt.fleets.combat_fleets[1].update_ship_hps(new_hps[6:12])
+            flt.fleets.combat_fleets[1].update_ship_hps(new_hps[fleet1_size:])
             Log.log_msg(flt.fleets.combat_fleets[1])
 
     def process_battle_result(self, data):
