@@ -6,14 +6,16 @@
 	"enemy_context": ["subs"],
 	"nodes": {
 		"A": {
-			"coords": [377, 515]
+			"coords": [377, 515],
+			"types": ["sub"]
 		},
 		"B": {
 			"coords": [542, 166],
 			"types": ["air"]
 		},
 		"C": {
-			"coords": [573, 322]
+			"coords": [573, 322],
+			"types": ["sub"]
 		},
 		"D": {
 			"coords": [614, 508],
@@ -34,7 +36,7 @@
 		},
 		"J": {
 			"coords": [694, 441],
-			"types": ["boss"]
+			"types": ["sub", "boss"]
 		},
 		"K": {
 			"coords": [901, 366],
