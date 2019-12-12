@@ -15,12 +15,14 @@ from util.core_base import CoreBase
 from util.json_data import JsonData
 from util.kc_time import KCTime
 from util.logger import Log
+from kca_enums.damage_states import DamageStateEnum
 from kca_enums.event_difficulties import EventDifficultyEnum
 from kca_enums.fatigue_states import FatigueStateEnum
 from kca_enums.formations import FormationEnum
 from kca_enums.kcsapi_paths import KCSAPIEnum
 from kca_enums.maps import MapEnum
 from kca_enums.nodes import NodeEnum
+from kca_enums.ship_types import ShipTypeEnum
 
 
 class CombatCore(CoreBase):
@@ -314,6 +316,8 @@ class CombatCore(CoreBase):
                         or kca_u.kca.exists(
                             'lower_right', 'combat|combat_flagship_dmg.png')
                         or kca_u.kca.exists(
+                            'lower', 'combat|fcf_retreat_ship.png')
+                        or kca_u.kca.exists(
                             'kc', 'combat|combat_retreat.png')):
                     Log.log_debug("Check for Port API.")
                     api_result = api.api.update_from_api(
@@ -325,6 +329,11 @@ class CombatCore(CoreBase):
                         return
                     else:
                         kca_u.kca.r['combat_click'].click()
+
+            if flt.fleets.combined_fleet:
+                if kca_u.kca.exists('lower', 'combat|fcf_retreat_ship.png'):
+                    Log.log_debug("FCF prompt.")
+                    # self._resolve_fcf_prompt()
 
             if kca_u.kca.exists('kc', 'combat|combat_retreat.png'):
                 Log.log_debug("Continue sortie prompt.")
@@ -516,6 +525,62 @@ class CombatCore(CoreBase):
 
         return continue_sortie
 
+    def _resolve_fcf_prompt(self):
+        Log.log_debug("Resolve FCF prompt.")
+        min_combat_nodes_before_fcf = 1  # extrapolate this out to config
+        use_fcf = False
+
+        if len(self.combat_nodes_run) < min_combat_nodes_before_fcf:
+            return False
+
+        heavy_damage_counter = 0
+        damaged_ship = None
+        damaged_ship_idx = None
+        escort_ship = None
+        escort_ship_idx = None
+
+        for ship_idx, ship in enumerate(flt.fleets.combat_ships):
+            if ship_idx == len(flt.fleets.combat_fleets[0].ship_data):
+                # do not count the damage stage of the escort fleet flagship
+                # as it is un-sinkable and un-retreatable
+                pass
+            if ship.damage is DamageStateEnum.HEAVY:
+                Log.log_debug(f"{ship.name} is heavily damaged.")
+                heavy_damage_counter += 1
+                damaged_ship = ship
+                damaged_ship_idx = ship_idx
+
+        if heavy_damage_counter == 1:
+            last_combat_fleet_ships = flt.fleets.combat_fleets[-1].ship_data
+            for ship_idx, ship in enumerate(last_combat_fleet_ships):
+                if (
+                        ship.ship_type is ShipTypeEnum.DD
+                        and ship.damage <= DamageStateEnum.SCRATCH):
+                    Log.log_debug(f"Found {ship.name} as escort ship.")
+                    escort_ship = ship
+                    escort_ship_idx = ship_idx
+                    break
+            if not escort_ship or not escort_ship_idx:
+                raise ValueError("Valid FCF retreat escort ship not found.")
+
+            Log.log_msg(
+                f"Retreating {damaged_ship.name} with {escort_ship.name} "
+                "using FCF.")
+            kca_u.kca.click_existing(
+                'lower', 'combat|fcf_retreat_ship.png', cached=True)
+
+            flt.fleets.combat_ships[damaged_ship_idx].hp = -1
+            last_combat_fleet_ships[escort_ship_idx].hp = -1
+            sts.stats.combat.fcfs_done += 1
+            use_fcf = True
+        else:
+            Log.log_msg("Not retreating ships using FCF.")
+            kca_u.kca.click_existing(
+                'lower', 'combat|fcf_continue_fleet.png', cached=True)
+        kca_u.kca.r['lbas'].hover()
+
+        return use_fcf
+
     def predict_battle(self, data):
         Log.log_debug("Predicting battle from data.")
         if 'api_flavor_info' in data:
@@ -530,11 +595,11 @@ class CombatCore(CoreBase):
             else list(data['api_f_nowhps']))
         new_hps = self._calculate_hps(new_hps, data)
         Log.log_debug(f"Calculated HPs: {new_hps}")
-        fleet1_size = len(flt.fleets.combat_fleets[0].ship_data)
-        flt.fleets.combat_fleets[0].update_ship_hps(new_hps[0:fleet1_size])
+        fleet_1_size = len(flt.fleets.combat_fleets[0].ship_data)
+        flt.fleets.combat_fleets[0].update_ship_hps(new_hps[0:fleet_1_size])
         Log.log_msg(flt.fleets.combat_fleets[0])
         if flt.fleets.combined_fleet:
-            flt.fleets.combat_fleets[1].update_ship_hps(new_hps[fleet1_size:])
+            flt.fleets.combat_fleets[1].update_ship_hps(new_hps[fleet_1_size:])
             Log.log_msg(flt.fleets.combat_fleets[1])
 
     def process_battle_result(self, data):
