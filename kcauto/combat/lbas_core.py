@@ -105,7 +105,7 @@ class LBASCore(object):
                         or (panel_pos == 'r' and node_instance.x > 780)):
                     kca_u.kca.hover(panel)
                 node_instance.select()
-                kca_u.kca.sleep()
+                kca_u.kca.sleep(1.3)
             kca_u.kca.r['lbas'].hover()
             kca_u.kca.click_existing('upper', 'combat|lbas_assign_confirm.png')
             kca_u.kca.r['lbas'].hover()
