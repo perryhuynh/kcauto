@@ -80,8 +80,7 @@ class Ship(object):
         elif self.local_id in rep.repair.ships_under_repair:
             return DamageStateEnum.REPAIRING
         else:
-            return DamageStateEnum.get_damage_state_from_hp_percent(
-                self.hp_percent)
+            return DamageStateEnum.get_damage_state_from_hp_percent(self.hp_p)
 
     @property
     def fatigue(self):
