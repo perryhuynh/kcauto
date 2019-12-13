@@ -99,7 +99,7 @@ class CombatCore(CoreBase):
 
     @property
     def should_and_able_to_sortie(self):
-        if not self.enabled:
+        if not self.enabled or not self.time_to_sortie:
             return False
         if cfg.config.combat.port_check:
             if shp.ships.current_ship_count == shp.ships.max_ship_count:
@@ -117,25 +117,23 @@ class CombatCore(CoreBase):
                     Log.log_warn("Combat fleet is fatigued.")
                     self.set_next_sortie_time(49 - fleet.lowest_morale)
                     return False
-        if self.time_to_sortie:
-            for fleet in flt.fleets.combat_fleets:
-                if fleet.under_repair:
-                    Log.log_warn("Combat fleet is under repair.")
-                    self.set_next_sortie_time(rep.repair.soonest_complete_time)
-                    return False
-                if fleet.needs_repair:
-                    Log.log_warn("Combat fleet needs repair.")
-                    if rep.repair.docks_are_available:
-                        self.set_next_sortie_time()
-                    else:
-                        self.set_next_sortie_time(
-                            rep.repair.soonest_complete_time)
-                    return False
-                if fleet.needs_resupply:
-                    Log.log_warn("Combat fleet needs resupply.")
-                    return False
-            return True
-        return False
+        for fleet in flt.fleets.combat_fleets:
+            if fleet.under_repair:
+                Log.log_warn("Combat fleet is under repair.")
+                self.set_next_sortie_time(rep.repair.soonest_complete_time)
+                return False
+            if fleet.needs_repair:
+                Log.log_warn("Combat fleet needs repair.")
+                if rep.repair.docks_are_available:
+                    self.set_next_sortie_time()
+                else:
+                    self.set_next_sortie_time(
+                        rep.repair.soonest_complete_time)
+                return False
+            if fleet.needs_resupply:
+                Log.log_warn("Combat fleet needs resupply.")
+                return False
+        return True
 
     def set_next_sortie_time(self, value=timedelta(seconds=0), override=False):
         if isinstance(value, timedelta):
