@@ -226,6 +226,7 @@ class CombatCore(CoreBase):
         if sortie_map.world == 'E':
             while cur_page < self.map_data.page:
                 kca_u.kca.r['top'].hover()
+                kca_u.kca.sleep(0.5)
                 kca_u.kca.click_existing(
                     'kc', f'combat|_event_next_page_{cur_page}.png')
                 cur_page += 1
