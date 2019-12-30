@@ -196,6 +196,10 @@ class ApiWrapper(object):
             return self._process_repair_dock_data(data)
         elif request_type is KCSAPIEnum.QUEST_LIST:
             return self._process_quest_data(data)
+        elif request_type is KCSAPIEnum.RESUPPLY_ACTION:
+            return True
+        elif request_type is KCSAPIEnum.LBAS_RESUPPLY_ACTION:
+            return True
         return None
 
     def _process_get_data(self, data):

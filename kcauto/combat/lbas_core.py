@@ -146,13 +146,20 @@ class LBASCore(object):
 
     def _resupply(self, group_id):
         Log.log_msg(f"Resupplying LBAS group {group_id}.")
-        kca_u.kca.while_wrapper(
-            self._lbas_panel_resupply_cond, self._lbas_panel_resupply_func,
-            timeout=10)
+        # kca_u.kca.while_wrapper(
+        #     self._lbas_panel_resupply_cond, self._lbas_panel_resupply_func,
+        #     timeout=10)
+        api_result = {}
+        while KCSAPIEnum.LBAS_RESUPPLY_ACTION.name not in api_result:
+            kca_u.kca.click_existing(
+                'upper_right', 'combat|lbas_resupply.png')
+            api_result = api.api.update_from_api(
+                {KCSAPIEnum.LBAS_RESUPPLY_ACTION}, need_all=False, timeout=1)
+            kca_u.kca.sleep()
 
         kca_u.kca.wait_vanish(
             'lower_right', 'combat|lbas_resupply_in_progress.png')
-        kca_u.kca.sleep()
+        kca_u.kca.sleep(1)
 
     def _set_to_desired_state(self, start, stop):
         if start is stop:
