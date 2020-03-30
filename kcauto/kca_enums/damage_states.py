@@ -10,7 +10,8 @@ class DamageStateEnum(EnumBase):
     MINOR = 2
     SCRATCH = 1
     NO = 0
-    REPAIRING = -1
+    RETREATED = -1
+    REPAIRING = -2
 
     @property
     def display_name(self):

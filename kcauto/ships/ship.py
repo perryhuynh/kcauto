@@ -75,7 +75,12 @@ class Ship(object):
 
     @property
     def damage(self):
-        return self._get_damage_state(self.local_id, self.hp_p)
+        if self.hp == -1:
+            return DamageStateEnum.RETREATED
+        elif self.local_id in rep.repair.ships_under_repair:
+            return DamageStateEnum.REPAIRING
+        else:
+            return DamageStateEnum.get_damage_state_from_hp_percent(self.hp_p)
 
     @property
     def fatigue(self):
@@ -118,13 +123,6 @@ class Ship(object):
 
     def repair(self):
         self.hp = self.hp_max
-
-    def _get_damage_state(self, local_id, hp_percent):
-        if local_id in rep.repair.ships_under_repair:
-            return DamageStateEnum.REPAIRING
-        else:
-            return DamageStateEnum.get_damage_state_from_hp_percent(
-                hp_percent)
 
     def __repr__(self):
         return (

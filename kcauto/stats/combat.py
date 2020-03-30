@@ -9,6 +9,7 @@ class CombatStats(StatsBase):
     combat_sorties = 0
     nodes_fought = 0
     ships_rescued = 0
+    fcfs_done = 0
     event_resets = 0
 
     def __init__(self, start_time):
@@ -26,6 +27,10 @@ class CombatStats(StatsBase):
     @property
     def ships_rescued_ph(self):
         return self.ships_rescued / self.hours_run
+
+    @property
+    def fcfs_done_ph(self):
+        return self.fcfs_done / self.hours_run
 
     @property
     def event_resets_ph(self):
@@ -51,9 +56,14 @@ class CombatStats(StatsBase):
                 f"({self.nodes_fought_ph:.2f}/hr) / "
                 f"{self.ships_rescued} ships rescued "
                 f"({self.ships_rescued_ph:.2f}/hr)")
+            if self.fcfs_done:
+                return_string += (
+                    f" / {self.fcfs_done} FCF retreats "
+                    f"({self.fcfs_done_ph:.2f}/hr)")
             if cfg.config.event_reset.enabled:
                 return_string += (
-                    f" / {self.event_resets} ({self.event_resets_ph:.2f}/hr)")
+                    f" / {self.event_resets} event resets "
+                    f"({self.event_resets_ph:.2f}/hr)")
         else:
             return_string = "Combat module is disabled."
 

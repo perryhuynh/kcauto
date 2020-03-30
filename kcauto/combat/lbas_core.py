@@ -105,18 +105,27 @@ class LBASCore(object):
                         or (panel_pos == 'r' and node_instance.x > 780)):
                     kca_u.kca.hover(panel)
                 node_instance.select()
-                kca_u.kca.sleep()
+                kca_u.kca.sleep(1.3)
             kca_u.kca.r['lbas'].hover()
             kca_u.kca.click_existing('upper', 'combat|lbas_assign_confirm.png')
             kca_u.kca.r['lbas'].hover()
             kca_u.kca.sleep(1)
+
+    def _lbas_panel_check_cond(self):
+        return (
+            True
+            if (
+                kca_u.kca.exists('upper_right', 'combat|lbas_group_tab_1.png')
+                or kca_u.kca.exists(
+                    'upper_right', 'combat|lbas_group_tab_1_only.png'))
+            else False)
 
     def _open_lbas_panel(self):
         if cfg.config.combat.sortie_map.world == 'E':
             kca_u.kca.click_existing(
                 'lower_left', 'combat|lbas_resupply_menu_button_event.png')
             kca_u.kca.sleep()
-            kca_u.kca.wait('upper_right', 'combat|lbas_group_tab_1.png')
+            kca_u.kca.while_wrapper(self._lbas_panel_check_cond, timeout=10)
         else:
             kca_u.kca.click_existing(
                 'upper_right', 'combat|lbas_resupply_menu_button.png')
@@ -124,16 +133,33 @@ class LBASCore(object):
             kca_u.kca.wait('upper_right', 'combat|lbas_group_tab_1.png')
         kca_u.kca.sleep()
 
+    def _lbas_panel_resupply_cond(self):
+        return (
+            True
+            if not kca_u.kca.exists('upper_right', 'combat|lbas_resupply.png')
+            else False)
+
+    def _lbas_panel_resupply_func(self):
+        kca_u.kca.click_existing(
+            'upper_right', 'combat|lbas_resupply.png', cached=True)
+        kca_u.kca.sleep(0.1)
+
     def _resupply(self, group_id):
         Log.log_msg(f"Resupplying LBAS group {group_id}.")
-        while kca_u.kca.exists('upper_right', 'combat|lbas_resupply.png'):
+        # kca_u.kca.while_wrapper(
+        #     self._lbas_panel_resupply_cond, self._lbas_panel_resupply_func,
+        #     timeout=10)
+        api_result = {}
+        while KCSAPIEnum.LBAS_RESUPPLY_ACTION.name not in api_result:
             kca_u.kca.click_existing(
-                'upper_right', 'combat|lbas_resupply.png',
-                cached=True)
-            kca_u.kca.sleep(0.1)
+                'upper_right', 'combat|lbas_resupply.png')
+            api_result = api.api.update_from_api(
+                {KCSAPIEnum.LBAS_RESUPPLY_ACTION}, need_all=False, timeout=1)
+            kca_u.kca.sleep()
+
         kca_u.kca.wait_vanish(
             'lower_right', 'combat|lbas_resupply_in_progress.png')
-        kca_u.kca.sleep()
+        kca_u.kca.sleep(1)
 
     def _set_to_desired_state(self, start, stop):
         if start is stop:

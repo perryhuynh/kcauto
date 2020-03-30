@@ -1,5 +1,6 @@
 import os
 import PyChromeDevTools
+from datetime import datetime, timedelta
 from pyvisauto import Region, FindFailed, ImageMatch
 from random import randint, uniform
 from time import sleep
@@ -266,13 +267,13 @@ class Kca(object):
         self._create_or_shift_region(
             'formation_vanguard', x + 989, y + 495, 150, 44)
         self._create_or_shift_region(
-            'formation_combinedfleet_1', x + 640, y + 240, 215, 45)
+            'formation_combined_fleet_1', x + 640, y + 240, 215, 45)
         self._create_or_shift_region(
-            'formation_combinedfleet_2', x + 890, y + 240, 215, 45)
+            'formation_combined_fleet_2', x + 890, y + 240, 215, 45)
         self._create_or_shift_region(
-            'formation_combinedfleet_3', x + 640, y + 445, 215, 45)
+            'formation_combined_fleet_3', x + 640, y + 445, 215, 45)
         self._create_or_shift_region(
-            'formation_combinedfleet_4', x + 890, y + 445, 215, 45)
+            'formation_combined_fleet_4', x + 890, y + 445, 215, 45)
 
     def _create_or_shift_region(self, key, x, y, w, h):
         """Helper method for generating or shifting an existing Region's x
@@ -511,6 +512,61 @@ class Kca(object):
         else:
             flex = base if flex is None else flex
             sleep(uniform(base, base + flex) + SLEEP_MODIFIER)
+
+    def while_wrapper(
+            self, conditional_func, internal_func=None, timeout=None,
+            attempt_limit=None):
+        """A wrapper for while conditionals that allow for execution timeouts
+        and loop number limits to be defined. The conditional_func parameter
+        should be a function or lambda with it returning True when the while
+        loop should exit successfully. The internal_function, if specified,
+        will execute within the while loop. Either timeout or attempt_limit
+        must be specified. Meant to facilitate visual asset searches in while
+        loops.
+
+        Args:
+            conditional_func (func/lambda): conditional function/lambda.
+            internal_func (func/lambda): function/lambda to execute within
+                the while loop. Defaults to None.
+            timeout (int, optional): max number of seconds the while loop
+                should execute. Defaults to None.
+            attempt_limit (int, optional): max number of times the while loop
+                should execute. Defaults to None.
+
+        Raises:
+            TypeError: neither timeout or attempt limit specified.
+            FindFailed: the conditional failed to succeed before the timeout
+                or within the attempt limit.
+
+        Returns:
+            True: conditional_func succeeded and returned True
+        """
+        if not timeout and not attempt_limit:
+            raise TypeError("timeout or attempt_limit must be defined.")
+
+        failed_conditional = False
+        if timeout:
+            end_time = datetime.now() + timedelta(seconds=timeout)
+        elif attempt_limit:
+            counter = 0
+
+        while not conditional_func():
+            if timeout and datetime.now() > end_time:
+                failed_conditional = True
+                break
+            elif attempt_limit:
+                counter += 1
+                if counter >= attempt_limit:
+                    failed_conditional = True
+                    break
+            if internal_func:
+                internal_func()
+
+        if failed_conditional:
+            raise FindFailed(
+                "Conditional failed by exceeding timeout or attempt limit")
+
+        return True
 
     def readable_list_join(self, raw_list):
         """Helper method for joining a list into a human-readable string,

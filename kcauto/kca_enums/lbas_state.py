@@ -8,5 +8,6 @@ class LBASStateEnum(EnumBase):
     RETREAT = 3
     REST = 4
 
+    @property
     def display_name(self):
         return self.name.replace('_', ' ').title()
