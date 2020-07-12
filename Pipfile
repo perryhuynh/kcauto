@@ -10,7 +10,7 @@ flake8 = "~=3.7.9"
 matplotlib = "~=3.1.2"
 numpy = "~=1.17.4"
 pychromedevtools = "~=0.1"
-pysimplegui = "~=4.7.0"
+pysimplegui = "~=4.14.0"
 pyvisauto = "~=1.0.2"
 requests = "~=2.22.0"
 

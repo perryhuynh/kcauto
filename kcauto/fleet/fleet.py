@@ -127,7 +127,7 @@ class Fleet(object):
     @needs_resupply.setter
     def needs_resupply(self, value):
         if type(value) is not bool:
-            raise ValueError("NEeds resupply flag is not bool")
+            raise ValueError("Needs resupply flag is not bool")
         for ship in self.ship_data:
             if value is True:
                 ship.needs_resupply = True

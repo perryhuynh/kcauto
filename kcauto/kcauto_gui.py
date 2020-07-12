@@ -19,6 +19,7 @@ def gui_main():
     """Primary method for composing and initializing the kcauto GUI.
     """
     Log.log_success("Starting kcauto GUI.")
+    sg.theme('DefaultNoMoreNagging')
 
     layout = [
         GuiTabButtonsLayout.get_layout(),

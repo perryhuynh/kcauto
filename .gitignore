@@ -49,4 +49,5 @@ venv.bak/
 data/temp/*.json
 !configs/config.json
 !data/combat/*.json
+!data/combat/*/*.json
 !data/quests/*.json

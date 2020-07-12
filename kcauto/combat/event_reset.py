@@ -19,6 +19,8 @@ class EventReset(object):
 
     @property
     def need_to_reset(self):
+        if not self.enabled:
+            return False
         return sts.stats.combat.combat_sorties > self.next_reset_sortie_count
 
     def reset_event_difficulty(self):
@@ -27,7 +29,7 @@ class EventReset(object):
         self._dismiss_chalkboards()
         self._switch_difficulty(cfg.config.event_reset.reset_difficulty)
 
-        kca_u.kca.click_existing('lower_right', 'combat|c_world_1.png')
+        kca_u.kca.click_existing('lower_left', 'combat|c_world_1.png')
         kca_u.kca.click_existing(
             'kc', f'combat|_event_world_{map_name}.png')
 
@@ -60,8 +62,8 @@ class EventReset(object):
                 'lower_right', 'combat|event_difficulty_cancel.png')
         else:
             kca_u.kca.click_existing(
-                'lower_right', 'event_difficulty_acecpt.png')
-        kca_u.kca.wait('lower_right', 'combat|sortie_select.png')
+                'lower_right', 'combat|event_difficulty_accept.png')
+        kca_u.kca.wait('lower_right', 'global|sortie_select.png')
 
 
 reset = EventReset()

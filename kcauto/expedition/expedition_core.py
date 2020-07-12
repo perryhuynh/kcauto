@@ -107,7 +107,7 @@ class ExpeditionCore(CoreBase):
             fleet_expeditions = cfg.config.expedition.expeditions_for_fleet(
                 fleet.fleet_id)
             if set(self.SUPPORT_EXPEDITIONS) & set(fleet_expeditions):
-                if not com.combat.should_and_able_to_sortie:
+                if com.combat.should_and_able_to_sortie:
                     fleets_to_send.append(fleet)
             else:
                 fleets_to_send.append(fleet)

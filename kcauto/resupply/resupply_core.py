@@ -1,7 +1,9 @@
+import api.api_core as api
 import fleet.fleet_core as flt
 import nav.nav as nav
 import stats.stats_core as sts
 import util.kca as kca_u
+from kca_enums.kcsapi_paths import KCSAPIEnum
 from util.logger import Log
 
 
@@ -31,16 +33,14 @@ class ResupplyCore(object):
         for fleet in fleets:
             Log.log_msg(f"Resupplying Fleet {fleet.fleet_id}.")
             fleet.select()
-            resupply_button = kca_u.kca.wait(
-                'upper_left', 'resupply|resupply_all.png')
-            resupply_button.hover()
-            while not kca_u.kca.exists(
-                    'lower_right', 'resupply|resupply_all_done.png'):
-                resupply_button.click()
-                kca_u.kca.sleep(0.2)
-            kca_u.kca.r['top'].hover()
+            api_result = {}
+            while KCSAPIEnum.RESUPPLY_ACTION.name not in api_result:
+                kca_u.kca.click_existing(
+                    'upper_left', 'resupply|resupply_all.png')
+                api_result = api.api.update_from_api(
+                    {KCSAPIEnum.RESUPPLY_ACTION}, need_all=False, timeout=1)
+                kca_u.kca.sleep()
             sts.stats.resupply.resupplies_done += 1
-            kca_u.kca.sleep()
 
     def exp_provisional_resupply(self, fleet):
         if kca_u.kca.click_existing(

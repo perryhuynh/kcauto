@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7687d732d5a8ae681cfd1dfe3d165ab7e4c1c788f636de0d3418c90c203b0149"
+            "sha256": "ace85a6dd5024b43d361d865c765e9a75231d93c44c44a066c21032c913fef07"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.7"
+            "python_version": "3.7.3"
         },
         "sources": [
             {
@@ -233,10 +233,10 @@
         },
         "pyparsing": {
             "hashes": [
-                "sha256:20f995ecd72f2a1f4bf6b072b63b22e2eb457836601e76d6e5dfcd75436acc1f",
-                "sha256:4ca62001be367f01bd3e92ecbb79070272a9d4964dce6a48a82ff0b8bc7e683a"
+                "sha256:4c830582a84fb022400b85429791bc551f1f4871c33f23e44f353119e92f969f",
+                "sha256:c342dccb5250c08d45fd6f8b4a559613ca603b57498511740e65cd11a2e7dcec"
             ],
-            "version": "==2.4.5"
+            "version": "==2.4.6"
         },
         "pyperclip": {
             "hashes": [
@@ -258,17 +258,17 @@
         },
         "pysimplegui": {
             "hashes": [
-                "sha256:90fc30f30e2337119dd0e52e8929173d91f89ceea4e22004302dcbf9c988648c",
-                "sha256:ac11054d49da84f829ab39a5468657fb911677c83e02e601492c68f2bf211dd7"
+                "sha256:1d485874fca1da3d5d369c3315641664dd05ed3048ec38dead126da2226d456b",
+                "sha256:5a954924d6e0c4a010e0bd4a5802f88bedbed9fe4e7145dff1d7da32fde80efa"
             ],
             "index": "pypi",
-            "version": "==4.7.1"
+            "version": "==4.14.0"
         },
         "pytesseract": {
             "hashes": [
-                "sha256:ae1dce01413d1f8eb0614fd65d831e26e649dc1a31699b7275455c57aa563b59"
+                "sha256:03735b242439f8dbedc0f33ac9d0e980d755d19ed5e51dda1dcd866d9422edc8"
             ],
-            "version": "==0.3.0"
+            "version": "==0.3.1"
         },
         "python-dateutil": {
             "hashes": [

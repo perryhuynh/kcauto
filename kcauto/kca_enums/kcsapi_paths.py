@@ -12,6 +12,7 @@ class KCSAPIEnum(EnumBase):
     EXPEDITION_LIST = 'kcsapi/api_get_member/mission'
     FLEETCOMP_PRESETS = 'kcsapi/api_get_member/preset_deck'
     RESUPPLY_ACTION = 'kcsapi/api_req_hokyu/charge'
+    LBAS_RESUPPLY_ACTION = 'kcsapi/api_req_air_corps/supply'
     REPAIR_DOCKS = 'kcsapi/api_get_member/ndock'
     QUEST_LIST = 'kcsapi/api_get_member/questlist'
     QUEST_TURN_IN = 'kcsapi/api_req_quest/clearitemget'
