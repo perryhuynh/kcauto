@@ -6,11 +6,7 @@ kcauto is not designed to be the fastest automation tool, but is instead meant t
 
 ---
 
-Consider supporting the developer on [Patreon](https://www.patreon.com/mrmin123)!
-
-<a href="https://www.patreon.com/mrmin123"><img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" width="130" /></a>
-
-You can also reach out to the dev (mrmin123#4639) and other kcauto users on [Discord](https://discord.gg/KEHSmUs)!
+You can also reach out to the dev (Perry) and other kcauto users on [Discord](https://discord.gg/KEHSmUs)!
 
 <a href="https://discord.gg/KEHSmUs"><img src="https://discordapp.com/assets/e4923594e694a21542a489471ecffa50.svg" width="130" /></a>
 
