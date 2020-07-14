@@ -51,7 +51,7 @@
 		},
 		"O": {
 			"coords": [565, 248],
-			"types": ["boss"]
+			"types": ["boss", "sub"]
 		},
 		"P": {
 			"coords": [938, 486]
@@ -65,6 +65,10 @@
 		},
 		"T": {
 			"coords": [534, 352]
+		},
+		"U": {
+			"coords": [508, 426],
+			"types": ["select"]
 		},
 		"V": {
 			"coords": [495, 281],
