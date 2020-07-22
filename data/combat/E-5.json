@@ -23,10 +23,12 @@
 			"types": ["select"]
 		},
 		"H": {
-			"coords": [682, 265]
+			"coords": [682, 265],
+			"types": ["sub"]
 		},
 		"I": {
-			"coords": [734, 402]
+			"coords": [734, 402],
+			"types": ["sub"]
 		},
 		"J": {
 			"coords": [753, 218]
