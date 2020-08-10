@@ -24,7 +24,8 @@
 			"types": ["air"]
 		},
         "F": {
-			"coords": [401, 287]
+			"coords": [401, 287],
+			"types": ["air"]
 		},
         "G": {
 			"coords": [433, 391]
@@ -44,7 +45,8 @@
 			"types": ["sub"]
 		},
         "N": {
-			"coords": [646, 506]
+			"coords": [646, 506],
+			"types": ["air"]
 		},
         "O": {
 			"coords": [667, 434]
