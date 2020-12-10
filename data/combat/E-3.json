@@ -1,6 +1,8 @@
 {
 	"world": "E",
 	"subworld": 3,
+	"panel": 1,
+	"page": 2,
 	"enemy_context": ["subs"],
 	"nodes": {
         "C": {
