@@ -47,6 +47,7 @@ class CombatCore(CoreBase):
     API_COMBAT_PHASES_TYPE1 = (
         'api_hougeki', 'api_hougeki1', 'api_hougeki2', 'api_hougeki3')
     API_COMBAT_PHASES_TYPE2 = ('api_opening_atack', 'api_raigeki')
+    API_COMBAT_PHASES_TYPE3 = ('api_kouku', 'api_kouku2')
     module_name = 'combat'
     module_display_name = 'Combat'
     available_maps = {}
@@ -622,6 +623,9 @@ class CombatCore(CoreBase):
         for phase in self.API_COMBAT_PHASES_TYPE2:
             if phase in data and data[phase] is not None:
                 new_hps = self._calculate_hps_from_type2(new_hps, data[phase])
+        for phase in self.API_COMBAT_PHASES_TYPE3:
+            if phase in data and data[phase]['api_stage3'] is not None:
+                new_hps = self._calculate_hps_from_type3(new_hps, data[phase])
         return new_hps
 
     def _calculate_hps_from_type1(self, hps, api_data):
@@ -639,6 +643,14 @@ class CombatCore(CoreBase):
     def _calculate_hps_from_type2(self, hps, api_data):
         hps = list(hps)
         dmgs = api_data['api_fdam']
+        return list(map(sub, hps, dmgs))
+
+    def _calculate_hps_from_type3(self, hps, api_data):
+        hps = list(hps)
+        dmgs = (list(api_data['api_stage3']['api_fdam'] +
+                     api_data['api_stage3_combined']['api_fdam'])
+            if flt.fleets.combined_fleet
+            else list(api_data['api_stage3']['api_fdam']))
         return list(map(sub, hps, dmgs))
 
     def _find_next_node(self, edge):
