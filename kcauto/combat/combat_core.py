@@ -624,7 +624,7 @@ class CombatCore(CoreBase):
             if phase in data and data[phase] is not None:
                 new_hps = self._calculate_hps_from_type2(new_hps, data[phase])
         for phase in self.API_COMBAT_PHASES_TYPE3:
-            if phase in data and data[phase] is not None:
+            if phase in data and data[phase]['api_stage3'] is not None:
                 new_hps = self._calculate_hps_from_type3(new_hps, data[phase])
         return new_hps
 
