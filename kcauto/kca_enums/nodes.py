@@ -14,6 +14,7 @@ class NodeEnum(EnumBase):
     NX1, NX2, NX3, NX4, NX5, NX6 = 'X1', 'X2', 'X3', 'X4', 'X5', 'X6'
     NY1, NY2, NY3, NY4, NY5, NY6 = 'Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6'
     NZ1, NZ2, NZ3, NZ4, NZ5, NZ6 = 'Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6'
+    NZ11 = "Z11",
     NZ7, NZ8, NZ9, NZZ, NZZ1, NZZ2 = 'Z7', 'Z8', 'Z9', 'ZZ', 'ZZ1', 'ZZ2'
     NZZ3 = 'ZZ3'
 
@@ -42,5 +43,6 @@ class NamedNodeEnum(EnumBase):
     NX1, NX2, NX3, NX4, NX5, NX6 = 'X1', 'X2', 'X3', 'X4', 'X5', 'X6'
     NY1, NY2, NY3, NY4, NY5, NY6 = 'Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6'
     NZ1, NZ2, NZ3, NZ4, NZ5, NZ6 = 'Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6'
+    NZ11 = "Z11",
     NZ7, NZ8, NZ9, NZZ, NZZ1, NZZ2 = 'Z7', 'Z8', 'Z9', 'ZZ', 'ZZ1', 'ZZ2'
     NZZ3 = 'ZZ3'
