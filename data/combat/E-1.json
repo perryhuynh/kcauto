@@ -11,10 +11,12 @@
 			"coords": [247, 383]
 		},
 		"C": {
-			"coords": [321, 204]
+			"coords": [321, 204],
+			"types": ["sub"]
 		},
 		"D": {
-			"coords": [367, 354]
+			"coords": [367, 354],
+			"types": ["sub"]
 		},
 		"E": {
 			"coords": [408, 247],
@@ -28,7 +30,8 @@
 			"types": ["select"]
 		},
 		"H": {
-			"coords": [523, 299]
+			"coords": [523, 299],
+			"types": ["sub"]
 		},
 		"I": {
 			"coords": [607, 484],
@@ -64,7 +67,8 @@
 			"coords": [619, 364]
 		},
 		"U": {
-			"coords": [714, 297]
+			"coords": [714, 297],
+			"types": ["sub"]
 		},
 		"V": {
 			"coords": [631, 272],
