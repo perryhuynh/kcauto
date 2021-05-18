@@ -72,7 +72,7 @@
 		},
 		"V": {
 			"coords": [631, 272],
-			"types": ["boss"]
+			"types": ["sub", "boss"]
 		}
 	},
 	"edges": {
