@@ -154,9 +154,18 @@ class ExpeditionCore(CoreBase):
         index = expedition_list.index(expedition)
         offset = 0
         if index >= self.NUM_VISIBLE_EXPEDITONS:
+            scroll_list_down_counter=0
             if kca_u.kca.exists('lower_left', 'global|scroll_next.png'):
-                self._scroll_list_down()
-            offset = len(expedition_list) - self.NUM_VISIBLE_EXPEDITONS
+                scroll_list_down_counter=self._scroll_list_down()
+            if scroll_list_down_counter+self.NUM_VISIBLE_EXPEDITONS<len(expedition_list):
+                offset = scroll_list_down_counter
+            elif scroll_list_down_counter+self.NUM_VISIBLE_EXPEDITONS==len(expedition_list):
+                offset = len(expedition_list) - self.NUM_VISIBLE_EXPEDITONS
+            else: 
+                offset = len(expedition_list) - self.NUM_VISIBLE_EXPEDITONS
+                Log.log_warn(f"Expedition {expedition.expedition} in world{expedition.world}, scroll down error occurred.")
+            Log.log_debug(f"Expedition {expedition.expedition} in world{expedition.world}, scroll down {scroll_list_down_counter} times.")
+
         else:
             if kca_u.kca.exists('upper_left', 'global|scroll_prev.png'):
                 self._scroll_list_up()
@@ -202,14 +211,20 @@ class ExpeditionCore(CoreBase):
     def _scroll_list_up(self):
         """Method to scroll the expedition list all the way up.
         """
+        scroll_list_up_counter=0
         while kca_u.kca.click_existing('upper_left', 'global|scroll_prev.png'):
+            scroll_list_up_counter+=1
             pass
+        return scroll_list_up_counter
 
     def _scroll_list_down(self):
         """Method to scroll the expedition list all the way down.
         """
+        scroll_list_down_counter=0
         while kca_u.kca.click_existing('lower_left', 'global|scroll_next.png'):
+            scroll_list_down_counter+=1
             pass
+        return scroll_list_down_counter
 
 
 expedition = ExpeditionCore()
