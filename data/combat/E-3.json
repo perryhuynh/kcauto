@@ -3,14 +3,15 @@
 	"subworld": 3,
 	"panel": 1,
 	"page": 2,
-	"enemy_context": [],
+	"enemy_context": ["subs"],
 	"nodes": {
 		"B": {
 			"coords": [386, 336],
 			"types": ["air"]
 		},
 		"C": {
-			"coords": [405, 160]
+			"coords": [405, 160],
+			"types": ["sub"]
 		},
 		"E": {
 			"coords": [548, 165],
