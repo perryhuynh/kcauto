@@ -10,7 +10,8 @@
 			"types": ["air"]
 		},
         "B": {
-			"coords": [629, 196]
+			"coords": [629, 196],
+			"types": ["sub"]
         },
         "C": {
 			"coords": [735, 198],
@@ -21,7 +22,8 @@
 			"types": ["air"]
         },
         "E": {
-			"coords": [770, 344]
+			"coords": [770, 344],
+			"types": ["sub"]
         },
         "F": {
 			"coords": [827, 202],
@@ -45,7 +47,8 @@
 			"types": ["boss"]
         },
         "M": {
-			"coords": [586, 399]
+			"coords": [586, 399],
+			"types": ["sub"]
         },
         "N": {
 			"coords": [623, 528]
@@ -59,7 +62,8 @@
 			"types": ["air"]
         },
         "Q": {
-			"coords": [282, 227]
+			"coords": [282, 227],
+			"types": ["sub"]
         },
         "Q1": {
 			"coords": [198, 202]
