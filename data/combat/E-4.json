@@ -92,7 +92,8 @@
 			"types": ["air"]
         },
         "V": {
-			"coords": [294, 482]
+			"coords": [294, 482],
+			"types": ["boss"]
         },
         "V3": {
 			"coords": [387, 443]
