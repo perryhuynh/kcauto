@@ -3,6 +3,7 @@ from kca_enums.enum_base import EnumBase
 
 class FleetModeEnum(EnumBase):
     STANDARD = 'standard'
+    STRIKE = 'strike'
     TCF = 'tcf'
     CTF = 'ctf'
     STF = 'stf'
