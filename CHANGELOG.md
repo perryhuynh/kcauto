@@ -1,3 +1,7 @@
+#### v8.1.0
+* Spring 2021 Event Support
+* Support for "Strike Force" fleets
+
 #### v8.0.0-rc1
 * **kcauto re-write**
   * No longer dependent on Sikuli
