@@ -64,8 +64,8 @@ class ConfigExpedition(ConfigBase):
                 self._config['expedition.enabled']
                 and len(value) > 0
                 and self._config['combat.enabled']
-                and FleetModeEnum.STRIKE.contains_value(
-                    self._config['combat.fleet_mode'])):
+                and FleetModeEnum.STRIKE.value == self._config[
+                    'combat.fleet_mode']):
             raise ValueError(
                 "Fleet 3 cannot be assigned to expeditions when combat is +"
                 " strike force")
