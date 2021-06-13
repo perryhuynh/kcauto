@@ -42,8 +42,10 @@ class ConfigExpeditionLayout(LayoutBase):
         fleet_2_elements = (
             'expedition.fleet_2.edit', 'expedition.fleet_2.clear',
         )
-        elements = (
+        fleet_3_elements = (
             'expedition.fleet_3.edit', 'expedition.fleet_3.clear',
+        )
+        elements = (
             'expedition.fleet_4.edit', 'expedition.fleet_4.clear',
         )
 
@@ -51,10 +53,10 @@ class ConfigExpeditionLayout(LayoutBase):
             cls.update_window_elements(window, elements, {'disabled': False})
 
             fleet_mode = values['combat.fleet_mode']
-            exp_2_button_state = (
-                window['expedition.fleet_2.edit'].TKButton.cget('state'))
+            exp_2_button_state = (window['expedition.fleet_2.edit'].TKButton.cget('state'))
+            exp_3_button_state = (window['expedition.fleet_3.edit'].TKButton.cget('state'))
             if values['combat.enabled'] is True:
-                if fleet_mode != FleetModeEnum.STANDARD.display_name:
+                if fleet_mode != FleetModeEnum.STANDARD.display_name and fleet_mode != FleetModeEnum.STRIKE.display_name:
                     window['expedition.fleet_2'].Update('')
                     cls.update_window_elements(
                         window, fleet_2_elements, {'disabled': True})
@@ -62,13 +64,24 @@ class ConfigExpeditionLayout(LayoutBase):
                     if exp_2_button_state == 'disabled':
                         cls.update_window_elements(
                             window, fleet_2_elements, {'disabled': False})
+                if fleet_mode == FleetModeEnum.STRIKE.display_name:
+                    window['expedition.fleet_3'].Update('')
+                    cls.update_window_elements(
+                        window, fleet_3_elements, {'disabled': True})
+                else:
+                    if exp_3_button_state == 'disabled':
+                        cls.update_window_elements(
+                            window, fleet_3_elements, {'disabled': False})
             else:
                 if exp_2_button_state == 'disabled':
                     cls.update_window_elements(
                         window, fleet_2_elements, {'disabled': False})
+                if exp_3_button_state == 'disabled':
+                    cls.update_window_elements(
+                        window, fleet_3_elements, {'disabled': False})
         else:
             cls.update_window_elements(
-                window, fleet_2_elements + elements, {'disabled': True})
+                window, fleet_2_elements + fleet_3_elements + elements, {'disabled': True})
 
         if event.startswith('expedition.fleet_') and event.endswith('edit'):
             fleet_id = event[17]
