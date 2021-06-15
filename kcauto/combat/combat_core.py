@@ -253,13 +253,17 @@ class CombatCore(CoreBase):
             if lbas.lbas.enabled and len(lbas.lbas.assignable_lbas_groups) > 0:
                 sortie_button_asset = 'combat|combat_start_lbas.png'
 
+            if flt.fleets.strike_force_fleet:
+                kca_u.kca.wait_and_click('upper_right', 'fleet|fleet_3.png')
+                kca_u.kca.sleep()
+
             if kca_u.kca.click_existing('lower_right', sortie_button_asset):
                 for fleet in flt.fleets.combat_fleets:
                     Log.log_msg(fleet)
                     Log.log_msg(fleet.detailed_fleet_status)
                 Log.log_msg("Starting sortie.")
                 return True
-            Log.log_warn(f"Cannot start combat.")
+            Log.log_warn("Cannot start combat.")
         return False
 
     def _check_map_clear(self):
@@ -586,8 +590,8 @@ class CombatCore(CoreBase):
         if 'api_flavor_info' in data:
             Log.log_debug("Boss node detected via API.")
             self.boss_api = True
-        # if 'api_midnight_flag' in data:
-        #     print(f"nightbattle: {data['api_midnight_flag']}")
+            # if 'api_midnight_flag' in data:
+            #     print(f"nightbattle: {data['api_midnight_flag']}")
 
         new_hps = (
             list(data['api_f_nowhps'] + data['api_f_nowhps_combined'])

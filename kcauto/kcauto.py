@@ -11,6 +11,7 @@ import scheduler.scheduler_core as sch
 import ship_switcher.ship_switcher_core as ssw
 import stats.stats_core as sts
 import util.kca as kca_u
+from kca_enums.expeditions import ExpeditionEnum
 from util.logger import Log
 
 
@@ -66,6 +67,12 @@ class Kcauto(object):
             self.find_kancolle()
             nav.navigate.to('home')
             self.fast_check_for_expedition()
+
+        if set([ExpeditionEnum.E5_33, ExpeditionEnum.E5_34,
+                ExpeditionEnum.EE_S1, ExpeditionEnum.EE_S2]) & set(
+                    cfg.config.expedition.all_expeditions):
+            if com.combat.time_to_sortie:
+                nav.navigate.to('refresh_home')
 
         if exp.expedition.fleets_are_ready:
             nav.navigate.to('home')

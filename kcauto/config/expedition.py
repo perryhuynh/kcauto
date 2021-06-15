@@ -1,6 +1,6 @@
 from config.config_base import ConfigBase
 from kca_enums.expeditions import ExpeditionEnum
-from kca_enums.fleet_modes import CombinedFleetModeEnum
+from kca_enums.fleet_modes import FleetModeEnum, CombinedFleetModeEnum
 
 
 class ConfigExpedition(ConfigBase):
@@ -60,6 +60,15 @@ class ConfigExpedition(ConfigBase):
         if not self._validate_expeditions(value):
             raise ValueError(
                 "Specified value for EXPEDITIONS_FLEET3 is not a valid exped")
+        if (
+                self._config['expedition.enabled']
+                and len(value) > 0
+                and self._config['combat.enabled']
+                and FleetModeEnum.STRIKE.value == self._config[
+                    'combat.fleet_mode']):
+            raise ValueError(
+                "Fleet 3 cannot be assigned to expeditions when combat is +"
+                " strike force")
         self._fleet_3 = [ExpeditionEnum(expedition) for expedition in value]
 
     @property

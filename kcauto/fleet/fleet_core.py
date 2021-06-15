@@ -26,6 +26,9 @@ class FleetCore(object):
             if fleet_id == 2:
                 fleet.fleet_type = (
                     'combat' if self.combined_fleet else 'expedition')
+            if fleet_id == 3:
+                fleet.fleet_type = (
+                    'combat' if self.strike_force_fleet else 'expedition')
             fleet.ship_ids = fleet_data['api_ship']
             at_base = fleet_data['api_mission'][0] == 0
             if at_base != fleet.at_base:
@@ -43,6 +46,8 @@ class FleetCore(object):
         if cfg.config.combat.enabled:
             if cfg.config.combat.fleet_mode is FleetModeEnum.STANDARD:
                 return [self.fleets[1]]
+            elif cfg.config.combat.fleet_mode is FleetModeEnum.STRIKE:
+                return [self.fleets[3]]
             elif CombinedFleetModeEnum.contains_value(
                     cfg.config.combat.fleet_mode.value):
                 return [self.fleets[1], self.fleets[2]]
@@ -51,6 +56,10 @@ class FleetCore(object):
     @property
     def combined_fleet(self):
         return len(self.combat_fleets) == 2
+
+    @property
+    def strike_force_fleet(self):
+        return cfg.config.combat.fleet_mode is FleetModeEnum.STRIKE
 
     @property
     def pvp_fleet(self):
@@ -76,7 +85,8 @@ class FleetCore(object):
                 and self.fleets[2].enabled):
             expedition_fleets.append(self.fleets[2])
         if (
-                len(cfg.config.expedition.fleet_3) > 0
+                not self.strike_force_fleet
+                and len(cfg.config.expedition.fleet_3) > 0
                 and self.fleets[3].enabled):
             expedition_fleets.append(self.fleets[3])
         if (
