@@ -23,6 +23,7 @@ class ExpeditionCore(CoreBase):
     module_name = 'expedition'
     module_display_name = 'Expedition'
     available_expeditions_per_world = {}
+    scroll_counter = 0
 
     @property
     def available_expeditions(self):
@@ -154,9 +155,19 @@ class ExpeditionCore(CoreBase):
         index = expedition_list.index(expedition)
         offset = 0
         if index >= self.NUM_VISIBLE_EXPEDITONS:
+            if not kca_u.kca.exists('upper_left', 'global|scroll_prev.png'):
+                self.scroll_counter=0
             if kca_u.kca.exists('lower_left', 'global|scroll_next.png'):
-                self._scroll_list_down()
-            offset = len(expedition_list) - self.NUM_VISIBLE_EXPEDITONS
+                self.scroll_counter=self._scroll_list_down()
+            if self.scroll_counter+self.NUM_VISIBLE_EXPEDITONS<len(expedition_list):
+                offset = self.scroll_counter
+            elif self.scroll_counter+self.NUM_VISIBLE_EXPEDITONS==len(expedition_list):
+                offset = len(expedition_list) - self.NUM_VISIBLE_EXPEDITONS
+            else: 
+                offset = len(expedition_list) - self.NUM_VISIBLE_EXPEDITONS
+                Log.log_warn(f"Expedition {expedition.expedition} in world{expedition.world}, scroll down error occurred.")
+            Log.log_debug(f"Expedition {expedition.expedition} in world{expedition.world}, scroll down {self.scroll_counter} times.")
+
         else:
             if kca_u.kca.exists('upper_left', 'global|scroll_prev.png'):
                 self._scroll_list_up()
@@ -204,12 +215,16 @@ class ExpeditionCore(CoreBase):
         """
         while kca_u.kca.click_existing('upper_left', 'global|scroll_prev.png'):
             pass
+        self.scroll_counter=0
+        return self.scroll_counter
 
     def _scroll_list_down(self):
         """Method to scroll the expedition list all the way down.
         """
         while kca_u.kca.click_existing('lower_left', 'global|scroll_next.png'):
+            self.scroll_counter+=1
             pass
+        return self.scroll_counter
 
 
 expedition = ExpeditionCore()
